@@ -1,0 +1,19 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "audit",
+  "latency_s": 6.324,
+  "parsed": {
+    "agree": true,
+    "concerns": [],
+    "summary": "Both the plant outage in San Antonio and the infotainment chip supplier delay in Princeton were correctly interpreted, with appropriate rescheduling, dealer notifications, and prioritized loaner assignments."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "audit",
+    "input_tokens": 1710,
+    "output_tokens": 654,
+    "cost_usd": 0.003735
+  }
+}
