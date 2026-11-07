@@ -1,0 +1,71 @@
+{
+  "pipeline_version": "0.1.0",
+  "event_id": "E-02",
+  "received_at": "2027-03-08T07:34:00",
+  "source": "ops chat",
+  "text": "Rumor from a supplier rep: something may be off with a seat material coming up. No dates, no details, nothing confirmed.",
+  "status": "escalated",
+  "classification": {
+    "category": "unconfirmed",
+    "confidence": 0.95,
+    "reason": "Self-described rumor: possibly about our seating parts, but no supplier, part, plant, lot or dates, and explicitly unconfirmed."
+  },
+  "incidents": [
+    {
+      "incident_id": "E-02#1",
+      "event_id": "E-02",
+      "category": "unconfirmed",
+      "confidence": 0.95,
+      "raw_mentions": {"part_id": "a seat material", "supplier_id": "a supplier rep", "timing": "coming up"},
+      "resolution_steps": [
+        {"mention": "a seat material", "entity_type": "part", "candidates": ["SEAT-FAB", "SEAT-LEA", "SEAT-VAN"], "chosen": null, "method": "unresolved", "note": "Three seating parts; text does not disambiguate"},
+        {"mention": "a supplier rep", "entity_type": "supplier", "candidates": ["SUP-04", "SUP-15"], "chosen": null, "method": "unresolved", "note": "Two seating suppliers (Meridian, Harbor)"},
+        {"mention": "coming up", "entity_type": "date", "candidates": [], "chosen": null, "method": "unresolved"}
+      ],
+      "ambiguities": [
+        {"field": "part_id", "issue": "Which seating part?", "options": ["SEAT-FAB", "SEAT-LEA", "SEAT-VAN"], "blocking": true},
+        {"field": "lot_id/shipment_id", "issue": "Quality issue or delay? Which lot or shipment?", "options": [], "blocking": true},
+        {"field": "dates", "issue": "No build window or ETA", "options": [], "blocking": true}
+      ],
+      "reason": "Possibly relevant (seating parts are in every BOM) but unconfirmed and unspecific (rule 8)."
+    }
+  ],
+  "paths": {},
+  "agents": [
+    {
+      "agent": "coordinator",
+      "started": "2027-03-08T07:34:01",
+      "ended": "2027-03-08T07:34:03",
+      "steps": [
+        {"t": "2027-03-08T07:34:01", "kind": "llm", "text": "Classified as unconfirmed (confidence 0.95). Mentions a seat material and a supplier rep; no ids or dates.", "data": {"model": "example-model", "input_tokens": 2010, "output_tokens": 150}},
+        {"t": "2027-03-08T07:34:02", "kind": "graph", "text": "Candidate parts SEAT-FAB/SEAT-LEA/SEAT-VAN appear in all six models' BOMs; acting on any would touch hundreds of unaffected records."},
+        {"t": "2027-03-08T07:34:02", "kind": "gate", "text": "Three blocking ambiguities → escalate, no operational action (rule 8)."},
+        {"t": "2027-03-08T07:34:03", "kind": "execute", "text": "escalate() sent with a precise question for the human."}
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "seq": 1,
+      "incident_id": "E-02#1",
+      "agent": "coordinator",
+      "tool": "escalate",
+      "args": {"reason": "Unconfirmed rumor about a seating material (candidates SEAT-FAB, SEAT-LEA, SEAT-VAN; suppliers Meridian SUP-04 or Harbor SUP-15). No lot, shipment, plant or dates. Please confirm with the supplier: which part, which lot or shipment, which plant, and the affected build window or new ETA. No operational action taken."},
+      "justification": "Rule 8: not specific or confirmed → escalate only",
+      "path_ids": [],
+      "rehearsal": {"ok": true},
+      "result": {"ok": true}
+    }
+  ],
+  "world_diff": {},
+  "counterfactual": null,
+  "llm": {
+    "calls": [
+      {"provider": "example", "model": "example-model", "purpose": "extract", "input_tokens": 2010, "output_tokens": 150, "cost_usd": 0.0003},
+      {"provider": "example", "model": "example-model", "purpose": "summarize", "input_tokens": 900, "output_tokens": 120, "cost_usd": 0.0001}
+    ],
+    "total_cost_usd": 0.0004
+  },
+  "summary": "A supplier representative hinted that a seating material may have a problem soon, with no dates or details. The report was handed to a human with the specific questions needed to make it actionable.",
+  "decision_reason": "Escalated, no operational change: the report is explicitly unconfirmed and names no part, lot, shipment, plant or date (rule 8). Acting on a guess would touch hundreds of unaffected builds and vehicles (rule 10)."
+}

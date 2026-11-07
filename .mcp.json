@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "wacky-enterprise": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "control_tower.mcp.server"],
+      "env": { "ENTERPRISE_URL": "http://127.0.0.1:8000" }
+    }
+  }
+}

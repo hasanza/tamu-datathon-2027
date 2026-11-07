@@ -1,0 +1,23 @@
+{
+  "hack_the_highway/Usecase.md": "97ccd6be2444933aec1ae34a00a72ea588cbd633f4eba134493572942ff1915b",
+  "hack_the_highway/data/aliases.csv": "2c50d17cfe7933b60a790dd20f5abb426b5cd04d7ba7cab0e0d21295a953de76",
+  "hack_the_highway/data/bom.csv": "ee7de3c5f960f8072cec2c6a1050fb6bb6a85a87412c699477813cdaa8b3dc6f",
+  "hack_the_highway/data/calendar.csv": "8edf3d52b934ac4f7dd22f3a609c1d40a90efcf882081d574f53cb85b933dca5",
+  "hack_the_highway/data/customer_orders.csv": "ec863118cf938adb89d69ac39c5dec8673d87a90d0af50918a90c8bb16e9cbe3",
+  "hack_the_highway/data/customers.csv": "508774d020be741f6a0893ccca75fa0ff38dcb3ecca5ce8fc3da89d6f5f1f76f",
+  "hack_the_highway/data/dealers.csv": "0fe622f8f82e8157e7c49b0ce86a73571c2becd3ed524ca727a4b7eb4521d5c3",
+  "hack_the_highway/data/events.json": "b9bfc037e39e4929afbfcf534a8e8e318dc16b6554186dc592c0b5a7cd295576",
+  "hack_the_highway/data/finished_vehicles.csv": "d39fb8951348afaa0cdf9c2ae0b976b5b5d91499143629eab4d6db8d67f29f23",
+  "hack_the_highway/data/inbound_shipments.csv": "79a80647e7590eeb6527af902485408fe698ac162f3481fb45559d29769ee4c8",
+  "hack_the_highway/data/loaners.csv": "544e32b7ffb63e3fbe4e781a125062dae3a535719ff0fb52a29bb0de4ce20c70",
+  "hack_the_highway/data/models.csv": "2d40f45ad0b39e7579e9ed5a698e6d7aada0f1c6692b54ddfef4f84ed67a93ff",
+  "hack_the_highway/data/part_lots.csv": "036415c2fff08b1b60a4b22e46597b8d10271441f7dee3e4e375ff1bb982ca74",
+  "hack_the_highway/data/parts.csv": "a86d45fab5577a3a06d81a9bf776c04f46b7bf9a286e651abe06dde063e33182",
+  "hack_the_highway/data/plant_models.csv": "9d7c4bdbb7811deef0f5eb9747f1315de698c2bc8823a64209a93e5f721cd606",
+  "hack_the_highway/data/plants.csv": "510c45382deb36f12544c6d86add1cd8260c2f9cdc4c356e408f23a0533c61ef",
+  "hack_the_highway/data/policy_handbook.md": "d6db92893f8c7e4b02479035283f89e1d8003094a1074c9735238dcc8193b6d4",
+  "hack_the_highway/data/production_orders.csv": "d39273943da6345211095e841f8f5be9fad2bc242a3954ba49ca53a898922a92",
+  "hack_the_highway/data/suppliers.csv": "95a7967b6dfbdbe2a179ac9f233d5d4c13f46a5f2289ca6e8ec917e0a73f9548",
+  "hack_the_highway/enterprise.py": "cc5a8ccc820c71f8fe5ca4e1d8d6de46270e6a904710e4efa9263c26452f70e9",
+  "hack_the_highway/enterprise_server.py": "f1cb4f6686a445f2e5c30f11bbb71ef6a57ce333e7cea25aaa5dbdf1a7757f1d"
+}
