@@ -49,6 +49,7 @@ class Settings:
     )
     poll_s: float = 0.25
     custom_dir: Path = field(default_factory=lambda: _path("CUSTOM_DIR", "traces/custom"))
+    custom_run_dir: Path = field(default_factory=lambda: _path("CUSTOM_RUN_DIR", "runs/custom"))
 
     @property
     def action_log(self) -> Path:
@@ -58,10 +59,19 @@ class Settings:
     def stream_file(self) -> Path:
         return self.run_dir / "events.ndjson"
 
+    @property
+    def custom_stream_file(self) -> Path:
+        return self.custom_run_dir / "events.ndjson"
+
 
 class CustomEvent(BaseModel):
-    text: str = Field(min_length=8, max_length=2000)
+    """Either a fresh message (`text`), or a follow-up to an existing event: `parent_id` + `details` the operator adds
+    (the original text is read from the parent's trace and the details are appended)."""
+
+    text: str | None = Field(default=None, min_length=8, max_length=2000)
     source: str = Field(default="judge input", max_length=60)
+    parent_id: str | None = Field(default=None, pattern=r"^[EC]-\d{2}$")
+    details: str | None = Field(default=None, min_length=4, max_length=1000)
 
 
 def _path(var: str, default: str) -> Path:
@@ -83,31 +93,45 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
 
 
 async def tail_ndjson(
-    path: Path | Callable[[], Path],
+    path: Path | Callable[[], Path | list[Path]],
     *,
     from_start: bool,
     poll_s: float,
     disconnected: Callable[[], Awaitable[bool]],
 ) -> AsyncIterator[dict[str, str]]:
-    """Yield SSE messages for each complete JSON line appended to ``path``.
+    """Yield SSE messages for each complete JSON line appended to one or more ndjson files.
 
-    Starts at the end of the file unless ``from_start``. Survives the file not existing yet and
-    being truncated (a new run). Lines that are not JSON objects with a known ``type`` are skipped.
+    ``path`` is a Path, or a callable returning a Path or a list of Paths (called every poll, so it follows a run
+    switching directories and also tails the sandbox stream for custom events). Starts at the end of each file unless
+    ``from_start``. Survives files not existing yet and being truncated (a new run). Lines that are not JSON objects with
+    a known ``type`` are skipped.
     """
-    resolve = path if callable(path) else (lambda: path)  # a callable follows a run switching run_dir mid-stream
-    current = resolve()
-    pos = 0 if from_start else (current.stat().st_size if current.exists() else 0)
-    buf = b""
+
+    def resolve() -> list[Path]:
+        got = path() if callable(path) else path
+        return list(got) if isinstance(got, list | tuple) else [got]
+
+    state: dict[Path, list[Any]] = {}  # path -> [position, partial-line buffer]
+    first = True
     while not await disconnected():
-        path = resolve()
-        if path != current:
-            current, pos, buf = path, 0, b""
-        if path.exists():
-            size = path.stat().st_size
+        paths = resolve()
+        for gone in set(state) - set(paths):
+            del state[gone]
+        for p in paths:
+            if p not in state:
+                # files present at connect time start at their end (unless replaying); a path that shows up later
+                # (a run switched directories) is a new stream and is read from its first line
+                at_end = first and not from_start
+                state[p] = [p.stat().st_size if at_end and p.exists() else 0, b""]
+        for p in paths:
+            pos, buf = state[p]
+            if not p.exists():
+                continue
+            size = p.stat().st_size
             if size < pos:
                 pos, buf = 0, b""
             if size > pos:
-                with path.open("rb") as f:
+                with p.open("rb") as f:
                     f.seek(pos)
                     chunk = f.read()
                 pos += len(chunk)
@@ -121,11 +145,11 @@ async def tail_ndjson(
                     if isinstance(msg, dict) and msg.get("type") in SSE_TYPES:
                         payload = msg.get("payload")
                         data = dict(payload) if isinstance(payload, dict) else {}
-                        if (
-                            "event_id" in msg
-                        ):  # CORE writes event_id beside the payload (docs/contracts.md: payload + event_id)
+                        if "event_id" in msg:  # CORE writes event_id beside the payload (docs/contracts.md)
                             data["event_id"] = msg["event_id"]
                         yield {"event": msg["type"], "data": json.dumps(data)}
+            state[p] = [pos, buf]
+        first = False
         await asyncio.sleep(poll_s)
 
 
@@ -189,6 +213,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                         "category": t.classification.category,
                         "confidence": t.classification.confidence,
                         "custom": True,
+                        "parent_id": (m.group(1) if (m := re.match(r"follow-up to ([EC]-\d{2})$", t.source)) else None),
                     }
                 )
         return out
@@ -249,12 +274,27 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def custom(body: CustomEvent) -> dict[str, Any]:
         """Run the full pipeline on a judge's own event text in a SANDBOX (in-process twin; never the real server or
         the real action log). Blocks until the trace exists (a few seconds), then returns it as C-nn."""
+        source = body.source
+        if body.parent_id:  # follow-up: the operator adds details to an escalated (or any) event; re-run in the sandbox
+            if not body.details:
+                raise HTTPException(422, "details are required with parent_id")
+            parent = load_trace(body.parent_id)
+            if parent is None:
+                raise HTTPException(404, f"no trace for {body.parent_id}")
+            text = f"{parent.text.strip()[:1500]}\n\nFollow-up from the operator: {body.details.strip()}"
+            source = f"follow-up to {body.parent_id}"
+        elif body.text:
+            text = body.text.strip()
+        else:
+            raise HTTPException(422, "give text, or parent_id with details")
         cfg.custom_dir.mkdir(parents=True, exist_ok=True)
         n = 1 + max([int(p.stem[2:]) for p in cfg.custom_dir.glob("C-*.json")] or [0])
         if n > 99:
             raise HTTPException(409, "custom event limit reached (C-99)")
         eid = f"C-{n:02d}"
-        ev = {"event_id": eid, "received_at": "2027-03-08T09:00:00", "source": body.source, "text": body.text.strip()}
+        ev = {"event_id": eid, "received_at": "2027-03-08T09:00:00", "source": source, "text": text}
+        cfg.custom_run_dir.mkdir(parents=True, exist_ok=True)
+        cfg.custom_stream_file.write_text("")  # connected Activity streams reset now; the run then appends live
         tmp = cfg.custom_dir / f"{eid}.input.json"
         tmp.write_text(json.dumps([ev]), encoding="utf-8")
         cmd = [sys.executable, "-m", "control_tower.live", "--custom", str(tmp)]
@@ -270,7 +310,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         t = load_trace(eid)
         if t is None:
             raise HTTPException(500, f"pipeline produced no trace: {r.stderr[-300:]}")
-        return {"event_id": eid, "status": t.status, "category": t.classification.category}
+        return {
+            "event_id": eid,
+            "status": t.status,
+            "category": t.classification.category,
+            "parent_id": body.parent_id,
+        }
 
     runner: dict[str, Any] = {"proc": None, "mode": None, "started": None}
     initial_dirs = (cfg.traces_dir, cfg.run_dir)  # what the server was started with: the committed snapshot
@@ -330,7 +375,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def stream(request: Request, replay: bool = False) -> EventSourceResponse:
         return EventSourceResponse(
             tail_ndjson(
-                lambda: cfg.stream_file, from_start=replay, poll_s=cfg.poll_s, disconnected=request.is_disconnected
+                lambda: [cfg.stream_file, cfg.custom_stream_file],
+                from_start=replay,
+                poll_s=cfg.poll_s,
+                disconnected=request.is_disconnected,
             )
         )
 
