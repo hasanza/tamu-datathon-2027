@@ -103,7 +103,15 @@ def cmd_inbox(a: argparse.Namespace) -> None:
 
 
 def cmd_show(a: argparse.Namespace) -> None:
-    print(gh("issue", "view", str(a.number), "--comments"))
+    # --json avoids a GraphQL field (projectCards) that older gh versions still request with --comments
+    data = json.loads(
+        gh("issue", "view", str(a.number), "--json", "number,title,state,labels,body,comments,url")
+    )
+    labels = ",".join(label["name"] for label in data["labels"])
+    print(f"#{data['number']} [{data['state']}] {data['title']}")
+    print(f"labels: {labels}\n{data['url']}\n\n{data['body']}")
+    for c in data.get("comments", []):
+        print(f"\n--- {c['author']['login']} @ {c['createdAt'][:16]} ---\n{c['body']}")
 
 
 def _labels(number: int) -> set[str]:
