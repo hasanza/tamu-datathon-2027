@@ -8,7 +8,7 @@
   "classification": {
     "category": "quality_hold",
     "confidence": 1.0,
-    "reason": "A specific part lot installed at a plant within a given build window is reported as defective with a faulty weld."
+    "reason": "The bulletin explicitly states that a specific lot installed at a plant has a defect and must be placed on hold."
   },
   "incidents": [
     {
@@ -96,7 +96,7 @@
         }
       ],
       "ambiguities": [],
-      "reason": "A specific part lot installed at a plant within a given build window is reported as defective with a faulty weld."
+      "reason": "The bulletin explicitly states that a specific lot installed at a plant has a defect and must be placed on hold."
     }
   ],
   "paths": {
@@ -398,40 +398,40 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T11:15:01.225000",
-      "ended": "2027-03-08T11:15:06.390000",
+      "started": "2027-03-08T11:15:01.332000",
+      "ended": "2027-03-08T11:15:07.203000",
       "steps": [
         {
-          "t": "2027-03-08T11:15:01.225000",
+          "t": "2027-03-08T11:15:01.332000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): quality_hold",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 808,
-            "output_tokens": 238,
+            "output_tokens": 264,
             "cached": false
           }
         },
         {
-          "t": "2027-03-08T11:15:01.226000",
+          "t": "2027-03-08T11:15:01.334000",
           "kind": "gate",
           "text": "E-15#1: quality_hold confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T11:15:01.232000",
+          "t": "2027-03-08T11:15:01.340000",
           "kind": "rehearse",
           "text": "Rehearsed 102 actions on the twin: 102 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T11:15:05.743000",
+          "t": "2027-03-08T11:15:06.703000",
           "kind": "audit",
-          "text": "Auditor agrees: The quality bulletin was accurately interpreted and the corrective action plan correctly holds lot LOT-0191, stops sales at dealers, and notifies affected vehicle owners.",
+          "text": "Auditor agrees: The interpretation accurately reflects the quality bulletin, and the planned actions strictly follow the quality hold policy with all required action types.",
           "data": null
         },
         {
-          "t": "2027-03-08T11:15:06.390000",
+          "t": "2027-03-08T11:15:07.203000",
           "kind": "execute",
           "text": "Executed 102 calls via server: 102 ok, 0 failed (102 writes, 0 verification reads)",
           "data": null
@@ -440,17 +440,17 @@
     },
     {
       "agent": "quality",
-      "started": "2027-03-08T11:15:01.229000",
-      "ended": "2027-03-08T11:15:01.230000",
+      "started": "2027-03-08T11:15:01.337000",
+      "ended": "2027-03-08T11:15:01.338000",
       "steps": [
         {
-          "t": "2027-03-08T11:15:01.229000",
+          "t": "2027-03-08T11:15:01.337000",
           "kind": "graph",
           "text": "Lot LOT-0191 -> part CHIP-IVI -> models using it -> POs at P_IN built 2027-03-02..2027-03-03: 4 POs, 116 vehicles (40 unsold at 25 dealers, 76 owners)",
           "data": null
         },
         {
-          "t": "2027-03-08T11:15:01.230000",
+          "t": "2027-03-08T11:15:01.338000",
           "kind": "plan",
           "text": "Hold LOT-0191; stop sale at 25 dealers; contact 76 owners once each.",
           "data": null
@@ -3419,8 +3419,8 @@
         "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 808,
-        "output_tokens": 238,
-        "cost_usd": 0.000837,
+        "output_tokens": 264,
+        "cost_usd": 0.000902,
         "cached": false
       },
       {
@@ -3428,22 +3428,22 @@
         "model": "gemini-3.8-flash",
         "purpose": "audit",
         "input_tokens": 1202,
-        "output_tokens": 504,
-        "cost_usd": 0.002791,
+        "output_tokens": 489,
+        "cost_usd": 0.002735,
         "cached": false
       },
       {
         "provider": "gemini",
         "model": "gemini-3.5-flash-lite",
         "purpose": "summarize",
-        "input_tokens": 396,
-        "output_tokens": 140,
-        "cost_usd": 0.000469,
+        "input_tokens": 398,
+        "output_tokens": 146,
+        "cost_usd": 0.000484,
         "cached": false
       }
     ],
-    "total_cost_usd": 0.004097
+    "total_cost_usd": 0.004121
   },
-  "summary": "Lot LOT-0191 of CHIP-IVI from supplier SUP-12 installed at P_IN on vehicles built 2027-03-02 to 2027-03-03 had a faulty weld. The supply-chain control tower placed the lot on hold, stopped the sale of unsold vehicles, and contacted owners.",
-  "decision_reason": "The control tower acted on a real incident under incident type quality_hold. Identifiers and dates were resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live baseline matched before the first write."
+  "summary": "Quality Bulletin QB-368 reported lot LOT-0191 of CHIP-IVI from supplier SUP-12 installed at P_IN on vehicles built from 2027-03-02 to 2027-03-03 had a faulty weld. The supply-chain control tower placed the lot on hold, stopped the sale of unsold vehicles, and contacted owners.",
+  "decision_reason": "Acted on a real incident under rule quality_hold because the ids and dates resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live schedule baseline matched before the first write."
 }

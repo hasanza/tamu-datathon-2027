@@ -1,0 +1,18 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "purpose": "summarize",
+  "latency_s": 0.817,
+  "parsed": {
+    "summary": "A supplier representative shared a rumor that something may be off with a seat material coming up without dates, details, or confirmation. Part of the message was not actionable and was escalated to a human.",
+    "decision_reason": "The unclear part was escalated with no operational change according to rule 8."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "purpose": "summarize",
+    "input_tokens": 289,
+    "output_tokens": 71,
+    "cost_usd": 0.000264
+  }
+}

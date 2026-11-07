@@ -4,18 +4,18 @@
       "provider": "gemini",
       "model": "gemini-3.5-flash-lite",
       "calls": 30,
-      "input_tokens": 16715,
-      "output_tokens": 4981,
-      "cost_usd": 0.017469
+      "input_tokens": 16752,
+      "output_tokens": 5233,
+      "cost_usd": 0.018109
     },
     {
       "provider": "gemini",
       "model": "gemini-3.8-flash",
       "calls": 10,
       "input_tokens": 13426,
-      "output_tokens": 5947,
-      "cost_usd": 0.03237
+      "output_tokens": 5759,
+      "cost_usd": 0.031664
     }
   ],
-  "total_cost_usd": 0.049839
+  "total_cost_usd": 0.049773
 }

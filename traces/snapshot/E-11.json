@@ -514,11 +514,11 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T10:07:00.993000",
-      "ended": "2027-03-08T10:07:09.534000",
+      "started": "2027-03-08T10:07:01.180000",
+      "ended": "2027-03-08T10:07:07.260000",
       "steps": [
         {
-          "t": "2027-03-08T10:07:00.993000",
+          "t": "2027-03-08T10:07:01.180000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): plant_outage",
           "data": {
@@ -529,25 +529,25 @@
           }
         },
         {
-          "t": "2027-03-08T10:07:00.994000",
+          "t": "2027-03-08T10:07:01.182000",
           "kind": "gate",
           "text": "E-11#1: plant_outage confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T10:07:01.002000",
+          "t": "2027-03-08T10:07:01.190000",
           "kind": "rehearse",
           "text": "Rehearsed 68 actions on the twin: 68 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T10:07:09.184000",
+          "t": "2027-03-08T10:07:06.885000",
           "kind": "audit",
-          "text": "Auditor agrees: The plant outage at Jackson (P_MS) from 2027-03-26 to 2027-03-30 was correctly identified, with all affected production orders properly rescheduled or transferred and customer loaners accurately allocated.",
+          "text": "Auditor agrees: The plant outage at Jackson (P_MS) from 2027-03-26 to 2027-03-30 was correctly identified, with all affected orders rescheduled or transferred appropriately, and customer care actions planned in accordance with policy.",
           "data": null
         },
         {
-          "t": "2027-03-08T10:07:09.534000",
+          "t": "2027-03-08T10:07:07.260000",
           "kind": "execute",
           "text": "Executed 68 calls via server: 68 ok, 0 failed (62 writes, 6 verification reads)",
           "data": null
@@ -556,17 +556,17 @@
     },
     {
       "agent": "supply_chain",
-      "started": "2027-03-08T10:07:00.997000",
-      "ended": "2027-03-08T10:07:00.997000",
+      "started": "2027-03-08T10:07:01.185000",
+      "ended": "2027-03-08T10:07:01.185000",
       "steps": [
         {
-          "t": "2027-03-08T10:07:00.997000",
+          "t": "2027-03-08T10:07:01.185000",
           "kind": "graph",
           "text": "Plant P_MS -> POs building 2027-03-26..2027-03-30 (inclusive): 9 affected: ['PO-0253', 'PO-0254', 'PO-0255', 'PO-0256', 'PO-0257', 'PO-0258', 'PO-0259', 'PO-0260', 'PO-0261']",
           "data": null
         },
         {
-          "t": "2027-03-08T10:07:00.997000",
+          "t": "2027-03-08T10:07:01.185000",
           "kind": "plan",
           "text": "Restart index 17; slots 5/day, shared across this event. 6 reschedule(s), 3 transfer(s), 0 unplaceable. PO-0253->P_MS 2027-03-31; PO-0254->P_MS 2027-03-31; PO-0255->P_MS 2027-04-01; PO-0256->P_MS 2027-04-01; PO-0257->P_MS 2027-04-02; PO-0258->P_MS 2027-04-02; PO-0259->P_KY 2027-03-08; PO-0260->P_AL 2027-03-08; PO-0261->P_NC 2027-03-08",
           "data": {
@@ -580,17 +580,17 @@
     },
     {
       "agent": "dealer_care",
-      "started": "2027-03-08T10:07:00.998000",
-      "ended": "2027-03-08T10:07:00.999000",
+      "started": "2027-03-08T10:07:01.185000",
+      "ended": "2027-03-08T10:07:01.186000",
       "steps": [
         {
-          "t": "2027-03-08T10:07:00.998000",
+          "t": "2027-03-08T10:07:01.185000",
           "kind": "graph",
           "text": "79 customer orders on 9 moved POs across 36 dealers (all incidents of this event together)",
           "data": null
         },
         {
-          "t": "2027-03-08T10:07:00.999000",
+          "t": "2027-03-08T10:07:01.186000",
           "kind": "plan",
           "text": "One notice per dealer; 18 Platinum/Gold customer orders entitled, 17 loaner(s) assigned within pool limits (Platinum, then Gold, earlier promise, lower id).",
           "data": null
@@ -3075,22 +3075,22 @@
         "model": "gemini-3.8-flash",
         "purpose": "audit",
         "input_tokens": 1427,
-        "output_tokens": 1003,
-        "cost_usd": 0.004831,
+        "output_tokens": 650,
+        "cost_usd": 0.003508,
         "cached": false
       },
       {
         "provider": "gemini",
         "model": "gemini-3.5-flash-lite",
         "purpose": "summarize",
-        "input_tokens": 354,
-        "output_tokens": 145,
-        "cost_usd": 0.000469,
+        "input_tokens": 356,
+        "output_tokens": 146,
+        "cost_usd": 0.000472,
         "cached": false
       }
     ],
-    "total_cost_usd": 0.006029
+    "total_cost_usd": 0.004709
   },
-  "summary": "Wacky Wheels Jackson is down 2027-03-26 to 2027-03-30. 9 production orders were moved, with 6 rescheduled at the same plant and 3 transferred to other plants because no same-plant slot was free. 36 dealers were notified once each for 79 customer orders, and 17 loaners were assigned.",
-  "decision_reason": "Acted on a real incident of type plant_outage because the ids and dates resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live baseline matched before the first write."
+  "summary": "Wacky Wheels Jackson is down 2027-03-26 to 2027-03-30. 9 production orders were moved with 6 rescheduled at the same plant and 3 transferred to other plants because no same-plant slot was free. 36 dealers were notified once each for 79 customer orders, and 17 loaners were assigned.",
+  "decision_reason": "Acted on every confirmed incident with ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, and the live schedule baseline matched before the first write. Incident types handled: plant_outage."
 }
