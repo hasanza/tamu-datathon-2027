@@ -2,6 +2,7 @@ import { Fragment, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import type { Incident, Trace } from "../api/types";
 import { CategoryBadge, Chip, ConfidenceRing, Mono, Panel, Stat } from "../components/ui/primitives";
+import { ImpactPanel } from "./ImpactPanel";
 
 function Id({ v }: { v: string | null }) {
   return v ? <Mono>{v}</Mono> : <span className="text-tx3">-</span>;
@@ -198,6 +199,8 @@ export function SummaryTab({ trace }: { trace: Trace }) {
           <p className="text-[13px] text-tx3">No operational change was made, so there is no business impact to measure.</p>
         )}
       </Panel>
+
+      <ImpactPanel trace={trace} />
 
       <Panel title={`Incidents (${trace.incidents.length})`} className="[&>div]:p-0">
         <IncidentsTable incidents={trace.incidents} />
