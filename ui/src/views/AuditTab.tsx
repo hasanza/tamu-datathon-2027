@@ -99,7 +99,7 @@ function DealerRow({ id, orders }: { id: string; orders: string[] }) {
 
 export function AuditTab({ trace }: { trace: Trace }) {
   const d = trace.world_diff;
-  const target = useExecTarget();
+  const target = useExecTarget(trace.event_id);
   const cs = checks(trace, target);
   const gateSteps = trace.agents.flatMap((a) => a.steps.filter((s) => ["rehearse", "audit", "gate", "execute"].includes(s.kind)).map((s) => ({ agent: a.agent, s })));
   const calls = trace.llm.calls;

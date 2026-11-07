@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Play } from "lucide-react";
+import { FlaskConical, Play } from "lucide-react";
 import { isNotFound, useTrace } from "../api/hooks";
-import type { FeedEvent, Status } from "../api/types";
+import { isCustomId, type FeedEvent, type Status } from "../api/types";
 import { SourceIcon } from "../components/EventFeed";
 import { useRun } from "../components/useRun";
-import { CategoryBadge, ConfidenceRing, Empty, ErrorBox, Loading, StatusChip } from "../components/ui/primitives";
+import { CategoryBadge, Chip, ConfidenceRing, Empty, ErrorBox, Loading, StatusChip } from "../components/ui/primitives";
 import { dateTime } from "../lib/format";
 import { ActionsTab } from "./ActionsTab";
 import { AgentsTab } from "./AgentsTab";
@@ -29,6 +29,7 @@ export function EventDetail({ event, processing }: { event: FeedEvent | undefine
   if (!event) return <Empty title="Select an event" hint="Pick an event from the feed (or press j / k) to see what the agents did and why." />;
 
   const t = trace.data;
+  const sandbox = isCustomId(event.event_id) || !!event.custom;
   const status: Status = processing ? "processing" : (t?.status ?? event.status);
   const queued = !t && !trace.isLoading && (!trace.isError || isNotFound(trace.error));
 
@@ -44,11 +45,13 @@ export function EventDetail({ event, processing }: { event: FeedEvent | undefine
           <h2 className="mono text-lg font-semibold">{event.event_id}</h2>
           <CategoryBadge category={t?.classification.category ?? event.category} />
           <StatusChip status={status} />
+          {sandbox && <Chip color="var(--cat-compound)">Sandbox</Chip>}
           <span className="flex items-center gap-1.5 text-xs text-tx3">
             <SourceIcon source={event.source} /> {event.source} · <span className="mono">{dateTime(event.received_at)}</span>
           </span>
           <div className="ml-auto flex items-center gap-3">
             <ConfidenceRing value={t?.classification.confidence ?? event.confidence} size={34} />
+            {!sandbox && (
             <button
               onClick={() => run.mutate({ eventId: event.event_id })}
               disabled={run.isPending}
@@ -56,8 +59,15 @@ export function EventDetail({ event, processing }: { event: FeedEvent | undefine
             >
               <Play size={12} aria-hidden /> Run this event
             </button>
+            )}
           </div>
         </div>
+        {sandbox && (
+          <p className="flex items-center gap-1.5 rounded-md border border-line bg-surface-2 px-2.5 py-1.5 text-xs text-tx2">
+            <FlaskConical size={13} className="shrink-0" style={{ color: "var(--cat-compound)" }} aria-hidden />
+            Sandbox run: rehearsed and executed on the digital twin. No calls reached the real enterprise server or the action log.
+          </p>
+        )}
         <div role="tablist" aria-label="Event views" className="-mb-px flex gap-1 overflow-x-auto">
           {TABS.map((name) => (
             <button

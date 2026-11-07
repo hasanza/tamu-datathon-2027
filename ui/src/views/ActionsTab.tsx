@@ -1,7 +1,7 @@
 import { Fragment, useMemo, useState } from "react";
 import { ChevronDown, ChevronRight, Network, Pencil, Eye } from "lucide-react";
 import { useExecTarget, useLog } from "../api/hooks";
-import { WRITE_TOOLS, type Action, type AgentId, type Trace } from "../api/types";
+import { isCustomId, WRITE_TOOLS, type Action, type AgentId, type Trace } from "../api/types";
 import { Chip, Empty, Mono, OkChip, Panel } from "../components/ui/primitives";
 import { clip, compactArgs } from "../lib/format";
 import { AGENT_META } from "../lib/meta";
@@ -50,8 +50,9 @@ function ActionDetail({ a }: { a: Action }) {
 }
 
 export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGraph: (ids: string[]) => void }) {
-  const log = useLog(trace.event_id);
-  const target = useExecTarget(); // "twin" for a dry run started from the UI, "server" for the committed snapshot
+  const sandbox = isCustomId(trace.event_id); // no server log exists for sandbox events: trace.actions is the record
+  const log = useLog(sandbox ? null : trace.event_id);
+  const target = useExecTarget(trace.event_id); // "twin" for a dry run started from the UI, "server" for the committed snapshot
   const [tool, setTool] = useState<string | null>(null);
   const [agent, setAgent] = useState<string>("all");
   const [kind, setKind] = useState<"all" | "write" | "read">("all");
