@@ -1,0 +1,311 @@
+{
+  "$defs": {
+    "Ambiguity": {
+      "properties": {
+        "field": {
+          "title": "Field",
+          "type": "string"
+        },
+        "issue": {
+          "title": "Issue",
+          "type": "string"
+        },
+        "options": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Options",
+          "type": "array"
+        },
+        "blocking": {
+          "default": false,
+          "title": "Blocking",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "field",
+        "issue"
+      ],
+      "title": "Ambiguity",
+      "type": "object"
+    },
+    "ResolutionStep": {
+      "description": "One mention in the text and how it became an id (or did not).",
+      "properties": {
+        "mention": {
+          "title": "Mention",
+          "type": "string"
+        },
+        "entity_type": {
+          "enum": [
+            "plant",
+            "part",
+            "supplier",
+            "shipment",
+            "lot",
+            "model",
+            "dealer",
+            "date"
+          ],
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "candidates": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Candidates",
+          "type": "array"
+        },
+        "chosen": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Chosen"
+        },
+        "method": {
+          "enum": [
+            "exact",
+            "alias",
+            "name",
+            "fuzzy",
+            "llm",
+            "data_snap",
+            "unresolved"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "mention",
+        "entity_type",
+        "method"
+      ],
+      "title": "ResolutionStep",
+      "type": "object"
+    }
+  },
+  "description": "A single incident; a compound event yields several. Ids are resolved, dates are ISO working days.",
+  "properties": {
+    "incident_id": {
+      "description": "<event_id>#<n>, e.g. E-01#1",
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "event_id": {
+      "title": "Event Id",
+      "type": "string"
+    },
+    "category": {
+      "enum": [
+        "supplier_delay",
+        "plant_outage",
+        "quality_hold",
+        "noise",
+        "unconfirmed"
+      ],
+      "title": "Category",
+      "type": "string"
+    },
+    "confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "plant_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Plant Id"
+    },
+    "part_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Part Id"
+    },
+    "supplier_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supplier Id"
+    },
+    "shipment_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Shipment Id"
+    },
+    "lot_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lot Id"
+    },
+    "orig_eta": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Orig Eta"
+    },
+    "new_eta": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "New Eta"
+    },
+    "outage_start": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Outage Start"
+    },
+    "outage_end": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Outage End"
+    },
+    "build_window_start": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Build Window Start"
+    },
+    "build_window_end": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Build Window End"
+    },
+    "raw_mentions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "field -> text as written",
+      "title": "Raw Mentions",
+      "type": "object"
+    },
+    "resolution_steps": {
+      "items": {
+        "$ref": "#/$defs/ResolutionStep"
+      },
+      "title": "Resolution Steps",
+      "type": "array"
+    },
+    "ambiguities": {
+      "items": {
+        "$ref": "#/$defs/Ambiguity"
+      },
+      "title": "Ambiguities",
+      "type": "array"
+    },
+    "reason": {
+      "description": "One sentence: why this category / why actionable or not",
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "incident_id",
+    "event_id",
+    "category",
+    "confidence",
+    "reason"
+  ],
+  "title": "IncidentSpec",
+  "type": "object"
+}

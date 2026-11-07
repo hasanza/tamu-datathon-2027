@@ -32,7 +32,8 @@ Ownership is enforced three ways: `.claude/rules/ownership.md` (path → owner, 
 |---|---|
 | CORE | `src/control_tower/{data,graph,understanding,agents,world,schemas}/`, `src/control_tower/run.py`, `eval/oracle.py`, `eval/replay_grader.py`, `eval/paraphrase_bench.py`, `tests/unit/`, `CLAUDE.md`, `.claude/`, `docs/SPEC.md`, `docs/PLAN.md`, `docs/contracts.md` |
 | GLASS | `ui/`, `api/`, `src/control_tower/mcp/`, `eval/reports/`, `docs/BRAND.md`, `docs/design_card.md`, `docs/server-notes.md`, `README.md`, `media/` |
-| shared (sync only) | `pyproject.toml`, `.mcp.json`, `traces/examples/`, `docs/WORKPLAN.md` |
+| shared (sync only) | `.mcp.json`, `traces/examples/`, `docs/WORKPLAN.md`, `docs/ONBOARDING.md`, `.gitignore` |
+| nobody | `hack_the_highway/**` (organizers' kit, hash-checked by a test), `.env` |
 
 See `ONBOARDING.md` for machine setup, assistant identity, git conventions and definition of done.
 
@@ -71,10 +72,10 @@ Deps use task ids. Hours are elapsed hackathon time.
 | ID | Owner | Task | Acceptance | Sens | AI | Deps |
 |---|---|---|---|---|---|---|
 | 0.1 | CORE | LLM access: use the existing **Gemini API key** first (free-tier quota is enough for ~40 calls/run); write the provider-agnostic `llm/adapter.py` (`complete_json(schema, system, user) -> dict + usage`) with Gemini and Anthropic backends; optionally add an Anthropic key (prepaid) later for Haiku 5.5 comparison | one structured JSON response from Gemini, tokens logged | H | light | — |
-| 0.2 | CORE | `uv` project, deps (`anthropic mcp networkx pydantic fastapi uvicorn sse-starlette pytest ruff python-dotenv rapidfuzz`), `CLAUDE.md`, `.claude/agents` (architect, implementer, reviewer, data-detective, eval-runner), `.claude/skills` (run-events, grade, trace), `.claude/rules`, `.mcp.json` | `uv run pytest` passes an empty test; subagents listed in `/agents` | M | heavy | — |
-| 0.3 | CORE | Contracts: Pydantic models for §1, JSON-schema export, `docs/contracts.md`, three example traces hand-written (`E-12` delay, `E-05` noise, `E-02` escalation) in `traces/examples/` | GLASS can render all three in the UI | H | heavy | — |
+| 0.2 ✅ `core/0.2-phase0-scaffold` | CORE | `uv` project, deps (`anthropic mcp networkx pydantic fastapi uvicorn sse-starlette pytest ruff python-dotenv rapidfuzz`), `CLAUDE.md`, `.claude/agents` (architect, implementer, reviewer, data-detective, eval-runner), `.claude/skills` (run-events, grade, trace), `.claude/rules`, `.mcp.json` | `uv run pytest` passes an empty test; subagents listed in `/agents` | M | heavy | — |
+| 0.3 ✅ `core/0.2-phase0-scaffold` | CORE | Contracts: Pydantic models for §1, JSON-schema export, `docs/contracts.md`, three example traces hand-written (`E-12` delay, `E-05` noise, `E-02` escalation) in `traces/examples/` | GLASS can render all three in the UI | H | heavy | — |
 | 0.4 | GLASS | Frontend scaffold: Vite + React + TS + Tailwind v4 + shadcn/ui, theme tokens from `docs/BRAND.md` (Hitachi-inspired red/black/gray, Noto Sans), app shell (top bar, left feed, center tabs, right rail), mock loader reading `traces/examples/*.json` | `npm run dev` shows shell with 3 example events | M | heavy (CORE pre-generates the shell with Max; GLASS wires and styles) | 0.3 |
-| 0.5 | GLASS | Run `enterprise_server.py`; exercise `/events`, `/tools`, `/act` with curl incl. failure cases; write `docs/server-notes.md` | notes cover every tool's error text | L | light | — |
+| 0.5 | GLASS | Run `hack_the_highway/enterprise_server.py` (see ONBOARDING §1); exercise `/events`, `/tools`, `/act` with curl incl. failure cases; write `docs/server-notes.md` | notes cover every tool's error text | L | light | — |
 
 ### Phase 1 — Core data + graph + twin / UI skeleton (H1–H5)
 

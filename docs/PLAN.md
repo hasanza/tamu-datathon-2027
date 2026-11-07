@@ -129,39 +129,34 @@ so the whole tower runs with no internet — matches the brief's "no cloud requi
 2. **UI**: React stack above. Must look like a real company product.
 3. **Team**: two people with code names. **CORE** (you, Fable/Max) owns everything that changes the action log; **GLASS** (teammate, Pro) owns UI, API, MCP wrapper, evaluation reports, docs, video. Ownership enforced via `.claude/rules/ownership.md`, `CODEOWNERS` and each person's `CLAUDE.local.md`. Granular board in `WORKPLAN.md`.
 
-## 7. Repository layout (proposed, not created yet)
+## 7. Repository layout (repo root is the project; scaffolded 2026-11-07)
 
 ```
-hack_the_highway/
-  CLAUDE.md                      # project memory for Claude Code (agent-first, see §9)
-  .claude/agents/*.md            # architect, implementer, reviewer, data-detective, eval-runner
-  .claude/skills/*/SKILL.md      # /run-events, /grade, /trace, /data-query
-  .claude/rules/*.md             # path-scoped rules (planner = handbook is law; agents = LLM boundaries)
-  .mcp.json                      # wacky-enterprise + knowledge-graph MCP servers for Claude Code
-  pyproject.toml                 # uv project
+tamu-datathon-2027/
+  hack_the_highway/              # ORGANIZERS' KIT, never modified (data/, policy_handbook.md, events.json, enterprise*.py, brief)
+  CLAUDE.md                      # project memory for Claude Code; CLAUDE.local.md (gitignored) holds each person's code name
+  .claude/agents/*.md            # architect (fable), implementer (sonnet), reviewer (opus), data-detective (sonnet), eval-runner (haiku)
+  .claude/skills/*/SKILL.md      # /run-events, /grade, /trace
+  .claude/rules/*.md             # ownership (global), planner (path-scoped, no LLM), llm (path-scoped)
+  .mcp.json                      # wacky-enterprise MCP server for Claude Code (same server the runtime uses)
+  pyproject.toml                 # uv project, src layout
   src/control_tower/
-    data/loader.py               # CSV → dataclasses
-    graph/ontology.py            # node/edge types, build(), traversals returning paths, export()
-    understanding/schemas.py     # IncidentSpec (Pydantic), categories
-    understanding/extract.py     # LLM structured extraction
-    understanding/resolve.py     # aliases, fuzzy, relative dates, data snapping, confidence
-    agents/coordinator.py        # triage, gate, dispatch, rehearse, audit, execute, summarize
-    agents/supply_chain.py       # impact + slot planner
-    agents/dealer_care.py        # notices, loaners, owner contact
-    agents/quality.py            # lot, vehicles, hold/stop-sale
-    world/twin.py                # wraps enterprise.Enterprise for rehearsal + invariants
-    mcp/server.py                # FastMCP: enterprise_* and graph_* tools
-    mcp/client.py                # in-process MCP client used by the executor
-    trace.py                     # trace schema + writer
-    run.py                       # CLI: run all events / one event / dry-run
-  eval/
-    oracle.py                    # deterministic expected-actions from rules (for self-grading)
-    replay_grader.py             # replays action_log.jsonl on a fresh twin, diffs vs oracle
-    paraphrase_bench.py          # generates reworded events, measures extraction accuracy
-  api/app.py                     # FastAPI: traces, actions, graph, kpis, SSE stream, run trigger
-  ui/                            # Vite + React + TS control tower (src/components, src/pages, src/lib/api.ts)
-  docs/                          # SPEC.md, PLAN.md, CONCEPTS.md, design_card.md, ontology.md
-  runs/, traces/                 # outputs (gitignored except final)
+    schemas/                     # CONTRACTS (frozen): incident.py, action.py, trace.py
+    data/loader.py               # CSV → typed records (task 1.1)
+    graph/ontology.py            # typed graph, traversals returning paths, exports (1.2, 1.3)
+    understanding/{extract,resolve}.py   # LLM extraction, deterministic resolution (2.1, 2.2)
+    llm/adapter.py               # provider-agnostic complete_json (0.1)
+    agents/{coordinator,supply_chain,dealer_care,quality}.py  # (2.3–2.5, 3.1)
+    world/twin.py                # rehearsal on enterprise.Enterprise (1.4)
+    mcp/{server,client}.py       # GLASS: FastMCP server; CORE: in-process client (1.5)
+    trace.py, run.py             # trace writer, CLI
+  api/app.py                     # GLASS: FastAPI + SSE (1.6)
+  ui/                            # GLASS: Vite + React + TS (0.4, 1.7, 2.7–2.9, 3.4–3.6, 4.5, 4.6)
+  eval/{oracle,replay_grader,paraphrase_bench}.py ; eval/reports/
+  tests/unit/                    # offline, < 10 s; includes data-integrity hash test
+  traces/examples/               # E-12 (delay), E-05 (noise), E-02 (escalated) — UI fixtures
+  docs/                          # SPEC, PLAN, WORKPLAN, ONBOARDING, BRAND, CONCEPTS, contracts, schemas/*.json, handoff/
+  runs/, traces/<run>/, cache/   # outputs (gitignored except final)
 ```
 
 ## 8. Schedule

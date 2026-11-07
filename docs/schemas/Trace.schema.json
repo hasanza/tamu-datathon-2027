@@ -1,0 +1,1056 @@
+{
+  "$defs": {
+    "Action": {
+      "properties": {
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "incident_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "None for event-level actions such as escalate",
+          "title": "Incident Id"
+        },
+        "agent": {
+          "enum": [
+            "coordinator",
+            "supply_chain",
+            "dealer_care",
+            "quality"
+          ],
+          "title": "Agent",
+          "type": "string"
+        },
+        "tool": {
+          "enum": [
+            "mes.get_schedule",
+            "mes.reschedule",
+            "mes.transfer",
+            "dealer.notify",
+            "dealer.stop_sale",
+            "crm.loaner_availability",
+            "crm.assign_loaner",
+            "crm.notify_customer",
+            "quality.hold_lot",
+            "escalate"
+          ],
+          "title": "Tool",
+          "type": "string"
+        },
+        "args": {
+          "additionalProperties": true,
+          "title": "Args",
+          "type": "object"
+        },
+        "justification": {
+          "description": "Which handbook rule and which affected record(s)",
+          "title": "Justification",
+          "type": "string"
+        },
+        "path_ids": {
+          "description": "Graph node ids on the justifying path",
+          "items": {
+            "type": "string"
+          },
+          "title": "Path Ids",
+          "type": "array"
+        },
+        "rehearsal": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Rehearsal"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "result": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ToolResult"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "seq",
+        "agent",
+        "tool",
+        "args",
+        "justification"
+      ],
+      "title": "Action",
+      "type": "object"
+    },
+    "AgentRun": {
+      "properties": {
+        "agent": {
+          "enum": [
+            "coordinator",
+            "supply_chain",
+            "dealer_care",
+            "quality"
+          ],
+          "title": "Agent",
+          "type": "string"
+        },
+        "started": {
+          "format": "date-time",
+          "title": "Started",
+          "type": "string"
+        },
+        "ended": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ended"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/AgentStep"
+          },
+          "title": "Steps",
+          "type": "array"
+        }
+      },
+      "required": [
+        "agent",
+        "started"
+      ],
+      "title": "AgentRun",
+      "type": "object"
+    },
+    "AgentStep": {
+      "properties": {
+        "t": {
+          "format": "date-time",
+          "title": "T",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "llm",
+            "graph",
+            "plan",
+            "rehearse",
+            "audit",
+            "execute",
+            "gate",
+            "note"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Data"
+        }
+      },
+      "required": [
+        "t",
+        "kind",
+        "text"
+      ],
+      "title": "AgentStep",
+      "type": "object"
+    },
+    "Ambiguity": {
+      "properties": {
+        "field": {
+          "title": "Field",
+          "type": "string"
+        },
+        "issue": {
+          "title": "Issue",
+          "type": "string"
+        },
+        "options": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Options",
+          "type": "array"
+        },
+        "blocking": {
+          "default": false,
+          "title": "Blocking",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "field",
+        "issue"
+      ],
+      "title": "Ambiguity",
+      "type": "object"
+    },
+    "Classification": {
+      "properties": {
+        "category": {
+          "enum": [
+            "supplier_delay",
+            "plant_outage",
+            "quality_hold",
+            "noise",
+            "unconfirmed",
+            "compound"
+          ],
+          "title": "Category",
+          "type": "string"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "category",
+        "confidence",
+        "reason"
+      ],
+      "title": "Classification",
+      "type": "object"
+    },
+    "Counterfactual": {
+      "properties": {
+        "customers_affected": {
+          "default": 0,
+          "title": "Customers Affected",
+          "type": "integer"
+        },
+        "avg_slip_days": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Avg Slip Days"
+        },
+        "loaners_entitled": {
+          "default": 0,
+          "title": "Loaners Entitled",
+          "type": "integer"
+        },
+        "loaners_assigned": {
+          "default": 0,
+          "title": "Loaners Assigned",
+          "type": "integer"
+        },
+        "vehicles_pulled": {
+          "default": 0,
+          "title": "Vehicles Pulled",
+          "type": "integer"
+        },
+        "owners_contacted": {
+          "default": 0,
+          "title": "Owners Contacted",
+          "type": "integer"
+        }
+      },
+      "title": "Counterfactual",
+      "type": "object"
+    },
+    "GraphEdge": {
+      "properties": {
+        "from": {
+          "title": "From",
+          "type": "string"
+        },
+        "to": {
+          "title": "To",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "SUPPLIES",
+            "OF_PART",
+            "TO_PLANT",
+            "FROM",
+            "USES_PART",
+            "BUILDS_MODEL",
+            "AT_PLANT",
+            "OF_MODEL",
+            "ON_DAY",
+            "FULFILLED_BY",
+            "SOLD_BY",
+            "FOR",
+            "BUILT_BY",
+            "AT_DEALER",
+            "OWNED_BY"
+          ],
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "from",
+        "to",
+        "type"
+      ],
+      "title": "GraphEdge",
+      "type": "object"
+    },
+    "GraphNode": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "Supplier",
+            "Part",
+            "Model",
+            "Plant",
+            "Shipment",
+            "ProductionOrder",
+            "CustomerOrder",
+            "Customer",
+            "Dealer",
+            "Lot",
+            "Vehicle",
+            "Day"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Set when the node stands for a collapsed set, e.g. '110 vehicles'",
+          "title": "Group"
+        },
+        "count": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Count"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "label"
+      ],
+      "title": "GraphNode",
+      "type": "object"
+    },
+    "GraphPath": {
+      "properties": {
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/GraphNode"
+          },
+          "title": "Nodes",
+          "type": "array"
+        },
+        "edges": {
+          "items": {
+            "$ref": "#/$defs/GraphEdge"
+          },
+          "title": "Edges",
+          "type": "array"
+        }
+      },
+      "required": [
+        "nodes",
+        "edges"
+      ],
+      "title": "GraphPath",
+      "type": "object"
+    },
+    "IncidentSpec": {
+      "description": "A single incident; a compound event yields several. Ids are resolved, dates are ISO working days.",
+      "properties": {
+        "incident_id": {
+          "description": "<event_id>#<n>, e.g. E-01#1",
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "event_id": {
+          "title": "Event Id",
+          "type": "string"
+        },
+        "category": {
+          "enum": [
+            "supplier_delay",
+            "plant_outage",
+            "quality_hold",
+            "noise",
+            "unconfirmed"
+          ],
+          "title": "Category",
+          "type": "string"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "plant_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Plant Id"
+        },
+        "part_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Part Id"
+        },
+        "supplier_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Supplier Id"
+        },
+        "shipment_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Shipment Id"
+        },
+        "lot_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lot Id"
+        },
+        "orig_eta": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Orig Eta"
+        },
+        "new_eta": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "New Eta"
+        },
+        "outage_start": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outage Start"
+        },
+        "outage_end": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outage End"
+        },
+        "build_window_start": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Build Window Start"
+        },
+        "build_window_end": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Build Window End"
+        },
+        "raw_mentions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "field -> text as written",
+          "title": "Raw Mentions",
+          "type": "object"
+        },
+        "resolution_steps": {
+          "items": {
+            "$ref": "#/$defs/ResolutionStep"
+          },
+          "title": "Resolution Steps",
+          "type": "array"
+        },
+        "ambiguities": {
+          "items": {
+            "$ref": "#/$defs/Ambiguity"
+          },
+          "title": "Ambiguities",
+          "type": "array"
+        },
+        "reason": {
+          "description": "One sentence: why this category / why actionable or not",
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "incident_id",
+        "event_id",
+        "category",
+        "confidence",
+        "reason"
+      ],
+      "title": "IncidentSpec",
+      "type": "object"
+    },
+    "LLMCall": {
+      "properties": {
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "purpose": {
+          "enum": [
+            "extract",
+            "audit",
+            "summarize",
+            "resolve",
+            "paraphrase"
+          ],
+          "title": "Purpose",
+          "type": "string"
+        },
+        "input_tokens": {
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "title": "Output Tokens",
+          "type": "integer"
+        },
+        "cost_usd": {
+          "title": "Cost Usd",
+          "type": "number"
+        },
+        "cached": {
+          "default": false,
+          "title": "Cached",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "provider",
+        "model",
+        "purpose",
+        "input_tokens",
+        "output_tokens",
+        "cost_usd"
+      ],
+      "title": "LLMCall",
+      "type": "object"
+    },
+    "LLMUsage": {
+      "properties": {
+        "calls": {
+          "items": {
+            "$ref": "#/$defs/LLMCall"
+          },
+          "title": "Calls",
+          "type": "array"
+        },
+        "total_cost_usd": {
+          "default": 0.0,
+          "title": "Total Cost Usd",
+          "type": "number"
+        }
+      },
+      "title": "LLMUsage",
+      "type": "object"
+    },
+    "MovedPO": {
+      "properties": {
+        "production_order_id": {
+          "title": "Production Order Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "reschedule",
+            "transfer"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "from_plant": {
+          "title": "From Plant",
+          "type": "string"
+        },
+        "from_date": {
+          "format": "date",
+          "title": "From Date",
+          "type": "string"
+        },
+        "to_plant": {
+          "title": "To Plant",
+          "type": "string"
+        },
+        "to_date": {
+          "format": "date",
+          "title": "To Date",
+          "type": "string"
+        }
+      },
+      "required": [
+        "production_order_id",
+        "kind",
+        "from_plant",
+        "from_date",
+        "to_plant",
+        "to_date"
+      ],
+      "title": "MovedPO",
+      "type": "object"
+    },
+    "NotifiedDealer": {
+      "properties": {
+        "dealer_id": {
+          "title": "Dealer Id",
+          "type": "string"
+        },
+        "customer_order_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Customer Order Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "dealer_id",
+        "customer_order_ids"
+      ],
+      "title": "NotifiedDealer",
+      "type": "object"
+    },
+    "Rehearsal": {
+      "properties": {
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        }
+      },
+      "required": [
+        "ok"
+      ],
+      "title": "Rehearsal",
+      "type": "object"
+    },
+    "ResolutionStep": {
+      "description": "One mention in the text and how it became an id (or did not).",
+      "properties": {
+        "mention": {
+          "title": "Mention",
+          "type": "string"
+        },
+        "entity_type": {
+          "enum": [
+            "plant",
+            "part",
+            "supplier",
+            "shipment",
+            "lot",
+            "model",
+            "dealer",
+            "date"
+          ],
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "candidates": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Candidates",
+          "type": "array"
+        },
+        "chosen": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Chosen"
+        },
+        "method": {
+          "enum": [
+            "exact",
+            "alias",
+            "name",
+            "fuzzy",
+            "llm",
+            "data_snap",
+            "unresolved"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "mention",
+        "entity_type",
+        "method"
+      ],
+      "title": "ResolutionStep",
+      "type": "object"
+    },
+    "ToolResult": {
+      "properties": {
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        },
+        "response": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Response"
+        }
+      },
+      "required": [
+        "ok"
+      ],
+      "title": "ToolResult",
+      "type": "object"
+    },
+    "WorldDiff": {
+      "properties": {
+        "moved_pos": {
+          "items": {
+            "$ref": "#/$defs/MovedPO"
+          },
+          "title": "Moved Pos",
+          "type": "array"
+        },
+        "notified_dealers": {
+          "items": {
+            "$ref": "#/$defs/NotifiedDealer"
+          },
+          "title": "Notified Dealers",
+          "type": "array"
+        },
+        "loaners": {
+          "description": "customer_order_ids that received a loaner",
+          "items": {
+            "type": "string"
+          },
+          "title": "Loaners",
+          "type": "array"
+        },
+        "held_lots": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Held Lots",
+          "type": "array"
+        },
+        "stopped_vins": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Stopped Vins",
+          "type": "array"
+        },
+        "contacted_customers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Contacted Customers",
+          "type": "array"
+        }
+      },
+      "title": "WorldDiff",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "pipeline_version": {
+      "default": "0.1.0",
+      "title": "Pipeline Version",
+      "type": "string"
+    },
+    "event_id": {
+      "title": "Event Id",
+      "type": "string"
+    },
+    "received_at": {
+      "format": "date-time",
+      "title": "Received At",
+      "type": "string"
+    },
+    "source": {
+      "title": "Source",
+      "type": "string"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "queued",
+        "processing",
+        "done",
+        "escalated",
+        "noise",
+        "failed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "classification": {
+      "$ref": "#/$defs/Classification"
+    },
+    "incidents": {
+      "items": {
+        "$ref": "#/$defs/IncidentSpec"
+      },
+      "title": "Incidents",
+      "type": "array"
+    },
+    "paths": {
+      "additionalProperties": {
+        "items": {
+          "$ref": "#/$defs/GraphPath"
+        },
+        "type": "array"
+      },
+      "description": "incident_id -> paths",
+      "title": "Paths",
+      "type": "object"
+    },
+    "agents": {
+      "items": {
+        "$ref": "#/$defs/AgentRun"
+      },
+      "title": "Agents",
+      "type": "array"
+    },
+    "actions": {
+      "items": {
+        "$ref": "#/$defs/Action"
+      },
+      "title": "Actions",
+      "type": "array"
+    },
+    "world_diff": {
+      "$ref": "#/$defs/WorldDiff"
+    },
+    "counterfactual": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Counterfactual"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "llm": {
+      "$ref": "#/$defs/LLMUsage"
+    },
+    "summary": {
+      "title": "Summary",
+      "type": "string"
+    },
+    "decision_reason": {
+      "title": "Decision Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "received_at",
+    "source",
+    "text",
+    "status",
+    "classification",
+    "summary",
+    "decision_reason"
+  ],
+  "title": "Trace",
+  "type": "object"
+}

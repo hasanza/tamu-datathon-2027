@@ -1,10 +1,32 @@
-# Python-generated files
+# Python
 __pycache__/
 *.py[oc]
 build/
 dist/
 wheels/
 *.egg-info
-
-# Virtual environments
 .venv
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+ui/dist/
+
+# Secrets and per-machine files
+.env
+CLAUDE.local.md
+.claude/settings.local.json
+
+# Run outputs (keep only curated examples and the final run)
+runs/
+!runs/final/
+traces/*
+!traces/examples/
+!traces/final/
+cache/
+!cache/final/
+
+# OS / editor
+.DS_Store
+~$*

@@ -5,20 +5,23 @@ Read in this order: `ONBOARDING.md` (this) → `SPEC.md` → `PLAN.md` → `WORK
 
 ## 1. Machine setup (15 minutes)
 
+Layout: the **repo root is the project** (`pyproject.toml`, `src/`, `api/`, `ui/`, `eval/`, `tests/`, `docs/`).
+`hack_the_highway/` is the organizers' kit (data, handbook, events, mock server, brief) and is **never modified**; a test checks its hashes.
+
 ```bash
-git clone <repo-url> datathon2027 && cd datathon2027/hack_the_highway
-uv sync                       # Python 3.12 env + deps (pyproject pins)
+git clone https://github.com/hasanza/tamu-datathon-2027.git && cd tamu-datathon-2027
+uv sync                       # Python 3.12 env + deps (uv downloads 3.12 if missing)
+uv run pytest                 # must be green before you start
 cd ui && npm install && cd .. # GLASS only, after the shell exists
-cp .env.example .env          # fill LLM_PROVIDER / GEMINI_API_KEY (CORE only; GLASS leaves it empty)
-uv run python enterprise_server.py --data data --events data/events.json --out runs/dev --port 8000 --overwrite
+cp .env.example .env          # CORE fills GEMINI_API_KEY; GLASS leaves values empty
+uv run python hack_the_highway/enterprise_server.py --data hack_the_highway/data --events hack_the_highway/data/events.json --out runs/dev --port 8000 --overwrite
 ```
 
-Ports: enterprise server 8000 · FastAPI 8001 · Vite 5173. Never commit `.env`, `runs/`, `traces/` (except `traces/examples/`).
-Never edit anything under `data/`, `enterprise.py`, `enterprise_server.py`.
+Ports: enterprise server 8000 · FastAPI 8001 · Vite 5173. `.gitignore` already excludes `.env`, `CLAUDE.local.md`, `runs/`, `traces/` (except `traces/examples/` and `traces/final/`).
 
 ## 2. Tell your assistant who you are
 
-Create `hack_the_highway/CLAUDE.local.md` (gitignored, one per machine). GLASS's version:
+Create `CLAUDE.local.md` at the repo root (already gitignored, one per machine). GLASS's version:
 
 ```markdown
 # Local identity
@@ -29,7 +32,7 @@ You are assisting **GLASS** on the Hack the Highway project.
 - Default model: sonnet. Keep sessions to one WORKPLAN task. Start each task by restating its acceptance line.
 - Follow the git conventions in docs/ONBOARDING.md §4 (branch per task, commit prefix `[GLASS <task-id>]`).
 - UI work follows docs/BRAND.md tokens exactly. Never invent colors.
-- Never touch data/, enterprise*.py, .env, or the contracts.
+- Never touch hack_the_highway/, .env, or the contracts (src/control_tower/schemas, docs/contracts.md).
 ```
 
 CORE's version is identical with CORE/GLASS swapped, `docs/handoff/glass.md`, and default model fable.
@@ -80,7 +83,7 @@ then show me the diff summary and the commit message before committing.
 
 1. Acceptance line in WORKPLAN is demonstrably true (say how you checked).
 2. `uv run ruff check . && uv run pytest -q` green (CORE); `npm run lint && npm run build` green (GLASS).
-3. No edits outside your owned paths. No secrets. No changes to `data/` or the organizers' files.
+3. No edits outside your owned paths. No secrets. No changes under `hack_the_highway/`.
 4. Commit message follows §4; PR opened; WORKPLAN row updated with ✅ and the branch name.
 5. If the task produced something the other person consumes (schema, endpoint, component), one line in the handoff file.
 

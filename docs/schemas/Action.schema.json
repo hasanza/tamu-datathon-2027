@@ -1,0 +1,161 @@
+{
+  "$defs": {
+    "Rehearsal": {
+      "properties": {
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        }
+      },
+      "required": [
+        "ok"
+      ],
+      "title": "Rehearsal",
+      "type": "object"
+    },
+    "ToolResult": {
+      "properties": {
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        },
+        "response": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Response"
+        }
+      },
+      "required": [
+        "ok"
+      ],
+      "title": "ToolResult",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "seq": {
+      "title": "Seq",
+      "type": "integer"
+    },
+    "incident_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "None for event-level actions such as escalate",
+      "title": "Incident Id"
+    },
+    "agent": {
+      "enum": [
+        "coordinator",
+        "supply_chain",
+        "dealer_care",
+        "quality"
+      ],
+      "title": "Agent",
+      "type": "string"
+    },
+    "tool": {
+      "enum": [
+        "mes.get_schedule",
+        "mes.reschedule",
+        "mes.transfer",
+        "dealer.notify",
+        "dealer.stop_sale",
+        "crm.loaner_availability",
+        "crm.assign_loaner",
+        "crm.notify_customer",
+        "quality.hold_lot",
+        "escalate"
+      ],
+      "title": "Tool",
+      "type": "string"
+    },
+    "args": {
+      "additionalProperties": true,
+      "title": "Args",
+      "type": "object"
+    },
+    "justification": {
+      "description": "Which handbook rule and which affected record(s)",
+      "title": "Justification",
+      "type": "string"
+    },
+    "path_ids": {
+      "description": "Graph node ids on the justifying path",
+      "items": {
+        "type": "string"
+      },
+      "title": "Path Ids",
+      "type": "array"
+    },
+    "rehearsal": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Rehearsal"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "result": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ToolResult"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "seq",
+    "agent",
+    "tool",
+    "args",
+    "justification"
+  ],
+  "title": "Action",
+  "type": "object"
+}
