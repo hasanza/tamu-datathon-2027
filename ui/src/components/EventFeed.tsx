@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Bell, ClipboardCheck, ListChecks, Mail, MessageSquare, Newspaper, Radio, Search, Siren } from "lucide-react";
 import type { EventCategory, FeedEvent, Status } from "../api/types";
 import { CATEGORY_META, sourceIconName, STATUS_META } from "../lib/meta";
@@ -138,14 +138,16 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
             className="w-full rounded-md border border-line bg-surface-2 py-1.5 pl-7 pr-2 text-[13px] text-tx placeholder:text-tx3"
           />
         </label>
-        <div className="flex flex-wrap gap-1" role="group" aria-label="Filter by category">
+        <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Filter by category">
+          <span className="w-12 text-[10px] uppercase tracking-wide text-tx3" aria-hidden>Type</span>
           {present.c.map((c) => (
             <FilterChip key={c} active={cats.has(c)} color={CATEGORY_META[c].color} onClick={() => setCats(toggle(cats, c))}>
               {CATEGORY_META[c].label}
             </FilterChip>
           ))}
         </div>
-        <div className="flex flex-wrap gap-1" role="group" aria-label="Filter by status">
+        <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Filter by status">
+          <span className="w-12 text-[10px] uppercase tracking-wide text-tx3" aria-hidden>Status</span>
           {present.s.map((s) => (
             <FilterChip key={s} active={stats.has(s)} color={STATUS_META[s].color} onClick={() => setStats(toggle(stats, s))}>
               {STATUS_META[s].label}
@@ -168,11 +170,18 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
           </div>
         )}
         <ul ref={listRef} role="list" className="divide-y divide-line">
-          {rows.map((e) => {
+          {rows.map((e, i) => {
             const sel = e.event_id === selected;
             const flash = recent[e.event_id];
+            const firstCustom = !!e.custom && !rows.slice(0, i).some((r) => r.custom);
             return (
-              <li key={e.event_id} className="relative">
+              <Fragment key={e.event_id}>
+              {firstCustom && (
+                <li role="presentation" className="bg-surface-2 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-tx3">
+                  Judge input · sandbox ({rows.filter((r) => r.custom).length})
+                </li>
+              )}
+              <li className="relative">
                 {flash && <div key={flash} aria-hidden className="anim-flash pointer-events-none absolute inset-0" />}
                 <button
                   onClick={() => onSelect(e.event_id)}
@@ -197,6 +206,7 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
                   <ConfidenceRing value={e.confidence} />
                 </button>
               </li>
+              </Fragment>
             );
           })}
         </ul>
