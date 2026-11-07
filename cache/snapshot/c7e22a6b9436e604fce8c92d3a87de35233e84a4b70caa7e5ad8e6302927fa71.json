@@ -2,12 +2,12 @@
   "provider": "gemini",
   "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 1.743,
+  "latency_s": 1.734,
   "parsed": {
     "incidents": [
       {
         "category": "plant_outage",
-        "evidence": "We're dark from next Friday through Monday Mar 22; the line restarts the following working day.",
+        "evidence": "We're dark from next Friday through Monday Mar 22",
         "plant": "San Antonio",
         "part": null,
         "supplier": null,
@@ -48,7 +48,7 @@
         "outage_end": null,
         "build_window_start": null,
         "build_window_end": null,
-        "reason": "The shipment of infotainment chips from Quanta to Princeton is delayed from next Monday to next Friday due to severe weather.",
+        "reason": "Quanta's shipment of infotainment chips to Princeton is delayed from next Monday to next Friday due to severe weather.",
         "confidence": 1.0
       }
     ]
@@ -58,7 +58,7 @@
     "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 808,
-    "output_tokens": 493,
-    "cost_usd": 0.001475
+    "output_tokens": 485,
+    "cost_usd": 0.001455
   }
 }

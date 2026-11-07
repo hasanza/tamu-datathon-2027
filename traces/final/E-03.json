@@ -8,7 +8,7 @@
   "classification": {
     "category": "quality_hold",
     "confidence": 1.0,
-    "reason": "A specific part lot sent to a plant has a defect and a suspect build window."
+    "reason": "This is a quality hold because a specific supplier and plant are identified with a defective part and a suspect build window."
   },
   "incidents": [
     {
@@ -95,7 +95,7 @@
         }
       ],
       "ambiguities": [],
-      "reason": "A specific part lot sent to a plant has a defect and a suspect build window."
+      "reason": "This is a quality hold because a specific supplier and plant are identified with a defective part and a suspect build window."
     }
   ],
   "paths": {
@@ -762,46 +762,46 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T07:51:00.923000",
-      "ended": "2027-03-08T07:51:06.082000",
+      "started": "2027-03-08T07:51:01.315000",
+      "ended": "2027-03-08T07:51:07.220000",
       "steps": [
         {
-          "t": "2027-03-08T07:51:00.923000",
+          "t": "2027-03-08T07:51:01.315000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): quality_hold",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 760,
-            "output_tokens": 203,
+            "output_tokens": 269,
             "cached": false
           }
         },
         {
-          "t": "2027-03-08T07:51:00.925000",
+          "t": "2027-03-08T07:51:01.316000",
           "kind": "gate",
           "text": "lot 'CHIP-IVI at P_MS built 2027-02-25..2027-03-01' -> LOT-0130 via data_snap: exact lot window match",
           "data": null
         },
         {
-          "t": "2027-03-08T07:51:00.925000",
+          "t": "2027-03-08T07:51:01.316000",
           "kind": "gate",
           "text": "E-03#1: quality_hold confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T07:51:00.935000",
+          "t": "2027-03-08T07:51:01.323000",
           "kind": "rehearse",
           "text": "Rehearsed 188 actions on the twin: 188 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T07:51:05.179000",
+          "t": "2027-03-08T07:51:06.338000",
           "kind": "audit",
-          "text": "Auditor agrees: The quality hold interpretation and planned corrective actions accurately reflect the bulletin and follow all operational rules.",
+          "text": "Auditor agrees: The quality hold on lot LOT-0130 at Jackson across the suspect dates is correctly interpreted with all required stop-sale and customer notification actions planned.",
           "data": null
         },
         {
-          "t": "2027-03-08T07:51:06.082000",
+          "t": "2027-03-08T07:51:07.220000",
           "kind": "execute",
           "text": "Executed 188 calls via server: 188 ok, 0 failed (188 writes, 0 verification reads)",
           "data": null
@@ -810,17 +810,17 @@
     },
     {
       "agent": "quality",
-      "started": "2027-03-08T07:51:00.932000",
-      "ended": "2027-03-08T07:51:00.933000",
+      "started": "2027-03-08T07:51:01.322000",
+      "ended": "2027-03-08T07:51:01.322000",
       "steps": [
         {
-          "t": "2027-03-08T07:51:00.932000",
+          "t": "2027-03-08T07:51:01.322000",
           "kind": "graph",
           "text": "Lot LOT-0130 -> part CHIP-IVI -> models using it -> POs at P_MS built 2027-02-25..2027-03-01: 9 POs, 260 vehicles (110 unsold at 37 dealers, 150 owners)",
           "data": null
         },
         {
-          "t": "2027-03-08T07:51:00.933000",
+          "t": "2027-03-08T07:51:01.322000",
           "kind": "plan",
           "text": "Hold LOT-0130; stop sale at 37 dealers; contact 150 owners once each.",
           "data": null
@@ -6337,8 +6337,8 @@
         "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 760,
-        "output_tokens": 203,
-        "cost_usd": 0.000736,
+        "output_tokens": 269,
+        "cost_usd": 0.0009,
         "cached": false
       },
       {
@@ -6346,22 +6346,22 @@
         "model": "gemini-3.8-flash",
         "purpose": "audit",
         "input_tokens": 1157,
-        "output_tokens": 464,
-        "cost_usd": 0.002608,
+        "output_tokens": 495,
+        "cost_usd": 0.002724,
         "cached": false
       },
       {
         "provider": "gemini",
         "model": "gemini-3.5-flash-lite",
         "purpose": "summarize",
-        "input_tokens": 350,
-        "output_tokens": 149,
-        "cost_usd": 0.000478,
+        "input_tokens": 352,
+        "output_tokens": 146,
+        "cost_usd": 0.000471,
         "cached": false
       }
     ],
-    "total_cost_usd": 0.003822
+    "total_cost_usd": 0.004095
   },
   "summary": "Lot LOT-0130 containing infotainment chips from Kestrel Electronics at Wacky Wheels Jackson, built from 2027-02-25 to 2027-03-01, was placed on hold. A total of 110 unsold vehicles were stopped from sale at 37 dealers and 150 owners of sold vehicles were contacted.",
-  "decision_reason": "The control tower acted because this was a real quality incident with specific IDs and dates resolved against the data, passing the digital twin rehearsal with zero failures and matching the live baseline before the first write. These actions were driven by the quality_hold incident type."
+  "decision_reason": "The control tower acted because this was a real incident matching quality_hold rules. All identifiers and dates were resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live schedule baseline matched before the first write."
 }

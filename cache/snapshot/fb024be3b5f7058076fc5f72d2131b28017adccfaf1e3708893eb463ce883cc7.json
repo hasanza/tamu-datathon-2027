@@ -1,0 +1,18 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "purpose": "summarize",
+  "latency_s": 1.048,
+  "parsed": {
+    "summary": "Lot LOT-0017, consisting of heavy-duty wiring harnesses from Atlas Wire and Cable at Wacky Wheels San Antonio and built from 2027-02-22 through 2027-02-24, was placed on hold. A total of 86 unsold vehicles were stopped from sale across 36 dealers, and 94 owners of sold vehicles were contacted.",
+    "decision_reason": "The control tower acted because this was a confirmed incident with IDs and dates resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live schedule baseline matched before the first write. This triggered the quality hold response."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "purpose": "summarize",
+    "input_tokens": 360,
+    "output_tokens": 152,
+    "cost_usd": 0.000488
+  }
+}

@@ -536,7 +536,7 @@ class Coordinator:
             parts.append(f"{len(failures)} call(s) failed at execution and were not retried: {failures[:2]}")
         reason = (
             "Acted on every confirmed incident: ids and dates resolved against the data, rehearsal on the digital "
-            "twin passed with zero failures, live baseline matched before the first write."
+            "twin passed with zero failures, the live schedule baseline matched before the first write."
             + (" The unclear part was escalated without operational change (rule 8)." if escalated else "")
             + (f" Incident types handled: {', '.join(sorted(cats))}." if cats else "")
         )

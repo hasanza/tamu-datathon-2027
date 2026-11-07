@@ -8,7 +8,7 @@
   "classification": {
     "category": "noise",
     "confidence": 1.0,
-    "reason": "This is a request for marketing materials unrelated to production operations."
+    "reason": "The message is a brochure request from a dealer, which has nothing to do with plant operations."
   },
   "incidents": [
     {
@@ -30,31 +30,31 @@
       "raw_mentions": {},
       "resolution_steps": [],
       "ambiguities": [],
-      "reason": "This is a request for marketing materials unrelated to production operations."
+      "reason": "The message is a brochure request from a dealer, which has nothing to do with plant operations."
     }
   ],
   "paths": {},
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T08:42:00.981000",
-      "ended": "2027-03-08T08:42:00.982000",
+      "started": "2027-03-08T08:42:01.122000",
+      "ended": "2027-03-08T08:42:01.123000",
       "steps": [
         {
-          "t": "2027-03-08T08:42:00.981000",
+          "t": "2027-03-08T08:42:01.122000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): noise",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 744,
-            "output_tokens": 172,
+            "output_tokens": 137,
             "cached": false
           }
         },
         {
-          "t": "2027-03-08T08:42:00.982000",
+          "t": "2027-03-08T08:42:01.123000",
           "kind": "gate",
-          "text": "Noise -> no write tools, no escalation (rule 7). This is a request for marketing materials unrelated to production operations.",
+          "text": "Noise -> no write tools, no escalation (rule 7). The message is a brochure request from a dealer, which has nothing to do with plant operations.",
           "data": null
         }
       ]
@@ -77,22 +77,22 @@
         "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 744,
-        "output_tokens": 172,
-        "cost_usd": 0.000653,
+        "output_tokens": 137,
+        "cost_usd": 0.000566,
         "cached": false
       },
       {
         "provider": "gemini",
         "model": "gemini-3.5-flash-lite",
         "purpose": "summarize",
-        "input_tokens": 271,
-        "output_tokens": 90,
-        "cost_usd": 0.000306,
+        "input_tokens": 278,
+        "output_tokens": 97,
+        "cost_usd": 0.000326,
         "cached": false
       }
     ],
-    "total_cost_usd": 0.000959
+    "total_cost_usd": 0.000892
   },
-  "summary": "Dealer Little Rock, AR asks where to find the new brochure PDF. This is a request for marketing materials unrelated to production operations. Not an operational event.",
-  "decision_reason": "No action: the message names no shipment, plant, part, lot or date and describes no disruption to production, dealers, loaners or owners pursuant to handbook rule 7 stating noise gets no write tools."
+  "summary": "Dealer Little Rock, AR asked where to find the new brochure PDF. The supply chain control tower identified this as a non-operational event. No plant operations or shipments were affected.",
+  "decision_reason": "No action was taken because the message names no shipment, plant, part, lot or date and describes no disruption to production, dealers, loaners or owners. Per handbook rule 7, noise gets no write tools."
 }
