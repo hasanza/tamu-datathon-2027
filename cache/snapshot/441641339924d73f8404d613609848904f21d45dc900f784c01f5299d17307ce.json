@@ -1,13 +1,13 @@
 {
   "provider": "gemini",
-  "model": "gemini-3.8-flash",
+  "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 5.02,
+  "latency_s": 1.042,
   "parsed": {
     "incidents": [
       {
         "category": "quality_hold",
-        "evidence": "Atlas says the heavy-duty wiring harness sent to the Texas plant had a moisture contamination. Anything built Monday Feb 22 through Wednesday Feb 24 is suspect.",
+        "evidence": "Quality alert: Atlas says the heavy-duty wiring harness sent to the Texas plant had a moisture contamination. Anything built Monday Feb 22 through Wednesday Feb 24 is suspect.",
         "plant": "the Texas plant",
         "part": "heavy-duty wiring harness",
         "supplier": "Atlas",
@@ -25,17 +25,17 @@
           "text": "Wednesday Feb 24",
           "iso": "2027-02-24"
         },
-        "reason": "Atlas reported moisture contamination in wiring harnesses affecting vehicles built during a specific window at the Texas plant.",
-        "confidence": 0.98
+        "reason": "The message reports a defective part lot with a specified build window and plant.",
+        "confidence": 1.0
       }
     ]
   },
   "usage": {
     "provider": "gemini",
-    "model": "gemini-3.8-flash",
+    "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 767,
-    "output_tokens": 275,
-    "cost_usd": 0.0
+    "output_tokens": 213,
+    "cost_usd": 0.000763
   }
 }

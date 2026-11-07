@@ -1,13 +1,13 @@
 {
   "provider": "gemini",
-  "model": "gemini-3.8-flash",
+  "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 8.752,
+  "latency_s": 1.75,
   "parsed": {
     "incidents": [
       {
         "category": "plant_outage",
-        "evidence": "San Antonio update: a software outage on the line. We're dark from next Friday through Monday Mar 22; the line restarts the following working day.",
+        "evidence": "We're dark from next Friday through Monday Mar 22",
         "plant": "San Antonio",
         "part": null,
         "supplier": null,
@@ -25,12 +25,12 @@
         },
         "build_window_start": null,
         "build_window_end": null,
-        "reason": "The San Antonio plant is shut down due to a software outage from next Friday through Monday Mar 22.",
-        "confidence": 0.98
+        "reason": "The San Antonio plant will experience a multi-day software outage causing a complete halt in production.",
+        "confidence": 1.0
       },
       {
         "category": "supplier_delay",
-        "evidence": "Quick heads up from Quanta: the infotainment chip run for Princeton can't make it next Monday. Carrier says next Friday now (severe weather on the route).",
+        "evidence": "the infotainment chip run for Princeton can't make it next Monday. Carrier says next Friday now",
         "plant": "Princeton",
         "part": "infotainment chip",
         "supplier": "Quanta",
@@ -48,17 +48,17 @@
         "outage_end": null,
         "build_window_start": null,
         "build_window_end": null,
-        "reason": "An inbound shipment of infotainment chips from Quanta to Princeton is delayed from next Monday to next Friday.",
-        "confidence": 0.98
+        "reason": "An inbound part shipment from Quanta to Princeton is delayed due to severe weather.",
+        "confidence": 1.0
       }
     ]
   },
   "usage": {
     "provider": "gemini",
-    "model": "gemini-3.8-flash",
+    "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 808,
-    "output_tokens": 523,
-    "cost_usd": 0.0
+    "output_tokens": 481,
+    "cost_usd": 0.001445
   }
 }

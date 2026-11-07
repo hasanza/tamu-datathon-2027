@@ -1,14 +1,14 @@
 {
   "provider": "gemini",
-  "model": "gemini-3.8-flash",
+  "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 4.161,
+  "latency_s": 1.318,
   "parsed": {
     "incidents": [
       {
         "category": "supplier_delay",
         "evidence": "Huntsville line is waiting on 60 kWh battery packs from Lumen. Original drop was Monday Mar 29, new ETA is Thursday Apr 1 because of a truck breakdown.",
-        "plant": "Huntsville line",
+        "plant": "Huntsville",
         "part": "60 kWh battery packs",
         "supplier": "Lumen",
         "shipment_id": null,
@@ -25,17 +25,17 @@
         "outage_end": null,
         "build_window_start": null,
         "build_window_end": null,
-        "reason": "An inbound shipment of battery packs from Lumen to Huntsville is delayed due to a vehicle breakdown.",
-        "confidence": 0.98
+        "reason": "An inbound shipment of 60 kWh battery packs from Lumen to the Huntsville plant is delayed from Monday Mar 29 to Thursday Apr 1 due to a truck breakdown.",
+        "confidence": 1.0
       }
     ]
   },
   "usage": {
     "provider": "gemini",
-    "model": "gemini-3.8-flash",
+    "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 768,
-    "output_tokens": 279,
-    "cost_usd": 0.0
+    "output_tokens": 294,
+    "cost_usd": 0.000965
   }
 }

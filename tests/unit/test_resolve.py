@@ -169,3 +169,81 @@ def test_unconfirmed_always_needs_a_human(world, index):
     raw = RawIncident(category="unconfirmed", evidence="x", reason="r", confidence=0.9, part="seat material")
     r = build_incident(world, index, raw, event_id="T-4", n=1, event_text="x")
     assert r.needs_human and any(a.blocking for a in r.spec.ambiguities)
+
+
+@pytest.mark.parametrize(
+    ("phrase", "expected"),
+    [
+        ("Fri 3/19", date(2027, 3, 19)),  # numeric month/day with weekday: used to fall through to "Friday" = 03-12
+        ("Mon 3/29", date(2027, 3, 29)),
+        ("3/22", date(2027, 3, 22)),
+        ("02/25", date(2027, 2, 25)),
+        ("4/1/2027", date(2027, 4, 1)),
+        ("nxt tue", date(2027, 3, 16)),  # abbreviation: used to become THIS week's Tuesday
+        ("nxt thu", date(2027, 3, 18)),
+        ("Tuesday the 30th of March", date(2027, 3, 30)),
+        ("March 1st", date(2027, 3, 1)),
+    ],
+)
+def test_messy_date_formats(phrase, expected):
+    assert parse_date_phrase(phrase).value == expected
+
+
+@pytest.mark.parametrize(
+    "phrase", ["Friday after the holiday", "Friday 99/99", "mon and tue", "the Friday shipment window"]
+)
+def test_bare_weekday_with_extra_words_is_not_guessed(phrase):
+    assert parse_date_phrase(phrase).value is None  # better unparsed (-> model fallback / escalate) than silently wrong
+
+
+def test_tiebreak_resolves_a_nickname_but_is_flagged_and_penalised(world, index):
+    calls = []
+
+    def fake(etype, mention, text):
+        calls.append((etype, mention))
+        return {("plant", "Alamo City"): ("P_TX", 0.95, "Alamo City is San Antonio")}.get(
+            (etype, mention), (None, 0.0, "no")
+        )
+
+    raw = RawIncident(
+        category="plant_outage", evidence="x", reason="r", confidence=0.98, plant="Alamo City",
+        outage_start=DateMention(text="next Friday"), outage_end=DateMention(text="Monday Mar 22"),
+    )  # fmt: skip
+    r = build_incident(world, index, raw, event_id="T-5", n=1, event_text="x", tiebreak=fake)
+    assert r.spec.plant_id == "P_TX" and not r.needs_human
+    assert r.spec.confidence < 0.98 and any(s.method == "llm" for s in r.spec.resolution_steps)
+    assert any("language model" in a.issue for a in r.spec.ambiguities)
+
+
+def test_tiebreak_low_confidence_or_none_still_escalates(world, index):
+    raw = RawIncident(
+        category="plant_outage", evidence="x", reason="r", confidence=0.98, plant="the big factory",
+        outage_start=DateMention(text="next Friday"), outage_end=DateMention(text="Monday Mar 22"),
+    )  # fmt: skip
+    for answer in ((None, 0.0, "no"), ("P_TX", 0.6, "maybe")):
+        r = build_incident(world, index, raw, event_id="T-5", n=1, event_text="x", tiebreak=lambda e, m, t, a=answer: a)
+        assert r.needs_human and r.spec.plant_id is None
+
+
+def test_unknown_supplier_nickname_is_harmless_when_the_shipment_identifies_it(world, index):
+    r = build_incident(world, index, _delay(supplier="QCX"), event_id="T-6", n=1, event_text="x")
+    assert r.spec.supplier_id == "SUP-11" and r.spec.shipment_id == "SH-0182" and not r.needs_human
+    assert any(a.field == "supplier_id" and not a.blocking for a in r.spec.ambiguities)
+
+
+def test_wrong_known_supplier_still_blocks(world, index):
+    r = build_incident(world, index, _delay(supplier="Atlas"), event_id="T-6", n=1, event_text="x")
+    assert r.needs_human  # a recognised but inconsistent supplier is never overridden
+
+
+def test_blank_plant_filled_from_text_only_when_exactly_one_is_named(world, index):
+    raw = RawIncident(
+        category="plant_outage", evidence="x", reason="r", confidence=0.95, plant=None,
+        outage_start=DateMention(text="next Tuesday"), outage_end=DateMention(text="next Thursday"),
+    )  # fmt: skip
+    one = build_incident(world, index, raw, event_id="T-7", n=1, event_text="power cut at Jackson, line is dark")
+    assert one.spec.plant_id == "P_MS" and not one.needs_human
+    two = build_incident(world, index, raw, event_id="T-7", n=1, event_text="Jackson and Huntsville lines both dark")
+    assert two.needs_human and two.spec.plant_id is None  # two candidates -> never guess
+    none = build_incident(world, index, raw, event_id="T-7", n=1, event_text="the line is dark")
+    assert none.needs_human

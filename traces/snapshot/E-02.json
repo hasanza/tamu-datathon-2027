@@ -7,15 +7,15 @@
   "status": "escalated",
   "classification": {
     "category": "unconfirmed",
-    "confidence": 0.95,
-    "reason": "The report is explicitly described as an unconfirmed rumor with no specific dates, plant, or shipment details."
+    "confidence": 0.9,
+    "reason": "This report is an unconfirmed rumor without specific details, dates, or confirmed operational impacts."
   },
   "incidents": [
     {
       "incident_id": "E-02#1",
       "event_id": "E-02",
       "category": "unconfirmed",
-      "confidence": 0.95,
+      "confidence": 0.9,
       "plant_id": null,
       "part_id": null,
       "supplier_id": null,
@@ -60,41 +60,41 @@
           "blocking": true
         }
       ],
-      "reason": "The report is explicitly described as an unconfirmed rumor with no specific dates, plant, or shipment details."
+      "reason": "This report is an unconfirmed rumor without specific details, dates, or confirmed operational impacts."
     }
   ],
   "paths": {},
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T07:34:00.001000",
-      "ended": "2027-03-08T07:34:00.004000",
+      "started": "2027-03-08T07:34:01.024000",
+      "ended": "2027-03-08T07:34:01.034000",
       "steps": [
         {
-          "t": "2027-03-08T07:34:00.001000",
+          "t": "2027-03-08T07:34:01.024000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): unconfirmed",
           "data": {
-            "model": "gemini-3.8-flash",
+            "model": "gemini-3.5-flash-lite",
             "input_tokens": 757,
-            "output_tokens": 200,
-            "cached": true
+            "output_tokens": 196,
+            "cached": false
           }
         },
         {
-          "t": "2027-03-08T07:34:00.004000",
+          "t": "2027-03-08T07:34:01.031000",
           "kind": "gate",
-          "text": "E-02#1: unconfirmed NOT actionable (confidence 0.95); cannot resolve 'seat material'; named only vaguely; not a specific record; no confirmed shipment, lot, plant or dates",
+          "text": "E-02#1: unconfirmed NOT actionable (confidence 0.90); cannot resolve 'seat material'; named only vaguely; not a specific record; no confirmed shipment, lot, plant or dates",
           "data": null
         },
         {
-          "t": "2027-03-08T07:34:00.004000",
+          "t": "2027-03-08T07:34:01.033000",
           "kind": "rehearse",
           "text": "Rehearsed 1 actions on the twin: 1 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T07:34:00.004000",
+          "t": "2027-03-08T07:34:01.034000",
           "kind": "execute",
           "text": "Executed 1 calls via twin: 1 ok, 0 failed (0 writes, 0 verification reads)",
           "data": null
@@ -139,15 +139,15 @@
     "calls": [
       {
         "provider": "gemini",
-        "model": "gemini-3.8-flash",
+        "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 757,
-        "output_tokens": 200,
-        "cost_usd": 0.0,
-        "cached": true
+        "output_tokens": 196,
+        "cost_usd": 0.000717,
+        "cached": false
       }
     ],
-    "total_cost_usd": 0.0
+    "total_cost_usd": 0.000717
   },
   "summary": "Part of the message was not actionable and was escalated to a human.",
   "decision_reason": "Acted on every confirmed incident: ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, live baseline matched before the first write. The unclear part was escalated without operational change (rule 8)."

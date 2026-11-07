@@ -30,16 +30,15 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 load_dotenv(REPO_ROOT / ".env")
 
 DEFAULT_MODELS = {
-    "gemini": os.environ.get("GEMINI_MODEL") or "gemini-3.8-flash",
+    "gemini": os.environ.get("GEMINI_MODEL") or "gemini-3.5-flash-lite",
     "anthropic": os.environ.get("ANTHROPIC_MODEL") or "claude-haiku-5-5",
 }
-# USD per 1M tokens (input, output). Gemini prices are filled in from the provider's pricing page before
-# the final run; until then they are None and cost_usd is 0.0 while token counts stay exact.
+# USD per 1M tokens (input, output). A model without a price records cost 0.0 and exact token counts.
 PRICES: dict[str, tuple[float, float] | None] = {
     "claude-haiku-5-5": (0.10, 0.50),
     "claude-sonnet-5-5": (2.00, 10.00),
-    "gemini-3.8-flash": None,
-    "gemini-3.5-flash-lite": None,
+    "gemini-3.5-flash-lite": (0.30, 2.50),  # ai.google.dev/gemini-api/docs/pricing; output includes thinking tokens
+    "gemini-3.8-flash": None,  # price not recorded: used only as reference/paraphrase writer in evals
 }
 
 
@@ -92,7 +91,9 @@ class GeminiBackend:
         return RawResponse(
             text=resp.text or "",
             input_tokens=int(getattr(usage, "prompt_token_count", 0) or 0),
-            output_tokens=int(getattr(usage, "candidates_token_count", 0) or 0),
+            # Gemini bills thinking tokens as output; they are reported separately from the visible answer
+            output_tokens=int(getattr(usage, "candidates_token_count", 0) or 0)
+            + int(getattr(usage, "thoughts_token_count", 0) or 0),
         )
 
 

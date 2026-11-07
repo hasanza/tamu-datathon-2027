@@ -1,15 +1,15 @@
 {
   "provider": "gemini",
-  "model": "gemini-3.8-flash",
+  "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 4.773,
+  "latency_s": 1.079,
   "parsed": {
     "incidents": [
       {
         "category": "unconfirmed",
-        "evidence": "Rumor from a supplier rep: something may be off with a seat material coming up. No dates, no details, nothing confirmed.",
+        "evidence": "Someone on the floor mentioned a possible shortage of something electronic sometime soon. Not confirmed by anyone.",
         "plant": null,
-        "part": "seat material",
+        "part": null,
         "supplier": null,
         "shipment_id": null,
         "lot_id": null,
@@ -19,17 +19,17 @@
         "outage_end": null,
         "build_window_start": null,
         "build_window_end": null,
-        "reason": "The report is explicitly described as an unconfirmed rumor with no specific dates, plant, or shipment details.",
+        "reason": "The message reports a vague and unconfirmed possibility of a shortage without specific parts, shipments, or dates.",
         "confidence": 0.95
       }
     ]
   },
   "usage": {
     "provider": "gemini",
-    "model": "gemini-3.8-flash",
+    "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
-    "input_tokens": 757,
-    "output_tokens": 200,
-    "cost_usd": 0.0
+    "input_tokens": 749,
+    "output_tokens": 190,
+    "cost_usd": 0.0007
   }
 }

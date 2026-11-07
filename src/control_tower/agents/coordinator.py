@@ -44,6 +44,7 @@ from control_tower.trace import Sink, Timeline, write_trace
 from control_tower.understanding.extract import extract
 from control_tower.understanding.resolve import CONFIDENCE_GATE, EntityIndex, build_incident
 from control_tower.understanding.schemas import RawIncident
+from control_tower.understanding.tiebreak import make_tiebreak
 from control_tower.world.executor import Executor
 from control_tower.world.twin import Twin, check_invariants
 
@@ -79,10 +80,12 @@ class Coordinator:
         provider: str | None = None,
         model: str | None = None,
         extractor=extract,
+        use_tiebreak: bool = False,
     ) -> None:
         self.world, self.g, self.index, self.twin, self.executor = world, graph, index, twin, executor
         self.traces_dir, self.sink, self.policy = traces_dir, sink or Sink(None), policy
         self.provider, self.model, self.extractor = provider, model, extractor
+        self.use_tiebreak = use_tiebreak
 
     # ------------------------------------------------------------------ public
     def handle(self, event: dict[str, Any]) -> Trace:
@@ -110,9 +113,16 @@ class Coordinator:
                 "cached": call.cached,
             },
         )
+        tiebreak = (
+            make_tiebreak(self.world, tl.llm_calls, provider=self.provider, model=self.model)
+            if self.use_tiebreak
+            else None
+        )
         pairs = []
         for n, raw in enumerate(extraction.incidents, 1):
-            res = build_incident(self.world, self.index, raw, event_id=eid, n=n, event_text=event["text"])
+            res = build_incident(
+                self.world, self.index, raw, event_id=eid, n=n, event_text=event["text"], tiebreak=tiebreak
+            )
             pairs.append((raw, res))
             for st in res.spec.resolution_steps:
                 if st.method in {"data_snap", "fuzzy", "llm"}:

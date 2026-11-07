@@ -1,13 +1,13 @@
 {
   "provider": "gemini",
-  "model": "gemini-3.8-flash",
+  "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 5.606,
+  "latency_s": 1.218,
   "parsed": {
     "incidents": [
       {
         "category": "quality_hold",
-        "evidence": "Kestrel says the infotainment chip sent to Jackson had a faulty weld. Anything built Thursday Feb 25 through last Monday is suspect.",
+        "evidence": "Quality alert: Kestrel says the infotainment chip sent to Jackson had a faulty weld. Anything built Thursday Feb 25 through last Monday is suspect.",
         "plant": "Jackson",
         "part": "infotainment chip",
         "supplier": "Kestrel",
@@ -25,17 +25,17 @@
           "text": "last Monday",
           "iso": "2027-03-01"
         },
-        "reason": "A supplier identified defective infotainment chips affecting vehicles built during a specific date window at the Jackson plant.",
-        "confidence": 0.98
+        "reason": "This is a quality hold because a specific supplier and plant are named for a defective part and a suspect build window.",
+        "confidence": 1.0
       }
     ]
   },
   "usage": {
     "provider": "gemini",
-    "model": "gemini-3.8-flash",
+    "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 760,
-    "output_tokens": 177,
-    "cost_usd": 0.0
+    "output_tokens": 267,
+    "cost_usd": 0.000895
   }
 }

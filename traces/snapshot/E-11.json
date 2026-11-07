@@ -7,15 +7,15 @@
   "status": "done",
   "classification": {
     "category": "plant_outage",
-    "confidence": 0.98,
-    "reason": "The Jackson plant is facing a power failure causing a production shutdown from Friday Mar 26 through Tuesday Mar 30."
+    "confidence": 1.0,
+    "reason": "The Jackson plant is experiencing a power failure causing a plant outage for a specified date range."
   },
   "incidents": [
     {
       "incident_id": "E-11#1",
       "event_id": "E-11",
       "category": "plant_outage",
-      "confidence": 0.98,
+      "confidence": 1.0,
       "plant_id": "P_MS",
       "part_id": null,
       "supplier_id": null,
@@ -63,7 +63,7 @@
         }
       ],
       "ambiguities": [],
-      "reason": "The Jackson plant is facing a power failure causing a production shutdown from Friday Mar 26 through Tuesday Mar 30."
+      "reason": "The Jackson plant is experiencing a power failure causing a plant outage for a specified date range."
     }
   ],
   "paths": {
@@ -514,34 +514,34 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T10:07:00.002000",
-      "ended": "2027-03-08T10:07:00.029000",
+      "started": "2027-03-08T10:07:01.142000",
+      "ended": "2027-03-08T10:07:01.155000",
       "steps": [
         {
-          "t": "2027-03-08T10:07:00.002000",
+          "t": "2027-03-08T10:07:01.142000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): plant_outage",
           "data": {
-            "model": "gemini-3.8-flash",
+            "model": "gemini-3.5-flash-lite",
             "input_tokens": 762,
-            "output_tokens": 264,
-            "cached": true
+            "output_tokens": 205,
+            "cached": false
           }
         },
         {
-          "t": "2027-03-08T10:07:00.002000",
+          "t": "2027-03-08T10:07:01.143000",
           "kind": "gate",
-          "text": "E-11#1: plant_outage confirmed, confidence 0.98 >= 0.7 -> act",
+          "text": "E-11#1: plant_outage confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T10:07:00.022000",
+          "t": "2027-03-08T10:07:01.148000",
           "kind": "rehearse",
           "text": "Rehearsed 68 actions on the twin: 68 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T10:07:00.029000",
+          "t": "2027-03-08T10:07:01.155000",
           "kind": "execute",
           "text": "Executed 68 calls via twin: 68 ok, 0 failed (62 writes, 6 verification reads)",
           "data": null
@@ -550,17 +550,17 @@
     },
     {
       "agent": "supply_chain",
-      "started": "2027-03-08T10:07:00.021000",
-      "ended": "2027-03-08T10:07:00.021000",
+      "started": "2027-03-08T10:07:01.145000",
+      "ended": "2027-03-08T10:07:01.145000",
       "steps": [
         {
-          "t": "2027-03-08T10:07:00.021000",
+          "t": "2027-03-08T10:07:01.145000",
           "kind": "graph",
           "text": "Plant P_MS -> POs building 2027-03-26..2027-03-30 (inclusive): 9 affected: ['PO-0253', 'PO-0254', 'PO-0255', 'PO-0256', 'PO-0257', 'PO-0258', 'PO-0259', 'PO-0260', 'PO-0261']",
           "data": null
         },
         {
-          "t": "2027-03-08T10:07:00.021000",
+          "t": "2027-03-08T10:07:01.145000",
           "kind": "plan",
           "text": "Restart index 17; slots 5/day, shared across this event. 6 reschedule(s), 3 transfer(s), 0 unplaceable. PO-0253->P_MS 2027-03-31; PO-0254->P_MS 2027-03-31; PO-0255->P_MS 2027-04-01; PO-0256->P_MS 2027-04-01; PO-0257->P_MS 2027-04-02; PO-0258->P_MS 2027-04-02; PO-0259->P_KY 2027-03-08; PO-0260->P_AL 2027-03-08; PO-0261->P_NC 2027-03-08",
           "data": {
@@ -574,17 +574,17 @@
     },
     {
       "agent": "dealer_care",
-      "started": "2027-03-08T10:07:00.021000",
-      "ended": "2027-03-08T10:07:00.022000",
+      "started": "2027-03-08T10:07:01.146000",
+      "ended": "2027-03-08T10:07:01.147000",
       "steps": [
         {
-          "t": "2027-03-08T10:07:00.021000",
+          "t": "2027-03-08T10:07:01.146000",
           "kind": "graph",
           "text": "79 customer orders on 9 moved POs across 36 dealers (all incidents of this event together)",
           "data": null
         },
         {
-          "t": "2027-03-08T10:07:00.022000",
+          "t": "2027-03-08T10:07:01.147000",
           "kind": "plan",
           "text": "One notice per dealer; 18 Platinum/Gold customer orders entitled, 17 loaner(s) assigned within pool limits (Platinum, then Gold, earlier promise, lower id).",
           "data": null
@@ -3057,15 +3057,15 @@
     "calls": [
       {
         "provider": "gemini",
-        "model": "gemini-3.8-flash",
+        "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 762,
-        "output_tokens": 264,
-        "cost_usd": 0.0,
-        "cached": true
+        "output_tokens": 205,
+        "cost_usd": 0.000741,
+        "cached": false
       }
     ],
-    "total_cost_usd": 0.0
+    "total_cost_usd": 0.000741
   },
   "summary": "Wacky Wheels Jackson is down 2027-03-26 to 2027-03-30. 9 production orders were moved (6 rescheduled after the restart, 3 transferred to other plants because same-plant slots ran out); 36 dealers notified once each for 79 customer orders; 17 loaners assigned.",
   "decision_reason": "Acted on every confirmed incident: ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, live baseline matched before the first write. Incident types handled: plant_outage."
