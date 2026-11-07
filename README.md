@@ -42,4 +42,4 @@ uv run python hack_the_highway/enterprise_server.py --data hack_the_highway/data
 uv run pytest
 ```
 
-Models used, token totals and cost for the submitted run: see `runs/final/models.json` (written by the pipeline) and the design card.
+Models: `gemini-3.5-flash-lite` for extraction, entity tie-break and summaries (about $0.019 per full run) and `gemini-3.8-flash` as the independent auditor (about $0.030). Models used, token totals and cost for the submitted run: see `runs/final/models.json` (written by the pipeline) and the design card.

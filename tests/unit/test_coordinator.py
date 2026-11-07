@@ -190,3 +190,50 @@ def test_grader_catches_a_wrong_loaner(make, tmp_path):
 
     rows, _ = _run_and_corrupt(make, tmp_path, swap_loaner)
     assert any("loaners differ" in i for i in rows[0]["issues"])
+
+
+def _verdict(*concerns, agree=True):
+    from control_tower.agents.auditor import AuditConcern, AuditVerdict
+
+    return AuditVerdict(agree=agree, concerns=[AuditConcern(**c) for c in concerns], summary="synthetic verdict")
+
+
+def _with_audit(make, monkeypatch, verdict):
+    c, ex = make(scripted(outage("the Kentucky plant", "next Tuesday", "next Thursday")))
+    c.use_audit = True
+    monkeypatch.setattr(coord_mod, "audit", lambda *a, **k: verdict)
+    return c
+
+
+def test_blocking_audit_concern_stops_execution(make, monkeypatch, tmp_path):
+    c = _with_audit(
+        make,
+        monkeypatch,
+        _verdict({"rule": "interpretation", "issue": "wrong plant", "severity": "blocking"}, agree=False),
+    )
+    t = c.handle(EVENT)
+    assert t.status == "escalated" and "Auditor disagreed" in t.actions[-1].args["reason"]
+    assert (tmp_path / "action_log.jsonl").read_text().count('"mes.reschedule"') == 0
+
+
+def test_note_only_audit_still_executes_and_is_recorded(make, monkeypatch):
+    c = _with_audit(
+        make, monkeypatch, _verdict({"rule": "3", "issue": "slot choice is fine but unusual", "severity": "note"})
+    )
+    t = c.handle(EVENT)
+    assert t.status == "done"
+    steps = [s.text for a in t.agents for s in a.steps if s.kind == "audit"]
+    assert steps and "unusual" in steps[0]
+
+
+def test_unavailable_auditor_does_not_block_the_deterministic_path(make, monkeypatch):
+    c = _with_audit(make, monkeypatch, None)
+    assert c.handle(EVENT).status == "done"
+
+
+def test_explainer_falls_back_to_the_deterministic_draft(make, monkeypatch):
+    c, _ = make(scripted(RawIncident(category="noise", evidence="x", reason="brochure question", confidence=0.99)))
+    c.use_explain = True
+    monkeypatch.setattr(coord_mod, "explain", lambda source, text, status, s, r, calls, **k: (s, r))
+    t = c.handle(EVENT)
+    assert "brochure" in t.summary

@@ -2,7 +2,7 @@
   "provider": "gemini",
   "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 1.14,
+  "latency_s": 0.968,
   "parsed": {
     "incidents": [
       {
@@ -25,7 +25,7 @@
         },
         "build_window_start": null,
         "build_window_end": null,
-        "reason": "The Jackson plant is experiencing a power failure causing a plant outage for a specified date range.",
+        "reason": "The plant is experiencing a power failure causing a multi-day outage.",
         "confidence": 1.0
       }
     ]
@@ -35,7 +35,7 @@
     "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 762,
-    "output_tokens": 205,
-    "cost_usd": 0.000741
+    "output_tokens": 200,
+    "cost_usd": 0.000729
   }
 }

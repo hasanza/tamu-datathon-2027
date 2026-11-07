@@ -222,7 +222,7 @@ Total expected write calls across the run: roughly 700. The LLM must not be in t
 | # | Ambiguity | Decision | Risk / mitigation |
 |---|---|---|---|
 | A1 | Order in which affected POs claim scarce slots (changes which PO gets which day, and which get transferred in E-11). | Sort by (original build_date, PO id); greedy earliest slot. | Make the policy a single configurable function; document in design card. |
-| A2 | Transfer target day: "any day with a free slot" — from today, or only ≥ disruption end? | Literal handbook: any working day from today to Apr 2, earliest first. | Config flag `transfer_min_day = today \| disruption_end`; pick one, state it. |
+| A2 | Transfer target day: "any day with a free slot" — from today, or only on/after the disruption end? | **`disruption_end` (decided 2026-11-08):** earliest free slot at another plant on or after the same-plant restart day. Valid under both readings if the grader checks feasibility, never builds before the plant/parts are back, no negative slips. Affects only E-09 (2 orders) and E-11 (3 orders). `--transfer-min-day today` restores the literal reading. | One flag; stated in the design card. |
 | A3 | Tie-break among transfer plants on the same day. | Plant id order. | Config. |
 | A4 | "Next Friday" on a Monday. | Next week's Friday (Mar 19). Cross-validated by "through Monday Mar 22" and by shipment ETA Mondays. | If the resolved date doesn't land on a real ETA/lot boundary, lower confidence; if two readings both fit, escalate. |
 | A5 | Quality hold on past builds: should the loaner/dealer-notify logic also run? | No. Rule 6 lists exactly hold, stop_sale, notify owners. | — |

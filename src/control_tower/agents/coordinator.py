@@ -16,7 +16,9 @@ from typing import Any
 
 import networkx as nx
 
+from control_tower.agents.auditor import audit, plan_digest
 from control_tower.agents.dealer_care import plan_care
+from control_tower.agents.explain import explain
 from control_tower.agents.policy import DEFAULT_POLICY, Policy
 from control_tower.agents.quality import plan_quality
 from control_tower.agents.supply_chain import Move, SlotBoard, moves_to_actions, plan_moves
@@ -27,7 +29,7 @@ from control_tower.graph.traverse import (
     impact_outage,
     impact_supplier_delay,
 )
-from control_tower.llm.adapter import LLMError
+from control_tower.llm.adapter import AUDIT_MODELS, LLMError, default_provider
 from control_tower.schemas.action import WRITE_TOOLS, Action, Rehearsal, ToolResult
 from control_tower.schemas.incident import IncidentSpec
 from control_tower.schemas.trace import (
@@ -81,11 +83,15 @@ class Coordinator:
         model: str | None = None,
         extractor=extract,
         use_tiebreak: bool = False,
+        use_audit: bool = False,
+        use_explain: bool = False,
+        audit_model: str | None = None,
     ) -> None:
         self.world, self.g, self.index, self.twin, self.executor = world, graph, index, twin, executor
         self.traces_dir, self.sink, self.policy = traces_dir, sink or Sink(None), policy
         self.provider, self.model, self.extractor = provider, model, extractor
         self.use_tiebreak = use_tiebreak
+        self.use_audit, self.use_explain, self.audit_model = use_audit, use_explain, audit_model
 
     # ------------------------------------------------------------------ public
     def handle(self, event: dict[str, Any]) -> Trace:
@@ -224,6 +230,33 @@ class Coordinator:
                 return self._finish_escalation(
                     event, tl, [x.spec for _, x in real], plans, f"Plan rejected by rehearsal, nothing executed: {why}"
                 )
+
+        # 4b. independent audit (second model, second channel) ------------------------------------------------
+        if self.use_audit and plans:
+            digest = plan_digest(self.world, plans, care_actions, escalate_reasons)
+            verdict = audit(
+                event["source"],
+                event["text"],
+                digest,
+                tl.llm_calls,
+                provider=self.provider,
+                model=self.audit_model or AUDIT_MODELS.get(self.provider or default_provider()),
+            )
+            if verdict is None:
+                tl.step("coordinator", "audit", "Auditor unavailable; continuing on the deterministic checks alone")
+            else:
+                blocking = [c for c in verdict.concerns if c.severity == "blocking"]
+                tl.step(
+                    "coordinator",
+                    "audit",
+                    f"Auditor {'agrees' if verdict.agree and not blocking else 'DISAGREES'}: {verdict.summary}"
+                    + "".join(f" [{c.severity}] rule {c.rule}: {c.issue}" for c in verdict.concerns),
+                )
+                if blocking:
+                    why = "Auditor disagreed, nothing executed: " + "; ".join(
+                        f"rule {c.rule}: {c.issue}" for c in blocking
+                    )
+                    return self._finish_escalation(event, tl, [x.spec for _, x in real], plans, why)
 
         # 5. verify the live world, then execute ----------------------------------------------------------------
         read_ids = {id(a) for a in reads}
@@ -613,6 +646,17 @@ class Coordinator:
                 loaners_assigned=len(diff.loaners),
                 vehicles_pulled=len(diff.stopped_vins),
                 owners_contacted=len(diff.contacted_customers),
+            )
+        if self.use_explain:
+            summary, reason = explain(
+                event["source"],
+                event["text"],
+                status,
+                summary,
+                reason,
+                tl.llm_calls,
+                provider=self.provider,
+                model=self.model,
             )
         trace = Trace(
             event_id=event["event_id"], received_at=event["received_at"], source=event["source"], text=event["text"], status=status, classification=cls,

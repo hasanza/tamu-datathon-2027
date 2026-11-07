@@ -1,0 +1,19 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "audit",
+  "latency_s": 3.979,
+  "parsed": {
+    "agree": true,
+    "concerns": [],
+    "summary": "The quality bulletin was correctly interpreted and the planned actions strictly follow the quality hold policy."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "audit",
+    "input_tokens": 1202,
+    "output_tokens": 390,
+    "cost_usd": 0.002364
+  }
+}

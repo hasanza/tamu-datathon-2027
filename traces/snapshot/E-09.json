@@ -8,7 +8,7 @@
   "classification": {
     "category": "supplier_delay",
     "confidence": 1.0,
-    "reason": "An inbound shipment of surround-view cameras from Orbit to Huntsville is delayed due to a customs inspection."
+    "reason": "An inbound shipment of surround-view cameras for Huntsville is delayed due to a customs inspection."
   },
   "incidents": [
     {
@@ -95,7 +95,7 @@
         }
       ],
       "ambiguities": [],
-      "reason": "An inbound shipment of surround-view cameras from Orbit to Huntsville is delayed due to a customs inspection."
+      "reason": "An inbound shipment of surround-view cameras for Huntsville is delayed due to a customs inspection."
     }
   ],
   "paths": {
@@ -543,40 +543,46 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T09:33:01.164000",
-      "ended": "2027-03-08T09:33:01.173000",
+      "started": "2027-03-08T09:33:01.043000",
+      "ended": "2027-03-08T09:33:06.403000",
       "steps": [
         {
-          "t": "2027-03-08T09:33:01.164000",
+          "t": "2027-03-08T09:33:01.043000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): supplier_delay",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 767,
-            "output_tokens": 273,
+            "output_tokens": 178,
             "cached": false
           }
         },
         {
-          "t": "2027-03-08T09:33:01.164000",
+          "t": "2027-03-08T09:33:01.045000",
           "kind": "gate",
           "text": "shipment 'CAM-360→P_AL due 2027-03-29' -> SH-0256 via data_snap: exactly one shipment matches plant, part and original ETA",
           "data": null
         },
         {
-          "t": "2027-03-08T09:33:01.164000",
+          "t": "2027-03-08T09:33:01.045000",
           "kind": "gate",
           "text": "E-09#1: supplier_delay confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T09:33:01.166000",
+          "t": "2027-03-08T09:33:01.051000",
           "kind": "rehearse",
           "text": "Rehearsed 46 actions on the twin: 46 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T09:33:01.173000",
+          "t": "2027-03-08T09:33:06.389000",
+          "kind": "audit",
+          "text": "Auditor agrees: The interpretation accurately captures the supplier delay for surround-view cameras to Huntsville, and the plan correctly reschedules affected orders, notifies dealers, and allocates loaners according to policy.",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T09:33:06.403000",
           "kind": "execute",
           "text": "Executed 46 calls via twin: 46 ok, 0 failed (42 writes, 4 verification reads)",
           "data": null
@@ -585,23 +591,23 @@
     },
     {
       "agent": "supply_chain",
-      "started": "2027-03-08T09:33:01.165000",
-      "ended": "2027-03-08T09:33:01.165000",
+      "started": "2027-03-08T09:33:01.048000",
+      "ended": "2027-03-08T09:33:01.049000",
       "steps": [
         {
-          "t": "2027-03-08T09:33:01.165000",
+          "t": "2027-03-08T09:33:01.048000",
           "kind": "graph",
           "text": "Shipment SH-0256 -> part CAM-360 -> models using it -> POs at P_AL building 2027-03-29..2027-04-01 (new ETA exclusive): 6 affected: ['PO-0436', 'PO-0438', 'PO-0439', 'PO-0441', 'PO-0442', 'PO-0444']",
           "data": null
         },
         {
-          "t": "2027-03-08T09:33:01.165000",
+          "t": "2027-03-08T09:33:01.049000",
           "kind": "plan",
-          "text": "Restart index 18; slots 5/day, shared across this event. 4 reschedule(s), 2 transfer(s), 0 unplaceable. PO-0436->P_AL 2027-04-01; PO-0438->P_AL 2027-04-01; PO-0439->P_AL 2027-04-02; PO-0441->P_AL 2027-04-02; PO-0442->P_KY 2027-03-08; PO-0444->P_IN 2027-03-08",
+          "text": "Restart index 18; slots 5/day, shared across this event. 4 reschedule(s), 2 transfer(s), 0 unplaceable. PO-0436->P_AL 2027-04-01; PO-0438->P_AL 2027-04-01; PO-0439->P_AL 2027-04-02; PO-0441->P_AL 2027-04-02; PO-0442->P_KY 2027-04-01; PO-0444->P_IN 2027-04-01",
           "data": {
             "policy": {
               "claim_order": "build_date_id",
-              "transfer_min_day": "today"
+              "transfer_min_day": "disruption_end"
             }
           }
         }
@@ -609,17 +615,17 @@
     },
     {
       "agent": "dealer_care",
-      "started": "2027-03-08T09:33:01.166000",
-      "ended": "2027-03-08T09:33:01.166000",
+      "started": "2027-03-08T09:33:01.049000",
+      "ended": "2027-03-08T09:33:01.050000",
       "steps": [
         {
-          "t": "2027-03-08T09:33:01.166000",
+          "t": "2027-03-08T09:33:01.049000",
           "kind": "graph",
           "text": "54 customer orders on 6 moved POs across 26 dealers (all incidents of this event together)",
           "data": null
         },
         {
-          "t": "2027-03-08T09:33:01.166000",
+          "t": "2027-03-08T09:33:01.050000",
           "kind": "plan",
           "text": "One notice per dealer; 12 Platinum/Gold customer orders entitled, 10 loaner(s) assigned within pool limits (Platinum, then Gold, earlier promise, lower id).",
           "data": null
@@ -717,7 +723,7 @@
       "tool": "mes.get_schedule",
       "args": {
         "plant_id": "P_IN",
-        "date": "2027-03-08"
+        "date": "2027-04-01"
       },
       "justification": "Free read: confirm the target slot is free in the live world before any write",
       "path_ids": [
@@ -732,18 +738,18 @@
         "error": null,
         "response": {
           "plant_id": "P_IN",
-          "date": "2027-03-08",
+          "date": "2027-04-01",
           "orders": [
             {
-              "production_order_id": "PO-0301",
+              "production_order_id": "PO-0355",
               "model": "VOYAGER"
             },
             {
-              "production_order_id": "PO-0302",
+              "production_order_id": "PO-0356",
               "model": "RANGER"
             },
             {
-              "production_order_id": "PO-0303",
+              "production_order_id": "PO-0357",
               "model": "NOVA"
             }
           ],
@@ -758,7 +764,7 @@
       "tool": "mes.get_schedule",
       "args": {
         "plant_id": "P_KY",
-        "date": "2027-03-08"
+        "date": "2027-04-01"
       },
       "justification": "Free read: confirm the target slot is free in the live world before any write",
       "path_ids": [
@@ -773,18 +779,18 @@
         "error": null,
         "response": {
           "plant_id": "P_KY",
-          "date": "2027-03-08",
+          "date": "2027-04-01",
           "orders": [
             {
-              "production_order_id": "PO-0121",
+              "production_order_id": "PO-0175",
               "model": "PIONEER"
             },
             {
-              "production_order_id": "PO-0122",
+              "production_order_id": "PO-0176",
               "model": "SUMMIT"
             },
             {
-              "production_order_id": "PO-0123",
+              "production_order_id": "PO-0177",
               "model": "VOYAGER"
             }
           ],
@@ -924,7 +930,7 @@
       "args": {
         "production_order_id": "PO-0442",
         "to_plant_id": "P_KY",
-        "new_date": "2027-03-08"
+        "new_date": "2027-04-01"
       },
       "justification": "Rule 1+3: needs CAM-360 and builds before the new ETA; no free P_AL slot; earliest free P_KY slot",
       "path_ids": [
@@ -944,7 +950,7 @@
           "ok": true,
           "production_order_id": "PO-0442",
           "plant_id": "P_KY",
-          "date": "2027-03-08"
+          "date": "2027-04-01"
         }
       }
     },
@@ -956,7 +962,7 @@
       "args": {
         "production_order_id": "PO-0444",
         "to_plant_id": "P_IN",
-        "new_date": "2027-03-08"
+        "new_date": "2027-04-01"
       },
       "justification": "Rule 1+3: needs CAM-360 and builds before the new ETA; no free P_AL slot; earliest free P_IN slot",
       "path_ids": [
@@ -976,7 +982,7 @@
           "ok": true,
           "production_order_id": "PO-0444",
           "plant_id": "P_IN",
-          "date": "2027-03-08"
+          "date": "2027-04-01"
         }
       }
     },
@@ -1051,7 +1057,7 @@
           "CO-02628",
           "CO-02643"
         ],
-        "message": "Delay notice. Affected customer orders: CO-02628 (promised 2027-04-03): build moves from 2027-03-31 to 2027-03-08 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02643 (promised 2027-04-03): build moves from 2027-03-31 to 2027-03-08 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
+        "message": "Delay notice. Affected customer orders: CO-02628 (promised 2027-04-03): build moves from 2027-03-31 to 2027-04-01 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02643 (promised 2027-04-03): build moves from 2027-03-31 to 2027-04-01 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
       },
       "justification": "Rule 4: one notification for D04, only its 2 affected order(s)",
       "path_ids": [
@@ -1109,7 +1115,7 @@
           "CO-02620",
           "CO-02622"
         ],
-        "message": "Delay notice. Affected customer orders: CO-02620 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02622 (promised 2027-04-04): build moves from 2027-03-31 to 2027-03-08 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
+        "message": "Delay notice. Affected customer orders: CO-02620 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02622 (promised 2027-04-04): build moves from 2027-03-31 to 2027-04-01 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
       },
       "justification": "Rule 4: one notification for D06, only its 2 affected order(s)",
       "path_ids": [
@@ -1144,7 +1150,7 @@
           "CO-02625",
           "CO-02649"
         ],
-        "message": "Delay notice. Affected customer orders: CO-02589 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02590 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02597 (promised 2027-04-02): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02623 (promised 2027-04-03): build moves from 2027-03-31 to 2027-03-08 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02625 (promised 2027-04-03): build moves from 2027-03-31 to 2027-03-08 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02649 (promised 2027-04-03): build moves from 2027-03-31 to 2027-03-08 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
+        "message": "Delay notice. Affected customer orders: CO-02589 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02590 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02597 (promised 2027-04-02): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02623 (promised 2027-04-03): build moves from 2027-03-31 to 2027-04-01 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02625 (promised 2027-04-03): build moves from 2027-03-31 to 2027-04-01 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02649 (promised 2027-04-03): build moves from 2027-03-31 to 2027-04-01 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
       },
       "justification": "Rule 4: one notification for D08, only its 6 affected order(s)",
       "path_ids": [
@@ -1202,7 +1208,7 @@
           "CO-02629",
           "CO-02646"
         ],
-        "message": "Delay notice. Affected customer orders: CO-02629 (promised 2027-04-04): build moves from 2027-03-31 to 2027-03-08 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02646 (promised 2027-04-04): build moves from 2027-03-31 to 2027-03-08 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
+        "message": "Delay notice. Affected customer orders: CO-02629 (promised 2027-04-04): build moves from 2027-03-31 to 2027-04-01 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02646 (promised 2027-04-04): build moves from 2027-03-31 to 2027-04-01 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
       },
       "justification": "Rule 4: one notification for D12, only its 2 affected order(s)",
       "path_ids": [
@@ -1232,7 +1238,7 @@
         "customer_order_ids": [
           "CO-02624"
         ],
-        "message": "Delay notice. Affected customer orders: CO-02624 (promised 2027-04-03): build moves from 2027-03-31 to 2027-03-08 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
+        "message": "Delay notice. Affected customer orders: CO-02624 (promised 2027-04-03): build moves from 2027-03-31 to 2027-04-01 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
       },
       "justification": "Rule 4: one notification for D15, only its 1 affected order(s)",
       "path_ids": [
@@ -1263,7 +1269,7 @@
           "CO-02602",
           "CO-02640"
         ],
-        "message": "Delay notice. Affected customer orders: CO-02602 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02640 (promised 2027-04-04): build moves from 2027-03-31 to 2027-03-08 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
+        "message": "Delay notice. Affected customer orders: CO-02602 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02640 (promised 2027-04-04): build moves from 2027-03-31 to 2027-04-01 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
       },
       "justification": "Rule 4: one notification for D16, only its 2 affected order(s)",
       "path_ids": [
@@ -1382,7 +1388,7 @@
           "CO-02594",
           "CO-02642"
         ],
-        "message": "Delay notice. Affected customer orders: CO-02594 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02642 (promised 2027-04-04): build moves from 2027-03-31 to 2027-03-08 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
+        "message": "Delay notice. Affected customer orders: CO-02594 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02642 (promised 2027-04-04): build moves from 2027-03-31 to 2027-04-01 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
       },
       "justification": "Rule 4: one notification for D23, only its 2 affected order(s)",
       "path_ids": [
@@ -1448,7 +1454,7 @@
           "CO-02618",
           "CO-02644"
         ],
-        "message": "Delay notice. Affected customer orders: CO-02567 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02568 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02570 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02591 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02600 (promised 2027-04-02): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02618 (promised 2027-04-02): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02644 (promised 2027-04-03): build moves from 2027-03-31 to 2027-03-08 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
+        "message": "Delay notice. Affected customer orders: CO-02567 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02568 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02570 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02591 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02600 (promised 2027-04-02): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02618 (promised 2027-04-02): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02644 (promised 2027-04-03): build moves from 2027-03-31 to 2027-04-01 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
       },
       "justification": "Rule 4: one notification for D25, only its 7 affected order(s)",
       "path_ids": [
@@ -1620,7 +1626,7 @@
         "customer_order_ids": [
           "CO-02647"
         ],
-        "message": "Delay notice. Affected customer orders: CO-02647 (promised 2027-04-05): build moves from 2027-03-31 to 2027-03-08 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
+        "message": "Delay notice. Affected customer orders: CO-02647 (promised 2027-04-05): build moves from 2027-03-31 to 2027-04-01 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
       },
       "justification": "Rule 4: one notification for D30, only its 1 affected order(s)",
       "path_ids": [
@@ -1708,7 +1714,7 @@
           "CO-02617",
           "CO-02641"
         ],
-        "message": "Delay notice. Affected customer orders: CO-02617 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02641 (promised 2027-04-04): build moves from 2027-03-31 to 2027-03-08 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
+        "message": "Delay notice. Affected customer orders: CO-02617 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02641 (promised 2027-04-04): build moves from 2027-03-31 to 2027-04-01 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
       },
       "justification": "Rule 4: one notification for D34, only its 2 affected order(s)",
       "path_ids": [
@@ -1859,7 +1865,7 @@
           "CO-02616",
           "CO-02645"
         ],
-        "message": "Delay notice. Affected customer orders: CO-02595 (promised 2027-04-04): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02598 (promised 2027-04-04): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02616 (promised 2027-04-04): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02645 (promised 2027-04-05): build moves from 2027-03-31 to 2027-03-08 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
+        "message": "Delay notice. Affected customer orders: CO-02595 (promised 2027-04-04): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02598 (promised 2027-04-04): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02616 (promised 2027-04-04): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02645 (promised 2027-04-05): build moves from 2027-03-31 to 2027-04-01 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
       },
       "justification": "Rule 4: one notification for D44, only its 4 affected order(s)",
       "path_ids": [
@@ -1975,7 +1981,7 @@
           "CO-02613",
           "CO-02626"
         ],
-        "message": "Delay notice. Affected customer orders: CO-02573 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02613 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02626 (promised 2027-04-04): build moves from 2027-03-31 to 2027-03-08 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
+        "message": "Delay notice. Affected customer orders: CO-02573 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02613 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02626 (promised 2027-04-04): build moves from 2027-03-31 to 2027-04-01 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
       },
       "justification": "Rule 4: one notification for D46, only its 3 affected order(s)",
       "path_ids": [
@@ -2007,7 +2013,7 @@
           "CO-02599",
           "CO-02627"
         ],
-        "message": "Delay notice. Affected customer orders: CO-02574 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02599 (promised 2027-04-02): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02627 (promised 2027-04-03): build moves from 2027-03-31 to 2027-03-08 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
+        "message": "Delay notice. Affected customer orders: CO-02574 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02599 (promised 2027-04-02): build moves from 2027-03-30 to 2027-04-02 (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02627 (promised 2027-04-03): build moves from 2027-03-31 to 2027-04-01 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
       },
       "justification": "Rule 4: one notification for D47, only its 3 affected order(s)",
       "path_ids": [
@@ -2038,7 +2044,7 @@
           "CO-02621",
           "CO-02648"
         ],
-        "message": "Delay notice. Affected customer orders: CO-02621 (promised 2027-04-05): build moves from 2027-03-31 to 2027-03-08 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02648 (promised 2027-04-05): build moves from 2027-03-31 to 2027-03-08 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
+        "message": "Delay notice. Affected customer orders: CO-02621 (promised 2027-04-05): build moves from 2027-03-31 to 2027-04-01 at P_KY (late shipment SH-0256 of CAM-360, new ETA 2027-04-01); CO-02648 (promised 2027-04-05): build moves from 2027-03-31 to 2027-04-01 at P_IN (late shipment SH-0256 of CAM-360, new ETA 2027-04-01)."
       },
       "justification": "Rule 4: one notification for D50, only its 2 affected order(s)",
       "path_ids": [
@@ -2099,7 +2105,7 @@
         "from_plant": "P_AL",
         "from_date": "2027-03-31",
         "to_plant": "P_KY",
-        "to_date": "2027-03-08"
+        "to_date": "2027-04-01"
       },
       {
         "production_order_id": "PO-0444",
@@ -2107,7 +2113,7 @@
         "from_plant": "P_AL",
         "from_date": "2027-03-31",
         "to_plant": "P_IN",
-        "to_date": "2027-03-08"
+        "to_date": "2027-04-01"
       }
     ],
     "notified_dealers": [
@@ -2314,7 +2320,7 @@
   },
   "counterfactual": {
     "customers_affected": 54,
-    "avg_slip_days": 2.0,
+    "avg_slip_days": 2.3,
     "loaners_entitled": 12,
     "loaners_assigned": 10,
     "vehicles_pulled": 0,
@@ -2327,13 +2333,31 @@
         "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 767,
-        "output_tokens": 273,
-        "cost_usd": 0.000913,
+        "output_tokens": 178,
+        "cost_usd": 0.000675,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "audit",
+        "input_tokens": 1375,
+        "output_tokens": 637,
+        "cost_usd": 0.00342,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "summarize",
+        "input_tokens": 374,
+        "output_tokens": 142,
+        "cost_usd": 0.000467,
         "cached": false
       }
     ],
-    "total_cost_usd": 0.000913
+    "total_cost_usd": 0.004562
   },
   "summary": "Orbit Optics's surround-view camera kit shipment SH-0256 to Wacky Wheels Huntsville slips from 2027-03-29 to 2027-04-01. 6 affected production orders were moved to the earliest free slots (4 rescheduled, 2 transferred); 26 dealers were each notified once for 54 customer orders; 10 Platinum/Gold customers received loaners within pool limits.",
-  "decision_reason": "Acted on every confirmed incident: ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, live baseline matched before the first write. Incident types handled: supplier_delay."
+  "decision_reason": "Acted on confirmed supplier_delay incident per handbook rules, resolving ids and dates against data with a successful digital twin rehearsal and matching live baseline."
 }

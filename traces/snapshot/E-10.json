@@ -8,7 +8,7 @@
   "classification": {
     "category": "supplier_delay",
     "confidence": 1.0,
-    "reason": "An inbound shipment of 60 kWh battery packs from Lumen to the Huntsville plant is delayed from Monday Mar 29 to Thursday Apr 1 due to a truck breakdown."
+    "reason": "The shipment of battery packs is arriving later than planned due to a truck breakdown."
   },
   "incidents": [
     {
@@ -95,7 +95,7 @@
         }
       ],
       "ambiguities": [],
-      "reason": "An inbound shipment of 60 kWh battery packs from Lumen to the Huntsville plant is delayed from Monday Mar 29 to Thursday Apr 1 due to a truck breakdown."
+      "reason": "The shipment of battery packs is arriving later than planned due to a truck breakdown."
     }
   ],
   "paths": {
@@ -324,40 +324,46 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T09:50:01.328000",
-      "ended": "2027-03-08T09:50:01.336000",
+      "started": "2027-03-08T09:50:01.031000",
+      "ended": "2027-03-08T09:50:05.723000",
       "steps": [
         {
-          "t": "2027-03-08T09:50:01.328000",
+          "t": "2027-03-08T09:50:01.031000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): supplier_delay",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 768,
-            "output_tokens": 294,
+            "output_tokens": 213,
             "cached": false
           }
         },
         {
-          "t": "2027-03-08T09:50:01.329000",
+          "t": "2027-03-08T09:50:01.033000",
           "kind": "gate",
           "text": "shipment 'BATT-60→P_AL due 2027-03-29' -> SH-0248 via data_snap: exactly one shipment matches plant, part and original ETA",
           "data": null
         },
         {
-          "t": "2027-03-08T09:50:01.330000",
+          "t": "2027-03-08T09:50:01.033000",
           "kind": "gate",
           "text": "E-10#1: supplier_delay confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T09:50:01.333000",
+          "t": "2027-03-08T09:50:01.038000",
           "kind": "rehearse",
           "text": "Rehearsed 30 actions on the twin: 30 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T09:50:01.336000",
+          "t": "2027-03-08T09:50:05.713000",
+          "kind": "audit",
+          "text": "Auditor agrees: The supplier delay was correctly interpreted and the corrective actions comply with all operational policies.",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T09:50:05.723000",
           "kind": "execute",
           "text": "Executed 30 calls via twin: 30 ok, 0 failed (28 writes, 2 verification reads)",
           "data": null
@@ -366,23 +372,23 @@
     },
     {
       "agent": "supply_chain",
-      "started": "2027-03-08T09:50:01.332000",
-      "ended": "2027-03-08T09:50:01.332000",
+      "started": "2027-03-08T09:50:01.035000",
+      "ended": "2027-03-08T09:50:01.036000",
       "steps": [
         {
-          "t": "2027-03-08T09:50:01.332000",
+          "t": "2027-03-08T09:50:01.035000",
           "kind": "graph",
           "text": "Shipment SH-0248 -> part BATT-60 -> models using it -> POs at P_AL building 2027-03-29..2027-04-01 (new ETA exclusive): 3 affected: ['PO-0437', 'PO-0440', 'PO-0443']",
           "data": null
         },
         {
-          "t": "2027-03-08T09:50:01.332000",
+          "t": "2027-03-08T09:50:01.036000",
           "kind": "plan",
           "text": "Restart index 18; slots 5/day, shared across this event. 3 reschedule(s), 0 transfer(s), 0 unplaceable. PO-0437->P_AL 2027-04-01; PO-0440->P_AL 2027-04-01; PO-0443->P_AL 2027-04-02",
           "data": {
             "policy": {
               "claim_order": "build_date_id",
-              "transfer_min_day": "today"
+              "transfer_min_day": "disruption_end"
             }
           }
         }
@@ -390,17 +396,17 @@
     },
     {
       "agent": "dealer_care",
-      "started": "2027-03-08T09:50:01.332000",
-      "ended": "2027-03-08T09:50:01.332000",
+      "started": "2027-03-08T09:50:01.036000",
+      "ended": "2027-03-08T09:50:01.037000",
       "steps": [
         {
-          "t": "2027-03-08T09:50:01.332000",
+          "t": "2027-03-08T09:50:01.036000",
           "kind": "graph",
           "text": "29 customer orders on 3 moved POs across 18 dealers (all incidents of this event together)",
           "data": null
         },
         {
-          "t": "2027-03-08T09:50:01.332000",
+          "t": "2027-03-08T09:50:01.037000",
           "kind": "plan",
           "text": "One notice per dealer; 7 Platinum/Gold customer orders entitled, 7 loaner(s) assigned within pool limits (Platinum, then Gold, earlier promise, lower id).",
           "data": null
@@ -1501,12 +1507,30 @@
         "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 768,
-        "output_tokens": 294,
-        "cost_usd": 0.000965,
+        "output_tokens": 213,
+        "cost_usd": 0.000763,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "audit",
+        "input_tokens": 1272,
+        "output_tokens": 470,
+        "cost_usd": 0.002717,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "summarize",
+        "input_tokens": 376,
+        "output_tokens": 155,
+        "cost_usd": 0.0005,
         "cached": false
       }
     ],
-    "total_cost_usd": 0.000965
+    "total_cost_usd": 0.00398
   },
   "summary": "Lumen Cells's 60 kWh battery pack shipment SH-0248 to Wacky Wheels Huntsville slips from 2027-03-29 to 2027-04-01. 3 affected production orders were moved to the earliest free slots (3 rescheduled, 0 transferred); 18 dealers were each notified once for 29 customer orders; 7 Platinum/Gold customers received loaners within pool limits.",
   "decision_reason": "Acted on every confirmed incident: ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, live baseline matched before the first write. Incident types handled: supplier_delay."

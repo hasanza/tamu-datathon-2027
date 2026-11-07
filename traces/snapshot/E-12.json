@@ -8,7 +8,7 @@
   "classification": {
     "category": "supplier_delay",
     "confidence": 1.0,
-    "reason": "The supplier states that an inbound shipment is arriving later than the originally scheduled due date."
+    "reason": "An inbound shipment is arriving later than its original due date due to port congestion."
   },
   "incidents": [
     {
@@ -30,7 +30,6 @@
       "raw_mentions": {
         "plant": "Wacky Wheels Princeton (P_IN)",
         "part": "CAM-360 (surround-view camera kit)",
-        "supplier": "orbit.example",
         "shipment": "SH-0182"
       },
       "resolution_steps": [
@@ -53,16 +52,6 @@
           "chosen": "CAM-360",
           "method": "exact",
           "note": null
-        },
-        {
-          "mention": "orbit.example",
-          "entity_type": "supplier",
-          "candidates": [
-            "SUP-11"
-          ],
-          "chosen": "SUP-11",
-          "method": "alias",
-          "note": "contains 'orbit'"
         },
         {
           "mention": "SH-0182",
@@ -106,7 +95,7 @@
         }
       ],
       "ambiguities": [],
-      "reason": "The supplier states that an inbound shipment is arriving later than the originally scheduled due date."
+      "reason": "An inbound shipment is arriving later than its original due date due to port congestion."
     }
   ],
   "paths": {
@@ -335,40 +324,46 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T10:24:01.396000",
-      "ended": "2027-03-08T10:24:01.407000",
+      "started": "2027-03-08T10:24:01.248000",
+      "ended": "2027-03-08T10:24:06.459000",
       "steps": [
         {
-          "t": "2027-03-08T10:24:01.396000",
+          "t": "2027-03-08T10:24:01.248000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): supplier_delay",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 815,
-            "output_tokens": 327,
+            "output_tokens": 325,
             "cached": false
           }
         },
         {
-          "t": "2027-03-08T10:24:01.402000",
+          "t": "2027-03-08T10:24:01.250000",
           "kind": "gate",
           "text": "shipment 'SH-0182' -> SH-0182 via data_snap: shipment row confirms plant, part, supplier and original ETA",
           "data": null
         },
         {
-          "t": "2027-03-08T10:24:01.402000",
+          "t": "2027-03-08T10:24:01.250000",
           "kind": "gate",
           "text": "E-12#1: supplier_delay confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T10:24:01.403000",
+          "t": "2027-03-08T10:24:01.256000",
           "kind": "rehearse",
           "text": "Rehearsed 29 actions on the twin: 29 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T10:24:01.407000",
+          "t": "2027-03-08T10:24:06.447000",
+          "kind": "audit",
+          "text": "Auditor agrees: The supplier delay at plant P_IN is correctly interpreted, and the rescheduling, dealer notifications, and loaner assignments follow all policy rules.",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T10:24:06.459000",
           "kind": "execute",
           "text": "Executed 29 calls via twin: 29 ok, 0 failed (27 writes, 2 verification reads)",
           "data": null
@@ -377,23 +372,23 @@
     },
     {
       "agent": "supply_chain",
-      "started": "2027-03-08T10:24:01.403000",
-      "ended": "2027-03-08T10:24:01.403000",
+      "started": "2027-03-08T10:24:01.253000",
+      "ended": "2027-03-08T10:24:01.254000",
       "steps": [
         {
-          "t": "2027-03-08T10:24:01.403000",
+          "t": "2027-03-08T10:24:01.253000",
           "kind": "graph",
           "text": "Shipment SH-0182 -> part CAM-360 -> models using it -> POs at P_IN building 2027-03-15..2027-03-18 (new ETA exclusive): 3 affected: ['PO-0316', 'PO-0319', 'PO-0322']",
           "data": null
         },
         {
-          "t": "2027-03-08T10:24:01.403000",
+          "t": "2027-03-08T10:24:01.254000",
           "kind": "plan",
           "text": "Restart index 8; slots 5/day, shared across this event. 3 reschedule(s), 0 transfer(s), 0 unplaceable. PO-0316->P_IN 2027-03-18; PO-0319->P_IN 2027-03-18; PO-0322->P_IN 2027-03-19",
           "data": {
             "policy": {
               "claim_order": "build_date_id",
-              "transfer_min_day": "today"
+              "transfer_min_day": "disruption_end"
             }
           }
         }
@@ -401,17 +396,17 @@
     },
     {
       "agent": "dealer_care",
-      "started": "2027-03-08T10:24:01.403000",
-      "ended": "2027-03-08T10:24:01.403000",
+      "started": "2027-03-08T10:24:01.254000",
+      "ended": "2027-03-08T10:24:01.255000",
       "steps": [
         {
-          "t": "2027-03-08T10:24:01.403000",
+          "t": "2027-03-08T10:24:01.254000",
           "kind": "graph",
           "text": "26 customer orders on 3 moved POs across 14 dealers (all incidents of this event together)",
           "data": null
         },
         {
-          "t": "2027-03-08T10:24:01.403000",
+          "t": "2027-03-08T10:24:01.255000",
           "kind": "plan",
           "text": "One notice per dealer; 10 Platinum/Gold customer orders entitled, 10 loaner(s) assigned within pool limits (Platinum, then Gold, earlier promise, lower id).",
           "data": null
@@ -1454,13 +1449,31 @@
         "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 815,
-        "output_tokens": 327,
-        "cost_usd": 0.001062,
+        "output_tokens": 325,
+        "cost_usd": 0.001057,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "audit",
+        "input_tokens": 1328,
+        "output_tokens": 487,
+        "cost_usd": 0.002822,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "summarize",
+        "input_tokens": 422,
+        "output_tokens": 163,
+        "cost_usd": 0.000534,
         "cached": false
       }
     ],
-    "total_cost_usd": 0.001062
+    "total_cost_usd": 0.004413
   },
-  "summary": "Orbit Optics's surround-view camera kit shipment SH-0182 to Wacky Wheels Princeton slips from 2027-03-15 to 2027-03-18. 3 affected production orders were moved to the earliest free slots (3 rescheduled, 0 transferred); 14 dealers were each notified once for 26 customer orders; 10 Platinum/Gold customers received loaners within pool limits.",
-  "decision_reason": "Acted on every confirmed incident: ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, live baseline matched before the first write. Incident types handled: supplier_delay."
+  "summary": "Orbit Optics's surround-view camera kit shipment SH-0182 to Wacky Wheels Princeton slips from 2027-03-15 to 2027-03-18. 3 affected production orders were moved to the earliest free slots with 3 rescheduled and 0 transferred. 14 dealers were each notified once for 26 customer orders, and 10 Platinum/Gold customers received loaners within pool limits.",
+  "decision_reason": "Acted on a real incident of type supplier_delay because ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, and the live baseline matched before the first write, following the rules that drove the actions."
 }
