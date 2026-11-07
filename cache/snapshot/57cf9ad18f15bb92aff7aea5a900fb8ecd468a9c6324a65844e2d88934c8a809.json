@@ -1,0 +1,19 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "audit",
+  "latency_s": 5.822,
+  "parsed": {
+    "agree": true,
+    "concerns": [],
+    "summary": "Both the plant outage and supplier delay incidents are correctly interpreted and the planned rescheduling, dealer notifications, and loaner assignments follow all operational rules."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "audit",
+    "input_tokens": 1710,
+    "output_tokens": 706,
+    "cost_usd": 0.00393
+  }
+}

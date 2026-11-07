@@ -67,11 +67,11 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T07:34:00.001000",
-      "ended": "2027-03-08T07:34:00.004000",
+      "started": "2027-03-08T07:34:00.004000",
+      "ended": "2027-03-08T07:34:00.010000",
       "steps": [
         {
-          "t": "2027-03-08T07:34:00.001000",
+          "t": "2027-03-08T07:34:00.004000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): unconfirmed",
           "data": {
@@ -82,19 +82,19 @@
           }
         },
         {
-          "t": "2027-03-08T07:34:00.003000",
+          "t": "2027-03-08T07:34:00.008000",
           "kind": "gate",
           "text": "E-02#1: unconfirmed NOT actionable (confidence 0.95); cannot resolve 'seat material'; named only vaguely; not a specific record; no confirmed shipment, lot, plant or dates",
           "data": null
         },
         {
-          "t": "2027-03-08T07:34:00.004000",
+          "t": "2027-03-08T07:34:00.010000",
           "kind": "rehearse",
           "text": "Rehearsed 1 actions on the twin: 1 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T07:34:00.004000",
+          "t": "2027-03-08T07:34:00.010000",
           "kind": "execute",
           "text": "Executed 1 calls via twin: 1 ok, 0 failed (0 writes, 0 verification reads)",
           "data": null

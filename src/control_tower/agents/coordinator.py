@@ -578,7 +578,9 @@ class Coordinator:
             loans = sum(a.tool == "crm.assign_loaner" and a.args["customer_order_id"] in p.co_ids for a in care)
             return (
                 f"{w.plants[s.plant_id].name} is down {s.outage_start} to {s.outage_end}. {len(p.moves)} production orders were moved "
-                f"({len(p.moves) - t} rescheduled after the restart, {t} transferred to other plants because same-plant slots ran out); "
+                f"({len(p.moves) - t} rescheduled at the same plant"
+                + (f", {t} transferred to other plants because no same-plant slot was free" if t else "")
+                + "); "
                 f"{len(notified)} dealers notified once each for {len(p.co_ids)} customer orders; {loans} loaners assigned."
             )
         lot = w.lots[s.lot_id]

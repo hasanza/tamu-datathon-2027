@@ -1,0 +1,19 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "audit",
+  "latency_s": 7.305,
+  "parsed": {
+    "agree": true,
+    "concerns": [],
+    "summary": "The interpretation accurately reflects the supplier delay notice and the planned actions strictly follow rescheduling, dealer notification, and loaner allocation rules."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "audit",
+    "input_tokens": 1375,
+    "output_tokens": 944,
+    "cost_usd": 0.004571
+  }
+}

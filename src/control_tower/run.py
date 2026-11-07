@@ -48,6 +48,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--audit-model", help="model for the auditor (default: same as --model / provider default)")
     ap.add_argument("--no-audit", action="store_true")
     ap.add_argument("--no-explain", action="store_true")
+    ap.add_argument("--pace", type=float, default=0.0, help="seconds to wait between events (live demo)")
     ap.add_argument("--transfer-min-day", choices=["today", "disruption_end"], default="today")
     a = ap.parse_args(argv)
     if not (a.all or a.event):
@@ -73,7 +74,9 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"{len(wanted)} event(s) -> {executor.name}; traces in {traces_dir.relative_to(REPO_ROOT)}")
     t0, rows, failed_events = time.perf_counter(), [], 0
-    for ev in wanted:
+    for i, ev in enumerate(wanted):
+        if i and a.pace:
+            time.sleep(a.pace)
         try:
             tr = coord.handle(ev)
         except Exception:  # never let one event stop the feed
