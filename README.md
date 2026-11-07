@@ -44,12 +44,12 @@ uv run pytest
 
 ## Models and final run
 
-Final clean run (`runs/final/`, `traces/final/`, tag `final-run-1`): 15 events, 10 acted, 3 noise, 2 escalated; 797 tool calls, 0 failed; independent grader 15/15; 40 LLM calls, $0.0498 in total, 87 s.
+Final clean run (`runs/final/`, `traces/final/`, tag `final-run-2`): 15 events, 10 acted, 3 noise, 2 escalated; 797 tool calls, 0 failed; independent grader 15/15; 40 LLM calls, $0.0498 in total, about 90 s.
 
 | Model (provider) | Role | Calls | Tokens in / out | Cost |
 |---|---|---|---|---|
-| `gemini-3.5-flash-lite` (Google) | extraction, entity tie-break, summaries | 30 | 16,715 / 4,981 | $0.0175 |
-| `gemini-3.8-flash` (Google) | independent auditor | 10 | 13,426 / 5,947 | $0.0324 |
+| `gemini-3.5-flash-lite` (Google) | extraction, entity tie-break, summaries | 30 | 16,752 / 5,233 | $0.0181 |
+| `gemini-3.8-flash` (Google) | independent auditor | 10 | 13,426 / 5,759 | $0.0317 |
 
 Source of truth: `runs/final/models.json` (written by the pipeline). No LLM call is made per action. Reproduce the identical log with no API key and no server: `LLM_CACHE_DIR=cache/final LLM_REPLAY_ONLY=1 uv run python -m control_tower.run --all --dry-run --out runs/dev`. Design card: `docs/design_card.md`.
 
