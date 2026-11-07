@@ -144,6 +144,21 @@ export function GraphTab({ trace, focus, onClearFocus }: { trace: Trace; focus: 
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,300px)_minmax(0,1fr)]">
         <Panel title="Selected node">
+          <label className="mb-2 block text-[11px] text-tx3">
+            Pick a node (same as clicking it on the graph)
+            <select
+              value={selected ?? ""}
+              onChange={(e) => setSelected(e.target.value || null)}
+              className="mono mt-1 w-full rounded-md border border-line bg-surface-2 px-1.5 py-1 text-[12px] text-tx"
+            >
+              <option value="">none</option>
+              {graph.nodes.map((n) => (
+                <option key={n.id} value={n.id}>
+                  {n.type} · {n.group ? `+${n.count ?? "?"} ${n.group.replace("_", " ")}` : n.id}
+                </option>
+              ))}
+            </select>
+          </label>
           {selNode ? (
             <div className="space-y-1.5 text-[13px]">
               <div className="flex items-center gap-2">

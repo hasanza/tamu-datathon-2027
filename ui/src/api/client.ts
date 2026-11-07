@@ -1,4 +1,4 @@
-import type { FeedEvent, GraphPath, Kpis, LogRow, Trace } from "./types";
+import type { FeedEvent, GraphPath, Kpis, LogRow, RunMode, RunStatus, Trace } from "./types";
 
 export class ApiError extends Error {
   status: number;
@@ -34,9 +34,11 @@ export const api = {
   actions: (id?: string) => request<LogRow[]>(`/api/actions${id ? `?event_id=${id}` : ""}`),
   graph: (id: string) => request<GraphPath>(`/api/graph/${id}`),
   kpis: () => request<Kpis>("/api/kpis"),
-  run: (opts: { eventId?: string; all?: boolean }) =>
-    request<Record<string, unknown>>(
-      `/api/run?${opts.all ? "all=true" : `event_id=${encodeURIComponent(opts.eventId ?? "")}`}`,
+  run: (opts: { eventId?: string; all?: boolean; mode: RunMode }) =>
+    request<RunStatus>(
+      `/api/run?${opts.all ? "all=true" : `event_id=${encodeURIComponent(opts.eventId ?? "")}`}&mode=${opts.mode}`,
       { method: "POST" },
     ),
+  runStatus: () => request<RunStatus>("/api/run/status"),
+  reset: () => request<RunStatus>("/api/reset", { method: "POST" }),
 };

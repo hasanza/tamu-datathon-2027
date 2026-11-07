@@ -207,3 +207,12 @@ export interface Kpis {
 }
 
 export type StreamType = "event_received" | "agent_step" | "action" | "event_done";
+
+export type RunMode = "dry" | "server";
+/** GET /api/run/status. `mode` is null until a run was started in this API session (and after a reset). */
+export interface RunStatus {
+  running: boolean;
+  mode: RunMode | null;
+  exit_code: number | null;
+  started: number | null;
+}

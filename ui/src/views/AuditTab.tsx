@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CheckCircle2, ChevronDown, ChevronRight, MinusCircle, XCircle } from "lucide-react";
+import { useExecTarget } from "../api/hooks";
 import { WRITE_TOOLS, type Trace } from "../api/types";
 import { Chip, Mono, Panel, Stat } from "../components/ui/primitives";
 import { usd } from "../lib/format";
@@ -12,10 +13,13 @@ interface Check {
   verdict: Verdict;
 }
 
-function checks(t: Trace): Check[] {
+function checks(t: Trace, target: "twin" | "server"): Check[] {
   const writes = t.actions.filter((a) => WRITE_TOOLS.has(a.tool));
   const unrehearsed = writes.filter((a) => a.rehearsal?.ok !== true);
+  const accepted = t.actions.filter((a) => a.result?.ok === true); // a missing result is not an acceptance
   const failed = t.actions.filter((a) => a.result && !a.result.ok);
+  const noResult = t.actions.length - accepted.length - failed.length;
+  const who = target === "twin" ? "Twin" : "Server";
   const distinctWrites = new Set(writes.map((a) => a.tool)).size;
   const out: Check[] = [
     {
@@ -24,9 +28,11 @@ function checks(t: Trace): Check[] {
       verdict: writes.length === 0 ? "na" : unrehearsed.length === 0 ? "pass" : "fail",
     },
     {
-      rule: "Server accepted every call",
-      detail: t.actions.length ? `${t.actions.length - failed.length}/${t.actions.length} calls returned ok` : "no calls",
-      verdict: t.actions.length === 0 ? "na" : failed.length === 0 ? "pass" : "fail",
+      rule: `${who} accepted every call`,
+      detail: t.actions.length
+        ? `${accepted.length}/${t.actions.length} calls returned ok${noResult ? ` (${noResult} without a result)` : ""}`
+        : "no calls",
+      verdict: t.actions.length === 0 ? "na" : failed.length > 0 ? "fail" : noResult > 0 ? "na" : "pass",
     },
   ];
   if (t.status === "escalated" || t.status === "noise") {
@@ -93,7 +99,8 @@ function DealerRow({ id, orders }: { id: string; orders: string[] }) {
 
 export function AuditTab({ trace }: { trace: Trace }) {
   const d = trace.world_diff;
-  const cs = checks(trace);
+  const target = useExecTarget();
+  const cs = checks(trace, target);
   const gateSteps = trace.agents.flatMap((a) => a.steps.filter((s) => ["rehearse", "audit", "gate", "execute"].includes(s.kind)).map((s) => ({ agent: a.agent, s })));
   const calls = trace.llm.calls;
   return (

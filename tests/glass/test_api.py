@@ -252,3 +252,24 @@ def test_stream_follows_run_dir_switch(tmp_path):
 
     got = _collect(lambda: current["p"], from_start=False, writer=switch_and_write)
     assert [m["event"] for m in got] == ["event_received"]
+
+
+def test_reset_returns_to_the_startup_directories(client, cfg, monkeypatch):
+    import api.app as appmod
+
+    start = (cfg.traces_dir, cfg.run_dir)
+    monkeypatch.setattr(appmod.subprocess, "Popen", lambda cmd, **kw: FakeProc(0))
+    assert client.post("/api/run", params={"all": True}).status_code == 202
+    assert (cfg.traces_dir, cfg.run_dir) != start  # run switched to traces/live + runs/live (under the temp ROOT)
+    r = client.post("/api/reset")
+    assert r.status_code == 200 and r.json() == {"running": False, "mode": None, "exit_code": None, "started": None}
+    assert (cfg.traces_dir, cfg.run_dir) == start
+    assert client.get("/api/run/status").json()["mode"] is None
+
+
+def test_reset_refused_while_running(client, monkeypatch):
+    import api.app as appmod
+
+    monkeypatch.setattr(appmod.subprocess, "Popen", lambda cmd, **kw: FakeProc())
+    client.post("/api/run", params={"all": True})
+    assert client.post("/api/reset").status_code == 409

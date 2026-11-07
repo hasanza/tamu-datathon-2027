@@ -106,8 +106,16 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
       if (e.category) c.add(e.category);
       s.add(processing.has(e.event_id) ? "processing" : e.status);
     }
+    for (const x of cats) c.add(x); // an active filter chip must stay visible even when nothing matches it any more
+    for (const x of stats) s.add(x);
     return { c: [...c], s: [...s] };
-  }, [events, processing]);
+  }, [events, processing, cats, stats]);
+  const filtered = q !== "" || cats.size > 0 || stats.size > 0;
+  const clearFilters = () => {
+    setQ("");
+    setCats(new Set());
+    setStats(new Set());
+  };
 
   return (
     <div data-feed className="flex h-full min-h-0 flex-col">
@@ -149,6 +157,13 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
         {error && <ErrorBox message={error.message} onRetry={onRetry} />}
         {!loading && !error && rows.length === 0 && (
           <Empty title="No events match" hint={events?.length ? "Clear the filters or search." : "The feed is empty."} />
+        )}
+        {!loading && !error && filtered && (
+          <div className="border-b border-line p-2">
+            <button onClick={clearFilters} className="rounded-md border border-line px-2 py-1 text-[11px] text-tx2 hover:border-brand-bright hover:text-tx">
+              Clear filters
+            </button>
+          </div>
         )}
         <ul ref={listRef} role="list" className="divide-y divide-line">
           {rows.map((e) => {

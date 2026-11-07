@@ -69,8 +69,17 @@ export function EventDetail({ event, processing }: { event: FeedEvent | undefine
               onClick={() => setTab(name)}
               onKeyDown={(e) => {
                 const i = TABS.indexOf(name);
-                if (e.key === "ArrowRight") setTab(TABS[(i + 1) % TABS.length] as Tab);
-                if (e.key === "ArrowLeft") setTab(TABS[(i + TABS.length - 1) % TABS.length] as Tab);
+                const to =
+                  e.key === "ArrowRight" ? (i + 1) % TABS.length
+                  : e.key === "ArrowLeft" ? (i + TABS.length - 1) % TABS.length
+                  : e.key === "Home" ? 0
+                  : e.key === "End" ? TABS.length - 1
+                  : -1;
+                if (to < 0) return;
+                e.preventDefault();
+                const next = TABS[to] as Tab;
+                setTab(next);
+                document.getElementById(`tab-${next}`)?.focus(); // roving tabindex: focus must follow the selection
               }}
               tabIndex={tab === name ? 0 : -1}
               className={`whitespace-nowrap border-b-2 px-3 py-2 text-[13px] font-medium ${
@@ -96,11 +105,11 @@ export function EventDetail({ event, processing }: { event: FeedEvent | undefine
             <blockquote className="rounded-lg border border-line bg-surface p-3 text-[13px] text-tx2">{event.text}</blockquote>
           </div>
         )}
-        {t && tab === "Summary" && <SummaryTab trace={t} />}
-        {t && tab === "Agents" && <AgentsTab trace={t} />}
-        {t && tab === "Graph" && <GraphTab trace={t} focus={focus} onClearFocus={() => setFocus(null)} />}
-        {t && tab === "Actions" && <ActionsTab trace={t} onShowOnGraph={showOnGraph} />}
-        {t && tab === "Audit" && <AuditTab trace={t} />}
+        {t && tab === "Summary" && <SummaryTab key={t.event_id} trace={t} />}
+        {t && tab === "Agents" && <AgentsTab key={t.event_id} trace={t} />}
+        {t && tab === "Graph" && <GraphTab key={t.event_id} trace={t} focus={focus} onClearFocus={() => setFocus(null)} />}
+        {t && tab === "Actions" && <ActionsTab key={t.event_id} trace={t} onShowOnGraph={showOnGraph} />}
+        {t && tab === "Audit" && <AuditTab key={t.event_id} trace={t} />}
       </div>
     </div>
   );

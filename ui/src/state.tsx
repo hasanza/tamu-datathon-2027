@@ -1,11 +1,16 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { CheckCircle2, Info, XCircle } from "lucide-react";
+import type { RunMode } from "./api/types";
 import { safeStorage } from "./lib/format";
 
 /* ---------- theme ---------- */
 type Theme = "dark" | "light";
 const ThemeCtx = createContext<{ theme: Theme; toggle: () => void }>({ theme: "dark", toggle: () => {} });
 export const useTheme = () => useContext(ThemeCtx);
+
+/* ---------- run mode (Dry = in-process twin, Server = a fresh organizers' server) ---------- */
+const RunModeCtx = createContext<{ mode: RunMode; setMode: (m: RunMode) => void }>({ mode: "dry", setMode: () => {} });
+export const useRunMode = () => useContext(RunModeCtx);
 
 /* ---------- toasts ---------- */
 type ToastKind = "info" | "ok" | "error";
@@ -25,6 +30,13 @@ export function AppProviders({ children }: { children: ReactNode }) {
   }, [theme]);
   const themeValue = useMemo(() => ({ theme, toggle: () => setTheme((t) => (t === "dark" ? "light" : "dark")) }), [theme]);
 
+  const [mode, setModeState] = useState<RunMode>(() => (safeStorage("ct-run-mode") === "server" ? "server" : "dry"));
+  const setMode = useCallback((m: RunMode) => {
+    setModeState(m);
+    safeStorage("ct-run-mode", m);
+  }, []);
+  const modeValue = useMemo(() => ({ mode, setMode }), [mode, setMode]);
+
   const [toasts, setToasts] = useState<Toast[]>([]);
   const push = useCallback((text: string, kind: ToastKind = "info") => {
     const id = Date.now() + Math.random();
@@ -34,6 +46,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
 
   return (
     <ThemeCtx.Provider value={themeValue}>
+      <RunModeCtx.Provider value={modeValue}>
       <ToastCtx.Provider value={push}>
         {children}
         <div aria-live="polite" className="pointer-events-none fixed bottom-10 right-4 z-50 flex flex-col gap-2">
@@ -55,6 +68,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
           ))}
         </div>
       </ToastCtx.Provider>
+      </RunModeCtx.Provider>
     </ThemeCtx.Provider>
   );
 }

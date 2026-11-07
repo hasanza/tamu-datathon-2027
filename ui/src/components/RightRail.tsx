@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckCheck, Radio, RotateCcw, Trash2, TriangleAlert } from "lucide-react";
 import type { ActivityItem } from "../api/stream";
-import { useTraces } from "../api/hooks";
+import { useRunStatus, useTraces } from "../api/hooks";
 import type { FeedEvent, Trace } from "../api/types";
 import { safeStorage } from "../lib/format";
 import { Chip, Empty, Mono, Panel } from "./ui/primitives";
@@ -27,10 +27,13 @@ function readAcked(): Set<string> {
 
 export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | undefined; onSelect: (id: string) => void }) {
   const ids = useMemo(() => (events ?? []).filter((e) => e.status === "escalated" || e.status === "failed").map((e) => e.event_id), [events]);
-  const traces = useTraces(ids);
+  const { traces, loading, failed } = useTraces(ids);
+  // An acknowledgement belongs to one run: the same event escalates again in the next run and must reappear.
+  const run = String(useRunStatus().data?.started ?? "snapshot");
+  const ackKey = (id: string) => `${run}|${id}`;
   const [acked, setAcked] = useState<Set<string>>(readAcked);
   useEffect(() => void safeStorage("ct-acked", JSON.stringify([...acked])), [acked]);
-  const open = traces.filter((t) => !acked.has(t.event_id));
+  const open = traces.filter((t) => !acked.has(ackKey(t.event_id)));
 
   return (
     <Panel
@@ -43,6 +46,10 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
     >
       {ids.length === 0 ? (
         <Empty title="Nothing escalated" hint="Unconfirmed or failed events land here with what a human needs to confirm." />
+      ) : loading && traces.length === 0 ? (
+        <Empty title="Loading escalations…" hint="Reading the traces of escalated events." />
+      ) : failed && traces.length === 0 ? (
+        <Empty title="Could not load escalations" hint="The API did not return the escalated traces. Check that it is running." />
       ) : open.length === 0 ? (
         <Empty title="All acknowledged" hint="Acknowledgement is local to this browser." />
       ) : (
@@ -65,7 +72,7 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
                   </p>
                 )}
                 <button
-                  onClick={() => setAcked(new Set(acked).add(t.event_id))}
+                  onClick={() => setAcked(new Set(acked).add(ackKey(t.event_id)))}
                   className="mt-2 inline-flex items-center gap-1 rounded-md border border-line px-2 py-1 text-xs text-tx2 hover:border-ok hover:text-tx"
                 >
                   <CheckCheck size={13} aria-hidden /> Acknowledge

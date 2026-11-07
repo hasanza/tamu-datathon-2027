@@ -225,6 +225,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         }
 
     runner: dict[str, Any] = {"proc": None, "mode": None, "started": None}
+    initial_dirs = (cfg.traces_dir, cfg.run_dir)  # what the server was started with: the committed snapshot
 
     def runner_state() -> dict[str, Any]:
         proc = runner["proc"]
@@ -266,6 +267,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         env = {**os.environ, "LLM_CACHE_DIR": os.environ.get("LLM_CACHE_DIR", str(ROOT / "cache" / "snapshot"))}
         runner["proc"] = subprocess.Popen(cmd, cwd=ROOT, env=env)  # noqa: S603
         runner["mode"], runner["started"] = mode, time.time()
+        return runner_state()
+
+    @app.post("/api/reset")
+    def reset() -> dict[str, Any]:
+        """Back to the snapshot: point the API at the directories it started with and forget the last live run."""
+        if runner_state()["running"]:
+            raise HTTPException(409, "a run is in progress; wait for it to finish")
+        cfg.traces_dir, cfg.run_dir = initial_dirs
+        runner.update(proc=None, mode=None, started=None)
         return runner_state()
 
     @app.get("/api/stream")

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRunStatus } from "./hooks";
 import type { StreamType } from "./types";
 
 export interface ActivityItem {
@@ -50,17 +51,38 @@ export function useLiveStream() {
   const [replay, setReplay] = useState(false);
   const seq = useRef(0);
 
+  // SSE can miss lines (reconnect starts at the end of the file). When the API says a run has finished,
+  // re-read everything so no event is left "processing" or "queued".
+  const running = useRunStatus().data?.running;
+  const wasRunning = useRef(false);
+  useEffect(() => {
+    if (wasRunning.current && running === false) {
+      setProcessing(new Set());
+      void qc.invalidateQueries();
+    }
+    if (running !== undefined) wasRunning.current = running;
+  }, [running, qc]);
+
   useEffect(() => {
     let es: EventSource | null = null;
     let timer: number | undefined;
     let attempt = 0;
     let closed = false;
+    let opened = false;
 
     const connect = () => {
+      // A replay stream starts from line 1 on every (re)connect: start the log empty so history is never appended twice.
+      if (replay) setItems([]);
       es = new EventSource(`/api/stream${replay ? "?replay=true" : ""}`);
       es.onopen = () => {
         attempt = 0;
         setLive(true);
+        if (opened) {
+          // Reconnected: lines written while we were away are gone. Rebuild the picture from the API.
+          setProcessing(new Set());
+          void qc.invalidateQueries();
+        }
+        opened = true;
       };
       es.onerror = () => {
         setLive(false);
@@ -94,9 +116,15 @@ export function useLiveStream() {
               else n.add(eventId);
               return n;
             });
-            void qc.invalidateQueries({ queryKey: ["trace", eventId] });
-            void qc.invalidateQueries({ queryKey: ["graph", eventId] });
-            void qc.invalidateQueries({ queryKey: ["actions", eventId] });
+            const refresh = () => {
+              void qc.invalidateQueries({ queryKey: ["trace", eventId] });
+              void qc.invalidateQueries({ queryKey: ["graph", eventId] });
+              void qc.invalidateQueries({ queryKey: ["actions", eventId] });
+            };
+            if (type === "event_done") {
+              // A fetch started before the trace was written may still be in flight (and end in a 404): drop it, then re-read.
+              void qc.cancelQueries({ queryKey: ["trace", eventId] }).then(refresh);
+            } else refresh();
           }
           void qc.invalidateQueries({ queryKey: ["events"] });
           void qc.invalidateQueries({ queryKey: ["kpis"] });

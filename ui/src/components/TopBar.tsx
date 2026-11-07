@@ -1,9 +1,9 @@
-import { Moon, Play, Sun } from "lucide-react";
-import { useKpis } from "../api/hooks";
+import { Moon, Play, Sun, Undo2 } from "lucide-react";
+import { useKpis, useRunStatus } from "../api/hooks";
 import type { Page } from "../lib/route";
 import { usd } from "../lib/format";
-import { useTheme } from "../state";
-import { useRun } from "./useRun";
+import { useRunMode, useTheme } from "../state";
+import { useReset, useRun } from "./useRun";
 
 const NAV: { page: Page; label: string }[] = [
   { page: "tower", label: "Control tower" },
@@ -43,6 +43,10 @@ export function KpiStrip() {
 export function TopBar({ page, go }: { page: Page; go: (p: Page) => void }) {
   const { theme, toggle } = useTheme();
   const run = useRun();
+  const reset = useReset();
+  const { mode, setMode } = useRunMode();
+  const status = useRunStatus().data;
+  const running = !!status?.running;
   return (
     <header className="shrink-0 border-b-2 border-brand bg-surface">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2">
@@ -64,12 +68,36 @@ export function TopBar({ page, go }: { page: Page; go: (p: Page) => void }) {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-3">
+          {status?.mode && !running && (
+            <button
+              onClick={() => reset.mutate()}
+              disabled={reset.isPending}
+              title="Discard this run and show the committed snapshot of all 15 events"
+              className="inline-flex items-center gap-1.5 rounded-md border border-line px-2.5 py-1.5 text-[13px] text-tx2 hover:border-brand-bright hover:text-tx disabled:opacity-60"
+            >
+              <Undo2 size={14} aria-hidden /> Back to snapshot
+            </button>
+          )}
+          <div role="group" aria-label="Run mode" className="flex rounded-md border border-line p-0.5 text-[12px]">
+            {(["dry", "server"] as const).map((m) => (
+              <button
+                key={m}
+                aria-pressed={mode === m}
+                disabled={running}
+                onClick={() => setMode(m)}
+                title={m === "dry" ? "Rehearse and execute on the in-process twin (no server needed)" : "Execute against a fresh organizers' enterprise server"}
+                className={`rounded px-2 py-1 font-medium disabled:opacity-60 ${mode === m ? "bg-surface-2 text-tx" : "text-tx3 hover:text-tx"}`}
+              >
+                {m === "dry" ? "Dry (twin)" : "Server"}
+              </button>
+            ))}
+          </div>
           <button
             onClick={() => run.mutate({ all: true })}
-            disabled={run.isPending}
+            disabled={run.isPending || running}
             className="inline-flex items-center gap-1.5 rounded-md bg-brand px-3 py-1.5 text-[13px] font-medium text-white hover:bg-brand-bright disabled:opacity-60"
           >
-            <Play size={14} aria-hidden /> {run.isPending ? "Starting…" : "Run feed"}
+            <Play size={14} aria-hidden /> {run.isPending ? "Starting…" : running ? "Running…" : "Run feed"}
           </button>
           <button
             onClick={toggle}
