@@ -26,6 +26,7 @@ def cfg(tmp_path):
         traces_dir=ROOT / "traces" / "examples",
         run_dir=tmp_path,
         custom_dir=tmp_path / "custom",
+        custom_run_dir=tmp_path / "custom_run",
         events_path=ROOT / "hack_the_highway" / "data" / "events.json",
         poll_s=0.01,
     )
@@ -296,3 +297,42 @@ def test_custom_event_sandbox(client, cfg, monkeypatch):
     assert client.get("/api/traces/C-01").json()["event_id"] == "C-01"
     ev = {e["event_id"]: e for e in client.get("/api/events").json()}
     assert ev["C-01"]["custom"] is True and "E-01" in ev
+
+
+def test_stream_tails_run_and_custom_streams_together(tmp_path):
+    a, b = tmp_path / "run.ndjson", tmp_path / "custom.ndjson"
+    a.write_text("")
+    b.write_text("")
+
+    def write_both():
+        a.write_text(json.dumps({"type": "event_received", "payload": {"event_id": "E-01"}}) + "\n")
+        b.write_text(json.dumps({"type": "event_received", "payload": {"event_id": "C-01"}}) + "\n")
+
+    got = _collect(lambda: [a, b], from_start=False, writer=write_both, n=2)
+    assert sorted(json.loads(m["data"])["event_id"] for m in got) == ["C-01", "E-01"]
+
+
+def test_custom_follow_up_appends_operator_details(client, cfg, monkeypatch):
+    import subprocess as sp
+
+    seen = {}
+
+    def fake_run(cmd, **kw):
+        ev = json.loads(Path(cmd[-1]).read_text())[0]
+        seen.update(ev)
+        src = json.loads((ROOT / "traces/examples/E-02.json").read_text())
+        src.update(event_id=ev["event_id"], text=ev["text"], source=ev["source"])
+        cfg.custom_dir.mkdir(parents=True, exist_ok=True)
+        (cfg.custom_dir / f"{ev['event_id']}.json").write_text(json.dumps(src))
+        return sp.CompletedProcess(cmd, 0, "", "")
+
+    monkeypatch.setattr("api.app.subprocess.run", fake_run)
+    assert client.post("/api/custom", json={"parent_id": "E-02"}).status_code == 422  # details required
+    assert client.post("/api/custom", json={"parent_id": "E-99", "details": "SH-0190 slipped"}).status_code == 404
+    r = client.post("/api/custom", json={"parent_id": "E-02", "details": "It is shipment SH-0190, now due Mar 19."})
+    assert r.status_code == 200 and r.json()["parent_id"] == "E-02"
+    assert (
+        seen["source"] == "follow-up to E-02" and "Follow-up from the operator: It is shipment SH-0190" in seen["text"]
+    )
+    ev = {e["event_id"]: e for e in client.get("/api/events").json()}
+    assert ev["C-01"]["parent_id"] == "E-02"
