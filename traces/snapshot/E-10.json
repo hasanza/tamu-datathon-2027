@@ -324,46 +324,46 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T09:50:01.031000",
-      "ended": "2027-03-08T09:50:05.723000",
+      "started": "2027-03-08T09:50:00.001000",
+      "ended": "2027-03-08T09:50:00.007000",
       "steps": [
         {
-          "t": "2027-03-08T09:50:01.031000",
+          "t": "2027-03-08T09:50:00.001000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): supplier_delay",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 768,
             "output_tokens": 213,
-            "cached": false
+            "cached": true
           }
         },
         {
-          "t": "2027-03-08T09:50:01.033000",
+          "t": "2027-03-08T09:50:00.002000",
           "kind": "gate",
           "text": "shipment 'BATT-60→P_AL due 2027-03-29' -> SH-0248 via data_snap: exactly one shipment matches plant, part and original ETA",
           "data": null
         },
         {
-          "t": "2027-03-08T09:50:01.033000",
+          "t": "2027-03-08T09:50:00.002000",
           "kind": "gate",
           "text": "E-10#1: supplier_delay confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T09:50:01.038000",
+          "t": "2027-03-08T09:50:00.003000",
           "kind": "rehearse",
           "text": "Rehearsed 30 actions on the twin: 30 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T09:50:05.713000",
+          "t": "2027-03-08T09:50:00.003000",
           "kind": "audit",
           "text": "Auditor agrees: The supplier delay was correctly interpreted and the corrective actions comply with all operational policies.",
           "data": null
         },
         {
-          "t": "2027-03-08T09:50:05.723000",
+          "t": "2027-03-08T09:50:00.007000",
           "kind": "execute",
           "text": "Executed 30 calls via twin: 30 ok, 0 failed (28 writes, 2 verification reads)",
           "data": null
@@ -372,23 +372,23 @@
     },
     {
       "agent": "supply_chain",
-      "started": "2027-03-08T09:50:01.035000",
-      "ended": "2027-03-08T09:50:01.036000",
+      "started": "2027-03-08T09:50:00.002000",
+      "ended": "2027-03-08T09:50:00.002000",
       "steps": [
         {
-          "t": "2027-03-08T09:50:01.035000",
+          "t": "2027-03-08T09:50:00.002000",
           "kind": "graph",
           "text": "Shipment SH-0248 -> part BATT-60 -> models using it -> POs at P_AL building 2027-03-29..2027-04-01 (new ETA exclusive): 3 affected: ['PO-0437', 'PO-0440', 'PO-0443']",
           "data": null
         },
         {
-          "t": "2027-03-08T09:50:01.036000",
+          "t": "2027-03-08T09:50:00.002000",
           "kind": "plan",
           "text": "Restart index 18; slots 5/day, shared across this event. 3 reschedule(s), 0 transfer(s), 0 unplaceable. PO-0437->P_AL 2027-04-01; PO-0440->P_AL 2027-04-01; PO-0443->P_AL 2027-04-02",
           "data": {
             "policy": {
               "claim_order": "build_date_id",
-              "transfer_min_day": "disruption_end"
+              "transfer_min_day": "today"
             }
           }
         }
@@ -396,17 +396,17 @@
     },
     {
       "agent": "dealer_care",
-      "started": "2027-03-08T09:50:01.036000",
-      "ended": "2027-03-08T09:50:01.037000",
+      "started": "2027-03-08T09:50:00.002000",
+      "ended": "2027-03-08T09:50:00.003000",
       "steps": [
         {
-          "t": "2027-03-08T09:50:01.036000",
+          "t": "2027-03-08T09:50:00.002000",
           "kind": "graph",
           "text": "29 customer orders on 3 moved POs across 18 dealers (all incidents of this event together)",
           "data": null
         },
         {
-          "t": "2027-03-08T09:50:01.037000",
+          "t": "2027-03-08T09:50:00.003000",
           "kind": "plan",
           "text": "One notice per dealer; 7 Platinum/Gold customer orders entitled, 7 loaner(s) assigned within pool limits (Platinum, then Gold, earlier promise, lower id).",
           "data": null
@@ -1509,7 +1509,7 @@
         "input_tokens": 768,
         "output_tokens": 213,
         "cost_usd": 0.000763,
-        "cached": false
+        "cached": true
       },
       {
         "provider": "gemini",
@@ -1518,7 +1518,7 @@
         "input_tokens": 1272,
         "output_tokens": 470,
         "cost_usd": 0.002717,
-        "cached": false
+        "cached": true
       },
       {
         "provider": "gemini",
@@ -1527,7 +1527,7 @@
         "input_tokens": 376,
         "output_tokens": 155,
         "cost_usd": 0.0005,
-        "cached": false
+        "cached": true
       }
     ],
     "total_cost_usd": 0.00398

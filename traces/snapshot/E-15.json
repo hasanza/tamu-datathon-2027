@@ -398,40 +398,40 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T11:15:01.137000",
-      "ended": "2027-03-08T11:15:05.152000",
+      "started": "2027-03-08T11:15:00.001000",
+      "ended": "2027-03-08T11:15:00.014000",
       "steps": [
         {
-          "t": "2027-03-08T11:15:01.137000",
+          "t": "2027-03-08T11:15:00.001000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): quality_hold",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 808,
             "output_tokens": 263,
-            "cached": false
+            "cached": true
           }
         },
         {
-          "t": "2027-03-08T11:15:01.138000",
+          "t": "2027-03-08T11:15:00.002000",
           "kind": "gate",
           "text": "E-15#1: quality_hold confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T11:15:01.144000",
+          "t": "2027-03-08T11:15:00.003000",
           "kind": "rehearse",
           "text": "Rehearsed 102 actions on the twin: 102 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T11:15:05.126000",
+          "t": "2027-03-08T11:15:00.004000",
           "kind": "audit",
           "text": "Auditor agrees: The quality bulletin was correctly interpreted and the planned actions strictly follow the quality hold policy.",
           "data": null
         },
         {
-          "t": "2027-03-08T11:15:05.152000",
+          "t": "2027-03-08T11:15:00.014000",
           "kind": "execute",
           "text": "Executed 102 calls via twin: 102 ok, 0 failed (102 writes, 0 verification reads)",
           "data": null
@@ -440,17 +440,17 @@
     },
     {
       "agent": "quality",
-      "started": "2027-03-08T11:15:01.142000",
-      "ended": "2027-03-08T11:15:01.143000",
+      "started": "2027-03-08T11:15:00.003000",
+      "ended": "2027-03-08T11:15:00.003000",
       "steps": [
         {
-          "t": "2027-03-08T11:15:01.142000",
+          "t": "2027-03-08T11:15:00.003000",
           "kind": "graph",
           "text": "Lot LOT-0191 -> part CHIP-IVI -> models using it -> POs at P_IN built 2027-03-02..2027-03-03: 4 POs, 116 vehicles (40 unsold at 25 dealers, 76 owners)",
           "data": null
         },
         {
-          "t": "2027-03-08T11:15:01.143000",
+          "t": "2027-03-08T11:15:00.003000",
           "kind": "plan",
           "text": "Hold LOT-0191; stop sale at 25 dealers; contact 76 owners once each.",
           "data": null
@@ -3421,7 +3421,7 @@
         "input_tokens": 808,
         "output_tokens": 263,
         "cost_usd": 0.0009,
-        "cached": false
+        "cached": true
       },
       {
         "provider": "gemini",
@@ -3430,7 +3430,7 @@
         "input_tokens": 1202,
         "output_tokens": 390,
         "cost_usd": 0.002364,
-        "cached": false
+        "cached": true
       },
       {
         "provider": "gemini",
@@ -3439,7 +3439,7 @@
         "input_tokens": 396,
         "output_tokens": 115,
         "cost_usd": 0.000406,
-        "cached": false
+        "cached": true
       }
     ],
     "total_cost_usd": 0.00367

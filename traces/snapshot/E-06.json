@@ -37,22 +37,22 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T08:42:01.182000",
-      "ended": "2027-03-08T08:42:01.182000",
+      "started": "2027-03-08T08:42:00.001000",
+      "ended": "2027-03-08T08:42:00.001000",
       "steps": [
         {
-          "t": "2027-03-08T08:42:01.182000",
+          "t": "2027-03-08T08:42:00.001000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): noise",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 744,
             "output_tokens": 176,
-            "cached": false
+            "cached": true
           }
         },
         {
-          "t": "2027-03-08T08:42:01.182000",
+          "t": "2027-03-08T08:42:00.001000",
           "kind": "gate",
           "text": "Noise -> no write tools, no escalation (rule 7). The message is a brochure request from a dealer, which is unrelated to operations.",
           "data": null
@@ -79,7 +79,7 @@
         "input_tokens": 744,
         "output_tokens": 176,
         "cost_usd": 0.000663,
-        "cached": false
+        "cached": true
       },
       {
         "provider": "gemini",
@@ -88,7 +88,7 @@
         "input_tokens": 275,
         "output_tokens": 78,
         "cost_usd": 0.000277,
-        "cached": false
+        "cached": true
       }
     ],
     "total_cost_usd": 0.00094

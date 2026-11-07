@@ -514,40 +514,40 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T10:07:00.975000",
-      "ended": "2027-03-08T10:07:06.095000",
+      "started": "2027-03-08T10:07:00.001000",
+      "ended": "2027-03-08T10:07:00.010000",
       "steps": [
         {
-          "t": "2027-03-08T10:07:00.975000",
+          "t": "2027-03-08T10:07:00.001000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): plant_outage",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 762,
             "output_tokens": 200,
-            "cached": false
+            "cached": true
           }
         },
         {
-          "t": "2027-03-08T10:07:00.977000",
+          "t": "2027-03-08T10:07:00.001000",
           "kind": "gate",
           "text": "E-11#1: plant_outage confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T10:07:00.984000",
+          "t": "2027-03-08T10:07:00.003000",
           "kind": "rehearse",
           "text": "Rehearsed 68 actions on the twin: 68 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T10:07:06.078000",
+          "t": "2027-03-08T10:07:00.004000",
           "kind": "audit",
-          "text": "Auditor agrees: The plant outage at Jackson (P_MS) from 2027-03-26 through 2027-03-30 is correctly interpreted, and all affected production orders, dealer notifications, and loaner assignments follow policy.",
+          "text": "Auditor unavailable; continuing on the deterministic checks alone",
           "data": null
         },
         {
-          "t": "2027-03-08T10:07:06.095000",
+          "t": "2027-03-08T10:07:00.010000",
           "kind": "execute",
           "text": "Executed 68 calls via twin: 68 ok, 0 failed (62 writes, 6 verification reads)",
           "data": null
@@ -556,23 +556,23 @@
     },
     {
       "agent": "supply_chain",
-      "started": "2027-03-08T10:07:00.981000",
-      "ended": "2027-03-08T10:07:00.981000",
+      "started": "2027-03-08T10:07:00.002000",
+      "ended": "2027-03-08T10:07:00.002000",
       "steps": [
         {
-          "t": "2027-03-08T10:07:00.981000",
+          "t": "2027-03-08T10:07:00.002000",
           "kind": "graph",
           "text": "Plant P_MS -> POs building 2027-03-26..2027-03-30 (inclusive): 9 affected: ['PO-0253', 'PO-0254', 'PO-0255', 'PO-0256', 'PO-0257', 'PO-0258', 'PO-0259', 'PO-0260', 'PO-0261']",
           "data": null
         },
         {
-          "t": "2027-03-08T10:07:00.981000",
+          "t": "2027-03-08T10:07:00.002000",
           "kind": "plan",
-          "text": "Restart index 17; slots 5/day, shared across this event. 6 reschedule(s), 3 transfer(s), 0 unplaceable. PO-0253->P_MS 2027-03-31; PO-0254->P_MS 2027-03-31; PO-0255->P_MS 2027-04-01; PO-0256->P_MS 2027-04-01; PO-0257->P_MS 2027-04-02; PO-0258->P_MS 2027-04-02; PO-0259->P_KY 2027-03-31; PO-0260->P_AL 2027-03-31; PO-0261->P_NC 2027-03-31",
+          "text": "Restart index 17; slots 5/day, shared across this event. 6 reschedule(s), 3 transfer(s), 0 unplaceable. PO-0253->P_MS 2027-03-31; PO-0254->P_MS 2027-03-31; PO-0255->P_MS 2027-04-01; PO-0256->P_MS 2027-04-01; PO-0257->P_MS 2027-04-02; PO-0258->P_MS 2027-04-02; PO-0259->P_KY 2027-03-08; PO-0260->P_AL 2027-03-08; PO-0261->P_NC 2027-03-08",
           "data": {
             "policy": {
               "claim_order": "build_date_id",
-              "transfer_min_day": "disruption_end"
+              "transfer_min_day": "today"
             }
           }
         }
@@ -580,17 +580,17 @@
     },
     {
       "agent": "dealer_care",
-      "started": "2027-03-08T10:07:00.982000",
-      "ended": "2027-03-08T10:07:00.983000",
+      "started": "2027-03-08T10:07:00.002000",
+      "ended": "2027-03-08T10:07:00.003000",
       "steps": [
         {
-          "t": "2027-03-08T10:07:00.982000",
+          "t": "2027-03-08T10:07:00.002000",
           "kind": "graph",
           "text": "79 customer orders on 9 moved POs across 36 dealers (all incidents of this event together)",
           "data": null
         },
         {
-          "t": "2027-03-08T10:07:00.983000",
+          "t": "2027-03-08T10:07:00.003000",
           "kind": "plan",
           "text": "One notice per dealer; 18 Platinum/Gold customer orders entitled, 17 loaner(s) assigned within pool limits (Platinum, then Gold, earlier promise, lower id).",
           "data": null
@@ -606,7 +606,7 @@
       "tool": "mes.get_schedule",
       "args": {
         "plant_id": "P_AL",
-        "date": "2027-03-31"
+        "date": "2027-03-08"
       },
       "justification": "Free read: confirm the target slot is free in the live world before any write",
       "path_ids": [
@@ -621,18 +621,18 @@
         "error": null,
         "response": {
           "plant_id": "P_AL",
-          "date": "2027-03-31",
+          "date": "2027-03-08",
           "orders": [
             {
-              "production_order_id": "PO-0442",
+              "production_order_id": "PO-0391",
               "model": "SUMMIT"
             },
             {
-              "production_order_id": "PO-0443",
+              "production_order_id": "PO-0392",
               "model": "NOVA"
             },
             {
-              "production_order_id": "PO-0444",
+              "production_order_id": "PO-0393",
               "model": "VOYAGER"
             }
           ],
@@ -647,7 +647,7 @@
       "tool": "mes.get_schedule",
       "args": {
         "plant_id": "P_KY",
-        "date": "2027-03-31"
+        "date": "2027-03-08"
       },
       "justification": "Free read: confirm the target slot is free in the live world before any write",
       "path_ids": [
@@ -662,18 +662,18 @@
         "error": null,
         "response": {
           "plant_id": "P_KY",
-          "date": "2027-03-31",
+          "date": "2027-03-08",
           "orders": [
             {
-              "production_order_id": "PO-0172",
+              "production_order_id": "PO-0121",
               "model": "PIONEER"
             },
             {
-              "production_order_id": "PO-0173",
+              "production_order_id": "PO-0122",
               "model": "SUMMIT"
             },
             {
-              "production_order_id": "PO-0174",
+              "production_order_id": "PO-0123",
               "model": "VOYAGER"
             }
           ],
@@ -811,7 +811,7 @@
       "tool": "mes.get_schedule",
       "args": {
         "plant_id": "P_NC",
-        "date": "2027-03-31"
+        "date": "2027-03-08"
       },
       "justification": "Free read: confirm the target slot is free in the live world before any write",
       "path_ids": [
@@ -826,18 +826,18 @@
         "error": null,
         "response": {
           "plant_id": "P_NC",
-          "date": "2027-03-31",
+          "date": "2027-03-08",
           "orders": [
             {
-              "production_order_id": "PO-0532",
+              "production_order_id": "PO-0481",
               "model": "PIONEER"
             },
             {
-              "production_order_id": "PO-0533",
+              "production_order_id": "PO-0482",
               "model": "TERRA"
             },
             {
-              "production_order_id": "PO-0534",
+              "production_order_id": "PO-0483",
               "model": "RANGER"
             }
           ],
@@ -1027,7 +1027,7 @@
       "args": {
         "production_order_id": "PO-0259",
         "to_plant_id": "P_KY",
-        "new_date": "2027-03-31"
+        "new_date": "2027-03-08"
       },
       "justification": "Rule 2+3: build falls inside the outage; no free P_MS slot; earliest free P_KY slot",
       "path_ids": [
@@ -1045,7 +1045,7 @@
           "ok": true,
           "production_order_id": "PO-0259",
           "plant_id": "P_KY",
-          "date": "2027-03-31"
+          "date": "2027-03-08"
         }
       }
     },
@@ -1057,7 +1057,7 @@
       "args": {
         "production_order_id": "PO-0260",
         "to_plant_id": "P_AL",
-        "new_date": "2027-03-31"
+        "new_date": "2027-03-08"
       },
       "justification": "Rule 2+3: build falls inside the outage; no free P_MS slot; earliest free P_AL slot",
       "path_ids": [
@@ -1075,7 +1075,7 @@
           "ok": true,
           "production_order_id": "PO-0260",
           "plant_id": "P_AL",
-          "date": "2027-03-31"
+          "date": "2027-03-08"
         }
       }
     },
@@ -1087,7 +1087,7 @@
       "args": {
         "production_order_id": "PO-0261",
         "to_plant_id": "P_NC",
-        "new_date": "2027-03-31"
+        "new_date": "2027-03-08"
       },
       "justification": "Rule 2+3: build falls inside the outage; no free P_MS slot; earliest free P_NC slot",
       "path_ids": [
@@ -1105,7 +1105,7 @@
           "ok": true,
           "production_order_id": "PO-0261",
           "plant_id": "P_NC",
-          "date": "2027-03-31"
+          "date": "2027-03-08"
         }
       }
     },
@@ -1119,7 +1119,7 @@
         "customer_order_ids": [
           "CO-01538"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01538 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-31 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01538 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-08 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D01, only its 1 affected order(s)",
       "path_ids": [
@@ -1154,7 +1154,7 @@
           "CO-01517",
           "CO-01519"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01460 (promised 2027-03-30): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01469 (promised 2027-03-30): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01471 (promised 2027-03-30): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01508 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-02 (P_MS outage 2027-03-26 to 2027-03-30); CO-01517 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-31 at P_KY (P_MS outage 2027-03-26 to 2027-03-30); CO-01519 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-31 at P_KY (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01460 (promised 2027-03-30): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01469 (promised 2027-03-30): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01471 (promised 2027-03-30): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01508 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-02 (P_MS outage 2027-03-26 to 2027-03-30); CO-01517 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-08 at P_KY (P_MS outage 2027-03-26 to 2027-03-30); CO-01519 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-08 at P_KY (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D02, only its 6 affected order(s)",
       "path_ids": [
@@ -1241,7 +1241,7 @@
           "CO-01532",
           "CO-01535"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01468 (promised 2027-03-29): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01472 (promised 2027-03-29): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01532 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-31 at P_NC (P_MS outage 2027-03-26 to 2027-03-30); CO-01535 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-31 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01468 (promised 2027-03-29): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01472 (promised 2027-03-29): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01532 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-08 at P_NC (P_MS outage 2027-03-26 to 2027-03-30); CO-01535 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-08 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D03, only its 4 affected order(s)",
       "path_ids": [
@@ -1298,7 +1298,7 @@
         "customer_order_ids": [
           "CO-01534"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01534 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-31 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01534 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-08 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D04, only its 1 affected order(s)",
       "path_ids": [
@@ -1365,7 +1365,7 @@
           "CO-01502",
           "CO-01513"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01470 (promised 2027-03-30): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01474 (promised 2027-03-30): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01480 (promised 2027-03-30): build moves from 2027-03-26 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01482 (promised 2027-03-30): build moves from 2027-03-26 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01490 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01493 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-02 (P_MS outage 2027-03-26 to 2027-03-30); CO-01502 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-02 (P_MS outage 2027-03-26 to 2027-03-30); CO-01513 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-31 at P_KY (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01470 (promised 2027-03-30): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01474 (promised 2027-03-30): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01480 (promised 2027-03-30): build moves from 2027-03-26 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01482 (promised 2027-03-30): build moves from 2027-03-26 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01490 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01493 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-02 (P_MS outage 2027-03-26 to 2027-03-30); CO-01502 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-02 (P_MS outage 2027-03-26 to 2027-03-30); CO-01513 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-08 at P_KY (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D06, only its 8 affected order(s)",
       "path_ids": [
@@ -1482,7 +1482,7 @@
           "CO-01518",
           "CO-01522"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01475 (promised 2027-03-29): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01483 (promised 2027-03-29): build moves from 2027-03-26 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01485 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01486 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01512 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-31 at P_KY (P_MS outage 2027-03-26 to 2027-03-30); CO-01518 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-31 at P_KY (P_MS outage 2027-03-26 to 2027-03-30); CO-01522 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-31 at P_AL (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01475 (promised 2027-03-29): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01483 (promised 2027-03-29): build moves from 2027-03-26 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01485 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01486 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01512 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-08 at P_KY (P_MS outage 2027-03-26 to 2027-03-30); CO-01518 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-08 at P_KY (P_MS outage 2027-03-26 to 2027-03-30); CO-01522 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-08 at P_AL (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D08, only its 7 affected order(s)",
       "path_ids": [
@@ -1661,7 +1661,7 @@
           "CO-01492",
           "CO-01523"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01465 (promised 2027-03-30): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01492 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01523 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-31 at P_AL (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01465 (promised 2027-03-30): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01492 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01523 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-08 at P_AL (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D16, only its 3 affected order(s)",
       "path_ids": [
@@ -1745,7 +1745,7 @@
         "customer_order_ids": [
           "CO-01515"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01515 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-31 at P_KY (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01515 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-08 at P_KY (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D18, only its 1 affected order(s)",
       "path_ids": [
@@ -1777,7 +1777,7 @@
           "CO-01525",
           "CO-01536"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01473 (promised 2027-03-31): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01525 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-31 at P_AL (P_MS outage 2027-03-26 to 2027-03-30); CO-01536 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-31 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01473 (promised 2027-03-31): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01525 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-08 at P_AL (P_MS outage 2027-03-26 to 2027-03-30); CO-01536 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-08 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D20, only its 3 affected order(s)",
       "path_ids": [
@@ -1807,7 +1807,7 @@
         "customer_order_ids": [
           "CO-01514"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01514 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-31 at P_KY (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01514 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-08 at P_KY (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D21, only its 1 affected order(s)",
       "path_ids": [
@@ -1870,7 +1870,7 @@
           "CO-01507",
           "CO-01516"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01507 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-02 (P_MS outage 2027-03-26 to 2027-03-30); CO-01516 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-31 at P_KY (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01507 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-02 (P_MS outage 2027-03-26 to 2027-03-30); CO-01516 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-08 at P_KY (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D23, only its 2 affected order(s)",
       "path_ids": [
@@ -1964,7 +1964,7 @@
           "CO-01529",
           "CO-01531"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01463 (promised 2027-03-29): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01488 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01521 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-31 at P_AL (P_MS outage 2027-03-26 to 2027-03-30); CO-01528 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-31 at P_NC (P_MS outage 2027-03-26 to 2027-03-30); CO-01529 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-31 at P_NC (P_MS outage 2027-03-26 to 2027-03-30); CO-01531 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-31 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01463 (promised 2027-03-29): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01488 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01521 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-08 at P_AL (P_MS outage 2027-03-26 to 2027-03-30); CO-01528 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-08 at P_NC (P_MS outage 2027-03-26 to 2027-03-30); CO-01529 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-08 at P_NC (P_MS outage 2027-03-26 to 2027-03-30); CO-01531 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-08 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D25, only its 6 affected order(s)",
       "path_ids": [
@@ -2228,7 +2228,7 @@
           "CO-01510",
           "CO-01520"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01501 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-02 (P_MS outage 2027-03-26 to 2027-03-30); CO-01510 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-31 at P_KY (P_MS outage 2027-03-26 to 2027-03-30); CO-01520 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-31 at P_AL (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01501 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-02 (P_MS outage 2027-03-26 to 2027-03-30); CO-01510 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-08 at P_KY (P_MS outage 2027-03-26 to 2027-03-30); CO-01520 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-08 at P_AL (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D31, only its 3 affected order(s)",
       "path_ids": [
@@ -2285,7 +2285,7 @@
         "customer_order_ids": [
           "CO-01530"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01530 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-31 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01530 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-08 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D32, only its 1 affected order(s)",
       "path_ids": [
@@ -2315,7 +2315,7 @@
         "customer_order_ids": [
           "CO-01527"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01527 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-31 at P_AL (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01527 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-08 at P_AL (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D33, only its 1 affected order(s)",
       "path_ids": [
@@ -2403,7 +2403,7 @@
           "CO-01467",
           "CO-01526"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01467 (promised 2027-03-29): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01526 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-31 at P_AL (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01467 (promised 2027-03-29): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01526 (promised 2027-04-02): build moves from 2027-03-30 to 2027-03-08 at P_AL (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D38, only its 2 affected order(s)",
       "path_ids": [
@@ -2463,7 +2463,7 @@
         "customer_order_ids": [
           "CO-01533"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01533 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-31 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01533 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-08 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D41, only its 1 affected order(s)",
       "path_ids": [
@@ -2584,7 +2584,7 @@
           "CO-01511",
           "CO-01537"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01464 (promised 2027-03-31): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01476 (promised 2027-03-31): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01481 (promised 2027-03-31): build moves from 2027-03-26 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01511 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-31 at P_KY (P_MS outage 2027-03-26 to 2027-03-30); CO-01537 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-31 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01464 (promised 2027-03-31): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01476 (promised 2027-03-31): build moves from 2027-03-26 to 2027-03-31 (P_MS outage 2027-03-26 to 2027-03-30); CO-01481 (promised 2027-03-31): build moves from 2027-03-26 to 2027-04-01 (P_MS outage 2027-03-26 to 2027-03-30); CO-01511 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-08 at P_KY (P_MS outage 2027-03-26 to 2027-03-30); CO-01537 (promised 2027-04-04): build moves from 2027-03-30 to 2027-03-08 at P_NC (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D45, only its 5 affected order(s)",
       "path_ids": [
@@ -2641,7 +2641,7 @@
         "customer_order_ids": [
           "CO-01524"
         ],
-        "message": "Delay notice. Affected customer orders: CO-01524 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-31 at P_AL (P_MS outage 2027-03-26 to 2027-03-30)."
+        "message": "Delay notice. Affected customer orders: CO-01524 (promised 2027-04-03): build moves from 2027-03-30 to 2027-03-08 at P_AL (P_MS outage 2027-03-26 to 2027-03-30)."
       },
       "justification": "Rule 4: one notification for D46, only its 1 affected order(s)",
       "path_ids": [
@@ -2748,7 +2748,7 @@
         "from_plant": "P_MS",
         "from_date": "2027-03-30",
         "to_plant": "P_KY",
-        "to_date": "2027-03-31"
+        "to_date": "2027-03-08"
       },
       {
         "production_order_id": "PO-0260",
@@ -2756,7 +2756,7 @@
         "from_plant": "P_MS",
         "from_date": "2027-03-30",
         "to_plant": "P_AL",
-        "to_date": "2027-03-31"
+        "to_date": "2027-03-08"
       },
       {
         "production_order_id": "PO-0261",
@@ -2764,7 +2764,7 @@
         "from_plant": "P_MS",
         "from_date": "2027-03-30",
         "to_plant": "P_NC",
-        "to_date": "2027-03-31"
+        "to_date": "2027-03-08"
       }
     ],
     "notified_dealers": [
@@ -3053,7 +3053,7 @@
   },
   "counterfactual": {
     "customers_affected": 79,
-    "avg_slip_days": 3.3,
+    "avg_slip_days": 3.0,
     "loaners_entitled": 18,
     "loaners_assigned": 17,
     "vehicles_pulled": 0,
@@ -3068,16 +3068,7 @@
         "input_tokens": 762,
         "output_tokens": 200,
         "cost_usd": 0.000729,
-        "cached": false
-      },
-      {
-        "provider": "gemini",
-        "model": "gemini-3.8-flash",
-        "purpose": "audit",
-        "input_tokens": 1427,
-        "output_tokens": 604,
-        "cost_usd": 0.003335,
-        "cached": false
+        "cached": true
       },
       {
         "provider": "gemini",
@@ -3086,10 +3077,10 @@
         "input_tokens": 352,
         "output_tokens": 153,
         "cost_usd": 0.000488,
-        "cached": false
+        "cached": true
       }
     ],
-    "total_cost_usd": 0.004552
+    "total_cost_usd": 0.001217
   },
   "summary": "Wacky Wheels Jackson experienced a power failure and is dark from Friday Mar 26 through Tuesday Mar 30, with the line restarting the following working day. The system moved 9 production orders, with 6 rescheduled after the restart and 3 transferred to other plants due to full same-plant slots. It also notified 36 dealers once each for 79 customer orders and assigned 17 loaners.",
   "decision_reason": "The control tower acted on a real incident of type plant_outage because ids and dates resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live baseline matched before the first write as required by rule 1."

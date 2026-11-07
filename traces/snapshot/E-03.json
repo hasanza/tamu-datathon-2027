@@ -762,46 +762,46 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T07:51:01.276000",
-      "ended": "2027-03-08T07:51:06.129000",
+      "started": "2027-03-08T07:51:00.002000",
+      "ended": "2027-03-08T07:51:00.022000",
       "steps": [
         {
-          "t": "2027-03-08T07:51:01.276000",
+          "t": "2027-03-08T07:51:00.002000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): quality_hold",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 760,
             "output_tokens": 269,
-            "cached": false
+            "cached": true
           }
         },
         {
-          "t": "2027-03-08T07:51:01.277000",
+          "t": "2027-03-08T07:51:00.002000",
           "kind": "gate",
           "text": "lot 'CHIP-IVI at P_MS built 2027-02-25..2027-03-01' -> LOT-0130 via data_snap: exact lot window match",
           "data": null
         },
         {
-          "t": "2027-03-08T07:51:01.278000",
+          "t": "2027-03-08T07:51:00.002000",
           "kind": "gate",
           "text": "E-03#1: quality_hold confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T07:51:01.286000",
+          "t": "2027-03-08T07:51:00.004000",
           "kind": "rehearse",
           "text": "Rehearsed 188 actions on the twin: 188 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T07:51:06.090000",
+          "t": "2027-03-08T07:51:00.005000",
           "kind": "audit",
           "text": "Auditor agrees: The quality hold for the infotainment chip at the Jackson plant correctly identifies the affected lot build dates and plans the required hold, stop-sale, and customer notifications.",
           "data": null
         },
         {
-          "t": "2027-03-08T07:51:06.129000",
+          "t": "2027-03-08T07:51:00.022000",
           "kind": "execute",
           "text": "Executed 188 calls via twin: 188 ok, 0 failed (188 writes, 0 verification reads)",
           "data": null
@@ -810,17 +810,17 @@
     },
     {
       "agent": "quality",
-      "started": "2027-03-08T07:51:01.283000",
-      "ended": "2027-03-08T07:51:01.284000",
+      "started": "2027-03-08T07:51:00.003000",
+      "ended": "2027-03-08T07:51:00.004000",
       "steps": [
         {
-          "t": "2027-03-08T07:51:01.283000",
+          "t": "2027-03-08T07:51:00.003000",
           "kind": "graph",
           "text": "Lot LOT-0130 -> part CHIP-IVI -> models using it -> POs at P_MS built 2027-02-25..2027-03-01: 9 POs, 260 vehicles (110 unsold at 37 dealers, 150 owners)",
           "data": null
         },
         {
-          "t": "2027-03-08T07:51:01.284000",
+          "t": "2027-03-08T07:51:00.004000",
           "kind": "plan",
           "text": "Hold LOT-0130; stop sale at 37 dealers; contact 150 owners once each.",
           "data": null
@@ -6339,7 +6339,7 @@
         "input_tokens": 760,
         "output_tokens": 269,
         "cost_usd": 0.0009,
-        "cached": false
+        "cached": true
       },
       {
         "provider": "gemini",
@@ -6348,7 +6348,7 @@
         "input_tokens": 1157,
         "output_tokens": 423,
         "cost_usd": 0.002454,
-        "cached": false
+        "cached": true
       },
       {
         "provider": "gemini",
@@ -6357,7 +6357,7 @@
         "input_tokens": 350,
         "output_tokens": 151,
         "cost_usd": 0.000483,
-        "cached": false
+        "cached": true
       }
     ],
     "total_cost_usd": 0.003837
