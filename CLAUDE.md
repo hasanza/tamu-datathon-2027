@@ -21,7 +21,7 @@ local enterprise server, writing a trace per event. Score is 50% replay of `acti
 ## Where things are
 - Spec `docs/SPEC.md` · plan `docs/PLAN.md` · tasks `docs/WORKPLAN.md` · UI tokens `docs/BRAND.md` · contracts `docs/contracts.md`
 - Example traces `traces/examples/*.json` · run outputs `runs/<name>/` · traces `traces/<run>/`
-- Handoff requests: `docs/handoff/core.md` (asks to CORE), `docs/handoff/glass.md` (asks to GLASS)
+- Agent comms: GitHub Issues bus (`docs/COMMS.md`; skills `/inbox`, `/send`; `scripts/comms.py`). `docs/handoff/*.md` only for notes needing no reply.
 
 ## Commands
 ```bash
