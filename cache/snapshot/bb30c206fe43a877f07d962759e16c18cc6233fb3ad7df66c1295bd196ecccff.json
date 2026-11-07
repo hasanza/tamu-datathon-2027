@@ -2,18 +2,18 @@
   "provider": "gemini",
   "model": "gemini-3.8-flash",
   "purpose": "audit",
-  "latency_s": 4.801,
+  "latency_s": 4.242,
   "parsed": {
     "agree": true,
     "concerns": [],
-    "summary": "The quality hold for the infotainment chip at the Jackson plant correctly identifies the affected lot build dates and plans the required hold, stop-sale, and customer notifications."
+    "summary": "The quality hold interpretation and planned corrective actions accurately reflect the bulletin and follow all operational rules."
   },
   "usage": {
     "provider": "gemini",
     "model": "gemini-3.8-flash",
     "purpose": "audit",
     "input_tokens": 1157,
-    "output_tokens": 423,
-    "cost_usd": 0.002454
+    "output_tokens": 464,
+    "cost_usd": 0.002608
   }
 }

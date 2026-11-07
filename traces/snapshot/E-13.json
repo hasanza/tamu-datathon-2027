@@ -7,15 +7,15 @@
   "status": "escalated",
   "classification": {
     "category": "unconfirmed",
-    "confidence": 0.95,
-    "reason": "The message reports a vague and unconfirmed potential shortage without specific parts, shipments, or dates."
+    "confidence": 0.9,
+    "reason": "The message discusses an unconfirmed possible shortage without specific shipment, lot, plant, or dates."
   },
   "incidents": [
     {
       "incident_id": "E-13#1",
       "event_id": "E-13",
       "category": "unconfirmed",
-      "confidence": 0.95,
+      "confidence": 0.9,
       "plant_id": null,
       "part_id": null,
       "supplier_id": null,
@@ -37,43 +37,43 @@
           "blocking": true
         }
       ],
-      "reason": "The message reports a vague and unconfirmed potential shortage without specific parts, shipments, or dates."
+      "reason": "The message discusses an unconfirmed possible shortage without specific shipment, lot, plant, or dates."
     }
   ],
   "paths": {},
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T10:41:00.003000",
-      "ended": "2027-03-08T10:41:00.006000",
+      "started": "2027-03-08T10:41:00.928000",
+      "ended": "2027-03-08T10:41:00.946000",
       "steps": [
         {
-          "t": "2027-03-08T10:41:00.003000",
+          "t": "2027-03-08T10:41:00.928000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): unconfirmed",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 749,
-            "output_tokens": 188,
-            "cached": true
+            "output_tokens": 126,
+            "cached": false
           }
         },
         {
-          "t": "2027-03-08T10:41:00.004000",
+          "t": "2027-03-08T10:41:00.929000",
           "kind": "gate",
-          "text": "E-13#1: unconfirmed NOT actionable (confidence 0.95); no confirmed shipment, lot, plant or dates",
+          "text": "E-13#1: unconfirmed NOT actionable (confidence 0.90); no confirmed shipment, lot, plant or dates",
           "data": null
         },
         {
-          "t": "2027-03-08T10:41:00.005000",
+          "t": "2027-03-08T10:41:00.931000",
           "kind": "rehearse",
           "text": "Rehearsed 1 actions on the twin: 1 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T10:41:00.006000",
+          "t": "2027-03-08T10:41:00.946000",
           "kind": "execute",
-          "text": "Executed 1 calls via twin: 1 ok, 0 failed (0 writes, 0 verification reads)",
+          "text": "Executed 1 calls via server: 1 ok, 0 failed (0 writes, 0 verification reads)",
           "data": null
         }
       ]
@@ -119,22 +119,22 @@
         "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 749,
-        "output_tokens": 188,
-        "cost_usd": 0.000695,
-        "cached": true
+        "output_tokens": 126,
+        "cost_usd": 0.00054,
+        "cached": false
       },
       {
         "provider": "gemini",
         "model": "gemini-3.5-flash-lite",
         "purpose": "summarize",
         "input_tokens": 279,
-        "output_tokens": 62,
-        "cost_usd": 0.000239,
-        "cached": true
+        "output_tokens": 70,
+        "cost_usd": 0.000259,
+        "cached": false
       }
     ],
-    "total_cost_usd": 0.000934
+    "total_cost_usd": 0.000799
   },
-  "summary": "An unconfirmed report regarding a possible shortage of something electronic sometime soon was received from the floor. The message was not actionable and was escalated to a human.",
-  "decision_reason": "The unclear part was escalated without operational change according to rule 8."
+  "summary": "An unconfirmed report of a possible upcoming electronic shortage was received from the floor. The message contained no specific items, quantities, or dates. Consequently, the item was escalated for human review.",
+  "decision_reason": "The unclear part was escalated with no operational change pursuant to rule 8."
 }

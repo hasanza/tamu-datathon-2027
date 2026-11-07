@@ -1,0 +1,19 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "audit",
+  "latency_s": 4.399,
+  "parsed": {
+    "agree": true,
+    "concerns": [],
+    "summary": "The quality hold for moisture-contaminated wiring harnesses at the Texas plant is correctly interpreted and planned in accordance with policy."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "audit",
+    "input_tokens": 1161,
+    "output_tokens": 456,
+    "cost_usd": 0.002581
+  }
+}

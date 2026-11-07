@@ -1,0 +1,98 @@
+{
+  "pipeline_version": "0.1.0",
+  "event_id": "E-06",
+  "received_at": "2027-03-08T08:42:00",
+  "source": "news wire",
+  "text": "Dealer Little Rock, AR asks where to find the new brochure PDF.",
+  "status": "noise",
+  "classification": {
+    "category": "noise",
+    "confidence": 1.0,
+    "reason": "This is a request for marketing materials unrelated to production operations."
+  },
+  "incidents": [
+    {
+      "incident_id": "E-06#1",
+      "event_id": "E-06",
+      "category": "noise",
+      "confidence": 1.0,
+      "plant_id": null,
+      "part_id": null,
+      "supplier_id": null,
+      "shipment_id": null,
+      "lot_id": null,
+      "orig_eta": null,
+      "new_eta": null,
+      "outage_start": null,
+      "outage_end": null,
+      "build_window_start": null,
+      "build_window_end": null,
+      "raw_mentions": {},
+      "resolution_steps": [],
+      "ambiguities": [],
+      "reason": "This is a request for marketing materials unrelated to production operations."
+    }
+  ],
+  "paths": {},
+  "agents": [
+    {
+      "agent": "coordinator",
+      "started": "2027-03-08T08:42:00.981000",
+      "ended": "2027-03-08T08:42:00.982000",
+      "steps": [
+        {
+          "t": "2027-03-08T08:42:00.981000",
+          "kind": "llm",
+          "text": "Extracted 1 incident(s): noise",
+          "data": {
+            "model": "gemini-3.5-flash-lite",
+            "input_tokens": 744,
+            "output_tokens": 172,
+            "cached": false
+          }
+        },
+        {
+          "t": "2027-03-08T08:42:00.982000",
+          "kind": "gate",
+          "text": "Noise -> no write tools, no escalation (rule 7). This is a request for marketing materials unrelated to production operations.",
+          "data": null
+        }
+      ]
+    }
+  ],
+  "actions": [],
+  "world_diff": {
+    "moved_pos": [],
+    "notified_dealers": [],
+    "loaners": [],
+    "held_lots": [],
+    "stopped_vins": [],
+    "contacted_customers": []
+  },
+  "counterfactual": null,
+  "llm": {
+    "calls": [
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "extract",
+        "input_tokens": 744,
+        "output_tokens": 172,
+        "cost_usd": 0.000653,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "summarize",
+        "input_tokens": 271,
+        "output_tokens": 90,
+        "cost_usd": 0.000306,
+        "cached": false
+      }
+    ],
+    "total_cost_usd": 0.000959
+  },
+  "summary": "Dealer Little Rock, AR asks where to find the new brochure PDF. This is a request for marketing materials unrelated to production operations. Not an operational event.",
+  "decision_reason": "No action: the message names no shipment, plant, part, lot or date and describes no disruption to production, dealers, loaners or owners pursuant to handbook rule 7 stating noise gets no write tools."
+}

@@ -1,0 +1,1537 @@
+{
+  "pipeline_version": "0.1.0",
+  "event_id": "E-10",
+  "received_at": "2027-03-08T09:50:00",
+  "source": "ops chat",
+  "text": "Huntsville line is waiting on 60 kWh battery packs from Lumen. Original drop was Monday Mar 29, new ETA is Thursday Apr 1 because of a truck breakdown.",
+  "status": "done",
+  "classification": {
+    "category": "supplier_delay",
+    "confidence": 1.0,
+    "reason": "This incident is classified as a supplier_delay because an inbound shipment of battery packs is arriving later than the original due date due to a truck breakdown."
+  },
+  "incidents": [
+    {
+      "incident_id": "E-10#1",
+      "event_id": "E-10",
+      "category": "supplier_delay",
+      "confidence": 1.0,
+      "plant_id": "P_AL",
+      "part_id": "BATT-60",
+      "supplier_id": "SUP-18",
+      "shipment_id": "SH-0248",
+      "lot_id": null,
+      "orig_eta": "2027-03-29",
+      "new_eta": "2027-04-01",
+      "outage_start": null,
+      "outage_end": null,
+      "build_window_start": null,
+      "build_window_end": null,
+      "raw_mentions": {
+        "plant": "Huntsville",
+        "part": "60 kWh battery packs",
+        "supplier": "Lumen"
+      },
+      "resolution_steps": [
+        {
+          "mention": "Huntsville",
+          "entity_type": "plant",
+          "candidates": [
+            "P_AL"
+          ],
+          "chosen": "P_AL",
+          "method": "alias",
+          "note": null
+        },
+        {
+          "mention": "60 kWh battery packs",
+          "entity_type": "part",
+          "candidates": [
+            "BATT-60"
+          ],
+          "chosen": "BATT-60",
+          "method": "alias",
+          "note": null
+        },
+        {
+          "mention": "Lumen",
+          "entity_type": "supplier",
+          "candidates": [
+            "SUP-18"
+          ],
+          "chosen": "SUP-18",
+          "method": "alias",
+          "note": null
+        },
+        {
+          "mention": "Monday Mar 29",
+          "entity_type": "date",
+          "candidates": [
+            "2027-03-29"
+          ],
+          "chosen": "2027-03-29",
+          "method": "exact",
+          "note": "explicit month/day with matching weekday"
+        },
+        {
+          "mention": "Thursday Apr 1",
+          "entity_type": "date",
+          "candidates": [
+            "2027-04-01"
+          ],
+          "chosen": "2027-04-01",
+          "method": "exact",
+          "note": "explicit month/day with matching weekday"
+        },
+        {
+          "mention": "BATT-60→P_AL due 2027-03-29",
+          "entity_type": "shipment",
+          "candidates": [
+            "SH-0248"
+          ],
+          "chosen": "SH-0248",
+          "method": "data_snap",
+          "note": "exactly one shipment matches plant, part and original ETA"
+        }
+      ],
+      "ambiguities": [],
+      "reason": "This incident is classified as a supplier_delay because an inbound shipment of battery packs is arriving later than the original due date due to a truck breakdown."
+    }
+  ],
+  "paths": {
+    "E-10#1": [
+      {
+        "nodes": [
+          {
+            "id": "SH-0248",
+            "type": "Shipment",
+            "label": "SH-0248 · BATT-60 → P_AL · ETA 03-29",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "BATT-60",
+            "type": "Part",
+            "label": "60 kWh battery pack",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "NOVA",
+            "type": "Model",
+            "label": "Nova",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0437",
+            "type": "ProductionOrder",
+            "label": "PO-0437 · NOVA · P_AL · 03-29",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0437",
+            "type": "CustomerOrder",
+            "label": "9 customer orders",
+            "group": "customer_orders",
+            "count": 9
+          },
+          {
+            "id": "grp:dealers:PO-0437",
+            "type": "Dealer",
+            "label": "7 dealers",
+            "group": "dealers",
+            "count": 7
+          }
+        ],
+        "edges": [
+          {
+            "from": "SH-0248",
+            "to": "BATT-60",
+            "type": "OF_PART"
+          },
+          {
+            "from": "NOVA",
+            "to": "BATT-60",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0437",
+            "to": "NOVA",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:cos:PO-0437",
+            "to": "PO-0437",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0437",
+            "to": "grp:dealers:PO-0437",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "SH-0248",
+            "type": "Shipment",
+            "label": "SH-0248 · BATT-60 → P_AL · ETA 03-29",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "BATT-60",
+            "type": "Part",
+            "label": "60 kWh battery pack",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "NOVA",
+            "type": "Model",
+            "label": "Nova",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0440",
+            "type": "ProductionOrder",
+            "label": "PO-0440 · NOVA · P_AL · 03-30",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0440",
+            "type": "CustomerOrder",
+            "label": "10 customer orders",
+            "group": "customer_orders",
+            "count": 10
+          },
+          {
+            "id": "grp:dealers:PO-0440",
+            "type": "Dealer",
+            "label": "8 dealers",
+            "group": "dealers",
+            "count": 8
+          }
+        ],
+        "edges": [
+          {
+            "from": "SH-0248",
+            "to": "BATT-60",
+            "type": "OF_PART"
+          },
+          {
+            "from": "NOVA",
+            "to": "BATT-60",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0440",
+            "to": "NOVA",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:cos:PO-0440",
+            "to": "PO-0440",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0440",
+            "to": "grp:dealers:PO-0440",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "SH-0248",
+            "type": "Shipment",
+            "label": "SH-0248 · BATT-60 → P_AL · ETA 03-29",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "BATT-60",
+            "type": "Part",
+            "label": "60 kWh battery pack",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "NOVA",
+            "type": "Model",
+            "label": "Nova",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0443",
+            "type": "ProductionOrder",
+            "label": "PO-0443 · NOVA · P_AL · 03-31",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0443",
+            "type": "CustomerOrder",
+            "label": "10 customer orders",
+            "group": "customer_orders",
+            "count": 10
+          },
+          {
+            "id": "grp:dealers:PO-0443",
+            "type": "Dealer",
+            "label": "9 dealers",
+            "group": "dealers",
+            "count": 9
+          }
+        ],
+        "edges": [
+          {
+            "from": "SH-0248",
+            "to": "BATT-60",
+            "type": "OF_PART"
+          },
+          {
+            "from": "NOVA",
+            "to": "BATT-60",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0443",
+            "to": "NOVA",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:cos:PO-0443",
+            "to": "PO-0443",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0443",
+            "to": "grp:dealers:PO-0443",
+            "type": "SOLD_BY"
+          }
+        ]
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent": "coordinator",
+      "started": "2027-03-08T09:50:01.008000",
+      "ended": "2027-03-08T09:50:05.894000",
+      "steps": [
+        {
+          "t": "2027-03-08T09:50:01.008000",
+          "kind": "llm",
+          "text": "Extracted 1 incident(s): supplier_delay",
+          "data": {
+            "model": "gemini-3.5-flash-lite",
+            "input_tokens": 768,
+            "output_tokens": 201,
+            "cached": false
+          }
+        },
+        {
+          "t": "2027-03-08T09:50:01.009000",
+          "kind": "gate",
+          "text": "shipment 'BATT-60→P_AL due 2027-03-29' -> SH-0248 via data_snap: exactly one shipment matches plant, part and original ETA",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T09:50:01.010000",
+          "kind": "gate",
+          "text": "E-10#1: supplier_delay confirmed, confidence 1.00 >= 0.7 -> act",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T09:50:01.016000",
+          "kind": "rehearse",
+          "text": "Rehearsed 30 actions on the twin: 30 ok, 0 failed. Invariants: ok",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T09:50:05.721000",
+          "kind": "audit",
+          "text": "Auditor agrees: The supplier delay at Huntsville was accurately interpreted and rescheduled within policy rules, with appropriate dealer notifications and loaner assignments.",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T09:50:05.894000",
+          "kind": "execute",
+          "text": "Executed 30 calls via server: 30 ok, 0 failed (28 writes, 2 verification reads)",
+          "data": null
+        }
+      ]
+    },
+    {
+      "agent": "supply_chain",
+      "started": "2027-03-08T09:50:01.014000",
+      "ended": "2027-03-08T09:50:01.015000",
+      "steps": [
+        {
+          "t": "2027-03-08T09:50:01.014000",
+          "kind": "graph",
+          "text": "Shipment SH-0248 -> part BATT-60 -> models using it -> POs at P_AL building 2027-03-29..2027-04-01 (new ETA exclusive): 3 affected: ['PO-0437', 'PO-0440', 'PO-0443']",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T09:50:01.015000",
+          "kind": "plan",
+          "text": "Restart index 18; slots 5/day, shared across this event. 3 reschedule(s), 0 transfer(s), 0 unplaceable. PO-0437->P_AL 2027-04-01; PO-0440->P_AL 2027-04-01; PO-0443->P_AL 2027-04-02",
+          "data": {
+            "policy": {
+              "claim_order": "build_date_id",
+              "transfer_min_day": "today"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "agent": "dealer_care",
+      "started": "2027-03-08T09:50:01.015000",
+      "ended": "2027-03-08T09:50:01.015000",
+      "steps": [
+        {
+          "t": "2027-03-08T09:50:01.015000",
+          "kind": "graph",
+          "text": "29 customer orders on 3 moved POs across 18 dealers (all incidents of this event together)",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T09:50:01.015000",
+          "kind": "plan",
+          "text": "One notice per dealer; 7 Platinum/Gold customer orders entitled, 7 loaner(s) assigned within pool limits (Platinum, then Gold, earlier promise, lower id).",
+          "data": null
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "seq": 1,
+      "incident_id": null,
+      "agent": "supply_chain",
+      "tool": "mes.get_schedule",
+      "args": {
+        "plant_id": "P_AL",
+        "date": "2027-04-01"
+      },
+      "justification": "Free read: confirm the target slot is free in the live world before any write",
+      "path_ids": [
+        "P_AL"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "plant_id": "P_AL",
+          "date": "2027-04-01",
+          "orders": [
+            {
+              "production_order_id": "PO-0445",
+              "model": "SUMMIT"
+            },
+            {
+              "production_order_id": "PO-0446",
+              "model": "NOVA"
+            },
+            {
+              "production_order_id": "PO-0447",
+              "model": "VOYAGER"
+            }
+          ],
+          "free_slots": 2
+        }
+      }
+    },
+    {
+      "seq": 2,
+      "incident_id": null,
+      "agent": "supply_chain",
+      "tool": "mes.get_schedule",
+      "args": {
+        "plant_id": "P_AL",
+        "date": "2027-04-02"
+      },
+      "justification": "Free read: confirm the target slot is free in the live world before any write",
+      "path_ids": [
+        "P_AL"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "plant_id": "P_AL",
+          "date": "2027-04-02",
+          "orders": [
+            {
+              "production_order_id": "PO-0448",
+              "model": "SUMMIT"
+            },
+            {
+              "production_order_id": "PO-0449",
+              "model": "NOVA"
+            },
+            {
+              "production_order_id": "PO-0450",
+              "model": "VOYAGER"
+            }
+          ],
+          "free_slots": 2
+        }
+      }
+    },
+    {
+      "seq": 3,
+      "incident_id": "E-10#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0437",
+        "new_date": "2027-04-01"
+      },
+      "justification": "Rule 1+3: needs BATT-60 and builds before the new ETA; earliest free P_AL slot at/after restart",
+      "path_ids": [
+        "SH-0248",
+        "BATT-60",
+        "NOVA",
+        "PO-0437"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0437",
+          "plant_id": "P_AL",
+          "date": "2027-04-01"
+        }
+      }
+    },
+    {
+      "seq": 4,
+      "incident_id": "E-10#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0440",
+        "new_date": "2027-04-01"
+      },
+      "justification": "Rule 1+3: needs BATT-60 and builds before the new ETA; earliest free P_AL slot at/after restart",
+      "path_ids": [
+        "SH-0248",
+        "BATT-60",
+        "NOVA",
+        "PO-0440"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0440",
+          "plant_id": "P_AL",
+          "date": "2027-04-01"
+        }
+      }
+    },
+    {
+      "seq": 5,
+      "incident_id": "E-10#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0443",
+        "new_date": "2027-04-02"
+      },
+      "justification": "Rule 1+3: needs BATT-60 and builds before the new ETA; earliest free P_AL slot at/after restart",
+      "path_ids": [
+        "SH-0248",
+        "BATT-60",
+        "NOVA",
+        "PO-0443"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0443",
+          "plant_id": "P_AL",
+          "date": "2027-04-02"
+        }
+      }
+    },
+    {
+      "seq": 6,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D02",
+        "customer_order_ids": [
+          "CO-02638"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02638 (promised 2027-04-04): build moves from 2027-03-31 to 2027-04-02 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D02, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0443",
+        "CO-02638",
+        "D02"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 7,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-02638"
+      },
+      "justification": "Rule 5: Gold customer C1633; pool D02 priority order",
+      "path_ids": [
+        "CO-02638",
+        "C1633",
+        "D02"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D02"
+        }
+      }
+    },
+    {
+      "seq": 8,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D04",
+        "customer_order_ids": [
+          "CO-02575"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02575 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D04, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0437",
+        "CO-02575",
+        "D04"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 9,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-02575"
+      },
+      "justification": "Rule 5: Gold customer C6785; pool D04 priority order",
+      "path_ids": [
+        "CO-02575",
+        "C6785",
+        "D04"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D04"
+        }
+      }
+    },
+    {
+      "seq": 10,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D08",
+        "customer_order_ids": [
+          "CO-02637"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02637 (promised 2027-04-03): build moves from 2027-03-31 to 2027-04-02 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D08, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0443",
+        "CO-02637",
+        "D08"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 11,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D10",
+        "customer_order_ids": [
+          "CO-02611"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02611 (promised 2027-04-04): build moves from 2027-03-30 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D10, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0440",
+        "CO-02611",
+        "D10"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 12,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D17",
+        "customer_order_ids": [
+          "CO-02634"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02634 (promised 2027-04-03): build moves from 2027-03-31 to 2027-04-02 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D17, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0443",
+        "CO-02634",
+        "D17"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 13,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D20",
+        "customer_order_ids": [
+          "CO-02576",
+          "CO-02578",
+          "CO-02631"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02576 (promised 2027-04-03): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01); CO-02578 (promised 2027-04-03): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01); CO-02631 (promised 2027-04-05): build moves from 2027-03-31 to 2027-04-02 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D20, only its 3 affected order(s)",
+      "path_ids": [
+        "PO-0437",
+        "CO-02576",
+        "D20"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 14,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-02578"
+      },
+      "justification": "Rule 5: Gold customer C3147; pool D20 priority order",
+      "path_ids": [
+        "CO-02578",
+        "C3147",
+        "D20"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D20"
+        }
+      }
+    },
+    {
+      "seq": 15,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D21",
+        "customer_order_ids": [
+          "CO-02607"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02607 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D21, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0440",
+        "CO-02607",
+        "D21"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 16,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D23",
+        "customer_order_ids": [
+          "CO-02579",
+          "CO-02603"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02579 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01); CO-02603 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D23, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0437",
+        "CO-02579",
+        "D23"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 17,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-02579"
+      },
+      "justification": "Rule 5: Gold customer C1129; pool D23 priority order",
+      "path_ids": [
+        "CO-02579",
+        "C1129",
+        "D23"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D23"
+        }
+      }
+    },
+    {
+      "seq": 18,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D25",
+        "customer_order_ids": [
+          "CO-02636"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02636 (promised 2027-04-03): build moves from 2027-03-31 to 2027-04-02 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D25, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0443",
+        "CO-02636",
+        "D25"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 19,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-02636"
+      },
+      "justification": "Rule 5: Platinum customer C3028; pool D25 priority order",
+      "path_ids": [
+        "CO-02636",
+        "C3028",
+        "D25"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D25"
+        }
+      }
+    },
+    {
+      "seq": 20,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D27",
+        "customer_order_ids": [
+          "CO-02604",
+          "CO-02630"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02604 (promised 2027-04-04): build moves from 2027-03-30 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01); CO-02630 (promised 2027-04-05): build moves from 2027-03-31 to 2027-04-02 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D27, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0440",
+        "CO-02604",
+        "D27"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 21,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-02604"
+      },
+      "justification": "Rule 5: Gold customer C3999; pool D27 priority order",
+      "path_ids": [
+        "CO-02604",
+        "C3999",
+        "D27"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D27"
+        }
+      }
+    },
+    {
+      "seq": 22,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D28",
+        "customer_order_ids": [
+          "CO-02580"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02580 (promised 2027-04-03): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D28, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0437",
+        "CO-02580",
+        "D28"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 23,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D31",
+        "customer_order_ids": [
+          "CO-02583"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02583 (promised 2027-04-02): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D31, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0437",
+        "CO-02583",
+        "D31"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 24,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D34",
+        "customer_order_ids": [
+          "CO-02605",
+          "CO-02609"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02605 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01); CO-02609 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D34, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0440",
+        "CO-02605",
+        "D34"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 25,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-02605"
+      },
+      "justification": "Rule 5: Gold customer C1094; pool D34 priority order",
+      "path_ids": [
+        "CO-02605",
+        "C1094",
+        "D34"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D34"
+        }
+      }
+    },
+    {
+      "seq": 26,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D44",
+        "customer_order_ids": [
+          "CO-02610"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02610 (promised 2027-04-04): build moves from 2027-03-30 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D44, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0440",
+        "CO-02610",
+        "D44"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 27,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D45",
+        "customer_order_ids": [
+          "CO-02577",
+          "CO-02582",
+          "CO-02606",
+          "CO-02608",
+          "CO-02632",
+          "CO-02635"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02577 (promised 2027-04-03): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01); CO-02582 (promised 2027-04-03): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01); CO-02606 (promised 2027-04-04): build moves from 2027-03-30 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01); CO-02608 (promised 2027-04-04): build moves from 2027-03-30 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01); CO-02632 (promised 2027-04-05): build moves from 2027-03-31 to 2027-04-02 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01); CO-02635 (promised 2027-04-05): build moves from 2027-03-31 to 2027-04-02 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D45, only its 6 affected order(s)",
+      "path_ids": [
+        "PO-0437",
+        "CO-02577",
+        "D45"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 28,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D46",
+        "customer_order_ids": [
+          "CO-02612",
+          "CO-02633"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02612 (promised 2027-04-03): build moves from 2027-03-30 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01); CO-02633 (promised 2027-04-04): build moves from 2027-03-31 to 2027-04-02 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D46, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0440",
+        "CO-02612",
+        "D46"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 29,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D47",
+        "customer_order_ids": [
+          "CO-02581"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02581 (promised 2027-04-01): build moves from 2027-03-29 to 2027-04-01 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D47, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0437",
+        "CO-02581",
+        "D47"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 30,
+      "incident_id": "E-10#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D48",
+        "customer_order_ids": [
+          "CO-02639"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-02639 (promised 2027-04-04): build moves from 2027-03-31 to 2027-04-02 (late shipment SH-0248 of BATT-60, new ETA 2027-04-01)."
+      },
+      "justification": "Rule 4: one notification for D48, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0443",
+        "CO-02639",
+        "D48"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    }
+  ],
+  "world_diff": {
+    "moved_pos": [
+      {
+        "production_order_id": "PO-0437",
+        "kind": "reschedule",
+        "from_plant": "P_AL",
+        "from_date": "2027-03-29",
+        "to_plant": "P_AL",
+        "to_date": "2027-04-01"
+      },
+      {
+        "production_order_id": "PO-0440",
+        "kind": "reschedule",
+        "from_plant": "P_AL",
+        "from_date": "2027-03-30",
+        "to_plant": "P_AL",
+        "to_date": "2027-04-01"
+      },
+      {
+        "production_order_id": "PO-0443",
+        "kind": "reschedule",
+        "from_plant": "P_AL",
+        "from_date": "2027-03-31",
+        "to_plant": "P_AL",
+        "to_date": "2027-04-02"
+      }
+    ],
+    "notified_dealers": [
+      {
+        "dealer_id": "D02",
+        "customer_order_ids": [
+          "CO-02638"
+        ]
+      },
+      {
+        "dealer_id": "D04",
+        "customer_order_ids": [
+          "CO-02575"
+        ]
+      },
+      {
+        "dealer_id": "D08",
+        "customer_order_ids": [
+          "CO-02637"
+        ]
+      },
+      {
+        "dealer_id": "D10",
+        "customer_order_ids": [
+          "CO-02611"
+        ]
+      },
+      {
+        "dealer_id": "D17",
+        "customer_order_ids": [
+          "CO-02634"
+        ]
+      },
+      {
+        "dealer_id": "D20",
+        "customer_order_ids": [
+          "CO-02576",
+          "CO-02578",
+          "CO-02631"
+        ]
+      },
+      {
+        "dealer_id": "D21",
+        "customer_order_ids": [
+          "CO-02607"
+        ]
+      },
+      {
+        "dealer_id": "D23",
+        "customer_order_ids": [
+          "CO-02579",
+          "CO-02603"
+        ]
+      },
+      {
+        "dealer_id": "D25",
+        "customer_order_ids": [
+          "CO-02636"
+        ]
+      },
+      {
+        "dealer_id": "D27",
+        "customer_order_ids": [
+          "CO-02604",
+          "CO-02630"
+        ]
+      },
+      {
+        "dealer_id": "D28",
+        "customer_order_ids": [
+          "CO-02580"
+        ]
+      },
+      {
+        "dealer_id": "D31",
+        "customer_order_ids": [
+          "CO-02583"
+        ]
+      },
+      {
+        "dealer_id": "D34",
+        "customer_order_ids": [
+          "CO-02605",
+          "CO-02609"
+        ]
+      },
+      {
+        "dealer_id": "D44",
+        "customer_order_ids": [
+          "CO-02610"
+        ]
+      },
+      {
+        "dealer_id": "D45",
+        "customer_order_ids": [
+          "CO-02577",
+          "CO-02582",
+          "CO-02606",
+          "CO-02608",
+          "CO-02632",
+          "CO-02635"
+        ]
+      },
+      {
+        "dealer_id": "D46",
+        "customer_order_ids": [
+          "CO-02612",
+          "CO-02633"
+        ]
+      },
+      {
+        "dealer_id": "D47",
+        "customer_order_ids": [
+          "CO-02581"
+        ]
+      },
+      {
+        "dealer_id": "D48",
+        "customer_order_ids": [
+          "CO-02639"
+        ]
+      }
+    ],
+    "loaners": [
+      "CO-02638",
+      "CO-02575",
+      "CO-02578",
+      "CO-02579",
+      "CO-02636",
+      "CO-02604",
+      "CO-02605"
+    ],
+    "held_lots": [],
+    "stopped_vins": [],
+    "contacted_customers": []
+  },
+  "counterfactual": {
+    "customers_affected": 29,
+    "avg_slip_days": 2.3,
+    "loaners_entitled": 7,
+    "loaners_assigned": 7,
+    "vehicles_pulled": 0,
+    "owners_contacted": 0
+  },
+  "llm": {
+    "calls": [
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "extract",
+        "input_tokens": 768,
+        "output_tokens": 201,
+        "cost_usd": 0.000733,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "audit",
+        "input_tokens": 1272,
+        "output_tokens": 492,
+        "cost_usd": 0.002799,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "summarize",
+        "input_tokens": 376,
+        "output_tokens": 155,
+        "cost_usd": 0.0005,
+        "cached": false
+      }
+    ],
+    "total_cost_usd": 0.004032
+  },
+  "summary": "Lumen Cells's 60 kWh battery pack shipment SH-0248 to Wacky Wheels Huntsville slips from 2027-03-29 to 2027-04-01. 3 affected production orders were moved to the earliest free slots with 3 rescheduled and 0 transferred. 18 dealers were each notified once for 29 customer orders, and 7 Platinum/Gold customers received loaners within pool limits.",
+  "decision_reason": "Acted on a real incident of type supplier_delay because IDs and dates resolved against the data, rehearsal on the digital twin passed with zero failures, and live baseline matched before the first write."
+}

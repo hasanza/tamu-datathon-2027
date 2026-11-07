@@ -1,0 +1,18 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "purpose": "summarize",
+  "latency_s": 1.012,
+  "parsed": {
+    "summary": "Wacky Wheels San Antonio is down 2027-03-19 to 2027-03-22. 6 production orders were moved; 27 dealers notified once each for 55 customer orders; 6 loaners assigned. Quanta Silicon's infotainment chip shipment SH-0190 to Wacky Wheels Princeton slips from 2027-03-15 to 2027-03-19. 8 affected production orders were moved to the earliest free slots; 29 dealers were each notified once for 67 customer orders; 20 Platinum/Gold customers received loaners within pool limits.",
+    "decision_reason": "Acted on every confirmed incident with ids and dates resolved against the data. Rehearsal on the digital twin passed with zero failures and live baseline matched before the first write. Incident types handled were plant_outage and supplier_delay."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "purpose": "summarize",
+    "input_tokens": 483,
+    "output_tokens": 210,
+    "cost_usd": 0.00067
+  }
+}

@@ -2,18 +2,18 @@
   "provider": "gemini",
   "model": "gemini-3.8-flash",
   "purpose": "audit",
-  "latency_s": 6.267,
+  "latency_s": 6.286,
   "parsed": {
     "agree": true,
     "concerns": [],
-    "summary": "The interpretation accurately captures both incidents with correct dates, and the plan adheres strictly to rescheduling, dealer notification, and loaner prioritization rules."
+    "summary": "Both incidents are correctly interpreted and the plan fully complies with rescheduling, dealer notification, and loaner prioritization rules."
   },
   "usage": {
     "provider": "gemini",
     "model": "gemini-3.8-flash",
     "purpose": "audit",
     "input_tokens": 1710,
-    "output_tokens": 705,
-    "cost_usd": 0.003926
+    "output_tokens": 731,
+    "cost_usd": 0.004024
   }
 }

@@ -2,17 +2,17 @@
   "provider": "gemini",
   "model": "gemini-3.5-flash-lite",
   "purpose": "summarize",
-  "latency_s": 1.114,
+  "latency_s": 1.053,
   "parsed": {
-    "summary": "Orbit Optics's surround-view camera kit shipment SH-0182 to Wacky Wheels Princeton slips from 2027-03-15 to 2027-03-18. 3 affected production orders were moved to the earliest free slots with 3 rescheduled and 0 transferred. 14 dealers were each notified once for 26 customer orders, and 10 Platinum/Gold customers received loaners within pool limits.",
-    "decision_reason": "Acted on a real incident of type supplier_delay because ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, and the live baseline matched before the first write, following the rules that drove the actions."
+    "summary": "Orbit Optics's surround-view camera kit shipment SH-0182 to Wacky Wheels Princeton slips from 2027-03-15 to 2027-03-18. 3 affected production orders were moved to the earliest free slots (3 rescheduled, 0 transferred); 14 dealers were each notified once for 26 customer orders; 10 Platinum/Gold customers received loaners within pool limits.",
+    "decision_reason": "Acted on every confirmed incident: ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, live baseline matched before the first write. Incident types handled: supplier_delay."
   },
   "usage": {
     "provider": "gemini",
     "model": "gemini-3.5-flash-lite",
     "purpose": "summarize",
     "input_tokens": 422,
-    "output_tokens": 163,
-    "cost_usd": 0.000534
+    "output_tokens": 154,
+    "cost_usd": 0.000512
   }
 }

@@ -1,0 +1,35 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "purpose": "extract",
+  "latency_s": 0.885,
+  "parsed": {
+    "incidents": [
+      {
+        "category": "unconfirmed",
+        "evidence": "Rumor from a supplier rep: something may be off with a seat material coming up. No dates, no details, nothing confirmed.",
+        "plant": null,
+        "part": "seat material",
+        "supplier": null,
+        "shipment_id": null,
+        "lot_id": null,
+        "original_eta": null,
+        "new_eta": null,
+        "outage_start": null,
+        "outage_end": null,
+        "build_window_start": null,
+        "build_window_end": null,
+        "reason": "This is an unconfirmed rumor about a part without specific details or dates.",
+        "confidence": 1.0
+      }
+    ]
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "purpose": "extract",
+    "input_tokens": 757,
+    "output_tokens": 149,
+    "cost_usd": 0.0006
+  }
+}

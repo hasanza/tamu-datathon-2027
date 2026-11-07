@@ -8,7 +8,7 @@
   "classification": {
     "category": "plant_outage",
     "confidence": 1.0,
-    "reason": "This is a plant outage because the message states that production is stopped at the Lexington plant due to a power failure for a specific date range."
+    "reason": "This is a plant outage because production is stopped due to a power failure for a specific range of days."
   },
   "incidents": [
     {
@@ -63,7 +63,7 @@
         }
       ],
       "ambiguities": [],
-      "reason": "This is a plant outage because the message states that production is stopped at the Lexington plant due to a power failure for a specific date range."
+      "reason": "This is a plant outage because production is stopped due to a power failure for a specific range of days."
     }
   ],
   "paths": {
@@ -367,59 +367,59 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T09:16:00.003000",
-      "ended": "2027-03-08T09:16:00.017000",
+      "started": "2027-03-08T09:16:01.188000",
+      "ended": "2027-03-08T09:16:05.171000",
       "steps": [
         {
-          "t": "2027-03-08T09:16:00.003000",
+          "t": "2027-03-08T09:16:01.188000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): plant_outage",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 779,
-            "output_tokens": 302,
-            "cached": true
+            "output_tokens": 295,
+            "cached": false
           }
         },
         {
-          "t": "2027-03-08T09:16:00.004000",
+          "t": "2027-03-08T09:16:01.190000",
           "kind": "gate",
           "text": "E-08#1: plant_outage confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T09:16:00.007000",
+          "t": "2027-03-08T09:16:01.194000",
           "kind": "rehearse",
           "text": "Rehearsed 49 actions on the twin: 49 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T09:16:00.008000",
+          "t": "2027-03-08T09:16:04.909000",
           "kind": "audit",
-          "text": "Auditor agrees: The plant outage at P_KY from 2027-03-24 to 2027-03-25 was interpreted correctly and the rescheduling, dealer notifications, and loaner assignments follow all operational policies.",
+          "text": "Auditor agrees: The plant outage at P_KY was accurately identified and all corrective actions including rescheduling, dealer notifications, and loaner assignments follow policy rules.",
           "data": null
         },
         {
-          "t": "2027-03-08T09:16:00.017000",
+          "t": "2027-03-08T09:16:05.171000",
           "kind": "execute",
-          "text": "Executed 49 calls via twin: 49 ok, 0 failed (46 writes, 3 verification reads)",
+          "text": "Executed 49 calls via server: 49 ok, 0 failed (46 writes, 3 verification reads)",
           "data": null
         }
       ]
     },
     {
       "agent": "supply_chain",
-      "started": "2027-03-08T09:16:00.005000",
-      "ended": "2027-03-08T09:16:00.005000",
+      "started": "2027-03-08T09:16:01.192000",
+      "ended": "2027-03-08T09:16:01.192000",
       "steps": [
         {
-          "t": "2027-03-08T09:16:00.005000",
+          "t": "2027-03-08T09:16:01.192000",
           "kind": "graph",
           "text": "Plant P_KY -> POs building 2027-03-24..2027-03-25 (inclusive): 6 affected: ['PO-0157', 'PO-0158', 'PO-0159', 'PO-0160', 'PO-0161', 'PO-0162']",
           "data": null
         },
         {
-          "t": "2027-03-08T09:16:00.005000",
+          "t": "2027-03-08T09:16:01.192000",
           "kind": "plan",
           "text": "Restart index 14; slots 5/day, shared across this event. 6 reschedule(s), 0 transfer(s), 0 unplaceable. PO-0157->P_KY 2027-03-26; PO-0158->P_KY 2027-03-26; PO-0159->P_KY 2027-03-29; PO-0160->P_KY 2027-03-29; PO-0161->P_KY 2027-03-30; PO-0162->P_KY 2027-03-30",
           "data": {
@@ -433,17 +433,17 @@
     },
     {
       "agent": "dealer_care",
-      "started": "2027-03-08T09:16:00.006000",
-      "ended": "2027-03-08T09:16:00.006000",
+      "started": "2027-03-08T09:16:01.192000",
+      "ended": "2027-03-08T09:16:01.193000",
       "steps": [
         {
-          "t": "2027-03-08T09:16:00.006000",
+          "t": "2027-03-08T09:16:01.192000",
           "kind": "graph",
           "text": "56 customer orders on 6 moved POs across 25 dealers (all incidents of this event together)",
           "data": null
         },
         {
-          "t": "2027-03-08T09:16:00.006000",
+          "t": "2027-03-08T09:16:01.193000",
           "kind": "plan",
           "text": "One notice per dealer; 15 Platinum/Gold customer orders entitled, 15 loaner(s) assigned within pool limits (Platinum, then Gold, earlier promise, lower id).",
           "data": null
@@ -2206,31 +2206,31 @@
         "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 779,
-        "output_tokens": 302,
-        "cost_usd": 0.000989,
-        "cached": true
+        "output_tokens": 295,
+        "cost_usd": 0.000971,
+        "cached": false
       },
       {
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "audit",
         "input_tokens": 1354,
-        "output_tokens": 320,
-        "cost_usd": 0.002216,
-        "cached": true
+        "output_tokens": 453,
+        "cost_usd": 0.002714,
+        "cached": false
       },
       {
         "provider": "gemini",
         "model": "gemini-3.5-flash-lite",
         "purpose": "summarize",
         "input_tokens": 356,
-        "output_tokens": 119,
-        "cost_usd": 0.000404,
+        "output_tokens": 138,
+        "cost_usd": 0.000452,
         "cached": false
       }
     ],
-    "total_cost_usd": 0.003609
+    "total_cost_usd": 0.004137
   },
-  "summary": "Wacky Wheels Lexington is down 2027-03-24 to 2027-03-25. 6 production orders were moved (6 rescheduled at the same plant); 25 dealers notified once each for 56 customer orders; 15 loaners assigned.",
-  "decision_reason": "Acted on confirmed incident plant_outage. Ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, live baseline matched before the first write."
+  "summary": "Wacky Wheels Lexington experienced a power failure causing production to stop from 2027-03-24 through 2027-03-25 inclusive. The control tower rescheduled 6 production orders at the same plant, notified 25 dealers once each for 56 customer orders, and assigned 15 loaners.",
+  "decision_reason": "The system acted because it was a real incident classified as plant_outage, where all IDs and dates were resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live baseline matched before the first write."
 }
