@@ -16,6 +16,9 @@ import asyncio
 import json
 import os
 import re
+import subprocess
+import sys
+import time
 from collections.abc import AsyncIterator, Awaitable, Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -40,13 +43,9 @@ SSE_TYPES = {"event_received", "agent_step", "action", "event_done"}
 class Settings:
     traces_dir: Path = field(default_factory=lambda: _path("TRACES_DIR", "traces/examples"))
     run_dir: Path = field(default_factory=lambda: _path("RUN_DIR", "runs/dev"))
-    events_path: Path = field(
-        default_factory=lambda: _path("EVENTS_PATH", "hack_the_highway/data/events.json")
-    )
+    events_path: Path = field(default_factory=lambda: _path("EVENTS_PATH", "hack_the_highway/data/events.json"))
     cors_origins: list[str] = field(
-        default_factory=lambda: os.environ.get(
-            "CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
-        ).split(",")
+        default_factory=lambda: os.environ.get("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
     )
     poll_s: float = 0.25
 
@@ -132,9 +131,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         try:
             return Trace.model_validate_json(p.read_text(encoding="utf-8"))
         except ValidationError as e:
-            raise HTTPException(
-                500, f"{p.name} does not match the Trace contract: {e.error_count()} errors"
-            ) from e
+            raise HTTPException(500, f"{p.name} does not match the Trace contract: {e.error_count()} errors") from e
 
     def all_traces() -> dict[str, Trace]:
         out = {}
@@ -216,21 +213,49 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "models": sorted({f"{c.provider}/{c.model}" for c in calls}),
         }
 
-    @app.post("/api/run")
+    runner: dict[str, Any] = {"proc": None, "mode": None, "started": None}
+
+    def runner_state() -> dict[str, Any]:
+        proc = runner["proc"]
+        running = proc is not None and proc.poll() is None
+        return {
+            "running": running,
+            "mode": runner["mode"],
+            "exit_code": None if proc is None or running else proc.returncode,
+            "started": runner["started"],
+        }
+
+    @app.get("/api/run/status")
+    def run_status() -> dict[str, Any]:
+        return runner_state()
+
+    @app.post("/api/run", status_code=202)
     def run(
-        event_id: str | None = Query(default=None, pattern=EVENT_ID.pattern), all: bool = False
+        event_id: str | None = Query(default=None, pattern=EVENT_ID.pattern),
+        all: bool = False,
+        mode: str = Query(default="dry", pattern="^(dry|server)$"),
+        pace: float = Query(default=1.0, ge=0, le=10),
     ) -> dict[str, Any]:
+        """Start the pipeline in a subprocess (control_tower.live). mode=server uses a fresh organizers' server."""
         if not event_id and not all:
             raise HTTPException(422, "give event_id=E-nn or all=true")
-        # Wired in task 3.4, once CORE's coordinator (3.1) exists.
-        raise HTTPException(501, "pipeline runner not wired yet (task 3.4, needs CORE 3.1)")
+        if runner_state()["running"]:
+            raise HTTPException(409, "a run is already in progress")
+        cmd = [sys.executable, "-m", "control_tower.live", "--mode", mode, "--pace", str(pace)]
+        if event_id:
+            cmd += ["--event", event_id]
+        cfg.traces_dir, cfg.run_dir = ROOT / "traces" / "live", ROOT / "runs" / "live"
+        for stale in cfg.traces_dir.glob("E-*.json") if cfg.traces_dir.exists() else []:
+            stale.unlink()  # the live run rewrites traces; do not show the previous run's results as current
+        env = {**os.environ, "LLM_CACHE_DIR": os.environ.get("LLM_CACHE_DIR", str(ROOT / "cache" / "snapshot"))}
+        runner["proc"] = subprocess.Popen(cmd, cwd=ROOT, env=env)  # noqa: S603
+        runner["mode"], runner["started"] = mode, time.time()
+        return runner_state()
 
     @app.get("/api/stream")
     async def stream(request: Request, replay: bool = False) -> EventSourceResponse:
         return EventSourceResponse(
-            tail_ndjson(
-                cfg.stream_file, from_start=replay, poll_s=cfg.poll_s, disconnected=request.is_disconnected
-            )
+            tail_ndjson(cfg.stream_file, from_start=replay, poll_s=cfg.poll_s, disconnected=request.is_disconnected)
         )
 
     return app

@@ -1,0 +1,19 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "audit",
+  "latency_s": 4.906,
+  "parsed": {
+    "agree": true,
+    "concerns": [],
+    "summary": "The interpretation accurately identifies the Kentucky plant outage dates and the corrective actions adhere to all scheduling and customer care policies."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "audit",
+    "input_tokens": 1440,
+    "output_tokens": 469,
+    "cost_usd": 0.002839
+  }
+}

@@ -1039,11 +1039,11 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T07:17:00.002000",
-      "ended": "2027-03-08T07:17:00.016000",
+      "started": "2027-03-08T07:17:00.003000",
+      "ended": "2027-03-08T07:17:00.015000",
       "steps": [
         {
-          "t": "2027-03-08T07:17:00.002000",
+          "t": "2027-03-08T07:17:00.003000",
           "kind": "llm",
           "text": "Extracted 2 incident(s): plant_outage, supplier_delay",
           "data": {
@@ -1060,13 +1060,13 @@
           "data": null
         },
         {
-          "t": "2027-03-08T07:17:00.003000",
+          "t": "2027-03-08T07:17:00.004000",
           "kind": "gate",
           "text": "E-01#1: plant_outage confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T07:17:00.003000",
+          "t": "2027-03-08T07:17:00.004000",
           "kind": "gate",
           "text": "E-01#2: supplier_delay confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
@@ -1080,11 +1080,11 @@
         {
           "t": "2027-03-08T07:17:00.007000",
           "kind": "audit",
-          "text": "Auditor unavailable; continuing on the deterministic checks alone",
+          "text": "Auditor agrees: Both the plant outage and supplier delay incidents are correctly interpreted and the planned rescheduling, dealer notifications, and loaner assignments follow all operational rules.",
           "data": null
         },
         {
-          "t": "2027-03-08T07:17:00.016000",
+          "t": "2027-03-08T07:17:00.015000",
           "kind": "execute",
           "text": "Executed 88 calls via twin: 88 ok, 0 failed (81 writes, 7 verification reads)",
           "data": null
@@ -4373,16 +4373,25 @@
       },
       {
         "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "audit",
+        "input_tokens": 1710,
+        "output_tokens": 706,
+        "cost_usd": 0.00393,
+        "cached": true
+      },
+      {
+        "provider": "gemini",
         "model": "gemini-3.5-flash-lite",
         "purpose": "summarize",
-        "input_tokens": 496,
-        "output_tokens": 231,
-        "cost_usd": 0.000726,
-        "cached": true
+        "input_tokens": 483,
+        "output_tokens": 223,
+        "cost_usd": 0.000702,
+        "cached": false
       }
     ],
-    "total_cost_usd": 0.002201
+    "total_cost_usd": 0.006107
   },
-  "summary": "Wacky Wheels San Antonio is down 2027-03-19 to 2027-03-22. 6 production orders were moved with 6 rescheduled after the restart and 0 transferred to other plants, 27 dealers notified once each for 55 customer orders, and 6 loaners assigned. Quanta Silicon's infotainment chip shipment SH-0190 to Wacky Wheels Princeton slips from 2027-03-15 to 2027-03-19. 8 affected production orders were moved to the earliest free slots with 8 rescheduled and 0 transferred, 29 dealers were each notified once for 67 customer orders, and 20 Platinum/Gold customers received loaners within pool limits.",
-  "decision_reason": "Acted on every confirmed incident, including plant_outage and supplier_delay, with ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, and live baseline matched before the first write."
+  "summary": "Wacky Wheels San Antonio is down 2027-03-19 to 2027-03-22, resulting in 6 production orders moved, 27 dealers notified once each for 55 customer orders, and 6 loaners assigned. Quanta Silicon's infotainment chip shipment SH-0190 to Wacky Wheels Princeton slips from 2027-03-15 to 2027-03-19. This caused 8 affected production orders to be moved to the earliest free slots, 29 dealers to be each notified once for 67 customer orders, and 20 Platinum or Gold customers to receive loaners within pool limits.",
+  "decision_reason": "The system acted on every confirmed incident because IDs and dates were resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live baseline matched before the first write. These actions were driven by the rules for plant outage and supplier delay incidents."
 }

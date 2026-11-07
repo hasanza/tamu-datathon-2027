@@ -514,11 +514,11 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T08:08:00.001000",
-      "ended": "2027-03-08T08:08:00.010000",
+      "started": "2027-03-08T08:08:00.002000",
+      "ended": "2027-03-08T08:08:04.920000",
       "steps": [
         {
-          "t": "2027-03-08T08:08:00.001000",
+          "t": "2027-03-08T08:08:00.002000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): plant_outage",
           "data": {
@@ -535,19 +535,19 @@
           "data": null
         },
         {
-          "t": "2027-03-08T08:08:00.003000",
+          "t": "2027-03-08T08:08:00.004000",
           "kind": "rehearse",
           "text": "Rehearsed 64 actions on the twin: 64 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T08:08:00.004000",
+          "t": "2027-03-08T08:08:04.911000",
           "kind": "audit",
-          "text": "Auditor agrees: The plant outage dates, order reschedules, dealer notifications, and loaner assignments correctly reflect the message and policy rules.",
+          "text": "Auditor agrees: The interpretation accurately identifies the Kentucky plant outage dates and the corrective actions adhere to all scheduling and customer care policies.",
           "data": null
         },
         {
-          "t": "2027-03-08T08:08:00.010000",
+          "t": "2027-03-08T08:08:04.920000",
           "kind": "execute",
           "text": "Executed 64 calls via twin: 64 ok, 0 failed (59 writes, 5 verification reads)",
           "data": null
@@ -556,17 +556,17 @@
     },
     {
       "agent": "supply_chain",
-      "started": "2027-03-08T08:08:00.002000",
-      "ended": "2027-03-08T08:08:00.002000",
+      "started": "2027-03-08T08:08:00.003000",
+      "ended": "2027-03-08T08:08:00.003000",
       "steps": [
         {
-          "t": "2027-03-08T08:08:00.002000",
+          "t": "2027-03-08T08:08:00.003000",
           "kind": "graph",
           "text": "Plant P_KY -> POs building 2027-03-16..2027-03-18 (inclusive): 9 affected: ['PO-0139', 'PO-0140', 'PO-0141', 'PO-0142', 'PO-0143', 'PO-0144', 'PO-0145', 'PO-0146', 'PO-0147']",
           "data": null
         },
         {
-          "t": "2027-03-08T08:08:00.002000",
+          "t": "2027-03-08T08:08:00.003000",
           "kind": "plan",
           "text": "Restart index 9; slots 5/day, shared across this event. 9 reschedule(s), 0 transfer(s), 0 unplaceable. PO-0139->P_KY 2027-03-19; PO-0140->P_KY 2027-03-19; PO-0141->P_KY 2027-03-22; PO-0142->P_KY 2027-03-22; PO-0143->P_KY 2027-03-23; PO-0144->P_KY 2027-03-23; PO-0145->P_KY 2027-03-24; PO-0146->P_KY 2027-03-24; PO-0147->P_KY 2027-03-25",
           "data": {
@@ -580,17 +580,17 @@
     },
     {
       "agent": "dealer_care",
-      "started": "2027-03-08T08:08:00.002000",
-      "ended": "2027-03-08T08:08:00.003000",
+      "started": "2027-03-08T08:08:00.003000",
+      "ended": "2027-03-08T08:08:00.004000",
       "steps": [
         {
-          "t": "2027-03-08T08:08:00.002000",
+          "t": "2027-03-08T08:08:00.003000",
           "kind": "graph",
           "text": "79 customer orders on 9 moved POs across 32 dealers (all incidents of this event together)",
           "data": null
         },
         {
-          "t": "2027-03-08T08:08:00.003000",
+          "t": "2027-03-08T08:08:00.004000",
           "kind": "plan",
           "text": "One notice per dealer; 22 Platinum/Gold customer orders entitled, 18 loaner(s) assigned within pool limits (Platinum, then Gold, earlier promise, lower id).",
           "data": null
@@ -2923,22 +2923,22 @@
         "model": "gemini-3.8-flash",
         "purpose": "audit",
         "input_tokens": 1440,
-        "output_tokens": 655,
-        "cost_usd": 0.003536,
-        "cached": true
+        "output_tokens": 469,
+        "cost_usd": 0.002839,
+        "cached": false
       },
       {
         "provider": "gemini",
         "model": "gemini-3.5-flash-lite",
         "purpose": "summarize",
-        "input_tokens": 351,
-        "output_tokens": 140,
-        "cost_usd": 0.000455,
-        "cached": true
+        "input_tokens": 338,
+        "output_tokens": 144,
+        "cost_usd": 0.000461,
+        "cached": false
       }
     ],
-    "total_cost_usd": 0.004842
+    "total_cost_usd": 0.004151
   },
-  "summary": "Wacky Wheels Lexington is down 2027-03-16 to 2027-03-18. 9 production orders were moved with 9 rescheduled after the restart and 0 transferred to other plants because same-plant slots ran out. 32 dealers were notified once each for 79 customer orders and 18 loaners were assigned.",
-  "decision_reason": "Acted on a confirmed incident type plant_outage because IDs and dates were resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live baseline matched before the first write."
+  "summary": "Wacky Wheels Lexington is down from 2027-03-16 to 2027-03-18 due to a line software outage. The supply-chain control tower rescheduled 9 production orders at the same plant, notified 32 dealers once each for 79 customer orders, and assigned 18 loaners.",
+  "decision_reason": "The control tower acted because it was a real incident of type plant_outage with confirmed identifiers and dates. It followed operational rules by resolving IDs against the data, passing the digital twin rehearsal with zero failures, and matching the live baseline before the first write."
 }

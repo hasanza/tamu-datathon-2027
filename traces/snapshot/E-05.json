@@ -37,11 +37,11 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T08:25:00.001000",
-      "ended": "2027-03-08T08:25:00.001000",
+      "started": "2027-03-08T08:25:00.005000",
+      "ended": "2027-03-08T08:25:00.006000",
       "steps": [
         {
-          "t": "2027-03-08T08:25:00.001000",
+          "t": "2027-03-08T08:25:00.005000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): noise",
           "data": {
@@ -52,7 +52,7 @@
           }
         },
         {
-          "t": "2027-03-08T08:25:00.001000",
+          "t": "2027-03-08T08:25:00.006000",
           "kind": "gate",
           "text": "Noise -> no write tools, no escalation (rule 7). This is a request for a brochure PDF and has nothing to do with plant operations or supply chain.",
           "data": null

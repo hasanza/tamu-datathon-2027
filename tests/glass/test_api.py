@@ -81,10 +81,23 @@ def test_empty_log_is_empty_not_error(client):
     assert client.get("/api/kpis").json()["failed"] == 0
 
 
-def test_run_is_not_wired_yet(client):
-    assert client.post("/api/run", params={"all": True}).status_code == 501
+def test_run_starts_subprocess_and_rejects_double_start(client, monkeypatch):
+    started = []
+
+    class FakeProc:
+        returncode = None
+
+        def poll(self):
+            return None
+
+    monkeypatch.setattr("api.app.subprocess.Popen", lambda cmd, **kw: started.append(cmd) or FakeProc())
     assert client.post("/api/run").status_code == 422
     assert client.post("/api/run", params={"event_id": "nope"}).status_code == 422
+    r = client.post("/api/run", params={"event_id": "E-11", "mode": "dry"})
+    assert r.status_code == 202 and r.json()["running"] is True
+    assert started[0][-2:] == ["--event", "E-11"]
+    assert client.post("/api/run", params={"all": True}).status_code == 409
+    assert client.get("/api/run/status").json()["running"] is True
 
 
 def test_cors_allows_vite(client):

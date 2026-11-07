@@ -398,11 +398,11 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T11:15:00.001000",
+      "started": "2027-03-08T11:15:00.002000",
       "ended": "2027-03-08T11:15:00.014000",
       "steps": [
         {
-          "t": "2027-03-08T11:15:00.001000",
+          "t": "2027-03-08T11:15:00.002000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): quality_hold",
           "data": {
@@ -419,7 +419,7 @@
           "data": null
         },
         {
-          "t": "2027-03-08T11:15:00.003000",
+          "t": "2027-03-08T11:15:00.004000",
           "kind": "rehearse",
           "text": "Rehearsed 102 actions on the twin: 102 ok, 0 failed. Invariants: ok",
           "data": null
