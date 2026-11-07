@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+/* Tokens from docs/BRAND.md. Dark is the default; light is applied with data-theme="light". */
+:root,
+:root[data-theme="dark"] {
+  --brand: #b30000;
+  --brand-bright: #e31b23;
+  --bg: #0a0a0b;
+  --surface: #141416;
+  --surface-2: #1c1c1f;
+  --border: #2a2a2e;
+  --text: #ffffff;
+  --text-2: #c9cac8;
+  --text-3: #8a8a8a;
+  --po-node: #ffffff;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --brand: #b30000;
+  --brand-bright: #e31b23;
+  --bg: #ffffff;
+  --surface: #f7f7f7;
+  --surface-2: #f4f4f4;
+  --border: #c9cac8;
+  --text: #000000;
+  --text-2: #4d4d4d;
+  --text-3: #6b6b6b;
+  --po-node: #000000;
+  color-scheme: light;
+}
+:root {
+  --cat-delay: #e6a100;
+  --cat-outage: #ff5a36;
+  --cat-quality: #8b5cf6;
+  --cat-noise: #747474;
+  --cat-unconfirmed: #3b82f6;
+  --cat-compound: #14b8a6; /* not in BRAND.md: compound events need a distinct, non-red color */
+  --ok: #2fa66a;
+  --warn: #e6a100;
+  --fail: #e31b23;
+}
+
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-bright: var(--brand-bright);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--border);
+  --color-tx: var(--text);
+  --color-tx2: var(--text-2);
+  --color-tx3: var(--text-3);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-fail: var(--fail);
+  --font-sans: "Noto Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --radius-lg: 8px;
+  --radius-md: 6px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Noto Sans", system-ui, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+code,
+.mono {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-bright);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* thin, calm scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+/* Motion only where it carries meaning */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes flash-row {
+  from {
+    background: color-mix(in srgb, var(--brand-bright) 28%, transparent);
+  }
+  to {
+    background: transparent;
+  }
+}
+.anim-slide-in {
+  animation: slide-in 0.25s ease-out;
+}
+.anim-pulse {
+  animation: pulse-dot 1.1s ease-in-out infinite;
+}
+.anim-flash {
+  animation: flash-row 1.6s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .anim-slide-in,
+  .anim-pulse,
+  .anim-flash {
+    animation: none;
+  }
+}
