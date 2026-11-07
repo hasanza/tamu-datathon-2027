@@ -28,9 +28,7 @@ def set_transport(transport: httpx.BaseTransport | None) -> None:
 
 
 def _client() -> httpx.Client:
-    return httpx.Client(
-        base_url=os.environ.get("ENTERPRISE_URL", DEFAULT_URL), timeout=TIMEOUT_S, transport=_transport
-    )
+    return httpx.Client(base_url=os.environ.get("ENTERPRISE_URL", DEFAULT_URL), timeout=TIMEOUT_S, transport=_transport)
 
 
 def _wrap(resp: httpx.Response) -> dict[str, Any]:

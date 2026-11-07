@@ -1,0 +1,19 @@
+flowchart LR
+  Supplier -- SUPPLIES --> Part
+  Shipment -- OF_PART --> Part
+  Shipment -- TO_PLANT --> Plant
+  Shipment -- FROM --> Supplier
+  Model -- USES_PART --> Part
+  Plant -- BUILDS_MODEL --> Model
+  ProductionOrder -- AT_PLANT --> Plant
+  ProductionOrder -- OF_MODEL --> Model
+  ProductionOrder -- ON_DAY --> Day
+  CustomerOrder -- FULFILLED_BY --> ProductionOrder
+  CustomerOrder -- SOLD_BY --> Dealer
+  CustomerOrder -- FOR --> Customer
+  Lot -- OF_PART --> Part
+  Lot -- AT_PLANT --> Plant
+  Lot -- FROM --> Supplier
+  Vehicle -- BUILT_BY --> ProductionOrder
+  Vehicle -- AT_DEALER --> Dealer
+  Vehicle -- OWNED_BY --> Customer
