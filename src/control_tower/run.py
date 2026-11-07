@@ -48,6 +48,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--audit-model", help="model for the auditor (default: same as --model / provider default)")
     ap.add_argument("--no-audit", action="store_true")
     ap.add_argument("--no-explain", action="store_true")
+    ap.add_argument("--events-file", help="JSON list of events to run instead of the organizers' feed (sandbox runs)")
     ap.add_argument("--pace", type=float, default=0.0, help="seconds to wait between events (live demo)")
     ap.add_argument("--transfer-min-day", choices=["today", "disruption_end"], default="today")
     a = ap.parse_args(argv)
@@ -65,7 +66,9 @@ def main(argv: list[str] | None = None) -> int:
     index = EntityIndex(world)
     twin = Twin()
     executor = TwinExecutor(out / "action_log.jsonl") if a.dry_run else ServerExecutor(a.server)
-    events = load_events(None if a.dry_run else a.server)
+    events = (
+        json.loads(Path(a.events_file).read_text()) if a.events_file else load_events(None if a.dry_run else a.server)
+    )
     wanted = [e for e in events if a.all or e["event_id"] in set(a.event)]
     coord = Coordinator(
         world, graph, index, twin, executor, traces_dir=traces_dir, sink=sink,
