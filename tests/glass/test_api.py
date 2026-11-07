@@ -25,6 +25,7 @@ def cfg(tmp_path):
     return Settings(
         traces_dir=ROOT / "traces" / "examples",
         run_dir=tmp_path,
+        custom_dir=tmp_path / "custom",
         events_path=ROOT / "hack_the_highway" / "data" / "events.json",
         poll_s=0.01,
     )
@@ -273,3 +274,25 @@ def test_reset_refused_while_running(client, monkeypatch):
     monkeypatch.setattr(appmod.subprocess, "Popen", lambda cmd, **kw: FakeProc())
     client.post("/api/run", params={"all": True})
     assert client.post("/api/reset").status_code == 409
+
+
+def test_custom_event_sandbox(client, cfg, monkeypatch):
+    import subprocess as sp
+
+    def fake_run(cmd, **kw):
+        assert cmd[-2] == "--custom"
+        ev = json.loads(Path(cmd[-1]).read_text())[0]
+        assert ev["event_id"] == "C-01" and ev["text"] == "The Huntsville line is down Wednesday."
+        src = json.loads((ROOT / "traces/examples/E-05.json").read_text())
+        src.update(event_id="C-01", text=ev["text"])
+        cfg.custom_dir.mkdir(parents=True, exist_ok=True)
+        (cfg.custom_dir / "C-01.json").write_text(json.dumps(src))
+        return sp.CompletedProcess(cmd, 0, "", "")
+
+    monkeypatch.setattr("api.app.subprocess.run", fake_run)
+    assert client.post("/api/custom", json={"text": "x"}).status_code == 422
+    r = client.post("/api/custom", json={"text": "The Huntsville line is down Wednesday."})
+    assert r.status_code == 200 and r.json()["event_id"] == "C-01"
+    assert client.get("/api/traces/C-01").json()["event_id"] == "C-01"
+    ev = {e["event_id"]: e for e in client.get("/api/events").json()}
+    assert ev["C-01"]["custom"] is True and "E-01" in ev

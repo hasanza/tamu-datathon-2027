@@ -26,13 +26,13 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import ValidationError
+from pydantic import BaseModel, Field, ValidationError
 from sse_starlette.sse import EventSourceResponse
 
 from control_tower.schemas import GraphPath, Trace
 
 ROOT = Path(__file__).resolve().parents[1]
-EVENT_ID = re.compile(r"^E-\d{2}$")
+EVENT_ID = re.compile(r"^[EC]-\d{2}$")
 # Tools that are not writes (hack_the_highway/enterprise.py TOOLS[...]["writes"] is False). Hard-coded because
 # GET /tools omits the flag (docs/server-notes.md).
 NON_WRITE_TOOLS = {"mes.get_schedule", "crm.loaner_availability", "escalate"}
@@ -48,6 +48,7 @@ class Settings:
         default_factory=lambda: os.environ.get("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
     )
     poll_s: float = 0.25
+    custom_dir: Path = field(default_factory=lambda: _path("CUSTOM_DIR", "traces/custom"))
 
     @property
     def action_log(self) -> Path:
@@ -56,6 +57,11 @@ class Settings:
     @property
     def stream_file(self) -> Path:
         return self.run_dir / "events.ndjson"
+
+
+class CustomEvent(BaseModel):
+    text: str = Field(min_length=8, max_length=2000)
+    source: str = Field(default="judge input", max_length=60)
 
 
 def _path(var: str, default: str) -> Path:
@@ -136,7 +142,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return event_id
 
     def load_trace(event_id: str) -> Trace | None:
-        p = cfg.traces_dir / f"{event_id}.json"
+        p = (cfg.custom_dir if event_id.startswith("C-") else cfg.traces_dir) / f"{event_id}.json"
         if not p.exists():
             return None
         try:
@@ -170,6 +176,21 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     "confidence": t.classification.confidence if t else None,
                 }
             )
+        for p in sorted(cfg.custom_dir.glob("C-*.json")) if cfg.custom_dir.exists() else []:
+            t = load_trace(p.stem)
+            if t:
+                out.append(
+                    {
+                        "event_id": t.event_id,
+                        "received_at": t.received_at,
+                        "source": t.source,
+                        "text": t.text,
+                        "status": t.status,
+                        "category": t.classification.category,
+                        "confidence": t.classification.confidence,
+                        "custom": True,
+                    }
+                )
         return out
 
     @app.get("/api/traces/{event_id}", response_model=Trace)
@@ -223,6 +244,33 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "llm_calls": len(calls),
             "models": sorted({f"{c.provider}/{c.model}" for c in calls}),
         }
+
+    @app.post("/api/custom")
+    def custom(body: CustomEvent) -> dict[str, Any]:
+        """Run the full pipeline on a judge's own event text in a SANDBOX (in-process twin; never the real server or
+        the real action log). Blocks until the trace exists (a few seconds), then returns it as C-nn."""
+        cfg.custom_dir.mkdir(parents=True, exist_ok=True)
+        n = 1 + max([int(p.stem[2:]) for p in cfg.custom_dir.glob("C-*.json")] or [0])
+        if n > 99:
+            raise HTTPException(409, "custom event limit reached (C-99)")
+        eid = f"C-{n:02d}"
+        ev = {"event_id": eid, "received_at": "2027-03-08T09:00:00", "source": body.source, "text": body.text.strip()}
+        tmp = cfg.custom_dir / f"{eid}.input.json"
+        tmp.write_text(json.dumps([ev]), encoding="utf-8")
+        cmd = [sys.executable, "-m", "control_tower.live", "--custom", str(tmp)]
+        env = {
+            k: v for k, v in os.environ.items() if k != "LLM_CACHE_DIR"
+        }  # new text: cache in cache/llm, not the committed snapshot
+        try:
+            r = subprocess.run(cmd, cwd=ROOT, env=env, capture_output=True, text=True, timeout=180)  # noqa: S603
+        except subprocess.TimeoutExpired as e:
+            raise HTTPException(504, "the pipeline took too long on this event") from e
+        finally:
+            tmp.unlink(missing_ok=True)
+        t = load_trace(eid)
+        if t is None:
+            raise HTTPException(500, f"pipeline produced no trace: {r.stderr[-300:]}")
+        return {"event_id": eid, "status": t.status, "category": t.classification.category}
 
     runner: dict[str, Any] = {"proc": None, "mode": None, "started": None}
     initial_dirs = (cfg.traces_dir, cfg.run_dir)  # what the server was started with: the committed snapshot
