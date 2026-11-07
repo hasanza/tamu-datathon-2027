@@ -77,7 +77,7 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
 
 
 async def tail_ndjson(
-    path: Path,
+    path: Path | Callable[[], Path],
     *,
     from_start: bool,
     poll_s: float,
@@ -88,9 +88,14 @@ async def tail_ndjson(
     Starts at the end of the file unless ``from_start``. Survives the file not existing yet and
     being truncated (a new run). Lines that are not JSON objects with a known ``type`` are skipped.
     """
-    pos = 0 if from_start else (path.stat().st_size if path.exists() else 0)
+    resolve = path if callable(path) else (lambda: path)  # a callable follows a run switching run_dir mid-stream
+    current = resolve()
+    pos = 0 if from_start else (current.stat().st_size if current.exists() else 0)
     buf = b""
     while not await disconnected():
+        path = resolve()
+        if path != current:
+            current, pos, buf = path, 0, b""
         if path.exists():
             size = path.stat().st_size
             if size < pos:
@@ -266,7 +271,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/api/stream")
     async def stream(request: Request, replay: bool = False) -> EventSourceResponse:
         return EventSourceResponse(
-            tail_ndjson(cfg.stream_file, from_start=replay, poll_s=cfg.poll_s, disconnected=request.is_disconnected)
+            tail_ndjson(
+                lambda: cfg.stream_file, from_start=replay, poll_s=cfg.poll_s, disconnected=request.is_disconnected
+            )
         )
 
     return app

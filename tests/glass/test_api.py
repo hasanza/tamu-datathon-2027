@@ -238,3 +238,17 @@ def test_run_single_event_passes_event_flag(client, monkeypatch):
         "running": False,
         "exit_code": 0,
     }
+
+
+def test_stream_follows_run_dir_switch(tmp_path):
+    # A client connected before POST /api/run must receive the new run's events (cfg.run_dir changes mid-stream).
+    old, new = tmp_path / "old.ndjson", tmp_path / "new.ndjson"
+    old.write_text("")
+    current = {"p": old}
+
+    def switch_and_write():
+        current["p"] = new
+        new.write_text(json.dumps({"type": "event_received", "payload": {"event_id": "E-01"}}) + "\n")
+
+    got = _collect(lambda: current["p"], from_start=False, writer=switch_and_write)
+    assert [m["event"] for m in got] == ["event_received"]
