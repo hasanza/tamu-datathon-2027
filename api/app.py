@@ -254,7 +254,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         for stale in cfg.traces_dir.glob("E-*.json") if cfg.traces_dir.exists() else []:
             stale.unlink()  # the live run rewrites traces; do not show the previous run's results as current
         cfg.run_dir.mkdir(parents=True, exist_ok=True)
-        cfg.stream_file.write_text("")  # connected SSE tailers see the truncation now, before the pipeline starts writing
+        cfg.action_log.write_text("")  # KPIs and the actions table must not show the previous run while this one starts
+        cfg.stream_file.write_text(
+            ""
+        )  # connected SSE tailers see the truncation now, before the pipeline starts writing
         env = {**os.environ, "LLM_CACHE_DIR": os.environ.get("LLM_CACHE_DIR", str(ROOT / "cache" / "snapshot"))}
         runner["proc"] = subprocess.Popen(cmd, cwd=ROOT, env=env)  # noqa: S603
         runner["mode"], runner["started"] = mode, time.time()
