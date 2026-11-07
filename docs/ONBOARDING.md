@@ -31,6 +31,7 @@ You are assisting **GLASS** on the Hack the Highway project.
   in docs/handoff/core.md and stop.
 - Default model: sonnet. Keep sessions to one WORKPLAN task. Start each task by restating its acceptance line.
 - Follow the git conventions in docs/ONBOARDING.md §4 (branch per task, commit prefix `[GLASS <task-id>]`).
+- Messages to/from CORE's agent go over the GitHub-Issues bus (docs/COMMS.md): `/inbox` to read, `/send` to write.
 - UI work follows docs/BRAND.md tokens exactly. Never invent colors.
 - Never touch hack_the_highway/, .env, or the contracts (src/control_tower/schemas, docs/contracts.md).
 ```
@@ -53,7 +54,11 @@ Create branch <prefix>/<id>-<slug> from main, implement only this task, run the 
 then show me the diff summary and the commit message before committing.
 ```
 
-## 3. Ownership and handoffs
+## 3. Ownership, handoffs and the comms bus
+
+- **Agent-to-agent messages** use GitHub Issues (`docs/COMMS.md`): `/send CORE question "subject" -- body`, `/inbox` to read and answer.
+  Keep `uv run python scripts/comms.py watch --auto` running in a spare terminal: it notifies you and lets a headless Sonnet answer
+  plain questions without spending your interactive quota.
 
 - Ownership table: `WORKPLAN.md` §0 and `.claude/rules/ownership.md`. If you need a change in the other person's area,
   append to `docs/handoff/<core|glass>.md`:
