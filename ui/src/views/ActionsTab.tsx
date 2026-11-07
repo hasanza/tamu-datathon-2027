@@ -1,6 +1,6 @@
 import { Fragment, useMemo, useState } from "react";
 import { ChevronDown, ChevronRight, Network, Pencil, Eye } from "lucide-react";
-import { useLog } from "../api/hooks";
+import { useExecTarget, useLog } from "../api/hooks";
 import { WRITE_TOOLS, type Action, type AgentId, type Trace } from "../api/types";
 import { Chip, Empty, Mono, OkChip, Panel } from "../components/ui/primitives";
 import { clip, compactArgs } from "../lib/format";
@@ -51,6 +51,7 @@ function ActionDetail({ a }: { a: Action }) {
 
 export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGraph: (ids: string[]) => void }) {
   const log = useLog(trace.event_id);
+  const target = useExecTarget(); // "twin" for a dry run started from the UI, "server" for the committed snapshot
   const [tool, setTool] = useState<string | null>(null);
   const [agent, setAgent] = useState<string>("all");
   const [kind, setKind] = useState<"all" | "write" | "read">("all");
@@ -98,7 +99,7 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
             {log.data && (
               <>
                 {" "}
-                · server log: <span className="mono">{log.data.length}</span> calls, <span className="mono">{logOk}</span> ok
+                · {target} log: <span className="mono">{log.data.length}</span> calls, <span className="mono">{logOk}</span> ok
                 {log.data.length !== trace.actions.length && <span className="text-warn"> (differs from trace)</span>}
               </>
             )}
@@ -207,7 +208,7 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
                       )}
                     </td>
                     <td className="px-2 py-1.5"><OkChip ok={a.rehearsal?.ok} label="twin" /></td>
-                    <td className="px-2 py-1.5"><OkChip ok={a.result?.ok} label="server" /></td>
+                    <td className="px-2 py-1.5"><OkChip ok={a.result?.ok} label={target} /></td>
                   </tr>
                   {isOpen && (
                     <tr>
