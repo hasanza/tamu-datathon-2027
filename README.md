@@ -43,3 +43,25 @@ uv run pytest
 ```
 
 Models: `gemini-3.5-flash-lite` for extraction, entity tie-break and summaries (about $0.019 per full run) and `gemini-3.8-flash` as the independent auditor (about $0.030). Models used, token totals and cost for the submitted run: see `runs/final/models.json` (written by the pipeline) and the design card.
+
+## API and UI
+
+```bash
+uv run uvicorn api.app:app --port 8001          # reads traces from traces/examples by default
+TRACES_DIR=traces/snapshot RUN_DIR=runs/dev uv run uvicorn api.app:app --port 8001   # the real 15-event run
+cd ui && npm run dev                            # UI on http://localhost:5173
+```
+
+| Endpoint | Returns |
+|---|---|
+| `GET /api/events` | the 15 events with status, category and confidence from their trace |
+| `GET /api/traces/{event_id}` | one trace (validated against `src/control_tower/schemas/trace.py`) |
+| `GET /api/actions[?event_id=]` | `action_log.jsonl` parsed, with a `write` flag |
+| `GET /api/graph/{event_id}` | the event's graph paths merged and deduplicated |
+| `GET /api/kpis` | events, writes, failed calls, escalations, LLM cost and models |
+| `POST /api/run?all=true&mode=dry` / `GET /api/run/status` | start a pipeline run in the background (`mode=server` uses a fresh enterprise server) |
+| `GET /api/stream[?replay=1]` | server-sent events tailing `runs/<run>/events.ndjson` |
+
+`mcp` tools for Claude Code (`.mcp.json`, server `wacky-enterprise`): `enterprise_act`, `enterprise_get_schedule`,
+`enterprise_loaner_availability`, `enterprise_list_tools`. Server behaviour and exact error texts: `docs/server-notes.md`.
+Architecture, LLM-versus-code split, guardrails and evaluation: `docs/design_card.md`.

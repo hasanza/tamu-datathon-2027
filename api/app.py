@@ -108,7 +108,13 @@ async def tail_ndjson(
                     except ValueError:
                         continue
                     if isinstance(msg, dict) and msg.get("type") in SSE_TYPES:
-                        yield {"event": msg["type"], "data": json.dumps(msg.get("payload", {}))}
+                        payload = msg.get("payload")
+                        data = dict(payload) if isinstance(payload, dict) else {}
+                        if (
+                            "event_id" in msg
+                        ):  # CORE writes event_id beside the payload (docs/contracts.md: payload + event_id)
+                            data["event_id"] = msg["event_id"]
+                        yield {"event": msg["type"], "data": json.dumps(data)}
         await asyncio.sleep(poll_s)
 
 
