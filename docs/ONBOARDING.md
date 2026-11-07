@@ -87,7 +87,7 @@ then show me the diff summary and the commit message before committing.
 ## 5. Definition of done (per task)
 
 1. Acceptance line in WORKPLAN is demonstrably true (say how you checked).
-2. `uv run ruff check . && uv run pytest -q` green (CORE); `npm run lint && npm run build` green (GLASS).
+2. `uv run ruff check . && uv run pytest -q` green (CORE); `npm run typecheck && npm run build` green (GLASS).
 3. No edits outside your owned paths. No secrets. No changes under `hack_the_highway/`.
 4. Commit message follows §4; PR opened; WORKPLAN row updated with ✅ and the branch name.
 5. If the task produced something the other person consumes (schema, endpoint, component), one line in the handoff file.
