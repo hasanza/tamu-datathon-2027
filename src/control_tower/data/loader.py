@@ -141,6 +141,12 @@ class Calendar:
         later = [x for x in self._by_date if x > d]
         return min(later) if later else None
 
+    def on_or_after(self, d: date) -> date | None:
+        """`d` itself if it is a working day, else the next working day, else None (past the calendar)."""
+        if d in self._by_date:
+            return d
+        return self.next_working_day(d)
+
     def working_days(self, start: date, end: date) -> list[date]:
         return sorted(x for x in self._by_date if start <= x <= end)
 
