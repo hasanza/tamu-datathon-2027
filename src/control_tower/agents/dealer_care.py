@@ -22,7 +22,7 @@ def plan_care(
     loaner_left: dict[str, int],
     *,
     incident_id: str | None,
-    cause: str,
+    cause: str | dict[str, str],
     policy: Policy = DEFAULT_POLICY,
     loaner_given_to: set[str] | None = None,
 ) -> list[Action]:
@@ -40,11 +40,12 @@ def plan_care(
         for co in cos:
             m = move_of[co.production_order_id]
             where = f" at {m.to_plant}" if m.kind == "transfer" else ""
+            why = cause[co.production_order_id] if isinstance(cause, dict) else cause
             lines.append(
                 f"{co.id} (promised {co.promised_date.isoformat()}): build moves from "
-                f"{m.po.build_date.isoformat()} to {m.to_date.isoformat()}{where}"
+                f"{m.po.build_date.isoformat()} to {m.to_date.isoformat()}{where} ({why})"
             )
-        message = f"Delay notice ({cause}). Affected customer orders: " + "; ".join(lines) + "."
+        message = "Delay notice. Affected customer orders: " + "; ".join(lines) + "."
         actions.append(
             Action(
                 seq=0,

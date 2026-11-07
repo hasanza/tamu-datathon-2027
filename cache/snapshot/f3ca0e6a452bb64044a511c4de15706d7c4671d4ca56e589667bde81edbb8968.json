@@ -1,0 +1,35 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "extract",
+  "latency_s": 3.568,
+  "parsed": {
+    "incidents": [
+      {
+        "category": "noise",
+        "evidence": "Dealer Pensacola, FL asks where to find the new brochure PDF.",
+        "plant": null,
+        "part": null,
+        "supplier": null,
+        "shipment_id": null,
+        "lot_id": null,
+        "original_eta": null,
+        "new_eta": null,
+        "outage_start": null,
+        "outage_end": null,
+        "build_window_start": null,
+        "build_window_end": null,
+        "reason": "This is a dealer request for a marketing brochure PDF, which has no impact on manufacturing or supply chain operations.",
+        "confidence": 1.0
+      }
+    ]
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "extract",
+    "input_tokens": 743,
+    "output_tokens": 122,
+    "cost_usd": 0.0
+  }
+}

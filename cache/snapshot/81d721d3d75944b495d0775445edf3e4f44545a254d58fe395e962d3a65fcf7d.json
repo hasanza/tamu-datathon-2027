@@ -1,0 +1,41 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "extract",
+  "latency_s": 5.003,
+  "parsed": {
+    "incidents": [
+      {
+        "category": "plant_outage",
+        "evidence": "Wacky Wheels Lexington (P_KY) lost production to a power failure. Production is stopped from 2027-03-24 through 2027-03-25 inclusive.",
+        "plant": "Wacky Wheels Lexington (P_KY)",
+        "part": null,
+        "supplier": null,
+        "shipment_id": null,
+        "lot_id": null,
+        "original_eta": null,
+        "new_eta": null,
+        "outage_start": {
+          "text": "2027-03-24",
+          "iso": "2027-03-24"
+        },
+        "outage_end": {
+          "text": "2027-03-25",
+          "iso": "2027-03-25"
+        },
+        "build_window_start": null,
+        "build_window_end": null,
+        "reason": "The plant experienced a power failure causing a complete production shutdown across specified dates.",
+        "confidence": 0.99
+      }
+    ]
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "extract",
+    "input_tokens": 779,
+    "output_tokens": 292,
+    "cost_usd": 0.0
+  }
+}

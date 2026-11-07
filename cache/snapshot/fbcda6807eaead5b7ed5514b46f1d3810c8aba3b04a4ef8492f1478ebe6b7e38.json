@@ -1,0 +1,41 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "extract",
+  "latency_s": 4.713,
+  "parsed": {
+    "incidents": [
+      {
+        "category": "plant_outage",
+        "evidence": "Jackson update: a power failure. We're dark from Friday Mar 26 through Tuesday Mar 30",
+        "plant": "Jackson",
+        "part": null,
+        "supplier": null,
+        "shipment_id": null,
+        "lot_id": null,
+        "original_eta": null,
+        "new_eta": null,
+        "outage_start": {
+          "text": "Friday Mar 26",
+          "iso": "2027-03-26"
+        },
+        "outage_end": {
+          "text": "Tuesday Mar 30",
+          "iso": "2027-03-30"
+        },
+        "build_window_start": null,
+        "build_window_end": null,
+        "reason": "The Jackson plant is facing a power failure causing a production shutdown from Friday Mar 26 through Tuesday Mar 30.",
+        "confidence": 0.98
+      }
+    ]
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "extract",
+    "input_tokens": 762,
+    "output_tokens": 264,
+    "cost_usd": 0.0
+  }
+}

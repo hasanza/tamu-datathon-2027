@@ -29,8 +29,9 @@ uv sync                                   # env
 uv run pytest                             # all tests (unit tests need no LLM, no server)
 uv run ruff check . && uv run ruff format .
 uv run python hack_the_highway/enterprise_server.py --data hack_the_highway/data --events hack_the_highway/data/events.json --out runs/dev --port 8000 --overwrite
-uv run python -m control_tower.run --all --out runs/dev            # after task 3.1
-uv run python eval/replay_grader.py runs/dev/action_log.jsonl      # after task 3.3
+uv run python -m control_tower.run --all --out runs/dev            # needs a fresh server on :8000 and the Gemini key
+LLM_CACHE_DIR=cache/snapshot LLM_REPLAY_ONLY=1 uv run python -m control_tower.run --all --dry-run --out runs/dev   # offline
+uv run python eval/replay_grader.py runs/dev/action_log.jsonl --traces traces/dev
 cd ui && npm run dev                      # UI on :5173 ; API: uv run uvicorn api.app:app --port 8001
 ```
 

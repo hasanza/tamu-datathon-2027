@@ -1,0 +1,41 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "extract",
+  "latency_s": 4.906,
+  "parsed": {
+    "incidents": [
+      {
+        "category": "quality_hold",
+        "evidence": "Lot LOT-0191 (CHIP-IVI, supplier SUP-12) installed at P_IN on vehicles built 2027-03-02 to 2027-03-03 has a faulty weld. Place the lot on hold",
+        "plant": "P_IN",
+        "part": "CHIP-IVI",
+        "supplier": "SUP-12",
+        "shipment_id": null,
+        "lot_id": "LOT-0191",
+        "original_eta": null,
+        "new_eta": null,
+        "outage_start": null,
+        "outage_end": null,
+        "build_window_start": {
+          "text": "2027-03-02",
+          "iso": "2027-03-02"
+        },
+        "build_window_end": {
+          "text": "2027-03-03",
+          "iso": "2027-03-03"
+        },
+        "reason": "A specific lot of parts installed during a defined build window has a defect and was ordered to be placed on hold.",
+        "confidence": 1.0
+      }
+    ]
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "extract",
+    "input_tokens": 808,
+    "output_tokens": 323,
+    "cost_usd": 0.0
+  }
+}

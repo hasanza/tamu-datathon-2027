@@ -131,7 +131,8 @@ def impact_supplier_delay(
             else:
                 built.append(po_id)
     pos.sort(key=lambda p: (p.build_date, p.id))
-    end_idx = world.calendar.idx(new_eta) if world.calendar.is_working_day(new_eta) else LAST_IDX + 1
+    resume = world.calendar.on_or_after(new_eta)  # a weekend ETA means builds resume the next working day
+    end_idx = world.calendar.idx(resume) if resume else LAST_IDX + 1
     impact = DisruptionImpact(
         kind="supplier_delay",
         plant_id=plant_id,

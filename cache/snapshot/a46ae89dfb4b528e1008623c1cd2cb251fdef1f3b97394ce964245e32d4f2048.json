@@ -1,0 +1,41 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "extract",
+  "latency_s": 4.696,
+  "parsed": {
+    "incidents": [
+      {
+        "category": "supplier_delay",
+        "evidence": "the surround-view cameras run for Huntsville can't make it Monday Mar 29. Carrier says Thursday Apr 1 now",
+        "plant": "Huntsville",
+        "part": "surround-view cameras",
+        "supplier": "Orbit",
+        "shipment_id": null,
+        "lot_id": null,
+        "original_eta": {
+          "text": "Monday Mar 29",
+          "iso": "2027-03-29"
+        },
+        "new_eta": {
+          "text": "Thursday Apr 1",
+          "iso": "2027-04-01"
+        },
+        "outage_start": null,
+        "outage_end": null,
+        "build_window_start": null,
+        "build_window_end": null,
+        "reason": "Orbit notified of a shipment delay for surround-view cameras destined for Huntsville due to customs inspection.",
+        "confidence": 0.98
+      }
+    ]
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "extract",
+    "input_tokens": 767,
+    "output_tokens": 267,
+    "cost_usd": 0.0
+  }
+}
