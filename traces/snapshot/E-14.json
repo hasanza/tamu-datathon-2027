@@ -543,46 +543,46 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T10:58:01.068000",
-      "ended": "2027-03-08T10:58:07.405000",
+      "started": "2027-03-08T10:58:00.001000",
+      "ended": "2027-03-08T10:58:00.017000",
       "steps": [
         {
-          "t": "2027-03-08T10:58:01.068000",
+          "t": "2027-03-08T10:58:00.001000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): quality_hold",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 767,
             "output_tokens": 195,
-            "cached": false
+            "cached": true
           }
         },
         {
-          "t": "2027-03-08T10:58:01.070000",
+          "t": "2027-03-08T10:58:00.002000",
           "kind": "gate",
           "text": "lot 'HARN-B at P_TX built 2027-02-22..2027-02-24' -> LOT-0017 via data_snap: exact lot window match",
           "data": null
         },
         {
-          "t": "2027-03-08T10:58:01.070000",
+          "t": "2027-03-08T10:58:00.002000",
           "kind": "gate",
           "text": "E-14#1: quality_hold confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T10:58:01.121000",
+          "t": "2027-03-08T10:58:00.004000",
           "kind": "rehearse",
           "text": "Rehearsed 131 actions on the twin: 131 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T10:58:07.377000",
+          "t": "2027-03-08T10:58:00.004000",
           "kind": "audit",
           "text": "Auditor agrees: The quality hold incident, affected dates, and corrective actions faithfully reflect the alert regarding the heavy-duty wiring harness contamination at the Texas plant.",
           "data": null
         },
         {
-          "t": "2027-03-08T10:58:07.405000",
+          "t": "2027-03-08T10:58:00.017000",
           "kind": "execute",
           "text": "Executed 131 calls via twin: 131 ok, 0 failed (131 writes, 0 verification reads)",
           "data": null
@@ -591,17 +591,17 @@
     },
     {
       "agent": "quality",
-      "started": "2027-03-08T10:58:01.119000",
-      "ended": "2027-03-08T10:58:01.120000",
+      "started": "2027-03-08T10:58:00.003000",
+      "ended": "2027-03-08T10:58:00.003000",
       "steps": [
         {
-          "t": "2027-03-08T10:58:01.119000",
+          "t": "2027-03-08T10:58:00.003000",
           "kind": "graph",
           "text": "Lot LOT-0017 -> part HARN-B -> models using it -> POs at P_TX built 2027-02-22..2027-02-24: 6 POs, 180 vehicles (86 unsold at 36 dealers, 94 owners)",
           "data": null
         },
         {
-          "t": "2027-03-08T10:58:01.120000",
+          "t": "2027-03-08T10:58:00.003000",
           "kind": "plan",
           "text": "Hold LOT-0017; stop sale at 36 dealers; contact 94 owners once each.",
           "data": null
@@ -4476,7 +4476,7 @@
         "input_tokens": 767,
         "output_tokens": 195,
         "cost_usd": 0.000718,
-        "cached": false
+        "cached": true
       },
       {
         "provider": "gemini",
@@ -4485,7 +4485,7 @@
         "input_tokens": 1161,
         "output_tokens": 696,
         "cost_usd": 0.003481,
-        "cached": false
+        "cached": true
       },
       {
         "provider": "gemini",
@@ -4494,7 +4494,7 @@
         "input_tokens": 358,
         "output_tokens": 157,
         "cost_usd": 0.0005,
-        "cached": false
+        "cached": true
       }
     ],
     "total_cost_usd": 0.004699

@@ -44,34 +44,34 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T10:41:01.124000",
-      "ended": "2027-03-08T10:41:01.128000",
+      "started": "2027-03-08T10:41:00.001000",
+      "ended": "2027-03-08T10:41:00.002000",
       "steps": [
         {
-          "t": "2027-03-08T10:41:01.124000",
+          "t": "2027-03-08T10:41:00.001000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): unconfirmed",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 749,
             "output_tokens": 188,
-            "cached": false
+            "cached": true
           }
         },
         {
-          "t": "2027-03-08T10:41:01.124000",
+          "t": "2027-03-08T10:41:00.001000",
           "kind": "gate",
           "text": "E-13#1: unconfirmed NOT actionable (confidence 0.95); no confirmed shipment, lot, plant or dates",
           "data": null
         },
         {
-          "t": "2027-03-08T10:41:01.127000",
+          "t": "2027-03-08T10:41:00.002000",
           "kind": "rehearse",
           "text": "Rehearsed 1 actions on the twin: 1 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T10:41:01.128000",
+          "t": "2027-03-08T10:41:00.002000",
           "kind": "execute",
           "text": "Executed 1 calls via twin: 1 ok, 0 failed (0 writes, 0 verification reads)",
           "data": null
@@ -121,7 +121,7 @@
         "input_tokens": 749,
         "output_tokens": 188,
         "cost_usd": 0.000695,
-        "cached": false
+        "cached": true
       },
       {
         "provider": "gemini",
@@ -130,7 +130,7 @@
         "input_tokens": 279,
         "output_tokens": 62,
         "cost_usd": 0.000239,
-        "cached": false
+        "cached": true
       }
     ],
     "total_cost_usd": 0.000934

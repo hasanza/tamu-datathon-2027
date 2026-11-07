@@ -1039,52 +1039,52 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T07:17:01.880000",
-      "ended": "2027-03-08T07:17:08.182000",
+      "started": "2027-03-08T07:17:00.002000",
+      "ended": "2027-03-08T07:17:00.016000",
       "steps": [
         {
-          "t": "2027-03-08T07:17:01.880000",
+          "t": "2027-03-08T07:17:00.002000",
           "kind": "llm",
           "text": "Extracted 2 incident(s): plant_outage, supplier_delay",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 808,
             "output_tokens": 493,
-            "cached": false
+            "cached": true
           }
         },
         {
-          "t": "2027-03-08T07:17:01.882000",
+          "t": "2027-03-08T07:17:00.003000",
           "kind": "gate",
           "text": "shipment 'CHIP-IVI→P_IN due 2027-03-15' -> SH-0190 via data_snap: exactly one shipment matches plant, part and original ETA",
           "data": null
         },
         {
-          "t": "2027-03-08T07:17:01.882000",
+          "t": "2027-03-08T07:17:00.003000",
           "kind": "gate",
           "text": "E-01#1: plant_outage confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T07:17:01.882000",
+          "t": "2027-03-08T07:17:00.003000",
           "kind": "gate",
           "text": "E-01#2: supplier_delay confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T07:17:01.888000",
+          "t": "2027-03-08T07:17:00.006000",
           "kind": "rehearse",
           "text": "Rehearsed 88 actions on the twin: 88 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T07:17:08.158000",
+          "t": "2027-03-08T07:17:00.007000",
           "kind": "audit",
-          "text": "Auditor agrees: The interpretation accurately captures both incidents with correct dates, and the plan adheres strictly to rescheduling, dealer notification, and loaner prioritization rules.",
+          "text": "Auditor unavailable; continuing on the deterministic checks alone",
           "data": null
         },
         {
-          "t": "2027-03-08T07:17:08.182000",
+          "t": "2027-03-08T07:17:00.016000",
           "kind": "execute",
           "text": "Executed 88 calls via twin: 88 ok, 0 failed (81 writes, 7 verification reads)",
           "data": null
@@ -1093,40 +1093,40 @@
     },
     {
       "agent": "supply_chain",
-      "started": "2027-03-08T07:17:01.884000",
-      "ended": "2027-03-08T07:17:01.885000",
+      "started": "2027-03-08T07:17:00.004000",
+      "ended": "2027-03-08T07:17:00.005000",
       "steps": [
         {
-          "t": "2027-03-08T07:17:01.884000",
+          "t": "2027-03-08T07:17:00.004000",
           "kind": "graph",
           "text": "Plant P_TX -> POs building 2027-03-19..2027-03-22 (inclusive): 6 affected: ['PO-0058', 'PO-0059', 'PO-0060', 'PO-0061', 'PO-0062', 'PO-0063']",
           "data": null
         },
         {
-          "t": "2027-03-08T07:17:01.884000",
+          "t": "2027-03-08T07:17:00.004000",
           "kind": "plan",
           "text": "Restart index 11; slots 5/day, shared across this event. 6 reschedule(s), 0 transfer(s), 0 unplaceable. PO-0058->P_TX 2027-03-23; PO-0059->P_TX 2027-03-23; PO-0060->P_TX 2027-03-24; PO-0061->P_TX 2027-03-24; PO-0062->P_TX 2027-03-25; PO-0063->P_TX 2027-03-25",
           "data": {
             "policy": {
               "claim_order": "build_date_id",
-              "transfer_min_day": "disruption_end"
+              "transfer_min_day": "today"
             }
           }
         },
         {
-          "t": "2027-03-08T07:17:01.885000",
+          "t": "2027-03-08T07:17:00.005000",
           "kind": "graph",
           "text": "Shipment SH-0190 -> part CHIP-IVI -> models using it -> POs at P_IN building 2027-03-15..2027-03-19 (new ETA exclusive): 8 affected: ['PO-0316', 'PO-0318', 'PO-0319', 'PO-0321', 'PO-0322', 'PO-0324', 'PO-0325', 'PO-0327']",
           "data": null
         },
         {
-          "t": "2027-03-08T07:17:01.885000",
+          "t": "2027-03-08T07:17:00.005000",
           "kind": "plan",
           "text": "Restart index 9; slots 5/day, shared across this event. 8 reschedule(s), 0 transfer(s), 0 unplaceable. PO-0316->P_IN 2027-03-19; PO-0318->P_IN 2027-03-19; PO-0319->P_IN 2027-03-22; PO-0321->P_IN 2027-03-22; PO-0322->P_IN 2027-03-23; PO-0324->P_IN 2027-03-23; PO-0325->P_IN 2027-03-24; PO-0327->P_IN 2027-03-24",
           "data": {
             "policy": {
               "claim_order": "build_date_id",
-              "transfer_min_day": "disruption_end"
+              "transfer_min_day": "today"
             }
           }
         }
@@ -1134,17 +1134,17 @@
     },
     {
       "agent": "dealer_care",
-      "started": "2027-03-08T07:17:01.886000",
-      "ended": "2027-03-08T07:17:01.886000",
+      "started": "2027-03-08T07:17:00.005000",
+      "ended": "2027-03-08T07:17:00.006000",
       "steps": [
         {
-          "t": "2027-03-08T07:17:01.886000",
+          "t": "2027-03-08T07:17:00.005000",
           "kind": "graph",
           "text": "122 customer orders on 14 moved POs across 41 dealers (all incidents of this event together)",
           "data": null
         },
         {
-          "t": "2027-03-08T07:17:01.886000",
+          "t": "2027-03-08T07:17:00.006000",
           "kind": "plan",
           "text": "One notice per dealer; 30 Platinum/Gold customer orders entitled, 26 loaner(s) assigned within pool limits (Platinum, then Gold, earlier promise, lower id).",
           "data": null
@@ -4369,16 +4369,7 @@
         "input_tokens": 808,
         "output_tokens": 493,
         "cost_usd": 0.001475,
-        "cached": false
-      },
-      {
-        "provider": "gemini",
-        "model": "gemini-3.8-flash",
-        "purpose": "audit",
-        "input_tokens": 1710,
-        "output_tokens": 705,
-        "cost_usd": 0.003926,
-        "cached": false
+        "cached": true
       },
       {
         "provider": "gemini",
@@ -4387,10 +4378,10 @@
         "input_tokens": 496,
         "output_tokens": 231,
         "cost_usd": 0.000726,
-        "cached": false
+        "cached": true
       }
     ],
-    "total_cost_usd": 0.006127
+    "total_cost_usd": 0.002201
   },
   "summary": "Wacky Wheels San Antonio is down 2027-03-19 to 2027-03-22. 6 production orders were moved with 6 rescheduled after the restart and 0 transferred to other plants, 27 dealers notified once each for 55 customer orders, and 6 loaners assigned. Quanta Silicon's infotainment chip shipment SH-0190 to Wacky Wheels Princeton slips from 2027-03-15 to 2027-03-19. 8 affected production orders were moved to the earliest free slots with 8 rescheduled and 0 transferred, 29 dealers were each notified once for 67 customer orders, and 20 Platinum/Gold customers received loaners within pool limits.",
   "decision_reason": "Acted on every confirmed incident, including plant_outage and supplier_delay, with ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, and live baseline matched before the first write."

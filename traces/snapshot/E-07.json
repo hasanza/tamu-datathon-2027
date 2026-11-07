@@ -37,22 +37,22 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T08:59:00.767000",
-      "ended": "2027-03-08T08:59:00.768000",
+      "started": "2027-03-08T08:59:00.001000",
+      "ended": "2027-03-08T08:59:00.001000",
       "steps": [
         {
-          "t": "2027-03-08T08:59:00.767000",
+          "t": "2027-03-08T08:59:00.001000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): noise",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 743,
             "output_tokens": 52,
-            "cached": false
+            "cached": true
           }
         },
         {
-          "t": "2027-03-08T08:59:00.768000",
+          "t": "2027-03-08T08:59:00.001000",
           "kind": "gate",
           "text": "Noise -> no write tools, no escalation (rule 7). This is a request for a brochure and has nothing to do with operations.",
           "data": null
@@ -79,7 +79,7 @@
         "input_tokens": 743,
         "output_tokens": 52,
         "cost_usd": 0.000353,
-        "cached": false
+        "cached": true
       },
       {
         "provider": "gemini",
@@ -88,7 +88,7 @@
         "input_tokens": 273,
         "output_tokens": 85,
         "cost_usd": 0.000294,
-        "cached": false
+        "cached": true
       }
     ],
     "total_cost_usd": 0.000647

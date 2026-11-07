@@ -37,7 +37,7 @@ def main() -> None:
     ap.add_argument("--end", type=date.fromisoformat)
     ap.add_argument("--first", type=date.fromisoformat)
     ap.add_argument("--last", type=date.fromisoformat)
-    ap.add_argument("--transfer-min-day", choices=["today", "disruption_end"], default="disruption_end")
+    ap.add_argument("--transfer-min-day", choices=["today", "disruption_end"], default="today")
     a = ap.parse_args()
     policy = Policy(transfer_min_day=a.transfer_min_day)
 
