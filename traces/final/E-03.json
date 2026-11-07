@@ -1,0 +1,6367 @@
+{
+  "pipeline_version": "0.1.0",
+  "event_id": "E-03",
+  "received_at": "2027-03-08T07:51:00",
+  "source": "quality bulletin",
+  "text": "Quality alert: Kestrel says the infotainment chip sent to Jackson had a faulty weld. Anything built Thursday Feb 25 through last Monday is suspect.",
+  "status": "done",
+  "classification": {
+    "category": "quality_hold",
+    "confidence": 1.0,
+    "reason": "A specific part lot sent to a plant has a defect and a suspect build window."
+  },
+  "incidents": [
+    {
+      "incident_id": "E-03#1",
+      "event_id": "E-03",
+      "category": "quality_hold",
+      "confidence": 1.0,
+      "plant_id": "P_MS",
+      "part_id": "CHIP-IVI",
+      "supplier_id": "SUP-06",
+      "shipment_id": null,
+      "lot_id": "LOT-0130",
+      "orig_eta": null,
+      "new_eta": null,
+      "outage_start": null,
+      "outage_end": null,
+      "build_window_start": "2027-02-25",
+      "build_window_end": "2027-03-01",
+      "raw_mentions": {
+        "plant": "Jackson",
+        "part": "infotainment chip",
+        "supplier": "Kestrel"
+      },
+      "resolution_steps": [
+        {
+          "mention": "Jackson",
+          "entity_type": "plant",
+          "candidates": [
+            "P_MS"
+          ],
+          "chosen": "P_MS",
+          "method": "alias",
+          "note": null
+        },
+        {
+          "mention": "infotainment chip",
+          "entity_type": "part",
+          "candidates": [
+            "CHIP-IVI"
+          ],
+          "chosen": "CHIP-IVI",
+          "method": "alias",
+          "note": null
+        },
+        {
+          "mention": "Kestrel",
+          "entity_type": "supplier",
+          "candidates": [
+            "SUP-06"
+          ],
+          "chosen": "SUP-06",
+          "method": "alias",
+          "note": null
+        },
+        {
+          "mention": "Thursday Feb 25",
+          "entity_type": "date",
+          "candidates": [
+            "2027-02-25"
+          ],
+          "chosen": "2027-02-25",
+          "method": "exact",
+          "note": "explicit month/day with matching weekday"
+        },
+        {
+          "mention": "last Monday",
+          "entity_type": "date",
+          "candidates": [
+            "2027-03-01"
+          ],
+          "chosen": "2027-03-01",
+          "method": "exact",
+          "note": "'last <weekday>' = that weekday of last week"
+        },
+        {
+          "mention": "CHIP-IVI at P_MS built 2027-02-25..2027-03-01",
+          "entity_type": "lot",
+          "candidates": [
+            "LOT-0130"
+          ],
+          "chosen": "LOT-0130",
+          "method": "data_snap",
+          "note": "exact lot window match"
+        }
+      ],
+      "ambiguities": [],
+      "reason": "A specific part lot sent to a plant has a defect and a suspect build window."
+    }
+  ],
+  "paths": {
+    "E-03#1": [
+      {
+        "nodes": [
+          {
+            "id": "LOT-0130",
+            "type": "Lot",
+            "label": "LOT-0130 · CHIP-IVI @ P_MS · 02-25..03-01",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PIONEER",
+            "type": "Model",
+            "label": "Pioneer",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0190",
+            "type": "ProductionOrder",
+            "label": "PO-0190 · PIONEER · P_MS · 02-25",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0190",
+            "type": "Vehicle",
+            "label": "27 vehicles",
+            "group": "vehicles",
+            "count": 27
+          },
+          {
+            "id": "grp:dealers_owners:PO-0190",
+            "type": "Dealer",
+            "label": "20 dealers / 13 owners",
+            "group": "dealers_owners",
+            "count": 27
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0130",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "PIONEER",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0190",
+            "to": "PIONEER",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0190",
+            "to": "PO-0190",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0190",
+            "to": "grp:dealers_owners:PO-0190",
+            "type": "AT_DEALER"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "LOT-0130",
+            "type": "Lot",
+            "label": "LOT-0130 · CHIP-IVI @ P_MS · 02-25..03-01",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "NOVA",
+            "type": "Model",
+            "label": "Nova",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0191",
+            "type": "ProductionOrder",
+            "label": "PO-0191 · NOVA · P_MS · 02-25",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0191",
+            "type": "Vehicle",
+            "label": "28 vehicles",
+            "group": "vehicles",
+            "count": 28
+          },
+          {
+            "id": "grp:dealers_owners:PO-0191",
+            "type": "Dealer",
+            "label": "18 dealers / 13 owners",
+            "group": "dealers_owners",
+            "count": 28
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0130",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "NOVA",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0191",
+            "to": "NOVA",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0191",
+            "to": "PO-0191",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0191",
+            "to": "grp:dealers_owners:PO-0191",
+            "type": "AT_DEALER"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "LOT-0130",
+            "type": "Lot",
+            "label": "LOT-0130 · CHIP-IVI @ P_MS · 02-25..03-01",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "TERRA",
+            "type": "Model",
+            "label": "Terra",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0192",
+            "type": "ProductionOrder",
+            "label": "PO-0192 · TERRA · P_MS · 02-25",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0192",
+            "type": "Vehicle",
+            "label": "30 vehicles",
+            "group": "vehicles",
+            "count": 30
+          },
+          {
+            "id": "grp:dealers_owners:PO-0192",
+            "type": "Dealer",
+            "label": "18 dealers / 21 owners",
+            "group": "dealers_owners",
+            "count": 30
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0130",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "TERRA",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0192",
+            "to": "TERRA",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0192",
+            "to": "PO-0192",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0192",
+            "to": "grp:dealers_owners:PO-0192",
+            "type": "AT_DEALER"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "LOT-0130",
+            "type": "Lot",
+            "label": "LOT-0130 · CHIP-IVI @ P_MS · 02-25..03-01",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PIONEER",
+            "type": "Model",
+            "label": "Pioneer",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0193",
+            "type": "ProductionOrder",
+            "label": "PO-0193 · PIONEER · P_MS · 02-26",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0193",
+            "type": "Vehicle",
+            "label": "25 vehicles",
+            "group": "vehicles",
+            "count": 25
+          },
+          {
+            "id": "grp:dealers_owners:PO-0193",
+            "type": "Dealer",
+            "label": "18 dealers / 17 owners",
+            "group": "dealers_owners",
+            "count": 25
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0130",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "PIONEER",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0193",
+            "to": "PIONEER",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0193",
+            "to": "PO-0193",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0193",
+            "to": "grp:dealers_owners:PO-0193",
+            "type": "AT_DEALER"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "LOT-0130",
+            "type": "Lot",
+            "label": "LOT-0130 · CHIP-IVI @ P_MS · 02-25..03-01",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "NOVA",
+            "type": "Model",
+            "label": "Nova",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0194",
+            "type": "ProductionOrder",
+            "label": "PO-0194 · NOVA · P_MS · 02-26",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0194",
+            "type": "Vehicle",
+            "label": "24 vehicles",
+            "group": "vehicles",
+            "count": 24
+          },
+          {
+            "id": "grp:dealers_owners:PO-0194",
+            "type": "Dealer",
+            "label": "17 dealers / 17 owners",
+            "group": "dealers_owners",
+            "count": 24
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0130",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "NOVA",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0194",
+            "to": "NOVA",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0194",
+            "to": "PO-0194",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0194",
+            "to": "grp:dealers_owners:PO-0194",
+            "type": "AT_DEALER"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "LOT-0130",
+            "type": "Lot",
+            "label": "LOT-0130 · CHIP-IVI @ P_MS · 02-25..03-01",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "TERRA",
+            "type": "Model",
+            "label": "Terra",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0195",
+            "type": "ProductionOrder",
+            "label": "PO-0195 · TERRA · P_MS · 02-26",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0195",
+            "type": "Vehicle",
+            "label": "31 vehicles",
+            "group": "vehicles",
+            "count": 31
+          },
+          {
+            "id": "grp:dealers_owners:PO-0195",
+            "type": "Dealer",
+            "label": "17 dealers / 20 owners",
+            "group": "dealers_owners",
+            "count": 31
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0130",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "TERRA",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0195",
+            "to": "TERRA",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0195",
+            "to": "PO-0195",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0195",
+            "to": "grp:dealers_owners:PO-0195",
+            "type": "AT_DEALER"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "LOT-0130",
+            "type": "Lot",
+            "label": "LOT-0130 · CHIP-IVI @ P_MS · 02-25..03-01",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PIONEER",
+            "type": "Model",
+            "label": "Pioneer",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0196",
+            "type": "ProductionOrder",
+            "label": "PO-0196 · PIONEER · P_MS · 03-01",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0196",
+            "type": "Vehicle",
+            "label": "24 vehicles",
+            "group": "vehicles",
+            "count": 24
+          },
+          {
+            "id": "grp:dealers_owners:PO-0196",
+            "type": "Dealer",
+            "label": "18 dealers / 14 owners",
+            "group": "dealers_owners",
+            "count": 24
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0130",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "PIONEER",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0196",
+            "to": "PIONEER",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0196",
+            "to": "PO-0196",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0196",
+            "to": "grp:dealers_owners:PO-0196",
+            "type": "AT_DEALER"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "LOT-0130",
+            "type": "Lot",
+            "label": "LOT-0130 · CHIP-IVI @ P_MS · 02-25..03-01",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "NOVA",
+            "type": "Model",
+            "label": "Nova",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0197",
+            "type": "ProductionOrder",
+            "label": "PO-0197 · NOVA · P_MS · 03-01",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0197",
+            "type": "Vehicle",
+            "label": "36 vehicles",
+            "group": "vehicles",
+            "count": 36
+          },
+          {
+            "id": "grp:dealers_owners:PO-0197",
+            "type": "Dealer",
+            "label": "19 dealers / 16 owners",
+            "group": "dealers_owners",
+            "count": 36
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0130",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "NOVA",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0197",
+            "to": "NOVA",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0197",
+            "to": "PO-0197",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0197",
+            "to": "grp:dealers_owners:PO-0197",
+            "type": "AT_DEALER"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "LOT-0130",
+            "type": "Lot",
+            "label": "LOT-0130 · CHIP-IVI @ P_MS · 02-25..03-01",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "TERRA",
+            "type": "Model",
+            "label": "Terra",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0198",
+            "type": "ProductionOrder",
+            "label": "PO-0198 · TERRA · P_MS · 03-01",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0198",
+            "type": "Vehicle",
+            "label": "35 vehicles",
+            "group": "vehicles",
+            "count": 35
+          },
+          {
+            "id": "grp:dealers_owners:PO-0198",
+            "type": "Dealer",
+            "label": "22 dealers / 19 owners",
+            "group": "dealers_owners",
+            "count": 35
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0130",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "TERRA",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0198",
+            "to": "TERRA",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0198",
+            "to": "PO-0198",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0198",
+            "to": "grp:dealers_owners:PO-0198",
+            "type": "AT_DEALER"
+          }
+        ]
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent": "coordinator",
+      "started": "2027-03-08T07:51:00.923000",
+      "ended": "2027-03-08T07:51:06.082000",
+      "steps": [
+        {
+          "t": "2027-03-08T07:51:00.923000",
+          "kind": "llm",
+          "text": "Extracted 1 incident(s): quality_hold",
+          "data": {
+            "model": "gemini-3.5-flash-lite",
+            "input_tokens": 760,
+            "output_tokens": 203,
+            "cached": false
+          }
+        },
+        {
+          "t": "2027-03-08T07:51:00.925000",
+          "kind": "gate",
+          "text": "lot 'CHIP-IVI at P_MS built 2027-02-25..2027-03-01' -> LOT-0130 via data_snap: exact lot window match",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:51:00.925000",
+          "kind": "gate",
+          "text": "E-03#1: quality_hold confirmed, confidence 1.00 >= 0.7 -> act",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:51:00.935000",
+          "kind": "rehearse",
+          "text": "Rehearsed 188 actions on the twin: 188 ok, 0 failed. Invariants: ok",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:51:05.179000",
+          "kind": "audit",
+          "text": "Auditor agrees: The quality hold interpretation and planned corrective actions accurately reflect the bulletin and follow all operational rules.",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:51:06.082000",
+          "kind": "execute",
+          "text": "Executed 188 calls via server: 188 ok, 0 failed (188 writes, 0 verification reads)",
+          "data": null
+        }
+      ]
+    },
+    {
+      "agent": "quality",
+      "started": "2027-03-08T07:51:00.932000",
+      "ended": "2027-03-08T07:51:00.933000",
+      "steps": [
+        {
+          "t": "2027-03-08T07:51:00.932000",
+          "kind": "graph",
+          "text": "Lot LOT-0130 -> part CHIP-IVI -> models using it -> POs at P_MS built 2027-02-25..2027-03-01: 9 POs, 260 vehicles (110 unsold at 37 dealers, 150 owners)",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:51:00.933000",
+          "kind": "plan",
+          "text": "Hold LOT-0130; stop sale at 37 dealers; contact 150 owners once each.",
+          "data": null
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "seq": 1,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "quality.hold_lot",
+      "args": {
+        "lot_id": "LOT-0130"
+      },
+      "justification": "Rule 6: LOT-0130 (CHIP-IVI at P_MS, built 2027-02-25..2027-03-01)",
+      "path_ids": [
+        "LOT-0130"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 2,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D02",
+        "vins": [
+          "AUR0002074",
+          "AUR0002077",
+          "AUR0002083",
+          "AUR0002214",
+          "AUR0002233",
+          "AUR0002248"
+        ]
+      },
+      "justification": "Rule 6: 6 unsold vehicle(s) from LOT-0130 at D02",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002074",
+        "D02"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 3,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D03",
+        "vins": [
+          "AUR0002062",
+          "AUR0002268",
+          "AUR0002283"
+        ]
+      },
+      "justification": "Rule 6: 3 unsold vehicle(s) from LOT-0130 at D03",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002062",
+        "D03"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 4,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D04",
+        "vins": [
+          "AUR0002121",
+          "AUR0002231",
+          "AUR0002252"
+        ]
+      },
+      "justification": "Rule 6: 3 unsold vehicle(s) from LOT-0130 at D04",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002121",
+        "D04"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 5,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D06",
+        "vins": [
+          "AUR0002041",
+          "AUR0002058",
+          "AUR0002139",
+          "AUR0002195",
+          "AUR0002260",
+          "AUR0002291"
+        ]
+      },
+      "justification": "Rule 6: 6 unsold vehicle(s) from LOT-0130 at D06",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002041",
+        "D06"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 6,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D07",
+        "vins": [
+          "AUR0002072"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0130 at D07",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002072",
+        "D07"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 7,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D08",
+        "vins": [
+          "AUR0002129",
+          "AUR0002191",
+          "AUR0002238"
+        ]
+      },
+      "justification": "Rule 6: 3 unsold vehicle(s) from LOT-0130 at D08",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002129",
+        "D08"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 8,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D10",
+        "vins": [
+          "AUR0002088",
+          "AUR0002122"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0130 at D10",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002088",
+        "D10"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 9,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D11",
+        "vins": [
+          "AUR0002264",
+          "AUR0002288"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0130 at D11",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002264",
+        "D11"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 10,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D12",
+        "vins": [
+          "AUR0002052",
+          "AUR0002164"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0130 at D12",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002052",
+        "D12"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 11,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D13",
+        "vins": [
+          "AUR0002092",
+          "AUR0002157",
+          "AUR0002278"
+        ]
+      },
+      "justification": "Rule 6: 3 unsold vehicle(s) from LOT-0130 at D13",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002092",
+        "D13"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 12,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D15",
+        "vins": [
+          "AUR0002186",
+          "AUR0002250",
+          "AUR0002284"
+        ]
+      },
+      "justification": "Rule 6: 3 unsold vehicle(s) from LOT-0130 at D15",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002186",
+        "D15"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 13,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D16",
+        "vins": [
+          "AUR0002145",
+          "AUR0002239",
+          "AUR0002251"
+        ]
+      },
+      "justification": "Rule 6: 3 unsold vehicle(s) from LOT-0130 at D16",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002145",
+        "D16"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 14,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D19",
+        "vins": [
+          "AUR0002237"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0130 at D19",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002237",
+        "D19"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 15,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D20",
+        "vins": [
+          "AUR0002114",
+          "AUR0002257"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0130 at D20",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002114",
+        "D20"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 16,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D21",
+        "vins": [
+          "AUR0002057",
+          "AUR0002087",
+          "AUR0002171",
+          "AUR0002201",
+          "AUR0002217",
+          "AUR0002223",
+          "AUR0002245",
+          "AUR0002276"
+        ]
+      },
+      "justification": "Rule 6: 8 unsold vehicle(s) from LOT-0130 at D21",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002057",
+        "D21"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 17,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D23",
+        "vins": [
+          "AUR0002110",
+          "AUR0002119",
+          "AUR0002208",
+          "AUR0002210",
+          "AUR0002227",
+          "AUR0002234"
+        ]
+      },
+      "justification": "Rule 6: 6 unsold vehicle(s) from LOT-0130 at D23",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002110",
+        "D23"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 18,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D24",
+        "vins": [
+          "AUR0002133"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0130 at D24",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002133",
+        "D24"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 19,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D25",
+        "vins": [
+          "AUR0002066",
+          "AUR0002246"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0130 at D25",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002066",
+        "D25"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 20,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D26",
+        "vins": [
+          "AUR0002059",
+          "AUR0002076",
+          "AUR0002096",
+          "AUR0002161",
+          "AUR0002258",
+          "AUR0002287",
+          "AUR0002294"
+        ]
+      },
+      "justification": "Rule 6: 7 unsold vehicle(s) from LOT-0130 at D26",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002059",
+        "D26"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 21,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D27",
+        "vins": [
+          "AUR0002051",
+          "AUR0002120",
+          "AUR0002202",
+          "AUR0002205",
+          "AUR0002277"
+        ]
+      },
+      "justification": "Rule 6: 5 unsold vehicle(s) from LOT-0130 at D27",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002051",
+        "D27"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 22,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D28",
+        "vins": [
+          "AUR0002154"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0130 at D28",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002154",
+        "D28"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 23,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D29",
+        "vins": [
+          "AUR0002045"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0130 at D29",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002045",
+        "D29"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 24,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D30",
+        "vins": [
+          "AUR0002147"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0130 at D30",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002147",
+        "D30"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 25,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D31",
+        "vins": [
+          "AUR0002038",
+          "AUR0002175",
+          "AUR0002179",
+          "AUR0002187"
+        ]
+      },
+      "justification": "Rule 6: 4 unsold vehicle(s) from LOT-0130 at D31",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002038",
+        "D31"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 26,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D32",
+        "vins": [
+          "AUR0002073",
+          "AUR0002293"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0130 at D32",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002073",
+        "D32"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 27,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D33",
+        "vins": [
+          "AUR0002049"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0130 at D33",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002049",
+        "D33"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 28,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D34",
+        "vins": [
+          "AUR0002266",
+          "AUR0002279"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0130 at D34",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002266",
+        "D34"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 29,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D35",
+        "vins": [
+          "AUR0002037",
+          "AUR0002048",
+          "AUR0002102",
+          "AUR0002115"
+        ]
+      },
+      "justification": "Rule 6: 4 unsold vehicle(s) from LOT-0130 at D35",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002037",
+        "D35"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 30,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D37",
+        "vins": [
+          "AUR0002085"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0130 at D37",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002085",
+        "D37"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 31,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D38",
+        "vins": [
+          "AUR0002047",
+          "AUR0002180",
+          "AUR0002247",
+          "AUR0002249",
+          "AUR0002254"
+        ]
+      },
+      "justification": "Rule 6: 5 unsold vehicle(s) from LOT-0130 at D38",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002047",
+        "D38"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 32,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D40",
+        "vins": [
+          "AUR0002212"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0130 at D40",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002212",
+        "D40"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 33,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D41",
+        "vins": [
+          "AUR0002143"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0130 at D41",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002143",
+        "D41"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 34,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D43",
+        "vins": [
+          "AUR0002203"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0130 at D43",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002203",
+        "D43"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 35,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D44",
+        "vins": [
+          "AUR0002086",
+          "AUR0002261"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0130 at D44",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002086",
+        "D44"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 36,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D45",
+        "vins": [
+          "AUR0002061",
+          "AUR0002101",
+          "AUR0002127",
+          "AUR0002181",
+          "AUR0002189",
+          "AUR0002194",
+          "AUR0002229"
+        ]
+      },
+      "justification": "Rule 6: 7 unsold vehicle(s) from LOT-0130 at D45",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002061",
+        "D45"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 37,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D46",
+        "vins": [
+          "AUR0002065",
+          "AUR0002067",
+          "AUR0002084",
+          "AUR0002151",
+          "AUR0002270"
+        ]
+      },
+      "justification": "Rule 6: 5 unsold vehicle(s) from LOT-0130 at D46",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002065",
+        "D46"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 38,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D50",
+        "vins": [
+          "AUR0002082",
+          "AUR0002149"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0130 at D50",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002082",
+        "D50"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 39,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0022",
+        "message": "Dear Sam Young: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002267). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002267 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002267",
+        "C0022"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 40,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0038",
+        "message": "Dear Dev Reyes: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002136). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002136 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002136",
+        "C0038"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 41,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0088",
+        "message": "Dear Maya Khan: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002138). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002138 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002138",
+        "C0088"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 42,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0089",
+        "message": "Dear Liam Moore: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002236). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002236 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002236",
+        "C0089"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 43,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0232",
+        "message": "Dear Liam Young: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002162). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002162 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002162",
+        "C0232"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 44,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0278",
+        "message": "Dear Liam Garcia: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002219). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002219 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002219",
+        "C0278"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 45,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0299",
+        "message": "Dear Ivy Garcia: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002055). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002055 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002055",
+        "C0299"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 46,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0392",
+        "message": "Dear Jon Silva: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002178). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002178 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002178",
+        "C0392"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 47,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0485",
+        "message": "Dear Ivy Brown: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002069). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002069 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002069",
+        "C0485"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 48,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0491",
+        "message": "Dear Noah Davis: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002123). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002123 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002123",
+        "C0491"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 49,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0598",
+        "message": "Dear Omar Ortiz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002098). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002098 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002098",
+        "C0598"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 50,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0605",
+        "message": "Dear Raul Khan: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002140). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002140 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002140",
+        "C0605"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 51,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0633",
+        "message": "Dear Ria Davis: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002079). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002079 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002079",
+        "C0633"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 52,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0697",
+        "message": "Dear Leo Patel: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002241). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002241 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002241",
+        "C0697"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 53,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0760",
+        "message": "Dear Ivy Ford: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002131). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002131 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002131",
+        "C0760"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 54,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0796",
+        "message": "Dear Sam Ford: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002169). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002169 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002169",
+        "C0796"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 55,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0858",
+        "message": "Dear Maya Smith: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002111). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002111 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002111",
+        "C0858"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 56,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0863",
+        "message": "Dear Noah Patel: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002117). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002117 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002117",
+        "C0863"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 57,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1040",
+        "message": "Dear Mia Nguyen: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002213). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002213 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002213",
+        "C1040"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 58,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1086",
+        "message": "Dear Dev Lopez: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002068). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002068 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002068",
+        "C1086"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 59,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1087",
+        "message": "Dear Liam Ortiz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002063). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002063 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002063",
+        "C1087"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 60,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1141",
+        "message": "Dear Zoe Clark: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002292). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002292 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002292",
+        "C1141"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 61,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1228",
+        "message": "Dear Ben Moore: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002099). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002099 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002099",
+        "C1228"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 62,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1240",
+        "message": "Dear Zoe Ford: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002167). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002167 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002167",
+        "C1240"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 63,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1311",
+        "message": "Dear Ivy Davis: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002090). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002090 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002090",
+        "C1311"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 64,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1341",
+        "message": "Dear Ben Diaz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002206). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002206 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002206",
+        "C1341"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 65,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1359",
+        "message": "Dear Ava Ortiz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002273). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002273 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002273",
+        "C1359"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 66,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1362",
+        "message": "Dear Leo Moore: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002253). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002253 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002253",
+        "C1362"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 67,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1383",
+        "message": "Dear Zoe Reyes: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002094). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002094 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002094",
+        "C1383"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 68,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1445",
+        "message": "Dear Jon Davis: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002135). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002135 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002135",
+        "C1445"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 69,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1581",
+        "message": "Dear Zoe Brown: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002040). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002040 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002040",
+        "C1581"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 70,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1612",
+        "message": "Dear Omar Brown: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002156). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002156 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002156",
+        "C1612"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 71,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1642",
+        "message": "Dear Dev Chen: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002160). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002160 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002160",
+        "C1642"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 72,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1668",
+        "message": "Dear Kai Nguyen: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002103). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002103 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002103",
+        "C1668"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 73,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1677",
+        "message": "Dear Ben Silva: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002044). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002044 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002044",
+        "C1677"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 74,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1678",
+        "message": "Dear Noah Clark: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002159). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002159 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002159",
+        "C1678"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 75,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1681",
+        "message": "Dear Ana Brown: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002215). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002215 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002215",
+        "C1681"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 76,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1693",
+        "message": "Dear Ria Lopez: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002056). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002056 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002056",
+        "C1693"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 77,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1699",
+        "message": "Dear Lena Young: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002134). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002134 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002134",
+        "C1699"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 78,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1701",
+        "message": "Dear Ana Khan: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002285). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002285 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002285",
+        "C1701"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 79,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1771",
+        "message": "Dear Ria Baker: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002155). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002155 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002155",
+        "C1771"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 80,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1837",
+        "message": "Dear Omar Smith: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002075). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002075 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002075",
+        "C1837"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 81,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1838",
+        "message": "Dear Mia Silva: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002220). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002220 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002220",
+        "C1838"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 82,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1865",
+        "message": "Dear Kai Hall: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002036). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002036 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002036",
+        "C1865"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 83,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1884",
+        "message": "Dear Liam Diaz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002230). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002230 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002230",
+        "C1884"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 84,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1898",
+        "message": "Dear Ivy Patel: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002275). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002275 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002275",
+        "C1898"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 85,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1903",
+        "message": "Dear Omar Ortiz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002095). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002095 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002095",
+        "C1903"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 86,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1924",
+        "message": "Dear Sam Baker: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002064). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002064 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002064",
+        "C1924"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 87,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1933",
+        "message": "Dear Ana Reyes: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002043). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002043 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002043",
+        "C1933"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 88,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1950",
+        "message": "Dear Zoe Garcia: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002163). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002163 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002163",
+        "C1950"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 89,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2026",
+        "message": "Dear Liam Ortiz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002170). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002170 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002170",
+        "C2026"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 90,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2070",
+        "message": "Dear Zoe Hall: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002259). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002259 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002259",
+        "C2070"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 91,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2203",
+        "message": "Dear Ivy Cole: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002183). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002183 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002183",
+        "C2203"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 92,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2213",
+        "message": "Dear Ria Baker: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002126). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002126 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002126",
+        "C2213"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 93,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2224",
+        "message": "Dear Mia Patel: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002295). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002295 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002295",
+        "C2224"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 94,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2283",
+        "message": "Dear Ava Hall: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002225). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002225 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002225",
+        "C2283"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 95,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2364",
+        "message": "Dear Leo Ford: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002192). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002192 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002192",
+        "C2364"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 96,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2464",
+        "message": "Dear Noah Cole: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002132). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002132 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002132",
+        "C2464"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 97,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2466",
+        "message": "Dear Maya Lopez: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002116). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002116 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002116",
+        "C2466"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 98,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2493",
+        "message": "Dear Ana Ortiz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002053). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002053 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002053",
+        "C2493"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 99,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2510",
+        "message": "Dear Ben Hall: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002097). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002097 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002097",
+        "C2510"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 100,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2631",
+        "message": "Dear Kai Cole: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002166). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002166 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002166",
+        "C2631"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 101,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2637",
+        "message": "Dear Liam Diaz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002209). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002209 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002209",
+        "C2637"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 102,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2777",
+        "message": "Dear Leo Clark: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002107). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002107 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002107",
+        "C2777"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 103,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2913",
+        "message": "Dear Ria Hall: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002042). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002042 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002042",
+        "C2913"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 104,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2914",
+        "message": "Dear Tess Garcia: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002207). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002207 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002207",
+        "C2914"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 105,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3005",
+        "message": "Dear Ava Moore: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002144). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002144 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002144",
+        "C3005"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 106,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3086",
+        "message": "Dear Mia Smith: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002240). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002240 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002240",
+        "C3086"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 107,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3126",
+        "message": "Dear Ben Chen: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002100). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002100 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002100",
+        "C3126"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 108,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3305",
+        "message": "Dear Jon Brown: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002221). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002221 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002221",
+        "C3305"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 109,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3319",
+        "message": "Dear Eli Chen: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002235). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002235 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002235",
+        "C3319"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 110,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3485",
+        "message": "Dear Mia Lopez: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002152). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002152 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002152",
+        "C3485"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 111,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3551",
+        "message": "Dear Raul Clark: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002193). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002193 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002193",
+        "C3551"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 112,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3563",
+        "message": "Dear Ivy Khan: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002244). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002244 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002244",
+        "C3563"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 113,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3589",
+        "message": "Dear Ben Diaz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002271). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002271 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002271",
+        "C3589"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 114,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3597",
+        "message": "Dear Zoe Clark: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002112). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002112 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002112",
+        "C3597"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 115,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3647",
+        "message": "Dear Ivy Clark: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002289). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002289 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002289",
+        "C3647"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 116,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3659",
+        "message": "Dear Dev Garcia: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002173). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002173 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002173",
+        "C3659"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 117,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3673",
+        "message": "Dear Ava Moore: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002141). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002141 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002141",
+        "C3673"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 118,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3692",
+        "message": "Dear Ana Silva: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002080). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002080 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002080",
+        "C3692"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 119,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3852",
+        "message": "Dear Ava Ford: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002226). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002226 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002226",
+        "C3852"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 120,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3905",
+        "message": "Dear Jon Davis: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002125). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002125 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002125",
+        "C3905"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 121,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3930",
+        "message": "Dear Noah Ford: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002198). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002198 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002198",
+        "C3930"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 122,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3939",
+        "message": "Dear Ana Cole: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002060). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002060 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002060",
+        "C3939"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 123,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3968",
+        "message": "Dear Eli Brown: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002256). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002256 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002256",
+        "C3968"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 124,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3995",
+        "message": "Dear Ben Garcia: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002216). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002216 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002216",
+        "C3995"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 125,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4050",
+        "message": "Dear Mia Diaz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002158). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002158 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002158",
+        "C4050"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 126,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4169",
+        "message": "Dear Raul Nguyen: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002148). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002148 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002148",
+        "C4169"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 127,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4189",
+        "message": "Dear Noah Khan: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002174). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002174 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002174",
+        "C4189"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 128,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4245",
+        "message": "Dear Tess Garcia: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002070). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002070 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002070",
+        "C4245"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 129,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4283",
+        "message": "Dear Liam Patel: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002093). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002093 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002093",
+        "C4283"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 130,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4303",
+        "message": "Dear Raul Moore: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002146). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002146 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002146",
+        "C4303"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 131,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4315",
+        "message": "Dear Ben Ortiz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002108). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002108 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002108",
+        "C4315"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 132,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4381",
+        "message": "Dear Noah Ortiz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002243). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002243 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002243",
+        "C4381"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 133,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4427",
+        "message": "Dear Ivy Nguyen: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002142). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002142 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002142",
+        "C4427"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 134,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4434",
+        "message": "Dear Ben Patel: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002280). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002280 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002280",
+        "C4434"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 135,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4523",
+        "message": "Dear Ben Smith: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002177). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002177 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002177",
+        "C4523"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 136,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4565",
+        "message": "Dear Liam Hall: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002165). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002165 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002165",
+        "C4565"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 137,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4594",
+        "message": "Dear Maya Young: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002200). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002200 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002200",
+        "C4594"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 138,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4625",
+        "message": "Dear Lena Ford: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002290). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002290 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002290",
+        "C4625"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 139,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4662",
+        "message": "Dear Maya Nguyen: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002262). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002262 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002262",
+        "C4662"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 140,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4663",
+        "message": "Dear Omar Davis: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002228). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002228 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002228",
+        "C4663"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 141,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4681",
+        "message": "Dear Ivy Lopez: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002153). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002153 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002153",
+        "C4681"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 142,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4757",
+        "message": "Dear Omar Khan: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002071). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002071 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002071",
+        "C4757"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 143,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4771",
+        "message": "Dear Raul Garcia: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002272). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002272 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002272",
+        "C4771"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 144,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4833",
+        "message": "Dear Leo Ortiz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002172). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002172 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002172",
+        "C4833"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 145,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4852",
+        "message": "Dear Ria Ortiz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002130). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002130 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002130",
+        "C4852"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 146,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4865",
+        "message": "Dear Ria Diaz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002039). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002039 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002039",
+        "C4865"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 147,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4942",
+        "message": "Dear Mia Baker: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002281). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002281 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002281",
+        "C4942"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 148,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5024",
+        "message": "Dear Liam Reyes: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002046). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002046 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002046",
+        "C5024"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 149,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5070",
+        "message": "Dear Raul Young: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002211). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002211 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002211",
+        "C5070"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 150,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5108",
+        "message": "Dear Raul Young: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002176). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002176 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002176",
+        "C5108"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 151,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5238",
+        "message": "Dear Ben Reyes: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002054). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002054 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002054",
+        "C5238"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 152,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5271",
+        "message": "Dear Ivy Young: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002196). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002196 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002196",
+        "C5271"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 153,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5320",
+        "message": "Dear Eli Ortiz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002269). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002269 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002269",
+        "C5320"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 154,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5364",
+        "message": "Dear Maya Baker: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002104). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002104 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002104",
+        "C5364"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 155,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5417",
+        "message": "Dear Kai Smith: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002185). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002185 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002185",
+        "C5417"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 156,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5511",
+        "message": "Dear Omar Smith: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002242). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002242 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002242",
+        "C5511"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 157,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5530",
+        "message": "Dear Sam Brown: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002199). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002199 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002199",
+        "C5530"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 158,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5551",
+        "message": "Dear Leo Reyes: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002124). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002124 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002124",
+        "C5551"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 159,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5564",
+        "message": "Dear Jon Patel: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002118). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002118 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002118",
+        "C5564"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 160,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5647",
+        "message": "Dear Kai Diaz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002150). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002150 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002150",
+        "C5647"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 161,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5671",
+        "message": "Dear Ria Chen: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002222). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002222 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002222",
+        "C5671"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 162,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5834",
+        "message": "Dear Ria Silva: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002128). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002128 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002128",
+        "C5834"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 163,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6003",
+        "message": "Dear Liam Lopez: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002286). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002286 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002286",
+        "C6003"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 164,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6074",
+        "message": "Dear Eli Ford: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002265). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002265 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002265",
+        "C6074"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 165,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6076",
+        "message": "Dear Noah Patel: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002224). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002224 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002224",
+        "C6076"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 166,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6092",
+        "message": "Dear Kai Nguyen: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002106). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002106 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002106",
+        "C6092"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 167,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6133",
+        "message": "Dear Jon Cole: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002050). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002050 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002050",
+        "C6133"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 168,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6190",
+        "message": "Dear Zoe Nguyen: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002263). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002263 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002263",
+        "C6190"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 169,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6248",
+        "message": "Dear Jon Hall: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002182). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002182 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002182",
+        "C6248"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 170,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6297",
+        "message": "Dear Noah Clark: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002089). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002089 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002089",
+        "C6297"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 171,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6333",
+        "message": "Dear Lena Smith: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002204). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002204 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002204",
+        "C6333"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 172,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6340",
+        "message": "Dear Eli Silva: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002137). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002137 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002137",
+        "C6340"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 173,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6542",
+        "message": "Dear Dev Nguyen: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002105). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002105 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002105",
+        "C6542"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 174,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6575",
+        "message": "Dear Ana Lopez: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002197). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002197 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002197",
+        "C6575"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 175,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6603",
+        "message": "Dear Sam Clark: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002113). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002113 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002113",
+        "C6603"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 176,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6614",
+        "message": "Dear Sam Davis: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002188). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002188 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002188",
+        "C6614"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 177,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6618",
+        "message": "Dear Sam Patel: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002218). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002218 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002218",
+        "C6618"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 178,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6631",
+        "message": "Dear Zoe Hall: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002282). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002282 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002282",
+        "C6631"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 179,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6679",
+        "message": "Dear Ava Ortiz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002168). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002168 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002168",
+        "C6679"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 180,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6683",
+        "message": "Dear Lena Hall: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002091). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002091 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002091",
+        "C6683"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 181,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6699",
+        "message": "Dear Ana Silva: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002190). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002190 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002190",
+        "C6699"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 182,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6716",
+        "message": "Dear Tess Garcia: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002255). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002255 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002255",
+        "C6716"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 183,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6719",
+        "message": "Dear Liam Brown: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002274). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002274 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002274",
+        "C6719"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 184,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6773",
+        "message": "Dear Maya Khan: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002109). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002109 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002109",
+        "C6773"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 185,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6831",
+        "message": "Dear Zoe Diaz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002078). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002078 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002078",
+        "C6831"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 186,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6928",
+        "message": "Dear Omar Ortiz: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002184). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002184 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002184",
+        "C6928"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 187,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6939",
+        "message": "Dear Mia Garcia: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002232). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002232 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002232",
+        "C6939"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 188,
+      "incident_id": "E-03#1",
+      "agent": "quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6999",
+        "message": "Dear Kai Baker: a quality issue (SUP-06 reported a defect in CHIP-IVI) affects part lot LOT-0130 installed in your vehicle (AUR0002081). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0002081 from LOT-0130",
+      "path_ids": [
+        "LOT-0130",
+        "AUR0002081",
+        "C6999"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    }
+  ],
+  "world_diff": {
+    "moved_pos": [],
+    "notified_dealers": [],
+    "loaners": [],
+    "held_lots": [
+      "LOT-0130"
+    ],
+    "stopped_vins": [
+      "AUR0002074",
+      "AUR0002077",
+      "AUR0002083",
+      "AUR0002214",
+      "AUR0002233",
+      "AUR0002248",
+      "AUR0002062",
+      "AUR0002268",
+      "AUR0002283",
+      "AUR0002121",
+      "AUR0002231",
+      "AUR0002252",
+      "AUR0002041",
+      "AUR0002058",
+      "AUR0002139",
+      "AUR0002195",
+      "AUR0002260",
+      "AUR0002291",
+      "AUR0002072",
+      "AUR0002129",
+      "AUR0002191",
+      "AUR0002238",
+      "AUR0002088",
+      "AUR0002122",
+      "AUR0002264",
+      "AUR0002288",
+      "AUR0002052",
+      "AUR0002164",
+      "AUR0002092",
+      "AUR0002157",
+      "AUR0002278",
+      "AUR0002186",
+      "AUR0002250",
+      "AUR0002284",
+      "AUR0002145",
+      "AUR0002239",
+      "AUR0002251",
+      "AUR0002237",
+      "AUR0002114",
+      "AUR0002257",
+      "AUR0002057",
+      "AUR0002087",
+      "AUR0002171",
+      "AUR0002201",
+      "AUR0002217",
+      "AUR0002223",
+      "AUR0002245",
+      "AUR0002276",
+      "AUR0002110",
+      "AUR0002119",
+      "AUR0002208",
+      "AUR0002210",
+      "AUR0002227",
+      "AUR0002234",
+      "AUR0002133",
+      "AUR0002066",
+      "AUR0002246",
+      "AUR0002059",
+      "AUR0002076",
+      "AUR0002096",
+      "AUR0002161",
+      "AUR0002258",
+      "AUR0002287",
+      "AUR0002294",
+      "AUR0002051",
+      "AUR0002120",
+      "AUR0002202",
+      "AUR0002205",
+      "AUR0002277",
+      "AUR0002154",
+      "AUR0002045",
+      "AUR0002147",
+      "AUR0002038",
+      "AUR0002175",
+      "AUR0002179",
+      "AUR0002187",
+      "AUR0002073",
+      "AUR0002293",
+      "AUR0002049",
+      "AUR0002266",
+      "AUR0002279",
+      "AUR0002037",
+      "AUR0002048",
+      "AUR0002102",
+      "AUR0002115",
+      "AUR0002085",
+      "AUR0002047",
+      "AUR0002180",
+      "AUR0002247",
+      "AUR0002249",
+      "AUR0002254",
+      "AUR0002212",
+      "AUR0002143",
+      "AUR0002203",
+      "AUR0002086",
+      "AUR0002261",
+      "AUR0002061",
+      "AUR0002101",
+      "AUR0002127",
+      "AUR0002181",
+      "AUR0002189",
+      "AUR0002194",
+      "AUR0002229",
+      "AUR0002065",
+      "AUR0002067",
+      "AUR0002084",
+      "AUR0002151",
+      "AUR0002270",
+      "AUR0002082",
+      "AUR0002149"
+    ],
+    "contacted_customers": [
+      "C0022",
+      "C0038",
+      "C0088",
+      "C0089",
+      "C0232",
+      "C0278",
+      "C0299",
+      "C0392",
+      "C0485",
+      "C0491",
+      "C0598",
+      "C0605",
+      "C0633",
+      "C0697",
+      "C0760",
+      "C0796",
+      "C0858",
+      "C0863",
+      "C1040",
+      "C1086",
+      "C1087",
+      "C1141",
+      "C1228",
+      "C1240",
+      "C1311",
+      "C1341",
+      "C1359",
+      "C1362",
+      "C1383",
+      "C1445",
+      "C1581",
+      "C1612",
+      "C1642",
+      "C1668",
+      "C1677",
+      "C1678",
+      "C1681",
+      "C1693",
+      "C1699",
+      "C1701",
+      "C1771",
+      "C1837",
+      "C1838",
+      "C1865",
+      "C1884",
+      "C1898",
+      "C1903",
+      "C1924",
+      "C1933",
+      "C1950",
+      "C2026",
+      "C2070",
+      "C2203",
+      "C2213",
+      "C2224",
+      "C2283",
+      "C2364",
+      "C2464",
+      "C2466",
+      "C2493",
+      "C2510",
+      "C2631",
+      "C2637",
+      "C2777",
+      "C2913",
+      "C2914",
+      "C3005",
+      "C3086",
+      "C3126",
+      "C3305",
+      "C3319",
+      "C3485",
+      "C3551",
+      "C3563",
+      "C3589",
+      "C3597",
+      "C3647",
+      "C3659",
+      "C3673",
+      "C3692",
+      "C3852",
+      "C3905",
+      "C3930",
+      "C3939",
+      "C3968",
+      "C3995",
+      "C4050",
+      "C4169",
+      "C4189",
+      "C4245",
+      "C4283",
+      "C4303",
+      "C4315",
+      "C4381",
+      "C4427",
+      "C4434",
+      "C4523",
+      "C4565",
+      "C4594",
+      "C4625",
+      "C4662",
+      "C4663",
+      "C4681",
+      "C4757",
+      "C4771",
+      "C4833",
+      "C4852",
+      "C4865",
+      "C4942",
+      "C5024",
+      "C5070",
+      "C5108",
+      "C5238",
+      "C5271",
+      "C5320",
+      "C5364",
+      "C5417",
+      "C5511",
+      "C5530",
+      "C5551",
+      "C5564",
+      "C5647",
+      "C5671",
+      "C5834",
+      "C6003",
+      "C6074",
+      "C6076",
+      "C6092",
+      "C6133",
+      "C6190",
+      "C6248",
+      "C6297",
+      "C6333",
+      "C6340",
+      "C6542",
+      "C6575",
+      "C6603",
+      "C6614",
+      "C6618",
+      "C6631",
+      "C6679",
+      "C6683",
+      "C6699",
+      "C6716",
+      "C6719",
+      "C6773",
+      "C6831",
+      "C6928",
+      "C6939",
+      "C6999"
+    ]
+  },
+  "counterfactual": {
+    "customers_affected": 0,
+    "avg_slip_days": null,
+    "loaners_entitled": 0,
+    "loaners_assigned": 0,
+    "vehicles_pulled": 110,
+    "owners_contacted": 150
+  },
+  "llm": {
+    "calls": [
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "extract",
+        "input_tokens": 760,
+        "output_tokens": 203,
+        "cost_usd": 0.000736,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "audit",
+        "input_tokens": 1157,
+        "output_tokens": 464,
+        "cost_usd": 0.002608,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "summarize",
+        "input_tokens": 350,
+        "output_tokens": 149,
+        "cost_usd": 0.000478,
+        "cached": false
+      }
+    ],
+    "total_cost_usd": 0.003822
+  },
+  "summary": "Lot LOT-0130 containing infotainment chips from Kestrel Electronics at Wacky Wheels Jackson, built from 2027-02-25 to 2027-03-01, was placed on hold. A total of 110 unsold vehicles were stopped from sale at 37 dealers and 150 owners of sold vehicles were contacted.",
+  "decision_reason": "The control tower acted because this was a real quality incident with specific IDs and dates resolved against the data, passing the digital twin rehearsal with zero failures and matching the live baseline before the first write. These actions were driven by the quality_hold incident type."
+}

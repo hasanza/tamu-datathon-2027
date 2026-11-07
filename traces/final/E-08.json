@@ -1,0 +1,2236 @@
+{
+  "pipeline_version": "0.1.0",
+  "event_id": "E-08",
+  "received_at": "2027-03-08T09:16:00",
+  "source": "plant alert",
+  "text": "Plant operations alert: Wacky Wheels Lexington (P_KY) lost production to a power failure. Production is stopped from 2027-03-24 through 2027-03-25 inclusive.",
+  "status": "done",
+  "classification": {
+    "category": "plant_outage",
+    "confidence": 1.0,
+    "reason": "This is a plant outage because production is stopped due to a power failure for a specific range of days."
+  },
+  "incidents": [
+    {
+      "incident_id": "E-08#1",
+      "event_id": "E-08",
+      "category": "plant_outage",
+      "confidence": 1.0,
+      "plant_id": "P_KY",
+      "part_id": null,
+      "supplier_id": null,
+      "shipment_id": null,
+      "lot_id": null,
+      "orig_eta": null,
+      "new_eta": null,
+      "outage_start": "2027-03-24",
+      "outage_end": "2027-03-25",
+      "build_window_start": null,
+      "build_window_end": null,
+      "raw_mentions": {
+        "plant": "Wacky Wheels Lexington (P_KY)"
+      },
+      "resolution_steps": [
+        {
+          "mention": "Wacky Wheels Lexington (P_KY)",
+          "entity_type": "plant",
+          "candidates": [
+            "P_KY"
+          ],
+          "chosen": "P_KY",
+          "method": "exact",
+          "note": null
+        },
+        {
+          "mention": "2027-03-24",
+          "entity_type": "date",
+          "candidates": [
+            "2027-03-24"
+          ],
+          "chosen": "2027-03-24",
+          "method": "exact",
+          "note": "iso date"
+        },
+        {
+          "mention": "2027-03-25",
+          "entity_type": "date",
+          "candidates": [
+            "2027-03-25"
+          ],
+          "chosen": "2027-03-25",
+          "method": "exact",
+          "note": "iso date"
+        }
+      ],
+      "ambiguities": [],
+      "reason": "This is a plant outage because production is stopped due to a power failure for a specific range of days."
+    }
+  ],
+  "paths": {
+    "E-08#1": [
+      {
+        "nodes": [
+          {
+            "id": "P_KY",
+            "type": "Plant",
+            "label": "Wacky Wheels Lexington",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0157",
+            "type": "ProductionOrder",
+            "label": "PO-0157 · PIONEER · P_KY · 03-24",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0157",
+            "type": "CustomerOrder",
+            "label": "9 customer orders",
+            "group": "customer_orders",
+            "count": 9
+          },
+          {
+            "id": "grp:dealers:PO-0157",
+            "type": "Dealer",
+            "label": "9 dealers",
+            "group": "dealers",
+            "count": 9
+          }
+        ],
+        "edges": [
+          {
+            "from": "PO-0157",
+            "to": "P_KY",
+            "type": "AT_PLANT"
+          },
+          {
+            "from": "grp:cos:PO-0157",
+            "to": "PO-0157",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0157",
+            "to": "grp:dealers:PO-0157",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "P_KY",
+            "type": "Plant",
+            "label": "Wacky Wheels Lexington",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0158",
+            "type": "ProductionOrder",
+            "label": "PO-0158 · SUMMIT · P_KY · 03-24",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0158",
+            "type": "CustomerOrder",
+            "label": "8 customer orders",
+            "group": "customer_orders",
+            "count": 8
+          },
+          {
+            "id": "grp:dealers:PO-0158",
+            "type": "Dealer",
+            "label": "6 dealers",
+            "group": "dealers",
+            "count": 6
+          }
+        ],
+        "edges": [
+          {
+            "from": "PO-0158",
+            "to": "P_KY",
+            "type": "AT_PLANT"
+          },
+          {
+            "from": "grp:cos:PO-0158",
+            "to": "PO-0158",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0158",
+            "to": "grp:dealers:PO-0158",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "P_KY",
+            "type": "Plant",
+            "label": "Wacky Wheels Lexington",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0159",
+            "type": "ProductionOrder",
+            "label": "PO-0159 · VOYAGER · P_KY · 03-24",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0159",
+            "type": "CustomerOrder",
+            "label": "10 customer orders",
+            "group": "customer_orders",
+            "count": 10
+          },
+          {
+            "id": "grp:dealers:PO-0159",
+            "type": "Dealer",
+            "label": "7 dealers",
+            "group": "dealers",
+            "count": 7
+          }
+        ],
+        "edges": [
+          {
+            "from": "PO-0159",
+            "to": "P_KY",
+            "type": "AT_PLANT"
+          },
+          {
+            "from": "grp:cos:PO-0159",
+            "to": "PO-0159",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0159",
+            "to": "grp:dealers:PO-0159",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "P_KY",
+            "type": "Plant",
+            "label": "Wacky Wheels Lexington",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0160",
+            "type": "ProductionOrder",
+            "label": "PO-0160 · PIONEER · P_KY · 03-25",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0160",
+            "type": "CustomerOrder",
+            "label": "10 customer orders",
+            "group": "customer_orders",
+            "count": 10
+          },
+          {
+            "id": "grp:dealers:PO-0160",
+            "type": "Dealer",
+            "label": "8 dealers",
+            "group": "dealers",
+            "count": 8
+          }
+        ],
+        "edges": [
+          {
+            "from": "PO-0160",
+            "to": "P_KY",
+            "type": "AT_PLANT"
+          },
+          {
+            "from": "grp:cos:PO-0160",
+            "to": "PO-0160",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0160",
+            "to": "grp:dealers:PO-0160",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "P_KY",
+            "type": "Plant",
+            "label": "Wacky Wheels Lexington",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0161",
+            "type": "ProductionOrder",
+            "label": "PO-0161 · SUMMIT · P_KY · 03-25",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0161",
+            "type": "CustomerOrder",
+            "label": "9 customer orders",
+            "group": "customer_orders",
+            "count": 9
+          },
+          {
+            "id": "grp:dealers:PO-0161",
+            "type": "Dealer",
+            "label": "7 dealers",
+            "group": "dealers",
+            "count": 7
+          }
+        ],
+        "edges": [
+          {
+            "from": "PO-0161",
+            "to": "P_KY",
+            "type": "AT_PLANT"
+          },
+          {
+            "from": "grp:cos:PO-0161",
+            "to": "PO-0161",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0161",
+            "to": "grp:dealers:PO-0161",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "P_KY",
+            "type": "Plant",
+            "label": "Wacky Wheels Lexington",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0162",
+            "type": "ProductionOrder",
+            "label": "PO-0162 · VOYAGER · P_KY · 03-25",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0162",
+            "type": "CustomerOrder",
+            "label": "10 customer orders",
+            "group": "customer_orders",
+            "count": 10
+          },
+          {
+            "id": "grp:dealers:PO-0162",
+            "type": "Dealer",
+            "label": "8 dealers",
+            "group": "dealers",
+            "count": 8
+          }
+        ],
+        "edges": [
+          {
+            "from": "PO-0162",
+            "to": "P_KY",
+            "type": "AT_PLANT"
+          },
+          {
+            "from": "grp:cos:PO-0162",
+            "to": "PO-0162",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0162",
+            "to": "grp:dealers:PO-0162",
+            "type": "SOLD_BY"
+          }
+        ]
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent": "coordinator",
+      "started": "2027-03-08T09:16:01.188000",
+      "ended": "2027-03-08T09:16:05.171000",
+      "steps": [
+        {
+          "t": "2027-03-08T09:16:01.188000",
+          "kind": "llm",
+          "text": "Extracted 1 incident(s): plant_outage",
+          "data": {
+            "model": "gemini-3.5-flash-lite",
+            "input_tokens": 779,
+            "output_tokens": 295,
+            "cached": false
+          }
+        },
+        {
+          "t": "2027-03-08T09:16:01.190000",
+          "kind": "gate",
+          "text": "E-08#1: plant_outage confirmed, confidence 1.00 >= 0.7 -> act",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T09:16:01.194000",
+          "kind": "rehearse",
+          "text": "Rehearsed 49 actions on the twin: 49 ok, 0 failed. Invariants: ok",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T09:16:04.909000",
+          "kind": "audit",
+          "text": "Auditor agrees: The plant outage at P_KY was accurately identified and all corrective actions including rescheduling, dealer notifications, and loaner assignments follow policy rules.",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T09:16:05.171000",
+          "kind": "execute",
+          "text": "Executed 49 calls via server: 49 ok, 0 failed (46 writes, 3 verification reads)",
+          "data": null
+        }
+      ]
+    },
+    {
+      "agent": "supply_chain",
+      "started": "2027-03-08T09:16:01.192000",
+      "ended": "2027-03-08T09:16:01.192000",
+      "steps": [
+        {
+          "t": "2027-03-08T09:16:01.192000",
+          "kind": "graph",
+          "text": "Plant P_KY -> POs building 2027-03-24..2027-03-25 (inclusive): 6 affected: ['PO-0157', 'PO-0158', 'PO-0159', 'PO-0160', 'PO-0161', 'PO-0162']",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T09:16:01.192000",
+          "kind": "plan",
+          "text": "Restart index 14; slots 5/day, shared across this event. 6 reschedule(s), 0 transfer(s), 0 unplaceable. PO-0157->P_KY 2027-03-26; PO-0158->P_KY 2027-03-26; PO-0159->P_KY 2027-03-29; PO-0160->P_KY 2027-03-29; PO-0161->P_KY 2027-03-30; PO-0162->P_KY 2027-03-30",
+          "data": {
+            "policy": {
+              "claim_order": "build_date_id",
+              "transfer_min_day": "today"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "agent": "dealer_care",
+      "started": "2027-03-08T09:16:01.192000",
+      "ended": "2027-03-08T09:16:01.193000",
+      "steps": [
+        {
+          "t": "2027-03-08T09:16:01.192000",
+          "kind": "graph",
+          "text": "56 customer orders on 6 moved POs across 25 dealers (all incidents of this event together)",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T09:16:01.193000",
+          "kind": "plan",
+          "text": "One notice per dealer; 15 Platinum/Gold customer orders entitled, 15 loaner(s) assigned within pool limits (Platinum, then Gold, earlier promise, lower id).",
+          "data": null
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "seq": 1,
+      "incident_id": null,
+      "agent": "supply_chain",
+      "tool": "mes.get_schedule",
+      "args": {
+        "plant_id": "P_KY",
+        "date": "2027-03-26"
+      },
+      "justification": "Free read: confirm the target slot is free in the live world before any write",
+      "path_ids": [
+        "P_KY"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "plant_id": "P_KY",
+          "date": "2027-03-26",
+          "orders": [
+            {
+              "production_order_id": "PO-0163",
+              "model": "PIONEER"
+            },
+            {
+              "production_order_id": "PO-0164",
+              "model": "SUMMIT"
+            },
+            {
+              "production_order_id": "PO-0165",
+              "model": "VOYAGER"
+            }
+          ],
+          "free_slots": 2
+        }
+      }
+    },
+    {
+      "seq": 2,
+      "incident_id": null,
+      "agent": "supply_chain",
+      "tool": "mes.get_schedule",
+      "args": {
+        "plant_id": "P_KY",
+        "date": "2027-03-29"
+      },
+      "justification": "Free read: confirm the target slot is free in the live world before any write",
+      "path_ids": [
+        "P_KY"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "plant_id": "P_KY",
+          "date": "2027-03-29",
+          "orders": [
+            {
+              "production_order_id": "PO-0166",
+              "model": "PIONEER"
+            },
+            {
+              "production_order_id": "PO-0167",
+              "model": "SUMMIT"
+            },
+            {
+              "production_order_id": "PO-0168",
+              "model": "VOYAGER"
+            }
+          ],
+          "free_slots": 2
+        }
+      }
+    },
+    {
+      "seq": 3,
+      "incident_id": null,
+      "agent": "supply_chain",
+      "tool": "mes.get_schedule",
+      "args": {
+        "plant_id": "P_KY",
+        "date": "2027-03-30"
+      },
+      "justification": "Free read: confirm the target slot is free in the live world before any write",
+      "path_ids": [
+        "P_KY"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "plant_id": "P_KY",
+          "date": "2027-03-30",
+          "orders": [
+            {
+              "production_order_id": "PO-0169",
+              "model": "PIONEER"
+            },
+            {
+              "production_order_id": "PO-0170",
+              "model": "SUMMIT"
+            },
+            {
+              "production_order_id": "PO-0171",
+              "model": "VOYAGER"
+            }
+          ],
+          "free_slots": 2
+        }
+      }
+    },
+    {
+      "seq": 4,
+      "incident_id": "E-08#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0157",
+        "new_date": "2027-03-26"
+      },
+      "justification": "Rule 2+3: build falls inside the outage; earliest free P_KY slot at/after restart",
+      "path_ids": [
+        "PIONEER",
+        "PO-0157"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0157",
+          "plant_id": "P_KY",
+          "date": "2027-03-26"
+        }
+      }
+    },
+    {
+      "seq": 5,
+      "incident_id": "E-08#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0158",
+        "new_date": "2027-03-26"
+      },
+      "justification": "Rule 2+3: build falls inside the outage; earliest free P_KY slot at/after restart",
+      "path_ids": [
+        "SUMMIT",
+        "PO-0158"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0158",
+          "plant_id": "P_KY",
+          "date": "2027-03-26"
+        }
+      }
+    },
+    {
+      "seq": 6,
+      "incident_id": "E-08#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0159",
+        "new_date": "2027-03-29"
+      },
+      "justification": "Rule 2+3: build falls inside the outage; earliest free P_KY slot at/after restart",
+      "path_ids": [
+        "VOYAGER",
+        "PO-0159"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0159",
+          "plant_id": "P_KY",
+          "date": "2027-03-29"
+        }
+      }
+    },
+    {
+      "seq": 7,
+      "incident_id": "E-08#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0160",
+        "new_date": "2027-03-29"
+      },
+      "justification": "Rule 2+3: build falls inside the outage; earliest free P_KY slot at/after restart",
+      "path_ids": [
+        "PIONEER",
+        "PO-0160"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0160",
+          "plant_id": "P_KY",
+          "date": "2027-03-29"
+        }
+      }
+    },
+    {
+      "seq": 8,
+      "incident_id": "E-08#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0161",
+        "new_date": "2027-03-30"
+      },
+      "justification": "Rule 2+3: build falls inside the outage; earliest free P_KY slot at/after restart",
+      "path_ids": [
+        "SUMMIT",
+        "PO-0161"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0161",
+          "plant_id": "P_KY",
+          "date": "2027-03-30"
+        }
+      }
+    },
+    {
+      "seq": 9,
+      "incident_id": "E-08#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0162",
+        "new_date": "2027-03-30"
+      },
+      "justification": "Rule 2+3: build falls inside the outage; earliest free P_KY slot at/after restart",
+      "path_ids": [
+        "VOYAGER",
+        "PO-0162"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0162",
+          "plant_id": "P_KY",
+          "date": "2027-03-30"
+        }
+      }
+    },
+    {
+      "seq": 10,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D02",
+        "customer_order_ids": [
+          "CO-00897"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00897 (promised 2027-03-28): build moves from 2027-03-24 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D02, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0159",
+        "CO-00897",
+        "D02"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 11,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D03",
+        "customer_order_ids": [
+          "CO-00889",
+          "CO-00907"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00889 (promised 2027-03-27): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25); CO-00907 (promised 2027-03-28): build moves from 2027-03-25 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D03, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0158",
+        "CO-00889",
+        "D03"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 12,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D05",
+        "customer_order_ids": [
+          "CO-00928"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00928 (promised 2027-03-28): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D05, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0162",
+        "CO-00928",
+        "D05"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 13,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D07",
+        "customer_order_ids": [
+          "CO-00876",
+          "CO-00893"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00876 (promised 2027-03-28): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25); CO-00893 (promised 2027-03-28): build moves from 2027-03-24 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D07, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0157",
+        "CO-00876",
+        "D07"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 14,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00876"
+      },
+      "justification": "Rule 5: Gold customer C5020; pool D07 priority order",
+      "path_ids": [
+        "CO-00876",
+        "C5020",
+        "D07"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D07"
+        }
+      }
+    },
+    {
+      "seq": 15,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D08",
+        "customer_order_ids": [
+          "CO-00882",
+          "CO-00895",
+          "CO-00911",
+          "CO-00915",
+          "CO-00922",
+          "CO-00930"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00882 (promised 2027-03-27): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25); CO-00895 (promised 2027-03-27): build moves from 2027-03-24 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25); CO-00911 (promised 2027-03-28): build moves from 2027-03-25 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25); CO-00915 (promised 2027-03-28): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25); CO-00922 (promised 2027-03-28): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25); CO-00930 (promised 2027-03-28): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D08, only its 6 affected order(s)",
+      "path_ids": [
+        "PO-0157",
+        "CO-00882",
+        "D08"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 16,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00930"
+      },
+      "justification": "Rule 5: Platinum customer C2866; pool D08 priority order",
+      "path_ids": [
+        "CO-00930",
+        "C2866",
+        "D08"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D08"
+        }
+      }
+    },
+    {
+      "seq": 17,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00911"
+      },
+      "justification": "Rule 5: Gold customer C0327; pool D08 priority order",
+      "path_ids": [
+        "CO-00911",
+        "C0327",
+        "D08"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D08"
+        }
+      }
+    },
+    {
+      "seq": 18,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00915"
+      },
+      "justification": "Rule 5: Gold customer C4531; pool D08 priority order",
+      "path_ids": [
+        "CO-00915",
+        "C4531",
+        "D08"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D08"
+        }
+      }
+    },
+    {
+      "seq": 19,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D14",
+        "customer_order_ids": [
+          "CO-00885"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00885 (promised 2027-03-29): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D14, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0158",
+        "CO-00885",
+        "D14"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 20,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D15",
+        "customer_order_ids": [
+          "CO-00903",
+          "CO-00920",
+          "CO-00921"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00903 (promised 2027-03-28): build moves from 2027-03-25 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25); CO-00920 (promised 2027-03-28): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25); CO-00921 (promised 2027-03-28): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D15, only its 3 affected order(s)",
+      "path_ids": [
+        "PO-0160",
+        "CO-00903",
+        "D15"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 21,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D16",
+        "customer_order_ids": [
+          "CO-00917",
+          "CO-00918",
+          "CO-00927"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00917 (promised 2027-03-29): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25); CO-00918 (promised 2027-03-29): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25); CO-00927 (promised 2027-03-29): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D16, only its 3 affected order(s)",
+      "path_ids": [
+        "PO-0161",
+        "CO-00917",
+        "D16"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 22,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00927"
+      },
+      "justification": "Rule 5: Platinum customer C0300; pool D16 priority order",
+      "path_ids": [
+        "CO-00927",
+        "C0300",
+        "D16"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D16"
+        }
+      }
+    },
+    {
+      "seq": 23,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00918"
+      },
+      "justification": "Rule 5: Gold customer C4998; pool D16 priority order",
+      "path_ids": [
+        "CO-00918",
+        "C4998",
+        "D16"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D16"
+        }
+      }
+    },
+    {
+      "seq": 24,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D17",
+        "customer_order_ids": [
+          "CO-00886"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00886 (promised 2027-03-27): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D17, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0158",
+        "CO-00886",
+        "D17"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 25,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00886"
+      },
+      "justification": "Rule 5: Gold customer C2175; pool D17 priority order",
+      "path_ids": [
+        "CO-00886",
+        "C2175",
+        "D17"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D17"
+        }
+      }
+    },
+    {
+      "seq": 26,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D19",
+        "customer_order_ids": [
+          "CO-00923"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00923 (promised 2027-03-30): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D19, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0162",
+        "CO-00923",
+        "D19"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 27,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D20",
+        "customer_order_ids": [
+          "CO-00879",
+          "CO-00894",
+          "CO-00908",
+          "CO-00929"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00879 (promised 2027-03-29): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25); CO-00894 (promised 2027-03-29): build moves from 2027-03-24 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25); CO-00908 (promised 2027-03-30): build moves from 2027-03-25 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25); CO-00929 (promised 2027-03-30): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D20, only its 4 affected order(s)",
+      "path_ids": [
+        "PO-0157",
+        "CO-00879",
+        "D20"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 28,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00908"
+      },
+      "justification": "Rule 5: Gold customer C0483; pool D20 priority order",
+      "path_ids": [
+        "CO-00908",
+        "C0483",
+        "D20"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D20"
+        }
+      }
+    },
+    {
+      "seq": 29,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D21",
+        "customer_order_ids": [
+          "CO-00881",
+          "CO-00898",
+          "CO-00899",
+          "CO-00900",
+          "CO-00901",
+          "CO-00914"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00881 (promised 2027-03-28): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25); CO-00898 (promised 2027-03-28): build moves from 2027-03-24 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25); CO-00899 (promised 2027-03-28): build moves from 2027-03-24 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25); CO-00900 (promised 2027-03-28): build moves from 2027-03-24 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25); CO-00901 (promised 2027-03-28): build moves from 2027-03-24 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25); CO-00914 (promised 2027-03-29): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D21, only its 6 affected order(s)",
+      "path_ids": [
+        "PO-0157",
+        "CO-00881",
+        "D21"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 30,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00899"
+      },
+      "justification": "Rule 5: Platinum customer C0283; pool D21 priority order",
+      "path_ids": [
+        "CO-00899",
+        "C0283",
+        "D21"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D21"
+        }
+      }
+    },
+    {
+      "seq": 31,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D22",
+        "customer_order_ids": [
+          "CO-00919"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00919 (promised 2027-03-30): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D22, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0161",
+        "CO-00919",
+        "D22"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 32,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D23",
+        "customer_order_ids": [
+          "CO-00910",
+          "CO-00912"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00910 (promised 2027-03-29): build moves from 2027-03-25 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25); CO-00912 (promised 2027-03-29): build moves from 2027-03-25 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D23, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0160",
+        "CO-00910",
+        "D23"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 33,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D24",
+        "customer_order_ids": [
+          "CO-00892"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00892 (promised 2027-03-28): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D24, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0158",
+        "CO-00892",
+        "D24"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 34,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D26",
+        "customer_order_ids": [
+          "CO-00887",
+          "CO-00890",
+          "CO-00902",
+          "CO-00904",
+          "CO-00909",
+          "CO-00916"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00887 (promised 2027-03-27): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25); CO-00890 (promised 2027-03-27): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25); CO-00902 (promised 2027-03-27): build moves from 2027-03-24 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25); CO-00904 (promised 2027-03-28): build moves from 2027-03-25 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25); CO-00909 (promised 2027-03-28): build moves from 2027-03-25 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25); CO-00916 (promised 2027-03-28): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D26, only its 6 affected order(s)",
+      "path_ids": [
+        "PO-0158",
+        "CO-00887",
+        "D26"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 35,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00887"
+      },
+      "justification": "Rule 5: Gold customer C2673; pool D26 priority order",
+      "path_ids": [
+        "CO-00887",
+        "C2673",
+        "D26"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D26"
+        }
+      }
+    },
+    {
+      "seq": 36,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00904"
+      },
+      "justification": "Rule 5: Gold customer C1393; pool D26 priority order",
+      "path_ids": [
+        "CO-00904",
+        "C1393",
+        "D26"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D26"
+        }
+      }
+    },
+    {
+      "seq": 37,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D27",
+        "customer_order_ids": [
+          "CO-00888",
+          "CO-00891",
+          "CO-00931"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00888 (promised 2027-03-29): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25); CO-00891 (promised 2027-03-29): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25); CO-00931 (promised 2027-03-30): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D27, only its 3 affected order(s)",
+      "path_ids": [
+        "PO-0158",
+        "CO-00888",
+        "D27"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 38,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D31",
+        "customer_order_ids": [
+          "CO-00880"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00880 (promised 2027-03-28): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D31, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0157",
+        "CO-00880",
+        "D31"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 39,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00880"
+      },
+      "justification": "Rule 5: Gold customer C1487; pool D31 priority order",
+      "path_ids": [
+        "CO-00880",
+        "C1487",
+        "D31"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D31"
+        }
+      }
+    },
+    {
+      "seq": 40,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D32",
+        "customer_order_ids": [
+          "CO-00913"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00913 (promised 2027-03-30): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D32, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0161",
+        "CO-00913",
+        "D32"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 41,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D35",
+        "customer_order_ids": [
+          "CO-00877",
+          "CO-00924",
+          "CO-00926"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00877 (promised 2027-03-28): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25); CO-00924 (promised 2027-03-29): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25); CO-00926 (promised 2027-03-29): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D35, only its 3 affected order(s)",
+      "path_ids": [
+        "PO-0157",
+        "CO-00877",
+        "D35"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 42,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00926"
+      },
+      "justification": "Rule 5: Platinum customer C1992; pool D35 priority order",
+      "path_ids": [
+        "CO-00926",
+        "C1992",
+        "D35"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D35"
+        }
+      }
+    },
+    {
+      "seq": 43,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D38",
+        "customer_order_ids": [
+          "CO-00925"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00925 (promised 2027-03-28): build moves from 2027-03-25 to 2027-03-30 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D38, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0162",
+        "CO-00925",
+        "D38"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 44,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D39",
+        "customer_order_ids": [
+          "CO-00906"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00906 (promised 2027-03-29): build moves from 2027-03-25 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D39, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0160",
+        "CO-00906",
+        "D39"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 45,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00906"
+      },
+      "justification": "Rule 5: Platinum customer C2678; pool D39 priority order",
+      "path_ids": [
+        "CO-00906",
+        "C2678",
+        "D39"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D39"
+        }
+      }
+    },
+    {
+      "seq": 46,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D45",
+        "customer_order_ids": [
+          "CO-00878",
+          "CO-00905"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00878 (promised 2027-03-29): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25); CO-00905 (promised 2027-03-30): build moves from 2027-03-25 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D45, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0157",
+        "CO-00878",
+        "D45"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 47,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D46",
+        "customer_order_ids": [
+          "CO-00884"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00884 (promised 2027-03-28): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D46, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0157",
+        "CO-00884",
+        "D46"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 48,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00884"
+      },
+      "justification": "Rule 5: Gold customer C4844; pool D46 priority order",
+      "path_ids": [
+        "CO-00884",
+        "C4844",
+        "D46"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D46"
+        }
+      }
+    },
+    {
+      "seq": 49,
+      "incident_id": "E-08#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D49",
+        "customer_order_ids": [
+          "CO-00883",
+          "CO-00896"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00883 (promised 2027-03-28): build moves from 2027-03-24 to 2027-03-26 (P_KY outage 2027-03-24 to 2027-03-25); CO-00896 (promised 2027-03-28): build moves from 2027-03-24 to 2027-03-29 (P_KY outage 2027-03-24 to 2027-03-25)."
+      },
+      "justification": "Rule 4: one notification for D49, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0157",
+        "CO-00883",
+        "D49"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    }
+  ],
+  "world_diff": {
+    "moved_pos": [
+      {
+        "production_order_id": "PO-0157",
+        "kind": "reschedule",
+        "from_plant": "P_KY",
+        "from_date": "2027-03-24",
+        "to_plant": "P_KY",
+        "to_date": "2027-03-26"
+      },
+      {
+        "production_order_id": "PO-0158",
+        "kind": "reschedule",
+        "from_plant": "P_KY",
+        "from_date": "2027-03-24",
+        "to_plant": "P_KY",
+        "to_date": "2027-03-26"
+      },
+      {
+        "production_order_id": "PO-0159",
+        "kind": "reschedule",
+        "from_plant": "P_KY",
+        "from_date": "2027-03-24",
+        "to_plant": "P_KY",
+        "to_date": "2027-03-29"
+      },
+      {
+        "production_order_id": "PO-0160",
+        "kind": "reschedule",
+        "from_plant": "P_KY",
+        "from_date": "2027-03-25",
+        "to_plant": "P_KY",
+        "to_date": "2027-03-29"
+      },
+      {
+        "production_order_id": "PO-0161",
+        "kind": "reschedule",
+        "from_plant": "P_KY",
+        "from_date": "2027-03-25",
+        "to_plant": "P_KY",
+        "to_date": "2027-03-30"
+      },
+      {
+        "production_order_id": "PO-0162",
+        "kind": "reschedule",
+        "from_plant": "P_KY",
+        "from_date": "2027-03-25",
+        "to_plant": "P_KY",
+        "to_date": "2027-03-30"
+      }
+    ],
+    "notified_dealers": [
+      {
+        "dealer_id": "D02",
+        "customer_order_ids": [
+          "CO-00897"
+        ]
+      },
+      {
+        "dealer_id": "D03",
+        "customer_order_ids": [
+          "CO-00889",
+          "CO-00907"
+        ]
+      },
+      {
+        "dealer_id": "D05",
+        "customer_order_ids": [
+          "CO-00928"
+        ]
+      },
+      {
+        "dealer_id": "D07",
+        "customer_order_ids": [
+          "CO-00876",
+          "CO-00893"
+        ]
+      },
+      {
+        "dealer_id": "D08",
+        "customer_order_ids": [
+          "CO-00882",
+          "CO-00895",
+          "CO-00911",
+          "CO-00915",
+          "CO-00922",
+          "CO-00930"
+        ]
+      },
+      {
+        "dealer_id": "D14",
+        "customer_order_ids": [
+          "CO-00885"
+        ]
+      },
+      {
+        "dealer_id": "D15",
+        "customer_order_ids": [
+          "CO-00903",
+          "CO-00920",
+          "CO-00921"
+        ]
+      },
+      {
+        "dealer_id": "D16",
+        "customer_order_ids": [
+          "CO-00917",
+          "CO-00918",
+          "CO-00927"
+        ]
+      },
+      {
+        "dealer_id": "D17",
+        "customer_order_ids": [
+          "CO-00886"
+        ]
+      },
+      {
+        "dealer_id": "D19",
+        "customer_order_ids": [
+          "CO-00923"
+        ]
+      },
+      {
+        "dealer_id": "D20",
+        "customer_order_ids": [
+          "CO-00879",
+          "CO-00894",
+          "CO-00908",
+          "CO-00929"
+        ]
+      },
+      {
+        "dealer_id": "D21",
+        "customer_order_ids": [
+          "CO-00881",
+          "CO-00898",
+          "CO-00899",
+          "CO-00900",
+          "CO-00901",
+          "CO-00914"
+        ]
+      },
+      {
+        "dealer_id": "D22",
+        "customer_order_ids": [
+          "CO-00919"
+        ]
+      },
+      {
+        "dealer_id": "D23",
+        "customer_order_ids": [
+          "CO-00910",
+          "CO-00912"
+        ]
+      },
+      {
+        "dealer_id": "D24",
+        "customer_order_ids": [
+          "CO-00892"
+        ]
+      },
+      {
+        "dealer_id": "D26",
+        "customer_order_ids": [
+          "CO-00887",
+          "CO-00890",
+          "CO-00902",
+          "CO-00904",
+          "CO-00909",
+          "CO-00916"
+        ]
+      },
+      {
+        "dealer_id": "D27",
+        "customer_order_ids": [
+          "CO-00888",
+          "CO-00891",
+          "CO-00931"
+        ]
+      },
+      {
+        "dealer_id": "D31",
+        "customer_order_ids": [
+          "CO-00880"
+        ]
+      },
+      {
+        "dealer_id": "D32",
+        "customer_order_ids": [
+          "CO-00913"
+        ]
+      },
+      {
+        "dealer_id": "D35",
+        "customer_order_ids": [
+          "CO-00877",
+          "CO-00924",
+          "CO-00926"
+        ]
+      },
+      {
+        "dealer_id": "D38",
+        "customer_order_ids": [
+          "CO-00925"
+        ]
+      },
+      {
+        "dealer_id": "D39",
+        "customer_order_ids": [
+          "CO-00906"
+        ]
+      },
+      {
+        "dealer_id": "D45",
+        "customer_order_ids": [
+          "CO-00878",
+          "CO-00905"
+        ]
+      },
+      {
+        "dealer_id": "D46",
+        "customer_order_ids": [
+          "CO-00884"
+        ]
+      },
+      {
+        "dealer_id": "D49",
+        "customer_order_ids": [
+          "CO-00883",
+          "CO-00896"
+        ]
+      }
+    ],
+    "loaners": [
+      "CO-00876",
+      "CO-00930",
+      "CO-00911",
+      "CO-00915",
+      "CO-00927",
+      "CO-00918",
+      "CO-00886",
+      "CO-00908",
+      "CO-00899",
+      "CO-00887",
+      "CO-00904",
+      "CO-00880",
+      "CO-00926",
+      "CO-00906",
+      "CO-00884"
+    ],
+    "held_lots": [],
+    "stopped_vins": [],
+    "contacted_customers": []
+  },
+  "counterfactual": {
+    "customers_affected": 56,
+    "avg_slip_days": 3.8,
+    "loaners_entitled": 15,
+    "loaners_assigned": 15,
+    "vehicles_pulled": 0,
+    "owners_contacted": 0
+  },
+  "llm": {
+    "calls": [
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "extract",
+        "input_tokens": 779,
+        "output_tokens": 295,
+        "cost_usd": 0.000971,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "audit",
+        "input_tokens": 1354,
+        "output_tokens": 453,
+        "cost_usd": 0.002714,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "summarize",
+        "input_tokens": 356,
+        "output_tokens": 138,
+        "cost_usd": 0.000452,
+        "cached": false
+      }
+    ],
+    "total_cost_usd": 0.004137
+  },
+  "summary": "Wacky Wheels Lexington experienced a power failure causing production to stop from 2027-03-24 through 2027-03-25 inclusive. The control tower rescheduled 6 production orders at the same plant, notified 25 dealers once each for 56 customer orders, and assigned 15 loaners.",
+  "decision_reason": "The system acted because it was a real incident classified as plant_outage, where all IDs and dates were resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live baseline matched before the first write."
+}

@@ -2,7 +2,7 @@
   "provider": "gemini",
   "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 1.131,
+  "latency_s": 1.219,
   "parsed": {
     "incidents": [
       {
@@ -25,7 +25,7 @@
           "text": "2027-03-03",
           "iso": "2027-03-03"
         },
-        "reason": "The bulletin explicitly places a defective lot of parts on hold at a specific plant for a defined build window.",
+        "reason": "A specific part lot installed at a plant within a given build window is reported as defective with a faulty weld.",
         "confidence": 1.0
       }
     ]
@@ -35,7 +35,7 @@
     "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 808,
-    "output_tokens": 263,
-    "cost_usd": 0.0009
+    "output_tokens": 238,
+    "cost_usd": 0.000837
   }
 }

@@ -19,7 +19,8 @@ CLAUDE.local.md
 .claude/settings.local.json
 
 # Run outputs (keep only curated examples and the final run)
-runs/
+runs/*
+!runs/final/
 !runs/final/
 traces/*
 !traces/examples/

@@ -2,18 +2,18 @@
   "provider": "gemini",
   "model": "gemini-3.8-flash",
   "purpose": "audit",
-  "latency_s": 4.672,
+  "latency_s": 4.702,
   "parsed": {
     "agree": true,
     "concerns": [],
-    "summary": "The supplier delay was correctly interpreted and the corrective actions comply with all operational policies."
+    "summary": "The supplier delay at Huntsville was accurately interpreted and rescheduled within policy rules, with appropriate dealer notifications and loaner assignments."
   },
   "usage": {
     "provider": "gemini",
     "model": "gemini-3.8-flash",
     "purpose": "audit",
     "input_tokens": 1272,
-    "output_tokens": 470,
-    "cost_usd": 0.002717
+    "output_tokens": 492,
+    "cost_usd": 0.002799
   }
 }

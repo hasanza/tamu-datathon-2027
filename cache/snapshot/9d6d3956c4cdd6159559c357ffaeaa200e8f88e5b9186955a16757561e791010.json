@@ -2,17 +2,17 @@
   "provider": "gemini",
   "model": "gemini-3.5-flash-lite",
   "purpose": "summarize",
-  "latency_s": 0.921,
+  "latency_s": 0.873,
   "parsed": {
-    "summary": "Lot LOT-0191 of CHIP-IVI from supplier SUP-12 installed at P_IN on vehicles built 2027-03-02 to 2027-03-03 had a faulty weld. The lot was placed on hold, the sale of unsold vehicles was stopped, and owners were contacted.",
-    "decision_reason": "Acted on a real quality incident because the identifiers and dates were confirmed against the data, passing rule quality_hold."
+    "summary": "Lot LOT-0191 of CHIP-IVI from supplier SUP-12 installed at P_IN on vehicles built 2027-03-02 to 2027-03-03 had a faulty weld. The supply-chain control tower placed the lot on hold, stopped the sale of unsold vehicles, and contacted owners.",
+    "decision_reason": "The control tower acted on a real incident under incident type quality_hold. Identifiers and dates were resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live baseline matched before the first write."
   },
   "usage": {
     "provider": "gemini",
     "model": "gemini-3.5-flash-lite",
     "purpose": "summarize",
     "input_tokens": 396,
-    "output_tokens": 115,
-    "cost_usd": 0.000406
+    "output_tokens": 140,
+    "cost_usd": 0.000469
   }
 }

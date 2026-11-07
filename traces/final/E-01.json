@@ -1,0 +1,4397 @@
+{
+  "pipeline_version": "0.1.0",
+  "event_id": "E-01",
+  "received_at": "2027-03-08T07:17:00",
+  "source": "daily digest",
+  "text": "Morning digest, two items. (1) San Antonio update: a software outage on the line. We're dark from next Friday through Monday Mar 22; the line restarts the following working day. (2) Quick heads up from Quanta: the infotainment chip run for Princeton can't make it next Monday. Carrier says next Friday now (severe weather on the route).",
+  "status": "done",
+  "classification": {
+    "category": "compound",
+    "confidence": 1.0,
+    "reason": "The San Antonio plant will experience a software outage spanning from next Friday through Monday Mar 22. The shipment of infotainment chips from Quanta to Princeton is delayed from next Monday to next Friday due to severe weather."
+  },
+  "incidents": [
+    {
+      "incident_id": "E-01#1",
+      "event_id": "E-01",
+      "category": "plant_outage",
+      "confidence": 1.0,
+      "plant_id": "P_TX",
+      "part_id": null,
+      "supplier_id": null,
+      "shipment_id": null,
+      "lot_id": null,
+      "orig_eta": null,
+      "new_eta": null,
+      "outage_start": "2027-03-19",
+      "outage_end": "2027-03-22",
+      "build_window_start": null,
+      "build_window_end": null,
+      "raw_mentions": {
+        "plant": "San Antonio"
+      },
+      "resolution_steps": [
+        {
+          "mention": "San Antonio",
+          "entity_type": "plant",
+          "candidates": [
+            "P_TX"
+          ],
+          "chosen": "P_TX",
+          "method": "alias",
+          "note": null
+        },
+        {
+          "mention": "next Friday",
+          "entity_type": "date",
+          "candidates": [
+            "2027-03-19"
+          ],
+          "chosen": "2027-03-19",
+          "method": "exact",
+          "note": "'next <weekday>' = that weekday of next week"
+        },
+        {
+          "mention": "Monday Mar 22",
+          "entity_type": "date",
+          "candidates": [
+            "2027-03-22"
+          ],
+          "chosen": "2027-03-22",
+          "method": "exact",
+          "note": "explicit month/day with matching weekday"
+        }
+      ],
+      "ambiguities": [],
+      "reason": "The San Antonio plant will experience a software outage spanning from next Friday through Monday Mar 22."
+    },
+    {
+      "incident_id": "E-01#2",
+      "event_id": "E-01",
+      "category": "supplier_delay",
+      "confidence": 1.0,
+      "plant_id": "P_IN",
+      "part_id": "CHIP-IVI",
+      "supplier_id": "SUP-12",
+      "shipment_id": "SH-0190",
+      "lot_id": null,
+      "orig_eta": "2027-03-15",
+      "new_eta": "2027-03-19",
+      "outage_start": null,
+      "outage_end": null,
+      "build_window_start": null,
+      "build_window_end": null,
+      "raw_mentions": {
+        "plant": "Princeton",
+        "part": "infotainment chip",
+        "supplier": "Quanta"
+      },
+      "resolution_steps": [
+        {
+          "mention": "Princeton",
+          "entity_type": "plant",
+          "candidates": [
+            "P_IN"
+          ],
+          "chosen": "P_IN",
+          "method": "alias",
+          "note": null
+        },
+        {
+          "mention": "infotainment chip",
+          "entity_type": "part",
+          "candidates": [
+            "CHIP-IVI"
+          ],
+          "chosen": "CHIP-IVI",
+          "method": "alias",
+          "note": null
+        },
+        {
+          "mention": "Quanta",
+          "entity_type": "supplier",
+          "candidates": [
+            "SUP-12"
+          ],
+          "chosen": "SUP-12",
+          "method": "alias",
+          "note": null
+        },
+        {
+          "mention": "next Monday",
+          "entity_type": "date",
+          "candidates": [
+            "2027-03-15"
+          ],
+          "chosen": "2027-03-15",
+          "method": "exact",
+          "note": "'next <weekday>' = that weekday of next week"
+        },
+        {
+          "mention": "next Friday",
+          "entity_type": "date",
+          "candidates": [
+            "2027-03-19"
+          ],
+          "chosen": "2027-03-19",
+          "method": "exact",
+          "note": "'next <weekday>' = that weekday of next week"
+        },
+        {
+          "mention": "CHIP-IVI→P_IN due 2027-03-15",
+          "entity_type": "shipment",
+          "candidates": [
+            "SH-0190"
+          ],
+          "chosen": "SH-0190",
+          "method": "data_snap",
+          "note": "exactly one shipment matches plant, part and original ETA"
+        }
+      ],
+      "ambiguities": [],
+      "reason": "The shipment of infotainment chips from Quanta to Princeton is delayed from next Monday to next Friday due to severe weather."
+    }
+  ],
+  "paths": {
+    "E-01#1": [
+      {
+        "nodes": [
+          {
+            "id": "P_TX",
+            "type": "Plant",
+            "label": "Wacky Wheels San Antonio",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0058",
+            "type": "ProductionOrder",
+            "label": "PO-0058 · RANGER · P_TX · 03-19",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0058",
+            "type": "CustomerOrder",
+            "label": "10 customer orders",
+            "group": "customer_orders",
+            "count": 10
+          },
+          {
+            "id": "grp:dealers:PO-0058",
+            "type": "Dealer",
+            "label": "9 dealers",
+            "group": "dealers",
+            "count": 9
+          }
+        ],
+        "edges": [
+          {
+            "from": "PO-0058",
+            "to": "P_TX",
+            "type": "AT_PLANT"
+          },
+          {
+            "from": "grp:cos:PO-0058",
+            "to": "PO-0058",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0058",
+            "to": "grp:dealers:PO-0058",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "P_TX",
+            "type": "Plant",
+            "label": "Wacky Wheels San Antonio",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0059",
+            "type": "ProductionOrder",
+            "label": "PO-0059 · SUMMIT · P_TX · 03-19",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0059",
+            "type": "CustomerOrder",
+            "label": "8 customer orders",
+            "group": "customer_orders",
+            "count": 8
+          },
+          {
+            "id": "grp:dealers:PO-0059",
+            "type": "Dealer",
+            "label": "8 dealers",
+            "group": "dealers",
+            "count": 8
+          }
+        ],
+        "edges": [
+          {
+            "from": "PO-0059",
+            "to": "P_TX",
+            "type": "AT_PLANT"
+          },
+          {
+            "from": "grp:cos:PO-0059",
+            "to": "PO-0059",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0059",
+            "to": "grp:dealers:PO-0059",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "P_TX",
+            "type": "Plant",
+            "label": "Wacky Wheels San Antonio",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0060",
+            "type": "ProductionOrder",
+            "label": "PO-0060 · TERRA · P_TX · 03-19",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0060",
+            "type": "CustomerOrder",
+            "label": "8 customer orders",
+            "group": "customer_orders",
+            "count": 8
+          },
+          {
+            "id": "grp:dealers:PO-0060",
+            "type": "Dealer",
+            "label": "7 dealers",
+            "group": "dealers",
+            "count": 7
+          }
+        ],
+        "edges": [
+          {
+            "from": "PO-0060",
+            "to": "P_TX",
+            "type": "AT_PLANT"
+          },
+          {
+            "from": "grp:cos:PO-0060",
+            "to": "PO-0060",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0060",
+            "to": "grp:dealers:PO-0060",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "P_TX",
+            "type": "Plant",
+            "label": "Wacky Wheels San Antonio",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0061",
+            "type": "ProductionOrder",
+            "label": "PO-0061 · RANGER · P_TX · 03-22",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0061",
+            "type": "CustomerOrder",
+            "label": "11 customer orders",
+            "group": "customer_orders",
+            "count": 11
+          },
+          {
+            "id": "grp:dealers:PO-0061",
+            "type": "Dealer",
+            "label": "10 dealers",
+            "group": "dealers",
+            "count": 10
+          }
+        ],
+        "edges": [
+          {
+            "from": "PO-0061",
+            "to": "P_TX",
+            "type": "AT_PLANT"
+          },
+          {
+            "from": "grp:cos:PO-0061",
+            "to": "PO-0061",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0061",
+            "to": "grp:dealers:PO-0061",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "P_TX",
+            "type": "Plant",
+            "label": "Wacky Wheels San Antonio",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0062",
+            "type": "ProductionOrder",
+            "label": "PO-0062 · SUMMIT · P_TX · 03-22",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0062",
+            "type": "CustomerOrder",
+            "label": "9 customer orders",
+            "group": "customer_orders",
+            "count": 9
+          },
+          {
+            "id": "grp:dealers:PO-0062",
+            "type": "Dealer",
+            "label": "9 dealers",
+            "group": "dealers",
+            "count": 9
+          }
+        ],
+        "edges": [
+          {
+            "from": "PO-0062",
+            "to": "P_TX",
+            "type": "AT_PLANT"
+          },
+          {
+            "from": "grp:cos:PO-0062",
+            "to": "PO-0062",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0062",
+            "to": "grp:dealers:PO-0062",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "P_TX",
+            "type": "Plant",
+            "label": "Wacky Wheels San Antonio",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0063",
+            "type": "ProductionOrder",
+            "label": "PO-0063 · TERRA · P_TX · 03-22",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0063",
+            "type": "CustomerOrder",
+            "label": "9 customer orders",
+            "group": "customer_orders",
+            "count": 9
+          },
+          {
+            "id": "grp:dealers:PO-0063",
+            "type": "Dealer",
+            "label": "7 dealers",
+            "group": "dealers",
+            "count": 7
+          }
+        ],
+        "edges": [
+          {
+            "from": "PO-0063",
+            "to": "P_TX",
+            "type": "AT_PLANT"
+          },
+          {
+            "from": "grp:cos:PO-0063",
+            "to": "PO-0063",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0063",
+            "to": "grp:dealers:PO-0063",
+            "type": "SOLD_BY"
+          }
+        ]
+      }
+    ],
+    "E-01#2": [
+      {
+        "nodes": [
+          {
+            "id": "SH-0190",
+            "type": "Shipment",
+            "label": "SH-0190 · CHIP-IVI → P_IN · ETA 03-15",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "VOYAGER",
+            "type": "Model",
+            "label": "Voyager",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0316",
+            "type": "ProductionOrder",
+            "label": "PO-0316 · VOYAGER · P_IN · 03-15",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0316",
+            "type": "CustomerOrder",
+            "label": "7 customer orders",
+            "group": "customer_orders",
+            "count": 7
+          },
+          {
+            "id": "grp:dealers:PO-0316",
+            "type": "Dealer",
+            "label": "6 dealers",
+            "group": "dealers",
+            "count": 6
+          }
+        ],
+        "edges": [
+          {
+            "from": "SH-0190",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "VOYAGER",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0316",
+            "to": "VOYAGER",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:cos:PO-0316",
+            "to": "PO-0316",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0316",
+            "to": "grp:dealers:PO-0316",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "SH-0190",
+            "type": "Shipment",
+            "label": "SH-0190 · CHIP-IVI → P_IN · ETA 03-15",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "NOVA",
+            "type": "Model",
+            "label": "Nova",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0318",
+            "type": "ProductionOrder",
+            "label": "PO-0318 · NOVA · P_IN · 03-15",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0318",
+            "type": "CustomerOrder",
+            "label": "8 customer orders",
+            "group": "customer_orders",
+            "count": 8
+          },
+          {
+            "id": "grp:dealers:PO-0318",
+            "type": "Dealer",
+            "label": "8 dealers",
+            "group": "dealers",
+            "count": 8
+          }
+        ],
+        "edges": [
+          {
+            "from": "SH-0190",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "NOVA",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0318",
+            "to": "NOVA",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:cos:PO-0318",
+            "to": "PO-0318",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0318",
+            "to": "grp:dealers:PO-0318",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "SH-0190",
+            "type": "Shipment",
+            "label": "SH-0190 · CHIP-IVI → P_IN · ETA 03-15",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "VOYAGER",
+            "type": "Model",
+            "label": "Voyager",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0319",
+            "type": "ProductionOrder",
+            "label": "PO-0319 · VOYAGER · P_IN · 03-16",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0319",
+            "type": "CustomerOrder",
+            "label": "10 customer orders",
+            "group": "customer_orders",
+            "count": 10
+          },
+          {
+            "id": "grp:dealers:PO-0319",
+            "type": "Dealer",
+            "label": "8 dealers",
+            "group": "dealers",
+            "count": 8
+          }
+        ],
+        "edges": [
+          {
+            "from": "SH-0190",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "VOYAGER",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0319",
+            "to": "VOYAGER",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:cos:PO-0319",
+            "to": "PO-0319",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0319",
+            "to": "grp:dealers:PO-0319",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "SH-0190",
+            "type": "Shipment",
+            "label": "SH-0190 · CHIP-IVI → P_IN · ETA 03-15",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "NOVA",
+            "type": "Model",
+            "label": "Nova",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0321",
+            "type": "ProductionOrder",
+            "label": "PO-0321 · NOVA · P_IN · 03-16",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0321",
+            "type": "CustomerOrder",
+            "label": "8 customer orders",
+            "group": "customer_orders",
+            "count": 8
+          },
+          {
+            "id": "grp:dealers:PO-0321",
+            "type": "Dealer",
+            "label": "8 dealers",
+            "group": "dealers",
+            "count": 8
+          }
+        ],
+        "edges": [
+          {
+            "from": "SH-0190",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "NOVA",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0321",
+            "to": "NOVA",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:cos:PO-0321",
+            "to": "PO-0321",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0321",
+            "to": "grp:dealers:PO-0321",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "SH-0190",
+            "type": "Shipment",
+            "label": "SH-0190 · CHIP-IVI → P_IN · ETA 03-15",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "VOYAGER",
+            "type": "Model",
+            "label": "Voyager",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0322",
+            "type": "ProductionOrder",
+            "label": "PO-0322 · VOYAGER · P_IN · 03-17",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0322",
+            "type": "CustomerOrder",
+            "label": "9 customer orders",
+            "group": "customer_orders",
+            "count": 9
+          },
+          {
+            "id": "grp:dealers:PO-0322",
+            "type": "Dealer",
+            "label": "8 dealers",
+            "group": "dealers",
+            "count": 8
+          }
+        ],
+        "edges": [
+          {
+            "from": "SH-0190",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "VOYAGER",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0322",
+            "to": "VOYAGER",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:cos:PO-0322",
+            "to": "PO-0322",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0322",
+            "to": "grp:dealers:PO-0322",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "SH-0190",
+            "type": "Shipment",
+            "label": "SH-0190 · CHIP-IVI → P_IN · ETA 03-15",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "NOVA",
+            "type": "Model",
+            "label": "Nova",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0324",
+            "type": "ProductionOrder",
+            "label": "PO-0324 · NOVA · P_IN · 03-17",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0324",
+            "type": "CustomerOrder",
+            "label": "9 customer orders",
+            "group": "customer_orders",
+            "count": 9
+          },
+          {
+            "id": "grp:dealers:PO-0324",
+            "type": "Dealer",
+            "label": "9 dealers",
+            "group": "dealers",
+            "count": 9
+          }
+        ],
+        "edges": [
+          {
+            "from": "SH-0190",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "NOVA",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0324",
+            "to": "NOVA",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:cos:PO-0324",
+            "to": "PO-0324",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0324",
+            "to": "grp:dealers:PO-0324",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "SH-0190",
+            "type": "Shipment",
+            "label": "SH-0190 · CHIP-IVI → P_IN · ETA 03-15",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "VOYAGER",
+            "type": "Model",
+            "label": "Voyager",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0325",
+            "type": "ProductionOrder",
+            "label": "PO-0325 · VOYAGER · P_IN · 03-18",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0325",
+            "type": "CustomerOrder",
+            "label": "8 customer orders",
+            "group": "customer_orders",
+            "count": 8
+          },
+          {
+            "id": "grp:dealers:PO-0325",
+            "type": "Dealer",
+            "label": "6 dealers",
+            "group": "dealers",
+            "count": 6
+          }
+        ],
+        "edges": [
+          {
+            "from": "SH-0190",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "VOYAGER",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0325",
+            "to": "VOYAGER",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:cos:PO-0325",
+            "to": "PO-0325",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0325",
+            "to": "grp:dealers:PO-0325",
+            "type": "SOLD_BY"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "SH-0190",
+            "type": "Shipment",
+            "label": "SH-0190 · CHIP-IVI → P_IN · ETA 03-15",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "CHIP-IVI",
+            "type": "Part",
+            "label": "infotainment chip",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "NOVA",
+            "type": "Model",
+            "label": "Nova",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0327",
+            "type": "ProductionOrder",
+            "label": "PO-0327 · NOVA · P_IN · 03-18",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:cos:PO-0327",
+            "type": "CustomerOrder",
+            "label": "8 customer orders",
+            "group": "customer_orders",
+            "count": 8
+          },
+          {
+            "id": "grp:dealers:PO-0327",
+            "type": "Dealer",
+            "label": "7 dealers",
+            "group": "dealers",
+            "count": 7
+          }
+        ],
+        "edges": [
+          {
+            "from": "SH-0190",
+            "to": "CHIP-IVI",
+            "type": "OF_PART"
+          },
+          {
+            "from": "NOVA",
+            "to": "CHIP-IVI",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0327",
+            "to": "NOVA",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:cos:PO-0327",
+            "to": "PO-0327",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:PO-0327",
+            "to": "grp:dealers:PO-0327",
+            "type": "SOLD_BY"
+          }
+        ]
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent": "coordinator",
+      "started": "2027-03-08T07:17:01.921000",
+      "ended": "2027-03-08T07:17:08.667000",
+      "steps": [
+        {
+          "t": "2027-03-08T07:17:01.921000",
+          "kind": "llm",
+          "text": "Extracted 2 incident(s): plant_outage, supplier_delay",
+          "data": {
+            "model": "gemini-3.5-flash-lite",
+            "input_tokens": 808,
+            "output_tokens": 493,
+            "cached": false
+          }
+        },
+        {
+          "t": "2027-03-08T07:17:01.923000",
+          "kind": "gate",
+          "text": "shipment 'CHIP-IVI→P_IN due 2027-03-15' -> SH-0190 via data_snap: exactly one shipment matches plant, part and original ETA",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:17:01.924000",
+          "kind": "gate",
+          "text": "E-01#1: plant_outage confirmed, confidence 1.00 >= 0.7 -> act",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:17:01.924000",
+          "kind": "gate",
+          "text": "E-01#2: supplier_delay confirmed, confidence 1.00 >= 0.7 -> act",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:17:01.931000",
+          "kind": "rehearse",
+          "text": "Rehearsed 88 actions on the twin: 88 ok, 0 failed. Invariants: ok",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:17:08.219000",
+          "kind": "audit",
+          "text": "Auditor agrees: Both incidents are correctly interpreted and the plan fully complies with rescheduling, dealer notification, and loaner prioritization rules.",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:17:08.667000",
+          "kind": "execute",
+          "text": "Executed 88 calls via server: 88 ok, 0 failed (81 writes, 7 verification reads)",
+          "data": null
+        }
+      ]
+    },
+    {
+      "agent": "supply_chain",
+      "started": "2027-03-08T07:17:01.925000",
+      "ended": "2027-03-08T07:17:01.927000",
+      "steps": [
+        {
+          "t": "2027-03-08T07:17:01.925000",
+          "kind": "graph",
+          "text": "Plant P_TX -> POs building 2027-03-19..2027-03-22 (inclusive): 6 affected: ['PO-0058', 'PO-0059', 'PO-0060', 'PO-0061', 'PO-0062', 'PO-0063']",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:17:01.925000",
+          "kind": "plan",
+          "text": "Restart index 11; slots 5/day, shared across this event. 6 reschedule(s), 0 transfer(s), 0 unplaceable. PO-0058->P_TX 2027-03-23; PO-0059->P_TX 2027-03-23; PO-0060->P_TX 2027-03-24; PO-0061->P_TX 2027-03-24; PO-0062->P_TX 2027-03-25; PO-0063->P_TX 2027-03-25",
+          "data": {
+            "policy": {
+              "claim_order": "build_date_id",
+              "transfer_min_day": "today"
+            }
+          }
+        },
+        {
+          "t": "2027-03-08T07:17:01.927000",
+          "kind": "graph",
+          "text": "Shipment SH-0190 -> part CHIP-IVI -> models using it -> POs at P_IN building 2027-03-15..2027-03-19 (new ETA exclusive): 8 affected: ['PO-0316', 'PO-0318', 'PO-0319', 'PO-0321', 'PO-0322', 'PO-0324', 'PO-0325', 'PO-0327']",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:17:01.927000",
+          "kind": "plan",
+          "text": "Restart index 9; slots 5/day, shared across this event. 8 reschedule(s), 0 transfer(s), 0 unplaceable. PO-0316->P_IN 2027-03-19; PO-0318->P_IN 2027-03-19; PO-0319->P_IN 2027-03-22; PO-0321->P_IN 2027-03-22; PO-0322->P_IN 2027-03-23; PO-0324->P_IN 2027-03-23; PO-0325->P_IN 2027-03-24; PO-0327->P_IN 2027-03-24",
+          "data": {
+            "policy": {
+              "claim_order": "build_date_id",
+              "transfer_min_day": "today"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "agent": "dealer_care",
+      "started": "2027-03-08T07:17:01.927000",
+      "ended": "2027-03-08T07:17:01.928000",
+      "steps": [
+        {
+          "t": "2027-03-08T07:17:01.927000",
+          "kind": "graph",
+          "text": "122 customer orders on 14 moved POs across 41 dealers (all incidents of this event together)",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:17:01.928000",
+          "kind": "plan",
+          "text": "One notice per dealer; 30 Platinum/Gold customer orders entitled, 26 loaner(s) assigned within pool limits (Platinum, then Gold, earlier promise, lower id).",
+          "data": null
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "seq": 1,
+      "incident_id": null,
+      "agent": "supply_chain",
+      "tool": "mes.get_schedule",
+      "args": {
+        "plant_id": "P_IN",
+        "date": "2027-03-19"
+      },
+      "justification": "Free read: confirm the target slot is free in the live world before any write",
+      "path_ids": [
+        "P_IN"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "plant_id": "P_IN",
+          "date": "2027-03-19",
+          "orders": [
+            {
+              "production_order_id": "PO-0328",
+              "model": "VOYAGER"
+            },
+            {
+              "production_order_id": "PO-0329",
+              "model": "RANGER"
+            },
+            {
+              "production_order_id": "PO-0330",
+              "model": "NOVA"
+            }
+          ],
+          "free_slots": 2
+        }
+      }
+    },
+    {
+      "seq": 2,
+      "incident_id": null,
+      "agent": "supply_chain",
+      "tool": "mes.get_schedule",
+      "args": {
+        "plant_id": "P_IN",
+        "date": "2027-03-22"
+      },
+      "justification": "Free read: confirm the target slot is free in the live world before any write",
+      "path_ids": [
+        "P_IN"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "plant_id": "P_IN",
+          "date": "2027-03-22",
+          "orders": [
+            {
+              "production_order_id": "PO-0331",
+              "model": "VOYAGER"
+            },
+            {
+              "production_order_id": "PO-0332",
+              "model": "RANGER"
+            },
+            {
+              "production_order_id": "PO-0333",
+              "model": "NOVA"
+            }
+          ],
+          "free_slots": 2
+        }
+      }
+    },
+    {
+      "seq": 3,
+      "incident_id": null,
+      "agent": "supply_chain",
+      "tool": "mes.get_schedule",
+      "args": {
+        "plant_id": "P_IN",
+        "date": "2027-03-23"
+      },
+      "justification": "Free read: confirm the target slot is free in the live world before any write",
+      "path_ids": [
+        "P_IN"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "plant_id": "P_IN",
+          "date": "2027-03-23",
+          "orders": [
+            {
+              "production_order_id": "PO-0334",
+              "model": "VOYAGER"
+            },
+            {
+              "production_order_id": "PO-0335",
+              "model": "RANGER"
+            },
+            {
+              "production_order_id": "PO-0336",
+              "model": "NOVA"
+            }
+          ],
+          "free_slots": 2
+        }
+      }
+    },
+    {
+      "seq": 4,
+      "incident_id": null,
+      "agent": "supply_chain",
+      "tool": "mes.get_schedule",
+      "args": {
+        "plant_id": "P_IN",
+        "date": "2027-03-24"
+      },
+      "justification": "Free read: confirm the target slot is free in the live world before any write",
+      "path_ids": [
+        "P_IN"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "plant_id": "P_IN",
+          "date": "2027-03-24",
+          "orders": [
+            {
+              "production_order_id": "PO-0337",
+              "model": "VOYAGER"
+            },
+            {
+              "production_order_id": "PO-0338",
+              "model": "RANGER"
+            },
+            {
+              "production_order_id": "PO-0339",
+              "model": "NOVA"
+            }
+          ],
+          "free_slots": 2
+        }
+      }
+    },
+    {
+      "seq": 5,
+      "incident_id": null,
+      "agent": "supply_chain",
+      "tool": "mes.get_schedule",
+      "args": {
+        "plant_id": "P_TX",
+        "date": "2027-03-23"
+      },
+      "justification": "Free read: confirm the target slot is free in the live world before any write",
+      "path_ids": [
+        "P_TX"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "plant_id": "P_TX",
+          "date": "2027-03-23",
+          "orders": [
+            {
+              "production_order_id": "PO-0064",
+              "model": "RANGER"
+            },
+            {
+              "production_order_id": "PO-0065",
+              "model": "SUMMIT"
+            },
+            {
+              "production_order_id": "PO-0066",
+              "model": "TERRA"
+            }
+          ],
+          "free_slots": 2
+        }
+      }
+    },
+    {
+      "seq": 6,
+      "incident_id": null,
+      "agent": "supply_chain",
+      "tool": "mes.get_schedule",
+      "args": {
+        "plant_id": "P_TX",
+        "date": "2027-03-24"
+      },
+      "justification": "Free read: confirm the target slot is free in the live world before any write",
+      "path_ids": [
+        "P_TX"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "plant_id": "P_TX",
+          "date": "2027-03-24",
+          "orders": [
+            {
+              "production_order_id": "PO-0067",
+              "model": "RANGER"
+            },
+            {
+              "production_order_id": "PO-0068",
+              "model": "SUMMIT"
+            },
+            {
+              "production_order_id": "PO-0069",
+              "model": "TERRA"
+            }
+          ],
+          "free_slots": 2
+        }
+      }
+    },
+    {
+      "seq": 7,
+      "incident_id": null,
+      "agent": "supply_chain",
+      "tool": "mes.get_schedule",
+      "args": {
+        "plant_id": "P_TX",
+        "date": "2027-03-25"
+      },
+      "justification": "Free read: confirm the target slot is free in the live world before any write",
+      "path_ids": [
+        "P_TX"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "plant_id": "P_TX",
+          "date": "2027-03-25",
+          "orders": [
+            {
+              "production_order_id": "PO-0070",
+              "model": "RANGER"
+            },
+            {
+              "production_order_id": "PO-0071",
+              "model": "SUMMIT"
+            },
+            {
+              "production_order_id": "PO-0072",
+              "model": "TERRA"
+            }
+          ],
+          "free_slots": 2
+        }
+      }
+    },
+    {
+      "seq": 8,
+      "incident_id": "E-01#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0058",
+        "new_date": "2027-03-23"
+      },
+      "justification": "Rule 2+3: build falls inside the outage; earliest free P_TX slot at/after restart",
+      "path_ids": [
+        "RANGER",
+        "PO-0058"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0058",
+          "plant_id": "P_TX",
+          "date": "2027-03-23"
+        }
+      }
+    },
+    {
+      "seq": 9,
+      "incident_id": "E-01#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0059",
+        "new_date": "2027-03-23"
+      },
+      "justification": "Rule 2+3: build falls inside the outage; earliest free P_TX slot at/after restart",
+      "path_ids": [
+        "SUMMIT",
+        "PO-0059"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0059",
+          "plant_id": "P_TX",
+          "date": "2027-03-23"
+        }
+      }
+    },
+    {
+      "seq": 10,
+      "incident_id": "E-01#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0060",
+        "new_date": "2027-03-24"
+      },
+      "justification": "Rule 2+3: build falls inside the outage; earliest free P_TX slot at/after restart",
+      "path_ids": [
+        "TERRA",
+        "PO-0060"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0060",
+          "plant_id": "P_TX",
+          "date": "2027-03-24"
+        }
+      }
+    },
+    {
+      "seq": 11,
+      "incident_id": "E-01#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0061",
+        "new_date": "2027-03-24"
+      },
+      "justification": "Rule 2+3: build falls inside the outage; earliest free P_TX slot at/after restart",
+      "path_ids": [
+        "RANGER",
+        "PO-0061"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0061",
+          "plant_id": "P_TX",
+          "date": "2027-03-24"
+        }
+      }
+    },
+    {
+      "seq": 12,
+      "incident_id": "E-01#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0062",
+        "new_date": "2027-03-25"
+      },
+      "justification": "Rule 2+3: build falls inside the outage; earliest free P_TX slot at/after restart",
+      "path_ids": [
+        "SUMMIT",
+        "PO-0062"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0062",
+          "plant_id": "P_TX",
+          "date": "2027-03-25"
+        }
+      }
+    },
+    {
+      "seq": 13,
+      "incident_id": "E-01#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0063",
+        "new_date": "2027-03-25"
+      },
+      "justification": "Rule 2+3: build falls inside the outage; earliest free P_TX slot at/after restart",
+      "path_ids": [
+        "TERRA",
+        "PO-0063"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0063",
+          "plant_id": "P_TX",
+          "date": "2027-03-25"
+        }
+      }
+    },
+    {
+      "seq": 14,
+      "incident_id": "E-01#2",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0316",
+        "new_date": "2027-03-19"
+      },
+      "justification": "Rule 1+3: needs CHIP-IVI and builds before the new ETA; earliest free P_IN slot at/after restart",
+      "path_ids": [
+        "SH-0190",
+        "CHIP-IVI",
+        "VOYAGER",
+        "PO-0316"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0316",
+          "plant_id": "P_IN",
+          "date": "2027-03-19"
+        }
+      }
+    },
+    {
+      "seq": 15,
+      "incident_id": "E-01#2",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0318",
+        "new_date": "2027-03-19"
+      },
+      "justification": "Rule 1+3: needs CHIP-IVI and builds before the new ETA; earliest free P_IN slot at/after restart",
+      "path_ids": [
+        "SH-0190",
+        "CHIP-IVI",
+        "NOVA",
+        "PO-0318"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0318",
+          "plant_id": "P_IN",
+          "date": "2027-03-19"
+        }
+      }
+    },
+    {
+      "seq": 16,
+      "incident_id": "E-01#2",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0319",
+        "new_date": "2027-03-22"
+      },
+      "justification": "Rule 1+3: needs CHIP-IVI and builds before the new ETA; earliest free P_IN slot at/after restart",
+      "path_ids": [
+        "SH-0190",
+        "CHIP-IVI",
+        "VOYAGER",
+        "PO-0319"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0319",
+          "plant_id": "P_IN",
+          "date": "2027-03-22"
+        }
+      }
+    },
+    {
+      "seq": 17,
+      "incident_id": "E-01#2",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0321",
+        "new_date": "2027-03-22"
+      },
+      "justification": "Rule 1+3: needs CHIP-IVI and builds before the new ETA; earliest free P_IN slot at/after restart",
+      "path_ids": [
+        "SH-0190",
+        "CHIP-IVI",
+        "NOVA",
+        "PO-0321"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0321",
+          "plant_id": "P_IN",
+          "date": "2027-03-22"
+        }
+      }
+    },
+    {
+      "seq": 18,
+      "incident_id": "E-01#2",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0322",
+        "new_date": "2027-03-23"
+      },
+      "justification": "Rule 1+3: needs CHIP-IVI and builds before the new ETA; earliest free P_IN slot at/after restart",
+      "path_ids": [
+        "SH-0190",
+        "CHIP-IVI",
+        "VOYAGER",
+        "PO-0322"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0322",
+          "plant_id": "P_IN",
+          "date": "2027-03-23"
+        }
+      }
+    },
+    {
+      "seq": 19,
+      "incident_id": "E-01#2",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0324",
+        "new_date": "2027-03-23"
+      },
+      "justification": "Rule 1+3: needs CHIP-IVI and builds before the new ETA; earliest free P_IN slot at/after restart",
+      "path_ids": [
+        "SH-0190",
+        "CHIP-IVI",
+        "NOVA",
+        "PO-0324"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0324",
+          "plant_id": "P_IN",
+          "date": "2027-03-23"
+        }
+      }
+    },
+    {
+      "seq": 20,
+      "incident_id": "E-01#2",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0325",
+        "new_date": "2027-03-24"
+      },
+      "justification": "Rule 1+3: needs CHIP-IVI and builds before the new ETA; earliest free P_IN slot at/after restart",
+      "path_ids": [
+        "SH-0190",
+        "CHIP-IVI",
+        "VOYAGER",
+        "PO-0325"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0325",
+          "plant_id": "P_IN",
+          "date": "2027-03-24"
+        }
+      }
+    },
+    {
+      "seq": 21,
+      "incident_id": "E-01#2",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0327",
+        "new_date": "2027-03-24"
+      },
+      "justification": "Rule 1+3: needs CHIP-IVI and builds before the new ETA; earliest free P_IN slot at/after restart",
+      "path_ids": [
+        "SH-0190",
+        "CHIP-IVI",
+        "NOVA",
+        "PO-0327"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "production_order_id": "PO-0327",
+          "plant_id": "P_IN",
+          "date": "2027-03-24"
+        }
+      }
+    },
+    {
+      "seq": 22,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D01",
+        "customer_order_ids": [
+          "CO-01812"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-01812 (promised 2027-03-20): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D01, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0322",
+        "CO-01812",
+        "D01"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 23,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01812"
+      },
+      "justification": "Rule 5: Platinum customer C2879; pool D01 priority order",
+      "path_ids": [
+        "CO-01812",
+        "C2879",
+        "D01"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D01"
+        }
+      }
+    },
+    {
+      "seq": 24,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D02",
+        "customer_order_ids": [
+          "CO-00256",
+          "CO-00264",
+          "CO-00279",
+          "CO-01759",
+          "CO-01803",
+          "CO-01811",
+          "CO-01832"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00256 (promised 2027-03-23): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22); CO-00264 (promised 2027-03-23): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22); CO-00279 (promised 2027-03-26): build moves from 2027-03-22 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-01759 (promised 2027-03-19): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01803 (promised 2027-03-20): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01811 (promised 2027-03-21): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01832 (promised 2027-03-21): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D02, only its 7 affected order(s)",
+      "path_ids": [
+        "PO-0058",
+        "CO-00256",
+        "D02"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 25,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D04",
+        "customer_order_ids": [
+          "CO-00260",
+          "CO-00282",
+          "CO-01854"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00260 (promised 2027-03-22): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22); CO-00282 (promised 2027-03-25): build moves from 2027-03-22 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-01854 (promised 2027-03-21): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D04, only its 3 affected order(s)",
+      "path_ids": [
+        "PO-0059",
+        "CO-00260",
+        "D04"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 26,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D06",
+        "customer_order_ids": [
+          "CO-00299",
+          "CO-00301",
+          "CO-01757",
+          "CO-01758",
+          "CO-01775",
+          "CO-01781"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00299 (promised 2027-03-26): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22); CO-00301 (promised 2027-03-26): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22); CO-01757 (promised 2027-03-19): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01758 (promised 2027-03-19): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01775 (promised 2027-03-19): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01781 (promised 2027-03-20): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D06, only its 6 affected order(s)",
+      "path_ids": [
+        "PO-0063",
+        "CO-00299",
+        "D06"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 27,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01781"
+      },
+      "justification": "Rule 5: Gold customer C3207; pool D06 priority order",
+      "path_ids": [
+        "CO-01781",
+        "C3207",
+        "D06"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D06"
+        }
+      }
+    },
+    {
+      "seq": 28,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D07",
+        "customer_order_ids": [
+          "CO-01756",
+          "CO-01835"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-01756 (promised 2027-03-19): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01835 (promised 2027-03-22): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D07, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0316",
+        "CO-01756",
+        "D07"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 29,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D08",
+        "customer_order_ids": [
+          "CO-00274",
+          "CO-00291",
+          "CO-01761",
+          "CO-01773",
+          "CO-01780",
+          "CO-01801",
+          "CO-01833",
+          "CO-01852",
+          "CO-01857"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00274 (promised 2027-03-25): build moves from 2027-03-22 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-00291 (promised 2027-03-25): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22); CO-01761 (promised 2027-03-18): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01773 (promised 2027-03-18): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01780 (promised 2027-03-19): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01801 (promised 2027-03-19): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01833 (promised 2027-03-20): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01852 (promised 2027-03-21): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01857 (promised 2027-03-21): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D08, only its 9 affected order(s)",
+      "path_ids": [
+        "PO-0061",
+        "CO-00274",
+        "D08"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 30,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01761"
+      },
+      "justification": "Rule 5: Platinum customer C4656; pool D08 priority order",
+      "path_ids": [
+        "CO-01761",
+        "C4656",
+        "D08"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D08"
+        }
+      }
+    },
+    {
+      "seq": 31,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01780"
+      },
+      "justification": "Rule 5: Gold customer C6028; pool D08 priority order",
+      "path_ids": [
+        "CO-01780",
+        "C6028",
+        "D08"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D08"
+        }
+      }
+    },
+    {
+      "seq": 32,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01833"
+      },
+      "justification": "Rule 5: Gold customer C6155; pool D08 priority order",
+      "path_ids": [
+        "CO-01833",
+        "C6155",
+        "D08"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D08"
+        }
+      }
+    },
+    {
+      "seq": 33,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D09",
+        "customer_order_ids": [
+          "CO-00262"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00262 (promised 2027-03-23): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22)."
+      },
+      "justification": "Rule 4: one notification for D09, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0059",
+        "CO-00262",
+        "D09"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 34,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D11",
+        "customer_order_ids": [
+          "CO-00285"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00285 (promised 2027-03-27): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22)."
+      },
+      "justification": "Rule 4: one notification for D11, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0062",
+        "CO-00285",
+        "D11"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 35,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D13",
+        "customer_order_ids": [
+          "CO-00289"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00289 (promised 2027-03-27): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22)."
+      },
+      "justification": "Rule 4: one notification for D13, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0062",
+        "CO-00289",
+        "D13"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 36,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D14",
+        "customer_order_ids": [
+          "CO-01762"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-01762 (promised 2027-03-20): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D14, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0316",
+        "CO-01762",
+        "D14"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 37,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D15",
+        "customer_order_ids": [
+          "CO-00270",
+          "CO-01837"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00270 (promised 2027-03-22): build moves from 2027-03-19 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-01837 (promised 2027-03-21): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D15, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0060",
+        "CO-00270",
+        "D15"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 38,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D16",
+        "customer_order_ids": [
+          "CO-00275"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00275 (promised 2027-03-26): build moves from 2027-03-22 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22)."
+      },
+      "justification": "Rule 4: one notification for D16, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0061",
+        "CO-00275",
+        "D16"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 39,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D17",
+        "customer_order_ids": [
+          "CO-01774"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-01774 (promised 2027-03-18): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D17, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0318",
+        "CO-01774",
+        "D17"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 40,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01774"
+      },
+      "justification": "Rule 5: Gold customer C0197; pool D17 priority order",
+      "path_ids": [
+        "CO-01774",
+        "C0197",
+        "D17"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D17"
+        }
+      }
+    },
+    {
+      "seq": 41,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D18",
+        "customer_order_ids": [
+          "CO-00247"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00247 (promised 2027-03-24): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22)."
+      },
+      "justification": "Rule 4: one notification for D18, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0058",
+        "CO-00247",
+        "D18"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 42,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00247"
+      },
+      "justification": "Rule 5: Gold customer C6387; pool D18 priority order",
+      "path_ids": [
+        "CO-00247",
+        "C6387",
+        "D18"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D18"
+        }
+      }
+    },
+    {
+      "seq": 43,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D19",
+        "customer_order_ids": [
+          "CO-00286"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00286 (promised 2027-03-27): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22)."
+      },
+      "justification": "Rule 4: one notification for D19, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0062",
+        "CO-00286",
+        "D19"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 44,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D20",
+        "customer_order_ids": [
+          "CO-00261",
+          "CO-00271",
+          "CO-00298",
+          "CO-01786"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00261 (promised 2027-03-24): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22); CO-00271 (promised 2027-03-24): build moves from 2027-03-19 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-00298 (promised 2027-03-27): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22); CO-01786 (promised 2027-03-21): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D20, only its 4 affected order(s)",
+      "path_ids": [
+        "PO-0059",
+        "CO-00261",
+        "D20"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 45,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01786"
+      },
+      "justification": "Rule 5: Platinum customer C1134; pool D20 priority order",
+      "path_ids": [
+        "CO-01786",
+        "C1134",
+        "D20"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D20"
+        }
+      }
+    },
+    {
+      "seq": 46,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D21",
+        "customer_order_ids": [
+          "CO-01783",
+          "CO-01808"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-01783 (promised 2027-03-20): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01808 (promised 2027-03-21): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D21, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0319",
+        "CO-01783",
+        "D21"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 47,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01783"
+      },
+      "justification": "Rule 5: Platinum customer C5201; pool D21 priority order",
+      "path_ids": [
+        "CO-01783",
+        "C5201",
+        "D21"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D21"
+        }
+      }
+    },
+    {
+      "seq": 48,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01808"
+      },
+      "justification": "Rule 5: Gold customer C1818; pool D21 priority order",
+      "path_ids": [
+        "CO-01808",
+        "C1818",
+        "D21"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D21"
+        }
+      }
+    },
+    {
+      "seq": 49,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D22",
+        "customer_order_ids": [
+          "CO-01777",
+          "CO-01799"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-01777 (promised 2027-03-20): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01799 (promised 2027-03-21): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D22, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0318",
+        "CO-01777",
+        "D22"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 50,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01799"
+      },
+      "justification": "Rule 5: Platinum customer C6615; pool D22 priority order",
+      "path_ids": [
+        "CO-01799",
+        "C6615",
+        "D22"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D22"
+        }
+      }
+    },
+    {
+      "seq": 51,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D23",
+        "customer_order_ids": [
+          "CO-00259",
+          "CO-00269",
+          "CO-01834",
+          "CO-01853"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00259 (promised 2027-03-23): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22); CO-00269 (promised 2027-03-23): build moves from 2027-03-19 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-01834 (promised 2027-03-22): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01853 (promised 2027-03-22): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D23, only its 4 affected order(s)",
+      "path_ids": [
+        "PO-0059",
+        "CO-00259",
+        "D23"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 52,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01853"
+      },
+      "justification": "Rule 5: Gold customer C5036; pool D23 priority order",
+      "path_ids": [
+        "CO-01853",
+        "C5036",
+        "D23"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D23"
+        }
+      }
+    },
+    {
+      "seq": 53,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D24",
+        "customer_order_ids": [
+          "CO-01779",
+          "CO-01828"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-01779 (promised 2027-03-19): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01828 (promised 2027-03-21): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D24, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0318",
+        "CO-01779",
+        "D24"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 54,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D25",
+        "customer_order_ids": [
+          "CO-00255",
+          "CO-00268",
+          "CO-00292",
+          "CO-01782",
+          "CO-01789",
+          "CO-01838"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00255 (promised 2027-03-22): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22); CO-00268 (promised 2027-03-22): build moves from 2027-03-19 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-00292 (promised 2027-03-25): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22); CO-01782 (promised 2027-03-19): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01789 (promised 2027-03-19): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01838 (promised 2027-03-21): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D25, only its 6 affected order(s)",
+      "path_ids": [
+        "PO-0058",
+        "CO-00255",
+        "D25"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 55,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D26",
+        "customer_order_ids": [
+          "CO-00253",
+          "CO-00263",
+          "CO-00266",
+          "CO-00283",
+          "CO-00294",
+          "CO-00295",
+          "CO-01778",
+          "CO-01826"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00253 (promised 2027-03-22): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22); CO-00263 (promised 2027-03-22): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22); CO-00266 (promised 2027-03-22): build moves from 2027-03-19 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-00283 (promised 2027-03-25): build moves from 2027-03-22 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-00294 (promised 2027-03-25): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22); CO-00295 (promised 2027-03-25): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22); CO-01778 (promised 2027-03-18): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01826 (promised 2027-03-20): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D26, only its 8 affected order(s)",
+      "path_ids": [
+        "PO-0058",
+        "CO-00253",
+        "D26"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 56,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00263"
+      },
+      "justification": "Rule 5: Gold customer C5147; pool D26 priority order",
+      "path_ids": [
+        "CO-00263",
+        "C5147",
+        "D26"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D26"
+        }
+      }
+    },
+    {
+      "seq": 57,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00283"
+      },
+      "justification": "Rule 5: Gold customer C2815; pool D26 priority order",
+      "path_ids": [
+        "CO-00283",
+        "C2815",
+        "D26"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D26"
+        }
+      }
+    },
+    {
+      "seq": 58,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D27",
+        "customer_order_ids": [
+          "CO-00248",
+          "CO-00251",
+          "CO-00257",
+          "CO-00281",
+          "CO-01831"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00248 (promised 2027-03-24): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22); CO-00251 (promised 2027-03-24): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22); CO-00257 (promised 2027-03-24): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22); CO-00281 (promised 2027-03-27): build moves from 2027-03-22 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-01831 (promised 2027-03-22): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D27, only its 5 affected order(s)",
+      "path_ids": [
+        "PO-0058",
+        "CO-00248",
+        "D27"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 59,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D29",
+        "customer_order_ids": [
+          "CO-00249"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00249 (promised 2027-03-22): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22)."
+      },
+      "justification": "Rule 4: one notification for D29, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0058",
+        "CO-00249",
+        "D29"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 60,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00249"
+      },
+      "justification": "Rule 5: Gold customer C4168; pool D29 priority order",
+      "path_ids": [
+        "CO-00249",
+        "C4168",
+        "D29"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D29"
+        }
+      }
+    },
+    {
+      "seq": 61,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D30",
+        "customer_order_ids": [
+          "CO-01806"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-01806 (promised 2027-03-22): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D30, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0322",
+        "CO-01806",
+        "D30"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 62,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D31",
+        "customer_order_ids": [
+          "CO-00252",
+          "CO-00272",
+          "CO-00277",
+          "CO-00278",
+          "CO-00287",
+          "CO-00300",
+          "CO-01784",
+          "CO-01807",
+          "CO-01850"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00252 (promised 2027-03-23): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22); CO-00272 (promised 2027-03-23): build moves from 2027-03-19 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-00277 (promised 2027-03-26): build moves from 2027-03-22 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-00278 (promised 2027-03-26): build moves from 2027-03-22 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-00287 (promised 2027-03-26): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22); CO-00300 (promised 2027-03-26): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22); CO-01784 (promised 2027-03-20): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01807 (promised 2027-03-21): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01850 (promised 2027-03-22): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D31, only its 9 affected order(s)",
+      "path_ids": [
+        "PO-0058",
+        "CO-00252",
+        "D31"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 63,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00278"
+      },
+      "justification": "Rule 5: Gold customer C6970; pool D31 priority order",
+      "path_ids": [
+        "CO-00278",
+        "C6970",
+        "D31"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D31"
+        }
+      }
+    },
+    {
+      "seq": 64,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D32",
+        "customer_order_ids": [
+          "CO-01802"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-01802 (promised 2027-03-21): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D32, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0321",
+        "CO-01802",
+        "D32"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 65,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01802"
+      },
+      "justification": "Rule 5: Gold customer C3439; pool D32 priority order",
+      "path_ids": [
+        "CO-01802",
+        "C3439",
+        "D32"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D32"
+        }
+      }
+    },
+    {
+      "seq": 66,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D33",
+        "customer_order_ids": [
+          "CO-00288",
+          "CO-01776"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00288 (promised 2027-03-27): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22); CO-01776 (promised 2027-03-20): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D33, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0062",
+        "CO-00288",
+        "D33"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 67,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D34",
+        "customer_order_ids": [
+          "CO-00254",
+          "CO-00265",
+          "CO-00267",
+          "CO-00297"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00254 (promised 2027-03-23): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22); CO-00265 (promised 2027-03-23): build moves from 2027-03-19 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-00267 (promised 2027-03-23): build moves from 2027-03-19 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-00297 (promised 2027-03-26): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22)."
+      },
+      "justification": "Rule 4: one notification for D34, only its 4 affected order(s)",
+      "path_ids": [
+        "PO-0058",
+        "CO-00254",
+        "D34"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 68,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D35",
+        "customer_order_ids": [
+          "CO-00280",
+          "CO-01856"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00280 (promised 2027-03-26): build moves from 2027-03-22 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-01856 (promised 2027-03-22): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D35, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0061",
+        "CO-00280",
+        "D35"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 69,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D36",
+        "customer_order_ids": [
+          "CO-00296"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00296 (promised 2027-03-27): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22)."
+      },
+      "justification": "Rule 4: one notification for D36, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0063",
+        "CO-00296",
+        "D36"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 70,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-00296"
+      },
+      "justification": "Rule 5: Gold customer C2312; pool D36 priority order",
+      "path_ids": [
+        "CO-00296",
+        "C2312",
+        "D36"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D36"
+        }
+      }
+    },
+    {
+      "seq": 71,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D38",
+        "customer_order_ids": [
+          "CO-01829",
+          "CO-01839",
+          "CO-01841"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-01829 (promised 2027-03-20): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01839 (promised 2027-03-21): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01841 (promised 2027-03-21): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D38, only its 3 affected order(s)",
+      "path_ids": [
+        "PO-0324",
+        "CO-01829",
+        "D38"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 72,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D39",
+        "customer_order_ids": [
+          "CO-00258"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00258 (promised 2027-03-23): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22)."
+      },
+      "justification": "Rule 4: one notification for D39, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0059",
+        "CO-00258",
+        "D39"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 73,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D41",
+        "customer_order_ids": [
+          "CO-01805",
+          "CO-01825"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-01805 (promised 2027-03-21): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01825 (promised 2027-03-22): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D41, only its 2 affected order(s)",
+      "path_ids": [
+        "PO-0321",
+        "CO-01805",
+        "D41"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 74,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D42",
+        "customer_order_ids": [
+          "CO-01772",
+          "CO-01800",
+          "CO-01813"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-01772 (promised 2027-03-20): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01800 (promised 2027-03-21): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01813 (promised 2027-03-22): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D42, only its 3 affected order(s)",
+      "path_ids": [
+        "PO-0318",
+        "CO-01772",
+        "D42"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 75,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01772"
+      },
+      "justification": "Rule 5: Gold customer C1695; pool D42 priority order",
+      "path_ids": [
+        "CO-01772",
+        "C1695",
+        "D42"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D42"
+        }
+      }
+    },
+    {
+      "seq": 76,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D43",
+        "customer_order_ids": [
+          "CO-01851"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-01851 (promised 2027-03-20): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D43, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0327",
+        "CO-01851",
+        "D43"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 77,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01851"
+      },
+      "justification": "Rule 5: Platinum customer C5298; pool D43 priority order",
+      "path_ids": [
+        "CO-01851",
+        "C5298",
+        "D43"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D43"
+        }
+      }
+    },
+    {
+      "seq": 78,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D44",
+        "customer_order_ids": [
+          "CO-01785",
+          "CO-01787",
+          "CO-01809",
+          "CO-01814"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-01785 (promised 2027-03-21): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01787 (promised 2027-03-21): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01809 (promised 2027-03-22): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01814 (promised 2027-03-22): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D44, only its 4 affected order(s)",
+      "path_ids": [
+        "PO-0319",
+        "CO-01785",
+        "D44"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 79,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01785"
+      },
+      "justification": "Rule 5: Platinum customer C2786; pool D44 priority order",
+      "path_ids": [
+        "CO-01785",
+        "C2786",
+        "D44"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D44"
+        }
+      }
+    },
+    {
+      "seq": 80,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01814"
+      },
+      "justification": "Rule 5: Gold customer C1115; pool D44 priority order",
+      "path_ids": [
+        "CO-01814",
+        "C1115",
+        "D44"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D44"
+        }
+      }
+    },
+    {
+      "seq": 81,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D45",
+        "customer_order_ids": [
+          "CO-00276",
+          "CO-00284",
+          "CO-01760",
+          "CO-01788",
+          "CO-01804",
+          "CO-01810",
+          "CO-01827",
+          "CO-01836",
+          "CO-01840"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00276 (promised 2027-03-27): build moves from 2027-03-22 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-00284 (promised 2027-03-27): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22); CO-01760 (promised 2027-03-20): build moves from 2027-03-15 to 2027-03-19 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01788 (promised 2027-03-21): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01804 (promised 2027-03-21): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01810 (promised 2027-03-22): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01827 (promised 2027-03-22): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01836 (promised 2027-03-23): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01840 (promised 2027-03-23): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D45, only its 9 affected order(s)",
+      "path_ids": [
+        "PO-0061",
+        "CO-00276",
+        "D45"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 82,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01810"
+      },
+      "justification": "Rule 5: Platinum customer C4200; pool D45 priority order",
+      "path_ids": [
+        "CO-01810",
+        "C4200",
+        "D45"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D45"
+        }
+      }
+    },
+    {
+      "seq": 83,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01827"
+      },
+      "justification": "Rule 5: Gold customer C0465; pool D45 priority order",
+      "path_ids": [
+        "CO-01827",
+        "C0465",
+        "D45"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D45"
+        }
+      }
+    },
+    {
+      "seq": 84,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D46",
+        "customer_order_ids": [
+          "CO-00250",
+          "CO-00273",
+          "CO-01798",
+          "CO-01830",
+          "CO-01855"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00250 (promised 2027-03-23): build moves from 2027-03-19 to 2027-03-23 (P_TX outage 2027-03-19 to 2027-03-22); CO-00273 (promised 2027-03-26): build moves from 2027-03-22 to 2027-03-24 (P_TX outage 2027-03-19 to 2027-03-22); CO-01798 (promised 2027-03-20): build moves from 2027-03-16 to 2027-03-22 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01830 (promised 2027-03-21): build moves from 2027-03-17 to 2027-03-23 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19); CO-01855 (promised 2027-03-22): build moves from 2027-03-18 to 2027-03-24 (late shipment SH-0190 of CHIP-IVI, new ETA 2027-03-19)."
+      },
+      "justification": "Rule 4: one notification for D46, only its 5 affected order(s)",
+      "path_ids": [
+        "PO-0058",
+        "CO-00250",
+        "D46"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 85,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01798"
+      },
+      "justification": "Rule 5: Gold customer C2246; pool D46 priority order",
+      "path_ids": [
+        "CO-01798",
+        "C2246",
+        "D46"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D46"
+        }
+      }
+    },
+    {
+      "seq": 86,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01830"
+      },
+      "justification": "Rule 5: Gold customer C1479; pool D46 priority order",
+      "path_ids": [
+        "CO-01830",
+        "C1479",
+        "D46"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true,
+          "dealer_id": "D46"
+        }
+      }
+    },
+    {
+      "seq": 87,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D47",
+        "customer_order_ids": [
+          "CO-00293"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00293 (promised 2027-03-25): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22)."
+      },
+      "justification": "Rule 4: one notification for D47, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0063",
+        "CO-00293",
+        "D47"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    },
+    {
+      "seq": 88,
+      "incident_id": null,
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D50",
+        "customer_order_ids": [
+          "CO-00290"
+        ],
+        "message": "Delay notice. Affected customer orders: CO-00290 (promised 2027-03-27): build moves from 2027-03-22 to 2027-03-25 (P_TX outage 2027-03-19 to 2027-03-22)."
+      },
+      "justification": "Rule 4: one notification for D50, only its 1 affected order(s)",
+      "path_ids": [
+        "PO-0062",
+        "CO-00290",
+        "D50"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    }
+  ],
+  "world_diff": {
+    "moved_pos": [
+      {
+        "production_order_id": "PO-0058",
+        "kind": "reschedule",
+        "from_plant": "P_TX",
+        "from_date": "2027-03-19",
+        "to_plant": "P_TX",
+        "to_date": "2027-03-23"
+      },
+      {
+        "production_order_id": "PO-0059",
+        "kind": "reschedule",
+        "from_plant": "P_TX",
+        "from_date": "2027-03-19",
+        "to_plant": "P_TX",
+        "to_date": "2027-03-23"
+      },
+      {
+        "production_order_id": "PO-0060",
+        "kind": "reschedule",
+        "from_plant": "P_TX",
+        "from_date": "2027-03-19",
+        "to_plant": "P_TX",
+        "to_date": "2027-03-24"
+      },
+      {
+        "production_order_id": "PO-0061",
+        "kind": "reschedule",
+        "from_plant": "P_TX",
+        "from_date": "2027-03-22",
+        "to_plant": "P_TX",
+        "to_date": "2027-03-24"
+      },
+      {
+        "production_order_id": "PO-0062",
+        "kind": "reschedule",
+        "from_plant": "P_TX",
+        "from_date": "2027-03-22",
+        "to_plant": "P_TX",
+        "to_date": "2027-03-25"
+      },
+      {
+        "production_order_id": "PO-0063",
+        "kind": "reschedule",
+        "from_plant": "P_TX",
+        "from_date": "2027-03-22",
+        "to_plant": "P_TX",
+        "to_date": "2027-03-25"
+      },
+      {
+        "production_order_id": "PO-0316",
+        "kind": "reschedule",
+        "from_plant": "P_IN",
+        "from_date": "2027-03-15",
+        "to_plant": "P_IN",
+        "to_date": "2027-03-19"
+      },
+      {
+        "production_order_id": "PO-0318",
+        "kind": "reschedule",
+        "from_plant": "P_IN",
+        "from_date": "2027-03-15",
+        "to_plant": "P_IN",
+        "to_date": "2027-03-19"
+      },
+      {
+        "production_order_id": "PO-0319",
+        "kind": "reschedule",
+        "from_plant": "P_IN",
+        "from_date": "2027-03-16",
+        "to_plant": "P_IN",
+        "to_date": "2027-03-22"
+      },
+      {
+        "production_order_id": "PO-0321",
+        "kind": "reschedule",
+        "from_plant": "P_IN",
+        "from_date": "2027-03-16",
+        "to_plant": "P_IN",
+        "to_date": "2027-03-22"
+      },
+      {
+        "production_order_id": "PO-0322",
+        "kind": "reschedule",
+        "from_plant": "P_IN",
+        "from_date": "2027-03-17",
+        "to_plant": "P_IN",
+        "to_date": "2027-03-23"
+      },
+      {
+        "production_order_id": "PO-0324",
+        "kind": "reschedule",
+        "from_plant": "P_IN",
+        "from_date": "2027-03-17",
+        "to_plant": "P_IN",
+        "to_date": "2027-03-23"
+      },
+      {
+        "production_order_id": "PO-0325",
+        "kind": "reschedule",
+        "from_plant": "P_IN",
+        "from_date": "2027-03-18",
+        "to_plant": "P_IN",
+        "to_date": "2027-03-24"
+      },
+      {
+        "production_order_id": "PO-0327",
+        "kind": "reschedule",
+        "from_plant": "P_IN",
+        "from_date": "2027-03-18",
+        "to_plant": "P_IN",
+        "to_date": "2027-03-24"
+      }
+    ],
+    "notified_dealers": [
+      {
+        "dealer_id": "D01",
+        "customer_order_ids": [
+          "CO-01812"
+        ]
+      },
+      {
+        "dealer_id": "D02",
+        "customer_order_ids": [
+          "CO-00256",
+          "CO-00264",
+          "CO-00279",
+          "CO-01759",
+          "CO-01803",
+          "CO-01811",
+          "CO-01832"
+        ]
+      },
+      {
+        "dealer_id": "D04",
+        "customer_order_ids": [
+          "CO-00260",
+          "CO-00282",
+          "CO-01854"
+        ]
+      },
+      {
+        "dealer_id": "D06",
+        "customer_order_ids": [
+          "CO-00299",
+          "CO-00301",
+          "CO-01757",
+          "CO-01758",
+          "CO-01775",
+          "CO-01781"
+        ]
+      },
+      {
+        "dealer_id": "D07",
+        "customer_order_ids": [
+          "CO-01756",
+          "CO-01835"
+        ]
+      },
+      {
+        "dealer_id": "D08",
+        "customer_order_ids": [
+          "CO-00274",
+          "CO-00291",
+          "CO-01761",
+          "CO-01773",
+          "CO-01780",
+          "CO-01801",
+          "CO-01833",
+          "CO-01852",
+          "CO-01857"
+        ]
+      },
+      {
+        "dealer_id": "D09",
+        "customer_order_ids": [
+          "CO-00262"
+        ]
+      },
+      {
+        "dealer_id": "D11",
+        "customer_order_ids": [
+          "CO-00285"
+        ]
+      },
+      {
+        "dealer_id": "D13",
+        "customer_order_ids": [
+          "CO-00289"
+        ]
+      },
+      {
+        "dealer_id": "D14",
+        "customer_order_ids": [
+          "CO-01762"
+        ]
+      },
+      {
+        "dealer_id": "D15",
+        "customer_order_ids": [
+          "CO-00270",
+          "CO-01837"
+        ]
+      },
+      {
+        "dealer_id": "D16",
+        "customer_order_ids": [
+          "CO-00275"
+        ]
+      },
+      {
+        "dealer_id": "D17",
+        "customer_order_ids": [
+          "CO-01774"
+        ]
+      },
+      {
+        "dealer_id": "D18",
+        "customer_order_ids": [
+          "CO-00247"
+        ]
+      },
+      {
+        "dealer_id": "D19",
+        "customer_order_ids": [
+          "CO-00286"
+        ]
+      },
+      {
+        "dealer_id": "D20",
+        "customer_order_ids": [
+          "CO-00261",
+          "CO-00271",
+          "CO-00298",
+          "CO-01786"
+        ]
+      },
+      {
+        "dealer_id": "D21",
+        "customer_order_ids": [
+          "CO-01783",
+          "CO-01808"
+        ]
+      },
+      {
+        "dealer_id": "D22",
+        "customer_order_ids": [
+          "CO-01777",
+          "CO-01799"
+        ]
+      },
+      {
+        "dealer_id": "D23",
+        "customer_order_ids": [
+          "CO-00259",
+          "CO-00269",
+          "CO-01834",
+          "CO-01853"
+        ]
+      },
+      {
+        "dealer_id": "D24",
+        "customer_order_ids": [
+          "CO-01779",
+          "CO-01828"
+        ]
+      },
+      {
+        "dealer_id": "D25",
+        "customer_order_ids": [
+          "CO-00255",
+          "CO-00268",
+          "CO-00292",
+          "CO-01782",
+          "CO-01789",
+          "CO-01838"
+        ]
+      },
+      {
+        "dealer_id": "D26",
+        "customer_order_ids": [
+          "CO-00253",
+          "CO-00263",
+          "CO-00266",
+          "CO-00283",
+          "CO-00294",
+          "CO-00295",
+          "CO-01778",
+          "CO-01826"
+        ]
+      },
+      {
+        "dealer_id": "D27",
+        "customer_order_ids": [
+          "CO-00248",
+          "CO-00251",
+          "CO-00257",
+          "CO-00281",
+          "CO-01831"
+        ]
+      },
+      {
+        "dealer_id": "D29",
+        "customer_order_ids": [
+          "CO-00249"
+        ]
+      },
+      {
+        "dealer_id": "D30",
+        "customer_order_ids": [
+          "CO-01806"
+        ]
+      },
+      {
+        "dealer_id": "D31",
+        "customer_order_ids": [
+          "CO-00252",
+          "CO-00272",
+          "CO-00277",
+          "CO-00278",
+          "CO-00287",
+          "CO-00300",
+          "CO-01784",
+          "CO-01807",
+          "CO-01850"
+        ]
+      },
+      {
+        "dealer_id": "D32",
+        "customer_order_ids": [
+          "CO-01802"
+        ]
+      },
+      {
+        "dealer_id": "D33",
+        "customer_order_ids": [
+          "CO-00288",
+          "CO-01776"
+        ]
+      },
+      {
+        "dealer_id": "D34",
+        "customer_order_ids": [
+          "CO-00254",
+          "CO-00265",
+          "CO-00267",
+          "CO-00297"
+        ]
+      },
+      {
+        "dealer_id": "D35",
+        "customer_order_ids": [
+          "CO-00280",
+          "CO-01856"
+        ]
+      },
+      {
+        "dealer_id": "D36",
+        "customer_order_ids": [
+          "CO-00296"
+        ]
+      },
+      {
+        "dealer_id": "D38",
+        "customer_order_ids": [
+          "CO-01829",
+          "CO-01839",
+          "CO-01841"
+        ]
+      },
+      {
+        "dealer_id": "D39",
+        "customer_order_ids": [
+          "CO-00258"
+        ]
+      },
+      {
+        "dealer_id": "D41",
+        "customer_order_ids": [
+          "CO-01805",
+          "CO-01825"
+        ]
+      },
+      {
+        "dealer_id": "D42",
+        "customer_order_ids": [
+          "CO-01772",
+          "CO-01800",
+          "CO-01813"
+        ]
+      },
+      {
+        "dealer_id": "D43",
+        "customer_order_ids": [
+          "CO-01851"
+        ]
+      },
+      {
+        "dealer_id": "D44",
+        "customer_order_ids": [
+          "CO-01785",
+          "CO-01787",
+          "CO-01809",
+          "CO-01814"
+        ]
+      },
+      {
+        "dealer_id": "D45",
+        "customer_order_ids": [
+          "CO-00276",
+          "CO-00284",
+          "CO-01760",
+          "CO-01788",
+          "CO-01804",
+          "CO-01810",
+          "CO-01827",
+          "CO-01836",
+          "CO-01840"
+        ]
+      },
+      {
+        "dealer_id": "D46",
+        "customer_order_ids": [
+          "CO-00250",
+          "CO-00273",
+          "CO-01798",
+          "CO-01830",
+          "CO-01855"
+        ]
+      },
+      {
+        "dealer_id": "D47",
+        "customer_order_ids": [
+          "CO-00293"
+        ]
+      },
+      {
+        "dealer_id": "D50",
+        "customer_order_ids": [
+          "CO-00290"
+        ]
+      }
+    ],
+    "loaners": [
+      "CO-01812",
+      "CO-01781",
+      "CO-01761",
+      "CO-01780",
+      "CO-01833",
+      "CO-01774",
+      "CO-00247",
+      "CO-01786",
+      "CO-01783",
+      "CO-01808",
+      "CO-01799",
+      "CO-01853",
+      "CO-00263",
+      "CO-00283",
+      "CO-00249",
+      "CO-00278",
+      "CO-01802",
+      "CO-00296",
+      "CO-01772",
+      "CO-01851",
+      "CO-01785",
+      "CO-01814",
+      "CO-01810",
+      "CO-01827",
+      "CO-01798",
+      "CO-01830"
+    ],
+    "held_lots": [],
+    "stopped_vins": [],
+    "contacted_customers": []
+  },
+  "counterfactual": {
+    "customers_affected": 122,
+    "avg_slip_days": 4.6,
+    "loaners_entitled": 30,
+    "loaners_assigned": 26,
+    "vehicles_pulled": 0,
+    "owners_contacted": 0
+  },
+  "llm": {
+    "calls": [
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "extract",
+        "input_tokens": 808,
+        "output_tokens": 493,
+        "cost_usd": 0.001475,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "audit",
+        "input_tokens": 1710,
+        "output_tokens": 731,
+        "cost_usd": 0.004024,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "summarize",
+        "input_tokens": 483,
+        "output_tokens": 210,
+        "cost_usd": 0.00067,
+        "cached": false
+      }
+    ],
+    "total_cost_usd": 0.006169
+  },
+  "summary": "Wacky Wheels San Antonio is down 2027-03-19 to 2027-03-22. 6 production orders were moved; 27 dealers notified once each for 55 customer orders; 6 loaners assigned. Quanta Silicon's infotainment chip shipment SH-0190 to Wacky Wheels Princeton slips from 2027-03-15 to 2027-03-19. 8 affected production orders were moved to the earliest free slots; 29 dealers were each notified once for 67 customer orders; 20 Platinum/Gold customers received loaners within pool limits.",
+  "decision_reason": "Acted on every confirmed incident with ids and dates resolved against the data. Rehearsal on the digital twin passed with zero failures and live baseline matched before the first write. Incident types handled were plant_outage and supplier_delay."
+}

@@ -1,0 +1,18 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "purpose": "summarize",
+  "latency_s": 0.758,
+  "parsed": {
+    "summary": "Dealer Little Rock, AR asks where to find the new brochure PDF. This is a request for marketing materials unrelated to production operations. Not an operational event.",
+    "decision_reason": "No action: the message names no shipment, plant, part, lot or date and describes no disruption to production, dealers, loaners or owners pursuant to handbook rule 7 stating noise gets no write tools."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "purpose": "summarize",
+    "input_tokens": 271,
+    "output_tokens": 90,
+    "cost_usd": 0.000306
+  }
+}

@@ -2,7 +2,7 @@
   "provider": "gemini",
   "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 1.68,
+  "latency_s": 1.743,
   "parsed": {
     "incidents": [
       {

@@ -1,0 +1,64 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "purpose": "extract",
+  "latency_s": 1.743,
+  "parsed": {
+    "incidents": [
+      {
+        "category": "plant_outage",
+        "evidence": "We're dark from next Friday through Monday Mar 22; the line restarts the following working day.",
+        "plant": "San Antonio",
+        "part": null,
+        "supplier": null,
+        "shipment_id": null,
+        "lot_id": null,
+        "original_eta": null,
+        "new_eta": null,
+        "outage_start": {
+          "text": "next Friday",
+          "iso": "2027-03-19"
+        },
+        "outage_end": {
+          "text": "Monday Mar 22",
+          "iso": "2027-03-22"
+        },
+        "build_window_start": null,
+        "build_window_end": null,
+        "reason": "The San Antonio plant will experience a software outage spanning from next Friday through Monday Mar 22.",
+        "confidence": 1.0
+      },
+      {
+        "category": "supplier_delay",
+        "evidence": "the infotainment chip run for Princeton can't make it next Monday. Carrier says next Friday now",
+        "plant": "Princeton",
+        "part": "infotainment chip",
+        "supplier": "Quanta",
+        "shipment_id": null,
+        "lot_id": null,
+        "original_eta": {
+          "text": "next Monday",
+          "iso": "2027-03-15"
+        },
+        "new_eta": {
+          "text": "next Friday",
+          "iso": "2027-03-19"
+        },
+        "outage_start": null,
+        "outage_end": null,
+        "build_window_start": null,
+        "build_window_end": null,
+        "reason": "The shipment of infotainment chips from Quanta to Princeton is delayed from next Monday to next Friday due to severe weather.",
+        "confidence": 1.0
+      }
+    ]
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "purpose": "extract",
+    "input_tokens": 808,
+    "output_tokens": 493,
+    "cost_usd": 0.001475
+  }
+}

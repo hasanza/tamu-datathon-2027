@@ -1,0 +1,18 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "purpose": "summarize",
+  "latency_s": 0.858,
+  "parsed": {
+    "summary": "Wacky Wheels Lexington experienced a power failure causing production to stop from 2027-03-24 through 2027-03-25 inclusive. The control tower rescheduled 6 production orders at the same plant, notified 25 dealers once each for 56 customer orders, and assigned 15 loaners.",
+    "decision_reason": "The system acted because it was a real incident classified as plant_outage, where all IDs and dates were resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live baseline matched before the first write."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "purpose": "summarize",
+    "input_tokens": 356,
+    "output_tokens": 138,
+    "cost_usd": 0.000452
+  }
+}

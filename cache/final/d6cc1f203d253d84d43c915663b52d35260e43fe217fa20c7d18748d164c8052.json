@@ -1,0 +1,35 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "purpose": "extract",
+  "latency_s": 0.976,
+  "parsed": {
+    "incidents": [
+      {
+        "category": "noise",
+        "evidence": "Dealer Little Rock, AR asks where to find the new brochure PDF.",
+        "plant": null,
+        "part": null,
+        "supplier": null,
+        "shipment_id": null,
+        "lot_id": null,
+        "original_eta": null,
+        "new_eta": null,
+        "outage_start": null,
+        "outage_end": null,
+        "build_window_start": null,
+        "build_window_end": null,
+        "reason": "This is a request for marketing materials unrelated to production operations.",
+        "confidence": 1.0
+      }
+    ]
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "purpose": "extract",
+    "input_tokens": 744,
+    "output_tokens": 172,
+    "cost_usd": 0.000653
+  }
+}

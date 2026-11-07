@@ -2,17 +2,17 @@
   "provider": "gemini",
   "model": "gemini-3.5-flash-lite",
   "purpose": "summarize",
-  "latency_s": 0.84,
+  "latency_s": 0.855,
   "parsed": {
-    "summary": "Lot LOT-0130 consisting of infotainment chips from Kestrel Electronics at Wacky Wheels Jackson, built from 2027-02-25 to 2027-03-01, was placed on hold. A total of 110 unsold vehicles were stopped from sale at 37 dealers, and 150 owners of sold vehicles were contacted.",
-    "decision_reason": "The control tower acted on a confirmed quality incident because the identifiers and dates were resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live baseline matched before the first write. This fell under the incident type quality_hold."
+    "summary": "Lot LOT-0130 containing infotainment chips from Kestrel Electronics at Wacky Wheels Jackson, built from 2027-02-25 to 2027-03-01, was placed on hold. A total of 110 unsold vehicles were stopped from sale at 37 dealers and 150 owners of sold vehicles were contacted.",
+    "decision_reason": "The control tower acted because this was a real quality incident with specific IDs and dates resolved against the data, passing the digital twin rehearsal with zero failures and matching the live baseline before the first write. These actions were driven by the quality_hold incident type."
   },
   "usage": {
     "provider": "gemini",
     "model": "gemini-3.5-flash-lite",
     "purpose": "summarize",
     "input_tokens": 350,
-    "output_tokens": 151,
-    "cost_usd": 0.000483
+    "output_tokens": 149,
+    "cost_usd": 0.000478
   }
 }

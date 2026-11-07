@@ -2,18 +2,18 @@
   "provider": "gemini",
   "model": "gemini-3.8-flash",
   "purpose": "audit",
-  "latency_s": 5.189,
+  "latency_s": 5.311,
   "parsed": {
     "agree": true,
     "concerns": [],
-    "summary": "The supplier delay at plant P_IN is correctly interpreted, and the rescheduling, dealer notifications, and loaner assignments follow all policy rules."
+    "summary": "The supplier delay for CAM-360 at plant P_IN was accurately interpreted and the rescheduling, dealer notifications, and loaner assignments follow all operational policies."
   },
   "usage": {
     "provider": "gemini",
     "model": "gemini-3.8-flash",
     "purpose": "audit",
     "input_tokens": 1328,
-    "output_tokens": 487,
-    "cost_usd": 0.002822
+    "output_tokens": 641,
+    "cost_usd": 0.0034
   }
 }

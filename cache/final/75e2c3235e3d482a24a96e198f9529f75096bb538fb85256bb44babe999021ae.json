@@ -1,0 +1,18 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "purpose": "summarize",
+  "latency_s": 0.672,
+  "parsed": {
+    "summary": "An unconfirmed report of a possible upcoming electronic shortage was received from the floor. The message contained no specific items, quantities, or dates. Consequently, the item was escalated for human review.",
+    "decision_reason": "The unclear part was escalated with no operational change pursuant to rule 8."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "purpose": "summarize",
+    "input_tokens": 279,
+    "output_tokens": 70,
+    "cost_usd": 0.000259
+  }
+}

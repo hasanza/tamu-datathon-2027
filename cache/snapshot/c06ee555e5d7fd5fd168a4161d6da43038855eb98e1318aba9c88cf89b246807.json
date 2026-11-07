@@ -2,18 +2,18 @@
   "provider": "gemini",
   "model": "gemini-3.8-flash",
   "purpose": "audit",
-  "latency_s": 5.549,
+  "latency_s": 8.179,
   "parsed": {
     "agree": true,
     "concerns": [],
-    "summary": "The plant outage at Jackson (P_MS) from 2027-03-26 through 2027-03-30 was correctly identified, production orders were properly rescheduled or transferred, and dealer notifications and loaner allocations follow all policy rules."
+    "summary": "The plant outage at Jackson (P_MS) from 2027-03-26 to 2027-03-30 was correctly identified, with all affected production orders properly rescheduled or transferred and customer loaners accurately allocated."
   },
   "usage": {
     "provider": "gemini",
     "model": "gemini-3.8-flash",
     "purpose": "audit",
     "input_tokens": 1427,
-    "output_tokens": 706,
-    "cost_usd": 0.003718
+    "output_tokens": 1003,
+    "cost_usd": 0.004831
   }
 }

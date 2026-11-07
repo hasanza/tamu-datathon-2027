@@ -2,7 +2,7 @@
   "provider": "gemini",
   "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 0.76,
+  "latency_s": 0.858,
   "parsed": {
     "incidents": [
       {
@@ -19,7 +19,7 @@
         "outage_end": null,
         "build_window_start": null,
         "build_window_end": null,
-        "reason": "This is a request for a brochure and has nothing to do with operations.",
+        "reason": "Brochure and PDF requests are unrelated to our operations.",
         "confidence": 1.0
       }
     ]
@@ -29,7 +29,7 @@
     "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 743,
-    "output_tokens": 52,
-    "cost_usd": 0.000353
+    "output_tokens": 51,
+    "cost_usd": 0.00035
   }
 }
