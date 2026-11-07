@@ -34,7 +34,15 @@ export default function App() {
   const trace = useTrace(selectedId);
   const lastVersion = useRef<string>();
   if (trace.data) lastVersion.current = trace.data.pipeline_version;
-  const select = useCallback((id: string) => go(id), [go]);
+  const select = useCallback(
+    (id: string) => {
+      go(id);
+      // Stacked (phone) layout: the detail sits below the feed, so bring it into view when an event is picked.
+      if (window.matchMedia("(max-width: 767px)").matches)
+        window.setTimeout(() => document.getElementById("event-detail")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+    },
+    [go],
+  );
 
   return (
     <div className="flex h-full flex-col">
@@ -56,7 +64,7 @@ export default function App() {
                 recent={stream.recent}
               />
             </aside>
-            <section aria-label="Event detail" className="min-h-0 min-w-0 md:overflow-hidden">
+            <section id="event-detail" aria-label="Event detail" className="min-h-0 min-w-0 md:overflow-hidden">
               <EventDetail event={selected} processing={!!selectedId && stream.processing.has(selectedId)} />
             </section>
             <aside

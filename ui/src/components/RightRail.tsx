@@ -26,7 +26,7 @@ function readAcked(): Set<string> {
 }
 
 export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | undefined; onSelect: (id: string) => void }) {
-  const ids = useMemo(() => (events ?? []).filter((e) => e.status === "escalated" || e.status === "failed").map((e) => e.event_id), [events]);
+  const ids = useMemo(() => (events ?? []).filter((e) => !e.custom && (e.status === "escalated" || e.status === "failed")).map((e) => e.event_id), [events]);
   const { traces, loading, failed } = useTraces(ids);
   // An acknowledgement belongs to one run: the same event escalates again in the next run and must reappear.
   const run = String(useRunStatus().data?.started ?? "snapshot");
