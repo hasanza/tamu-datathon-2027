@@ -1,6 +1,6 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { api, ApiError } from "./client";
-import type { RunMode, Trace } from "./types";
+import { isCustomId, type RunMode, type Trace } from "./types";
 
 const noRetry404 = (count: number, err: unknown) => !(err instanceof ApiError && err.status === 404) && count < 2;
 
@@ -48,8 +48,9 @@ export const useRunStatus = () =>
 
 /** Where the numbers on screen came from: the committed snapshot was produced against the real server,
  *  a run started from this UI in dry mode ran against the in-process twin. */
-export function useExecTarget(): "twin" | "server" {
+export function useExecTarget(eventId?: string): "twin" | "server" {
   const mode: RunMode | null | undefined = useRunStatus().data?.mode;
+  if (eventId && isCustomId(eventId)) return "twin"; // sandbox events never touch the real server
   return mode === "dry" ? "twin" : "server";
 }
 

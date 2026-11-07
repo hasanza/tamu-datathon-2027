@@ -9,10 +9,10 @@ export interface Route {
 function parse(): Route {
   const h = window.location.hash.replace(/^#\/?/, "");
   if (h === "ontology" || h === "about") return { page: h, eventId: null };
-  return { page: "tower", eventId: /^E-\d{2}$/.test(h) ? h : null };
+  return { page: "tower", eventId: /^[EC]-\d{2}$/.test(h) ? h : null };
 }
 
-/** Tiny hash router: #/ (tower), #/E-03 (tower with event selected), #/ontology, #/about. */
+/** Tiny hash router: #/ (tower), #/E-03 or #/C-01 (tower with an event selected; C- = sandbox custom event), #/ontology, #/about. */
 export function useRoute() {
   const [route, setRoute] = useState<Route>(parse);
   useEffect(() => {

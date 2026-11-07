@@ -20,6 +20,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     try {
       const body = await res.json();
       if (typeof body?.detail === "string") detail = body.detail;
+      else if (Array.isArray(body?.detail))
+        detail = body.detail.map((d: { msg?: string }) => d.msg).filter(Boolean).join("; ") || detail; // FastAPI validation errors
     } catch {
       /* not json */
     }
@@ -39,6 +41,12 @@ export const api = {
       `/api/run?${opts.all ? "all=true" : `event_id=${encodeURIComponent(opts.eventId ?? "")}`}&mode=${opts.mode}`,
       { method: "POST" },
     ),
+  custom: (text: string, source?: string) =>
+    request<{ event_id: string; status: string; category: string }>("/api/custom", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(source ? { text, source } : { text }),
+    }),
   runStatus: () => request<RunStatus>("/api/run/status"),
   reset: () => request<RunStatus>("/api/reset", { method: "POST" }),
 };

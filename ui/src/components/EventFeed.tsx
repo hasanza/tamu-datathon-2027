@@ -3,7 +3,8 @@ import { Bell, ClipboardCheck, ListChecks, Mail, MessageSquare, Newspaper, Radio
 import type { EventCategory, FeedEvent, Status } from "../api/types";
 import { CATEGORY_META, sourceIconName, STATUS_META } from "../lib/meta";
 import { clip } from "../lib/format";
-import { CategoryBadge, ConfidenceRing, Empty, ErrorBox, Loading, StatusChip } from "./ui/primitives";
+import { CustomEventCard } from "./CustomEventCard";
+import { CategoryBadge, Chip, ConfidenceRing, Empty, ErrorBox, Loading, StatusChip } from "./ui/primitives";
 
 const SOURCE_ICON = {
   chat: MessageSquare,
@@ -126,6 +127,7 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
             {rows.length}/{events?.length ?? 0} · <kbd className="mono">j</kbd>/<kbd className="mono">k</kbd> to move
           </span>
         </div>
+        <CustomEventCard onCreated={onSelect} />
         <label className="relative block">
           <span className="sr-only">Search events</span>
           <Search size={14} className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-tx3" aria-hidden />
@@ -189,6 +191,7 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
                     <div className="flex flex-wrap items-center gap-1.5">
                       <CategoryBadge category={e.category} />
                       <StatusChip status={e.status} />
+                      {e.custom && <Chip color="var(--cat-compound)">Sandbox</Chip>}
                     </div>
                   </div>
                   <ConfidenceRing value={e.confidence} />

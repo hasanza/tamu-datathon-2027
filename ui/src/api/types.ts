@@ -50,7 +50,12 @@ export interface FeedEvent {
   status: Status;
   category: EventCategory | null;
   confidence: number | null;
+  /** true for an event typed in by a user (sandbox: twin only, never the real server) */
+  custom?: boolean;
 }
+
+/** Custom events are ids C-nn; they run on the twin only and live in traces/custom. */
+export const isCustomId = (id: string) => /^C-\d{2}$/.test(id);
 
 export interface ResolutionStep {
   mention: string;
