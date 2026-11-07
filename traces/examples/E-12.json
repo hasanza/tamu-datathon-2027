@@ -31,12 +31,63 @@
         "new_eta": "will now arrive 2027-03-18"
       },
       "resolution_steps": [
-        {"mention": "SH-0182", "entity_type": "shipment", "candidates": ["SH-0182"], "chosen": "SH-0182", "method": "exact"},
-        {"mention": "CAM-360", "entity_type": "part", "candidates": ["CAM-360"], "chosen": "CAM-360", "method": "exact"},
-        {"mention": "Wacky Wheels Princeton (P_IN)", "entity_type": "plant", "candidates": ["P_IN"], "chosen": "P_IN", "method": "exact"},
-        {"mention": "orbit.example", "entity_type": "supplier", "candidates": ["SUP-11"], "chosen": "SUP-11", "method": "alias", "note": "'Orbit' alias; matches shipment's supplier"},
-        {"mention": "due 2027-03-15", "entity_type": "date", "candidates": ["2027-03-15"], "chosen": "2027-03-15", "method": "data_snap", "note": "equals SH-0182 eta_date"},
-        {"mention": "will now arrive 2027-03-18", "entity_type": "date", "candidates": ["2027-03-18"], "chosen": "2027-03-18", "method": "exact", "note": "Thursday, inside planning window"}
+        {
+          "mention": "SH-0182",
+          "entity_type": "shipment",
+          "candidates": [
+            "SH-0182"
+          ],
+          "chosen": "SH-0182",
+          "method": "exact"
+        },
+        {
+          "mention": "CAM-360",
+          "entity_type": "part",
+          "candidates": [
+            "CAM-360"
+          ],
+          "chosen": "CAM-360",
+          "method": "exact"
+        },
+        {
+          "mention": "Wacky Wheels Princeton (P_IN)",
+          "entity_type": "plant",
+          "candidates": [
+            "P_IN"
+          ],
+          "chosen": "P_IN",
+          "method": "exact"
+        },
+        {
+          "mention": "orbit.example",
+          "entity_type": "supplier",
+          "candidates": [
+            "SUP-11"
+          ],
+          "chosen": "SUP-11",
+          "method": "alias",
+          "note": "'Orbit' alias; matches shipment's supplier"
+        },
+        {
+          "mention": "due 2027-03-15",
+          "entity_type": "date",
+          "candidates": [
+            "2027-03-15"
+          ],
+          "chosen": "2027-03-15",
+          "method": "data_snap",
+          "note": "equals SH-0182 eta_date"
+        },
+        {
+          "mention": "will now arrive 2027-03-18",
+          "entity_type": "date",
+          "candidates": [
+            "2027-03-18"
+          ],
+          "chosen": "2027-03-18",
+          "method": "exact",
+          "note": "Thursday, inside planning window"
+        }
       ],
       "ambiguities": [],
       "reason": "Shipment SH-0182 (CAM-360 to P_IN) slips from 2027-03-15 to 2027-03-18; builds needing CAM-360 at P_IN on Mar 15-17 cannot run (rule 1)."
@@ -46,40 +97,148 @@
     "E-12#1": [
       {
         "nodes": [
-          {"id": "SH-0182", "type": "Shipment", "label": "SH-0182 · CAM-360 → P_IN · ETA 03-15"},
-          {"id": "CAM-360", "type": "Part", "label": "Surround-view camera kit"},
-          {"id": "VOYAGER", "type": "Model", "label": "Voyager"},
-          {"id": "PO-0316", "type": "ProductionOrder", "label": "PO-0316 · VOYAGER · P_IN · 03-15"},
-          {"id": "CO-01812", "type": "CustomerOrder", "label": "CO-01812 · promised 03-20"},
-          {"id": "D01", "type": "Dealer", "label": "Lone Star Wacky Wheels (Austin, TX)"},
-          {"id": "C2879", "type": "Customer", "label": "Platinum customer C2879"}
+          {
+            "id": "SH-0182",
+            "type": "Shipment",
+            "label": "SH-0182 · CAM-360 → P_IN · ETA 03-15"
+          },
+          {
+            "id": "CAM-360",
+            "type": "Part",
+            "label": "Surround-view camera kit"
+          },
+          {
+            "id": "VOYAGER",
+            "type": "Model",
+            "label": "Voyager"
+          },
+          {
+            "id": "PO-0322",
+            "type": "ProductionOrder",
+            "label": "PO-0322 · VOYAGER · P_IN · 03-17"
+          },
+          {
+            "id": "CO-01812",
+            "type": "CustomerOrder",
+            "label": "CO-01812 · promised 03-20"
+          },
+          {
+            "id": "D01",
+            "type": "Dealer",
+            "label": "Lone Star Wacky Wheels (Austin, TX)"
+          },
+          {
+            "id": "C2879",
+            "type": "Customer",
+            "label": "Platinum customer C2879"
+          }
         ],
         "edges": [
-          {"from": "SH-0182", "to": "CAM-360", "type": "OF_PART"},
-          {"from": "VOYAGER", "to": "CAM-360", "type": "USES_PART"},
-          {"from": "PO-0316", "to": "VOYAGER", "type": "OF_MODEL"},
-          {"from": "CO-01812", "to": "PO-0316", "type": "FULFILLED_BY"},
-          {"from": "CO-01812", "to": "D01", "type": "SOLD_BY"},
-          {"from": "CO-01812", "to": "C2879", "type": "FOR"}
+          {
+            "from": "SH-0182",
+            "to": "CAM-360",
+            "type": "OF_PART"
+          },
+          {
+            "from": "VOYAGER",
+            "to": "CAM-360",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0322",
+            "to": "VOYAGER",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "CO-01812",
+            "to": "PO-0322",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "CO-01812",
+            "to": "D01",
+            "type": "SOLD_BY"
+          },
+          {
+            "from": "CO-01812",
+            "to": "C2879",
+            "type": "FOR"
+          }
         ]
       },
       {
         "nodes": [
-          {"id": "SH-0182", "type": "Shipment", "label": "SH-0182"},
-          {"id": "CAM-360", "type": "Part", "label": "Surround-view camera kit"},
-          {"id": "VOYAGER", "type": "Model", "label": "Voyager"},
-          {"id": "PO-0319", "type": "ProductionOrder", "label": "PO-0319 · VOYAGER · P_IN · 03-16"},
-          {"id": "PO-0322", "type": "ProductionOrder", "label": "PO-0322 · VOYAGER · P_IN · 03-17"},
-          {"id": "grp:cos:E-12#1", "type": "CustomerOrder", "label": "23 more customer orders", "group": "customer_orders", "count": 23},
-          {"id": "grp:dealers:E-12#1", "type": "Dealer", "label": "13 more dealers", "group": "dealers", "count": 13}
+          {
+            "id": "SH-0182",
+            "type": "Shipment",
+            "label": "SH-0182"
+          },
+          {
+            "id": "CAM-360",
+            "type": "Part",
+            "label": "Surround-view camera kit"
+          },
+          {
+            "id": "VOYAGER",
+            "type": "Model",
+            "label": "Voyager"
+          },
+          {
+            "id": "PO-0319",
+            "type": "ProductionOrder",
+            "label": "PO-0319 · VOYAGER · P_IN · 03-16"
+          },
+          {
+            "id": "PO-0322",
+            "type": "ProductionOrder",
+            "label": "PO-0322 · VOYAGER · P_IN · 03-17"
+          },
+          {
+            "id": "grp:cos:E-12#1",
+            "type": "CustomerOrder",
+            "label": "23 more customer orders",
+            "group": "customer_orders",
+            "count": 23
+          },
+          {
+            "id": "grp:dealers:E-12#1",
+            "type": "Dealer",
+            "label": "13 more dealers",
+            "group": "dealers",
+            "count": 13
+          }
         ],
         "edges": [
-          {"from": "SH-0182", "to": "CAM-360", "type": "OF_PART"},
-          {"from": "VOYAGER", "to": "CAM-360", "type": "USES_PART"},
-          {"from": "PO-0319", "to": "VOYAGER", "type": "OF_MODEL"},
-          {"from": "PO-0322", "to": "VOYAGER", "type": "OF_MODEL"},
-          {"from": "grp:cos:E-12#1", "to": "PO-0319", "type": "FULFILLED_BY"},
-          {"from": "grp:cos:E-12#1", "to": "grp:dealers:E-12#1", "type": "SOLD_BY"}
+          {
+            "from": "SH-0182",
+            "to": "CAM-360",
+            "type": "OF_PART"
+          },
+          {
+            "from": "VOYAGER",
+            "to": "CAM-360",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0319",
+            "to": "VOYAGER",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "PO-0322",
+            "to": "VOYAGER",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:cos:E-12#1",
+            "to": "PO-0319",
+            "type": "FULFILLED_BY"
+          },
+          {
+            "from": "grp:cos:E-12#1",
+            "to": "grp:dealers:E-12#1",
+            "type": "SOLD_BY"
+          }
         ]
       }
     ]
@@ -90,12 +249,41 @@
       "started": "2027-03-08T10:24:01",
       "ended": "2027-03-08T10:24:09",
       "steps": [
-        {"t": "2027-03-08T10:24:01", "kind": "llm", "text": "Extracted 1 incident: supplier_delay (confidence 0.98)", "data": {"model": "example-model", "input_tokens": 2110, "output_tokens": 240}},
-        {"t": "2027-03-08T10:24:02", "kind": "gate", "text": "Resolved all ids exactly; dates snap to SH-0182 ETA. Confidence above threshold → act."},
-        {"t": "2027-03-08T10:24:02", "kind": "note", "text": "Dispatched to Supply Chain Planner, then Dealer & Customer Care."},
-        {"t": "2027-03-08T10:24:06", "kind": "rehearse", "text": "Rehearsed 20 actions on the twin: 20 ok, 0 failed. Invariants: 3 action kinds ✔, one notify per dealer ✔, no unaffected ids ✔."},
-        {"t": "2027-03-08T10:24:07", "kind": "audit", "text": "Auditor agrees with plan: rules 1, 3, 4, 5 satisfied; no violations found."},
-        {"t": "2027-03-08T10:24:09", "kind": "execute", "text": "Executed 20 actions via MCP: 20 ok."}
+        {
+          "t": "2027-03-08T10:24:01",
+          "kind": "llm",
+          "text": "Extracted 1 incident: supplier_delay (confidence 0.98)",
+          "data": {
+            "model": "example-model",
+            "input_tokens": 2110,
+            "output_tokens": 240
+          }
+        },
+        {
+          "t": "2027-03-08T10:24:02",
+          "kind": "gate",
+          "text": "Resolved all ids exactly; dates snap to SH-0182 ETA. Confidence above threshold → act."
+        },
+        {
+          "t": "2027-03-08T10:24:02",
+          "kind": "note",
+          "text": "Dispatched to Supply Chain Planner, then Dealer & Customer Care."
+        },
+        {
+          "t": "2027-03-08T10:24:06",
+          "kind": "rehearse",
+          "text": "Rehearsed 20 actions on the twin: 20 ok, 0 failed. Invariants: 3 action kinds ✔, one notify per dealer ✔, no unaffected ids ✔."
+        },
+        {
+          "t": "2027-03-08T10:24:07",
+          "kind": "audit",
+          "text": "Auditor agrees with plan: rules 1, 3, 4, 5 satisfied; no violations found."
+        },
+        {
+          "t": "2027-03-08T10:24:09",
+          "kind": "execute",
+          "text": "Executed 20 actions via MCP: 20 ok."
+        }
       ]
     },
     {
@@ -103,9 +291,27 @@
       "started": "2027-03-08T10:24:02",
       "ended": "2027-03-08T10:24:04",
       "steps": [
-        {"t": "2027-03-08T10:24:02", "kind": "graph", "text": "Shipment SH-0182 → Part CAM-360 → Models using it at P_IN: VOYAGER (RANGER and NOVA do not use CAM-360)."},
-        {"t": "2027-03-08T10:24:03", "kind": "graph", "text": "POs at P_IN, model VOYAGER, build date in [2027-03-15, 2027-03-18): PO-0316 (03-15), PO-0319 (03-16), PO-0322 (03-17)."},
-        {"t": "2027-03-08T10:24:03", "kind": "plan", "text": "Earliest feasible slots at P_IN from 03-18: 2 free on 03-18, 2 free on 03-19 → PO-0316→03-18, PO-0319→03-18, PO-0322→03-19. No transfer needed.", "data": {"policy": {"order": "build_date,po_id", "transfer_min_day": "today"}}}
+        {
+          "t": "2027-03-08T10:24:02",
+          "kind": "graph",
+          "text": "Shipment SH-0182 → Part CAM-360 → Models using it at P_IN: VOYAGER (RANGER and NOVA do not use CAM-360)."
+        },
+        {
+          "t": "2027-03-08T10:24:03",
+          "kind": "graph",
+          "text": "POs at P_IN, model VOYAGER, build date in [2027-03-15, 2027-03-18): PO-0316 (03-15), PO-0319 (03-16), PO-0322 (03-17)."
+        },
+        {
+          "t": "2027-03-08T10:24:03",
+          "kind": "plan",
+          "text": "Earliest feasible slots at P_IN from 03-18: 2 free on 03-18, 2 free on 03-19 → PO-0316→03-18, PO-0319→03-18, PO-0322→03-19. No transfer needed.",
+          "data": {
+            "policy": {
+              "order": "build_date,po_id",
+              "transfer_min_day": "today"
+            }
+          }
+        }
       ]
     },
     {
@@ -113,39 +319,393 @@
       "started": "2027-03-08T10:24:04",
       "ended": "2027-03-08T10:24:06",
       "steps": [
-        {"t": "2027-03-08T10:24:04", "kind": "graph", "text": "26 customer orders on the 3 moved POs across 14 dealers."},
-        {"t": "2027-03-08T10:24:05", "kind": "plan", "text": "One dealer.notify per dealer with its affected CO ids. 10 customers entitled (Platinum/Gold); pools sufficient at every dealer → 10 loaners, priority order applied."}
+        {
+          "t": "2027-03-08T10:24:04",
+          "kind": "graph",
+          "text": "26 customer orders on the 3 moved POs across 14 dealers."
+        },
+        {
+          "t": "2027-03-08T10:24:05",
+          "kind": "plan",
+          "text": "One dealer.notify per dealer with its affected CO ids. 10 customers entitled (Platinum/Gold); pools sufficient at every dealer → 10 loaners, priority order applied."
+        }
       ]
     }
   ],
   "actions": [
-    {"seq": 1, "incident_id": "E-12#1", "agent": "supply_chain", "tool": "mes.get_schedule", "args": {"plant_id": "P_IN", "date": "2027-03-18"}, "justification": "Read free slots at the new ETA (free tool)", "path_ids": ["P_IN"], "rehearsal": {"ok": true}, "result": {"ok": true, "response": {"free_slots": 2}}},
-    {"seq": 2, "incident_id": "E-12#1", "agent": "supply_chain", "tool": "mes.reschedule", "args": {"production_order_id": "PO-0316", "new_date": "2027-03-18"}, "justification": "Rule 1+3: needs CAM-360, built 03-15 < new ETA; earliest same-plant slot", "path_ids": ["SH-0182", "CAM-360", "VOYAGER", "PO-0316"], "rehearsal": {"ok": true}, "result": {"ok": true}},
-    {"seq": 3, "incident_id": "E-12#1", "agent": "supply_chain", "tool": "mes.reschedule", "args": {"production_order_id": "PO-0319", "new_date": "2027-03-18"}, "justification": "Rule 1+3: second free slot on 03-18", "path_ids": ["SH-0182", "CAM-360", "VOYAGER", "PO-0319"], "rehearsal": {"ok": true}, "result": {"ok": true}},
-    {"seq": 4, "incident_id": "E-12#1", "agent": "supply_chain", "tool": "mes.reschedule", "args": {"production_order_id": "PO-0322", "new_date": "2027-03-19"}, "justification": "Rule 1+3: 03-18 full after two moves; next free day 03-19", "path_ids": ["SH-0182", "CAM-360", "VOYAGER", "PO-0322"], "rehearsal": {"ok": true}, "result": {"ok": true}},
-    {"seq": 5, "incident_id": "E-12#1", "agent": "dealer_care", "tool": "crm.loaner_availability", "args": {"dealer_id": "D01"}, "justification": "Read pool before assigning (free tool)", "path_ids": ["D01"], "rehearsal": {"ok": true}, "result": {"ok": true, "response": {"available": 3}}},
-    {"seq": 6, "incident_id": "E-12#1", "agent": "dealer_care", "tool": "dealer.notify", "args": {"dealer_id": "D01", "customer_order_ids": ["CO-01812"], "message": "Delay notice: CO-01812 (Voyager, PO-0316) moves from 2027-03-15 to 2027-03-18 due to late shipment SH-0182."}, "justification": "Rule 4: one notification per dealer, only affected orders", "path_ids": ["PO-0316", "CO-01812", "D01"], "rehearsal": {"ok": true}, "result": {"ok": true}},
-    {"seq": 7, "incident_id": "E-12#1", "agent": "dealer_care", "tool": "crm.assign_loaner", "args": {"customer_order_id": "CO-01812"}, "justification": "Rule 5: Platinum customer C2879, pool D01 has 3", "path_ids": ["CO-01812", "C2879", "D01"], "rehearsal": {"ok": true}, "result": {"ok": true}},
-    {"seq": 8, "incident_id": "E-12#1", "agent": "dealer_care", "tool": "dealer.notify", "args": {"dealer_id": "D02", "customer_order_ids": ["CO-01759", "CO-01811"], "message": "Delay notice: CO-01759, CO-01811 (Voyager) move to 2027-03-18 / 2027-03-19 due to late shipment SH-0182."}, "justification": "Rule 4; both customers Standard → no loaner", "path_ids": ["PO-0316", "PO-0322", "D02"], "rehearsal": {"ok": true}, "result": {"ok": true}},
-    {"seq": 9, "incident_id": "E-12#1", "agent": "dealer_care", "tool": "dealer.notify", "args": {"dealer_id": "D06", "customer_order_ids": ["CO-01757", "CO-01758", "CO-01781"], "message": "Delay notice: 3 Voyager orders move to 2027-03-18 / 2027-03-19 due to late shipment SH-0182."}, "justification": "Rule 4", "path_ids": ["D06"], "rehearsal": {"ok": true}, "result": {"ok": true}},
-    {"seq": 10, "incident_id": "E-12#1", "agent": "dealer_care", "tool": "crm.assign_loaner", "args": {"customer_order_id": "CO-01781"}, "justification": "Rule 5: Gold customer C3207; CO-01757/CO-01758 are Standard", "path_ids": ["CO-01781", "C3207", "D06"], "rehearsal": {"ok": true}, "result": {"ok": true}},
-    {"seq": 11, "incident_id": "E-12#1", "agent": "dealer_care", "tool": "dealer.notify", "args": {"dealer_id": "D08", "customer_order_ids": ["CO-01761", "CO-01780"], "message": "Delay notice: CO-01761, CO-01780 (Voyager) move to 2027-03-18 / 2027-03-19 due to late shipment SH-0182."}, "justification": "Rule 4", "path_ids": ["D08"], "rehearsal": {"ok": true}, "result": {"ok": true}},
-    {"seq": 12, "incident_id": "E-12#1", "agent": "dealer_care", "tool": "crm.assign_loaner", "args": {"customer_order_id": "CO-01761"}, "justification": "Rule 5: Platinum C4656 first (promised 03-18)", "path_ids": ["CO-01761", "C4656", "D08"], "rehearsal": {"ok": true}, "result": {"ok": true}},
-    {"seq": 13, "incident_id": "E-12#1", "agent": "dealer_care", "tool": "crm.assign_loaner", "args": {"customer_order_id": "CO-01780"}, "justification": "Rule 5: Gold C6028 second; pool D08 had 3", "path_ids": ["CO-01780", "C6028", "D08"], "rehearsal": {"ok": true}, "result": {"ok": true}}
+    {
+      "seq": 1,
+      "incident_id": "E-12#1",
+      "agent": "supply_chain",
+      "tool": "mes.get_schedule",
+      "args": {
+        "plant_id": "P_IN",
+        "date": "2027-03-18"
+      },
+      "justification": "Read free slots at the new ETA (free tool)",
+      "path_ids": [
+        "P_IN"
+      ],
+      "rehearsal": {
+        "ok": true
+      },
+      "result": {
+        "ok": true,
+        "response": {
+          "free_slots": 2
+        }
+      }
+    },
+    {
+      "seq": 2,
+      "incident_id": "E-12#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0316",
+        "new_date": "2027-03-18"
+      },
+      "justification": "Rule 1+3: needs CAM-360, built 03-15 < new ETA; earliest same-plant slot",
+      "path_ids": [
+        "SH-0182",
+        "CAM-360",
+        "VOYAGER",
+        "PO-0316"
+      ],
+      "rehearsal": {
+        "ok": true
+      },
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "seq": 3,
+      "incident_id": "E-12#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0319",
+        "new_date": "2027-03-18"
+      },
+      "justification": "Rule 1+3: second free slot on 03-18",
+      "path_ids": [
+        "SH-0182",
+        "CAM-360",
+        "VOYAGER",
+        "PO-0319"
+      ],
+      "rehearsal": {
+        "ok": true
+      },
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "seq": 4,
+      "incident_id": "E-12#1",
+      "agent": "supply_chain",
+      "tool": "mes.reschedule",
+      "args": {
+        "production_order_id": "PO-0322",
+        "new_date": "2027-03-19"
+      },
+      "justification": "Rule 1+3: 03-18 full after two moves; next free day 03-19",
+      "path_ids": [
+        "SH-0182",
+        "CAM-360",
+        "VOYAGER",
+        "PO-0322"
+      ],
+      "rehearsal": {
+        "ok": true
+      },
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "seq": 5,
+      "incident_id": "E-12#1",
+      "agent": "dealer_care",
+      "tool": "crm.loaner_availability",
+      "args": {
+        "dealer_id": "D01"
+      },
+      "justification": "Read pool before assigning (free tool)",
+      "path_ids": [
+        "D01"
+      ],
+      "rehearsal": {
+        "ok": true
+      },
+      "result": {
+        "ok": true,
+        "response": {
+          "available": 3
+        }
+      }
+    },
+    {
+      "seq": 6,
+      "incident_id": "E-12#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D01",
+        "customer_order_ids": [
+          "CO-01812"
+        ],
+        "message": "Delay notice: CO-01812 (Voyager, PO-0322) build moves from 2027-03-17 to 2027-03-19 due to late shipment SH-0182."
+      },
+      "justification": "Rule 4: one notification per dealer, only affected orders",
+      "path_ids": [
+        "SH-0182",
+        "CAM-360",
+        "VOYAGER",
+        "PO-0322",
+        "CO-01812",
+        "D01"
+      ],
+      "rehearsal": {
+        "ok": true
+      },
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "seq": 7,
+      "incident_id": "E-12#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01812"
+      },
+      "justification": "Rule 5: Platinum customer C2879, pool D01 has 3",
+      "path_ids": [
+        "CO-01812",
+        "C2879",
+        "D01"
+      ],
+      "rehearsal": {
+        "ok": true
+      },
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "seq": 8,
+      "incident_id": "E-12#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D02",
+        "customer_order_ids": [
+          "CO-01759",
+          "CO-01811"
+        ],
+        "message": "Delay notice: CO-01759, CO-01811 (Voyager) move to 2027-03-18 / 2027-03-19 due to late shipment SH-0182."
+      },
+      "justification": "Rule 4; both customers Standard → no loaner",
+      "path_ids": [
+        "PO-0316",
+        "PO-0322",
+        "D02"
+      ],
+      "rehearsal": {
+        "ok": true
+      },
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "seq": 9,
+      "incident_id": "E-12#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D06",
+        "customer_order_ids": [
+          "CO-01757",
+          "CO-01758",
+          "CO-01781"
+        ],
+        "message": "Delay notice: 3 Voyager orders move to 2027-03-18 due to late shipment SH-0182."
+      },
+      "justification": "Rule 4",
+      "path_ids": [
+        "SH-0182",
+        "CAM-360",
+        "VOYAGER",
+        "PO-0316",
+        "D06"
+      ],
+      "rehearsal": {
+        "ok": true
+      },
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "seq": 10,
+      "incident_id": "E-12#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01781"
+      },
+      "justification": "Rule 5: Gold customer C3207; CO-01757/CO-01758 are Standard",
+      "path_ids": [
+        "CO-01781",
+        "C3207",
+        "D06"
+      ],
+      "rehearsal": {
+        "ok": true
+      },
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "seq": 11,
+      "incident_id": "E-12#1",
+      "agent": "dealer_care",
+      "tool": "dealer.notify",
+      "args": {
+        "dealer_id": "D08",
+        "customer_order_ids": [
+          "CO-01761",
+          "CO-01780"
+        ],
+        "message": "Delay notice: CO-01761, CO-01780 (Voyager) move to 2027-03-18 due to late shipment SH-0182."
+      },
+      "justification": "Rule 4",
+      "path_ids": [
+        "SH-0182",
+        "CAM-360",
+        "VOYAGER",
+        "PO-0316",
+        "D08"
+      ],
+      "rehearsal": {
+        "ok": true
+      },
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "seq": 12,
+      "incident_id": "E-12#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01761"
+      },
+      "justification": "Rule 5: Platinum C4656 first (promised 03-18)",
+      "path_ids": [
+        "CO-01761",
+        "C4656",
+        "D08"
+      ],
+      "rehearsal": {
+        "ok": true
+      },
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "seq": 13,
+      "incident_id": "E-12#1",
+      "agent": "dealer_care",
+      "tool": "crm.assign_loaner",
+      "args": {
+        "customer_order_id": "CO-01780"
+      },
+      "justification": "Rule 5: Gold C6028 second; pool D08 had 3",
+      "path_ids": [
+        "CO-01780",
+        "C6028",
+        "D08"
+      ],
+      "rehearsal": {
+        "ok": true
+      },
+      "result": {
+        "ok": true
+      }
+    }
   ],
   "world_diff": {
     "moved_pos": [
-      {"production_order_id": "PO-0316", "kind": "reschedule", "from_plant": "P_IN", "from_date": "2027-03-15", "to_plant": "P_IN", "to_date": "2027-03-18"},
-      {"production_order_id": "PO-0319", "kind": "reschedule", "from_plant": "P_IN", "from_date": "2027-03-16", "to_plant": "P_IN", "to_date": "2027-03-18"},
-      {"production_order_id": "PO-0322", "kind": "reschedule", "from_plant": "P_IN", "from_date": "2027-03-17", "to_plant": "P_IN", "to_date": "2027-03-19"}
+      {
+        "production_order_id": "PO-0316",
+        "kind": "reschedule",
+        "from_plant": "P_IN",
+        "from_date": "2027-03-15",
+        "to_plant": "P_IN",
+        "to_date": "2027-03-18"
+      },
+      {
+        "production_order_id": "PO-0319",
+        "kind": "reschedule",
+        "from_plant": "P_IN",
+        "from_date": "2027-03-16",
+        "to_plant": "P_IN",
+        "to_date": "2027-03-18"
+      },
+      {
+        "production_order_id": "PO-0322",
+        "kind": "reschedule",
+        "from_plant": "P_IN",
+        "from_date": "2027-03-17",
+        "to_plant": "P_IN",
+        "to_date": "2027-03-19"
+      }
     ],
     "notified_dealers": [
-      {"dealer_id": "D01", "customer_order_ids": ["CO-01812"]},
-      {"dealer_id": "D02", "customer_order_ids": ["CO-01759", "CO-01811"]},
-      {"dealer_id": "D06", "customer_order_ids": ["CO-01757", "CO-01758", "CO-01781"]},
-      {"dealer_id": "D08", "customer_order_ids": ["CO-01761", "CO-01780"]}
+      {
+        "dealer_id": "D01",
+        "customer_order_ids": [
+          "CO-01812"
+        ]
+      },
+      {
+        "dealer_id": "D02",
+        "customer_order_ids": [
+          "CO-01759",
+          "CO-01811"
+        ]
+      },
+      {
+        "dealer_id": "D06",
+        "customer_order_ids": [
+          "CO-01757",
+          "CO-01758",
+          "CO-01781"
+        ]
+      },
+      {
+        "dealer_id": "D08",
+        "customer_order_ids": [
+          "CO-01761",
+          "CO-01780"
+        ]
+      }
     ],
-    "loaners": ["CO-01812", "CO-01781", "CO-01761", "CO-01780"],
+    "loaners": [
+      "CO-01812",
+      "CO-01781",
+      "CO-01761",
+      "CO-01780"
+    ],
     "held_lots": [],
     "stopped_vins": [],
     "contacted_customers": []
@@ -160,9 +720,30 @@
   },
   "llm": {
     "calls": [
-      {"provider": "example", "model": "example-model", "purpose": "extract", "input_tokens": 2110, "output_tokens": 240, "cost_usd": 0.0004},
-      {"provider": "example", "model": "example-model", "purpose": "audit", "input_tokens": 1480, "output_tokens": 90, "cost_usd": 0.0002},
-      {"provider": "example", "model": "example-model", "purpose": "summarize", "input_tokens": 1200, "output_tokens": 160, "cost_usd": 0.0002}
+      {
+        "provider": "example",
+        "model": "example-model",
+        "purpose": "extract",
+        "input_tokens": 2110,
+        "output_tokens": 240,
+        "cost_usd": 0.0004
+      },
+      {
+        "provider": "example",
+        "model": "example-model",
+        "purpose": "audit",
+        "input_tokens": 1480,
+        "output_tokens": 90,
+        "cost_usd": 0.0002
+      },
+      {
+        "provider": "example",
+        "model": "example-model",
+        "purpose": "summarize",
+        "input_tokens": 1200,
+        "output_tokens": 160,
+        "cost_usd": 0.0002
+      }
     ],
     "total_cost_usd": 0.0008
   },

@@ -150,8 +150,7 @@ class Ledger:
             m["cost_usd"] = round(m["cost_usd"] + c.cost_usd, 6)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(
-            json.dumps({"models": list(by_model.values()), "total_cost_usd": self.total_cost_usd}, indent=2)
-            + "\n"
+            json.dumps({"models": list(by_model.values()), "total_cost_usd": self.total_cost_usd}, indent=2) + "\n"
         )
 
 

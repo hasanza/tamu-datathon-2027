@@ -90,10 +90,10 @@ Deps use task ids. Hours are elapsed hackathon time.
 
 | ID | Owner | Task | Acceptance | Sens | AI | Deps |
 |---|---|---|---|---|---|---|
-| 1.1 | CORE | CSV loader → typed records; calendar helpers (idx↔date, next working day) | unit tests | C | light | 0.2 |
-| 1.2 | CORE | Knowledge graph (`networkx.MultiDiGraph`, typed nodes/edges per SPEC FR-2); `export_graphml()`, `export_mermaid_ontology()` | node/edge counts logged; GraphML opens in Gephi/yEd | H | heavy | 1.1 |
-| 1.3 | CORE | Traversals returning paths: `impact_supplier_delay(plant, part, d1, d2)`, `impact_outage(plant, d1, d2)`, `impact_lot(part, plant, d1, d2)`, `cos_for_pos`, `vehicles_for_lot` | tests reproduce SPEC §6 magnitudes | C | heavy | 1.2 |
-| 1.4 | CORE | Twin: wrap `enterprise.Enterprise`, `rehearse(event_id, actions) -> per-action ok/error`, invariants (≥3 kinds, one notify per dealer, no ids outside impact set) | rehearsal of a hand-written plan passes/fails correctly | C | light | 1.1 |
+| 1.1 ✅ `core/1.1-1.4-graph-planners-twin` | CORE | CSV loader → typed records; calendar helpers (idx↔date, next working day) | unit tests | C | light | 0.2 |
+| 1.2 ✅ `core/1.1-1.4-graph-planners-twin` | CORE | Knowledge graph (`networkx.MultiDiGraph`, typed nodes/edges per SPEC FR-2); `export_graphml()`, `export_mermaid_ontology()` | node/edge counts logged; GraphML opens in Gephi/yEd | H | heavy | 1.1 |
+| 1.3 ✅ `core/1.1-1.4-graph-planners-twin` | CORE | Traversals returning paths: `impact_supplier_delay(plant, part, d1, d2)`, `impact_outage(plant, d1, d2)`, `impact_lot(part, plant, d1, d2)`, `cos_for_pos`, `vehicles_for_lot` | tests reproduce SPEC §6 magnitudes | C | heavy | 1.2 |
+| 1.4 ✅ `core/1.1-1.4-graph-planners-twin` | CORE | Twin: wrap `enterprise.Enterprise`, `rehearse(event_id, actions) -> per-action ok/error`, invariants (≥3 kinds, one notify per dealer, no ids outside impact set) | rehearsal of a hand-written plan passes/fails correctly | C | light | 1.1 |
 | 1.5 | GLASS | MCP server (FastMCP, stdio): `enterprise_act(event_id, tool, args)`, `enterprise_get_schedule`, `enterprise_loaner_availability`, `enterprise_list_tools`; register in `.mcp.json`; verify from Claude Code `/mcp` | tool call from Claude Code returns server JSON | M | light | 0.5 |
 | 1.6 | GLASS | FastAPI skeleton serving §1 endpoints from files on disk (`traces/`, `runs/*/action_log.jsonl`), SSE endpoint that tails a `events.ndjson` pipe file; CORS for Vite | UI loads real example traces via API | M | heavy | 0.3 |
 | 1.7 | GLASS | UI: Event Feed (source icon, category badge, confidence ring, status), Event Summary tab (summary, decision reason, incidents table) | renders 3 examples; keyboard nav | M | heavy | 0.4 |
@@ -104,9 +104,9 @@ Deps use task ids. Hours are elapsed hackathon time.
 |---|---|---|---|---|---|---|
 | 2.1 | CORE | Resolver: aliases → names → rapidfuzz → candidates; relative-date rules (anchor Mon 2027-03-08, "next X" = next week's X, "last X" = previous week's X); data snapping (ETA Mondays, lot windows, plant/model compat); confidence formula | tests on all 15 event texts' mentions | C | heavy | 1.2 |
 | 2.2 | CORE | Extraction via `llm/adapter.py` (Gemini Flash-class model; Haiku 5.5 if an Anthropic key exists) structured output → `IncidentSpec[]` with raw mentions + proposed dates; prompt includes alias table + rules summary (cached prefix); fixture cache keyed by text hash (`--replay-llm`) | 15/15 categories correct; dates agree with resolver | C | heavy | 0.1, 2.1 |
-| 2.3 | CORE | Supply Chain planner: affected POs → earliest feasible slot (SPEC §5, A1/A2 config flags) → reschedule/transfer actions with paths | E-11 yields 6 reschedules + 3 transfers; rehearsal passes | C | heavy | 1.3, 1.4 |
-| 2.4 | CORE | Dealer & Care planner: one notify per dealer, loaner priority within pool, templated messages | E-04 assigns exactly pool-limited loaners in priority order | C | heavy | 2.3 |
-| 2.5 | CORE | Quality planner: lot match, vehicle split, hold/stop_sale/notify_customer | E-03: 1 + 37 + 150 actions; rehearsal passes | C | light | 1.3 |
+| 2.3 ✅ planner logic (tests green; wired by 3.1) | CORE | Supply Chain planner: affected POs → earliest feasible slot (SPEC §5, A1/A2 config flags) → reschedule/transfer actions with paths | E-11 yields 6 reschedules + 3 transfers; rehearsal passes | C | heavy | 1.3, 1.4 |
+| 2.4 ✅ planner logic (tests green; wired by 3.1) | CORE | Dealer & Care planner: one notify per dealer, loaner priority within pool, templated messages | E-04 assigns exactly pool-limited loaners in priority order | C | heavy | 2.3 |
+| 2.5 ✅ planner logic (tests green; wired by 3.1) | CORE | Quality planner: lot match, vehicle split, hold/stop_sale/notify_customer | E-03: 1 + 37 + 150 actions; rehearsal passes | C | light | 1.3 |
 | 2.6 | CORE | Oracle (`eval/oracle.py`): expected action set per incident straight from rules, independent code path from planners where possible | oracle == planner on 10 incidents | H | light | 2.3–2.5 |
 | 2.7 | GLASS | Graph Path view: React Flow + ELK layout, typed node styles, collapsed group nodes ("110 vehicles · 37 dealers", expandable), path highlight on hover of an action | 3 example traces render clearly; 260-vehicle case stays readable | M | heavy | 1.7 |
 | 2.8 | GLASS | Agents Timeline: swimlanes per agent, steps with kind icons (llm/graph/plan/rehearse/execute), click → detail drawer with raw data | — | M | heavy | 1.7 |
