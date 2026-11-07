@@ -2,16 +2,22 @@
 
 import asyncio
 import json
-import sys
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT))  # `api/` lives at the repo root, outside pyproject's pythonpath
+from api.app import Settings, create_app, tail_ndjson
 
-from api.app import Settings, create_app, tail_ndjson  # noqa: E402
+ROOT = Path(__file__).resolve().parents[2]
+
+
+@pytest.fixture(autouse=True)
+def isolated_root(monkeypatch, tmp_path_factory):
+    """POST /api/run deletes stale traces/live/E-*.json under api.app.ROOT: never let a test touch the real repo."""
+    import api.app as appmod
+
+    monkeypatch.setattr(appmod, "ROOT", tmp_path_factory.mktemp("root"))
 
 
 @pytest.fixture
@@ -136,6 +142,15 @@ def test_stream_tails_new_lines_only_by_default(cfg):
     assert got == [{"event": "action", "data": json.dumps({"event_id": "E-12", "seq": 1})}]
 
 
+def test_stream_adds_top_level_event_id_to_payload(cfg):
+    # CORE's runner writes {"type", "event_id", "payload"}; the SSE data must carry event_id too.
+    cfg.stream_file.write_text(
+        json.dumps({"type": "event_done", "event_id": "E-05", "payload": {"status": "noise"}}) + "\n"
+    )
+    (msg,) = _collect(cfg.stream_file, from_start=True)
+    assert msg["event"] == "event_done" and json.loads(msg["data"]) == {"status": "noise", "event_id": "E-05"}
+
+
 def test_stream_replay_and_missing_file(cfg):
     assert _collect(cfg.stream_file, from_start=True, n=1) == []  # file absent: no crash, no messages
     cfg.stream_file.write_text(json.dumps({"type": "event_done", "payload": {"event_id": "E-05"}}) + "\n")
@@ -150,3 +165,76 @@ def test_stream_waits_for_complete_line(cfg):
             f.write('{"type": "event_received", "pay')
 
     assert _collect(cfg.stream_file, from_start=False, writer=partial_then_rest) == []
+
+
+SNAPSHOT = ROOT / "traces" / "snapshot"
+
+
+@pytest.fixture
+def snap(cfg):
+    cfg.traces_dir = SNAPSHOT
+    return TestClient(create_app(cfg))
+
+
+@pytest.mark.skipif(not SNAPSHOT.exists(), reason="no real traces yet")
+def test_every_real_trace_passes_the_contract_and_graph_merge(snap):
+    rows = snap.get("/api/events").json()
+    assert len(rows) == 15 and all(r["status"] != "queued" for r in rows)
+    for r in rows:
+        eid = r["event_id"]
+        assert snap.get(f"/api/traces/{eid}").status_code == 200, eid
+        g = snap.get(f"/api/graph/{eid}").json()
+        ids = [n["id"] for n in g["nodes"]]
+        assert len(ids) == len(set(ids)), eid
+        assert all(e["from"] in ids and e["to"] in ids for e in g["edges"]), f"dangling edge in {eid}"
+
+
+@pytest.mark.skipif(not SNAPSHOT.exists(), reason="no real traces yet")
+def test_real_traces_status_mix_and_no_writes_on_noise_or_escalation(snap):
+    by = {r["event_id"]: r for r in snap.get("/api/events").json()}
+    assert {by[e]["status"] for e in ("E-05", "E-06", "E-07")} == {"noise"}
+    assert {by[e]["status"] for e in ("E-02", "E-13")} == {"escalated"}
+    for eid in ("E-05", "E-06", "E-07", "E-02", "E-13"):
+        t = snap.get(f"/api/traces/{eid}").json()
+        assert not [
+            a for a in t["actions"] if a["tool"] not in ("escalate", "mes.get_schedule", "crm.loaner_availability")
+        ]
+
+
+class FakeProc:
+    def __init__(self, code=None):
+        self.code, self.returncode = code, code
+
+    def poll(self):
+        return self.code
+
+
+def test_run_endpoints(client, monkeypatch):
+    import api.app as appmod
+
+    started = []
+    monkeypatch.setattr(appmod.subprocess, "Popen", lambda cmd, **kw: started.append(cmd) or FakeProc())
+    assert client.get("/api/run/status").json()["running"] is False
+    assert client.post("/api/run").status_code == 422
+    assert client.post("/api/run", params={"event_id": "bad"}).status_code == 422
+    assert client.post("/api/run", params={"all": True, "mode": "rm -rf"}).status_code == 422
+    r = client.post("/api/run", params={"all": True, "mode": "dry", "pace": 0})
+    assert r.status_code == 202 and r.json()["running"] and r.json()["mode"] == "dry"
+    cmd = started[0]
+    assert cmd[1:3] == ["-m", "control_tower.live"] and "--event" not in cmd
+    assert client.post("/api/run", params={"all": True}).status_code == 409  # one run at a time
+    assert len(started) == 1
+
+
+def test_run_single_event_passes_event_flag(client, monkeypatch):
+    import api.app as appmod
+
+    started = []
+    monkeypatch.setattr(appmod.subprocess, "Popen", lambda cmd, **kw: started.append(cmd) or FakeProc(0))
+    assert client.post("/api/run", params={"event_id": "E-12"}).status_code == 202
+    assert started[0][-2:] == ["--event", "E-12"]
+    assert client.get("/api/run/status").json() == {
+        **client.get("/api/run/status").json(),
+        "running": False,
+        "exit_code": 0,
+    }
