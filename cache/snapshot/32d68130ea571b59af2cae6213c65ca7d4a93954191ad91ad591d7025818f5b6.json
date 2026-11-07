@@ -1,14 +1,14 @@
 {
   "provider": "gemini",
-  "model": "gemini-3.8-flash",
+  "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 6.066,
+  "latency_s": 1.074,
   "parsed": {
     "incidents": [
       {
         "category": "plant_outage",
-        "evidence": "a software outage on the line. We're dark from next Tuesday through next Thursday",
-        "plant": "Kentucky plant",
+        "evidence": "The Kentucky plant update: a software outage on the line. We're dark from next Tuesday through next Thursday; the line restarts the following working day.",
+        "plant": "Kentucky",
         "part": null,
         "supplier": null,
         "shipment_id": null,
@@ -25,17 +25,17 @@
         },
         "build_window_start": null,
         "build_window_end": null,
-        "reason": "The message reports a line stoppage at the Kentucky plant caused by a software outage with specified start and end dates.",
-        "confidence": 0.98
+        "reason": "The plant is experiencing a software outage causing a shutdown for a specified range of days.",
+        "confidence": 1.0
       }
     ]
   },
   "usage": {
     "provider": "gemini",
-    "model": "gemini-3.8-flash",
+    "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 761,
-    "output_tokens": 165,
-    "cost_usd": 0.0
+    "output_tokens": 196,
+    "cost_usd": 0.000718
   }
 }

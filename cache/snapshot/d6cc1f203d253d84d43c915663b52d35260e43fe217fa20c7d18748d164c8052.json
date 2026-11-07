@@ -1,8 +1,8 @@
 {
   "provider": "gemini",
-  "model": "gemini-3.8-flash",
+  "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 3.967,
+  "latency_s": 0.995,
   "parsed": {
     "incidents": [
       {
@@ -19,17 +19,17 @@
         "outage_end": null,
         "build_window_start": null,
         "build_window_end": null,
-        "reason": "This is a routine brochure PDF inquiry that has no relevance to manufacturing operations.",
+        "reason": "This message is a brochure request from a dealer, which is unrelated to operations and classified as noise.",
         "confidence": 1.0
       }
     ]
   },
   "usage": {
     "provider": "gemini",
-    "model": "gemini-3.8-flash",
+    "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 744,
-    "output_tokens": 177,
-    "cost_usd": 0.0
+    "output_tokens": 180,
+    "cost_usd": 0.000673
   }
 }

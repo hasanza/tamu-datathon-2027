@@ -1,8 +1,8 @@
 {
   "provider": "gemini",
-  "model": "gemini-3.8-flash",
+  "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 5.003,
+  "latency_s": 1.264,
   "parsed": {
     "incidents": [
       {
@@ -25,17 +25,17 @@
         },
         "build_window_start": null,
         "build_window_end": null,
-        "reason": "The plant experienced a power failure causing a complete production shutdown across specified dates.",
-        "confidence": 0.99
+        "reason": "This is a plant outage because the Lexington plant is stopped from building due to a power failure for a specific range of days.",
+        "confidence": 1.0
       }
     ]
   },
   "usage": {
     "provider": "gemini",
-    "model": "gemini-3.8-flash",
+    "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 779,
-    "output_tokens": 292,
-    "cost_usd": 0.0
+    "output_tokens": 299,
+    "cost_usd": 0.000981
   }
 }

@@ -65,7 +65,7 @@ def main(argv: list[str] | None = None) -> int:
     wanted = [e for e in events if a.all or e["event_id"] in set(a.event)]
     coord = Coordinator(
         world, graph, index, twin, executor, traces_dir=traces_dir, sink=sink,
-        policy=Policy(transfer_min_day=a.transfer_min_day), provider=a.provider, model=a.model,
+        policy=Policy(transfer_min_day=a.transfer_min_day), provider=a.provider, model=a.model, use_tiebreak=True,
     )  # fmt: skip
 
     print(f"{len(wanted)} event(s) -> {executor.name}; traces in {traces_dir.relative_to(REPO_ROOT)}")

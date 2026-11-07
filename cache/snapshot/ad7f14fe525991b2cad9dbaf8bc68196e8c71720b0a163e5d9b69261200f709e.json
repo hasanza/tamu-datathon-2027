@@ -1,13 +1,13 @@
 {
   "provider": "gemini",
-  "model": "gemini-3.8-flash",
+  "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 4.713,
+  "latency_s": 1.14,
   "parsed": {
     "incidents": [
       {
         "category": "plant_outage",
-        "evidence": "Jackson update: a power failure. We're dark from Friday Mar 26 through Tuesday Mar 30",
+        "evidence": "Jackson update: a power failure. We're dark from Friday Mar 26 through Tuesday Mar 30; the line restarts the following working day.",
         "plant": "Jackson",
         "part": null,
         "supplier": null,
@@ -25,17 +25,17 @@
         },
         "build_window_start": null,
         "build_window_end": null,
-        "reason": "The Jackson plant is facing a power failure causing a production shutdown from Friday Mar 26 through Tuesday Mar 30.",
-        "confidence": 0.98
+        "reason": "The Jackson plant is experiencing a power failure causing a plant outage for a specified date range.",
+        "confidence": 1.0
       }
     ]
   },
   "usage": {
     "provider": "gemini",
-    "model": "gemini-3.8-flash",
+    "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 762,
-    "output_tokens": 264,
-    "cost_usd": 0.0
+    "output_tokens": 205,
+    "cost_usd": 0.000741
   }
 }

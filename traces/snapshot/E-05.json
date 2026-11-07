@@ -8,7 +8,7 @@
   "classification": {
     "category": "noise",
     "confidence": 1.0,
-    "reason": "This is a routine request for a brochure PDF from a dealer and has no relevance to manufacturing or supply chain operations."
+    "reason": "This message is a brochure request from a dealer, which is unrelated to operations."
   },
   "incidents": [
     {
@@ -30,31 +30,31 @@
       "raw_mentions": {},
       "resolution_steps": [],
       "ambiguities": [],
-      "reason": "This is a routine request for a brochure PDF from a dealer and has no relevance to manufacturing or supply chain operations."
+      "reason": "This message is a brochure request from a dealer, which is unrelated to operations."
     }
   ],
   "paths": {},
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T08:25:00.002000",
-      "ended": "2027-03-08T08:25:00.002000",
+      "started": "2027-03-08T08:25:01.015000",
+      "ended": "2027-03-08T08:25:01.015000",
       "steps": [
         {
-          "t": "2027-03-08T08:25:00.002000",
+          "t": "2027-03-08T08:25:01.015000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): noise",
           "data": {
-            "model": "gemini-3.8-flash",
+            "model": "gemini-3.5-flash-lite",
             "input_tokens": 743,
-            "output_tokens": 184,
-            "cached": true
+            "output_tokens": 177,
+            "cached": false
           }
         },
         {
-          "t": "2027-03-08T08:25:00.002000",
+          "t": "2027-03-08T08:25:01.015000",
           "kind": "gate",
-          "text": "Noise -> no write tools, no escalation (rule 7). This is a routine request for a brochure PDF from a dealer and has no relevance to manufacturing or supply chain operations.",
+          "text": "Noise -> no write tools, no escalation (rule 7). This message is a brochure request from a dealer, which is unrelated to operations.",
           "data": null
         }
       ]
@@ -74,16 +74,16 @@
     "calls": [
       {
         "provider": "gemini",
-        "model": "gemini-3.8-flash",
+        "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 743,
-        "output_tokens": 184,
-        "cost_usd": 0.0,
-        "cached": true
+        "output_tokens": 177,
+        "cost_usd": 0.000665,
+        "cached": false
       }
     ],
-    "total_cost_usd": 0.0
+    "total_cost_usd": 0.000665
   },
-  "summary": "Not an operational event. This is a routine request for a brochure PDF from a dealer and has no relevance to manufacturing or supply chain operations.",
+  "summary": "Not an operational event. This message is a brochure request from a dealer, which is unrelated to operations.",
   "decision_reason": "No action: the message names no shipment, plant, part, lot or date and describes no disruption to production, dealers, loaners or owners (rule 7: noise gets no write tools)."
 }

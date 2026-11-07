@@ -41,7 +41,8 @@ _DM = re.compile(
     rf"\b(?:(?P<wd>{_WD})\.?,?\s+)?(?P<d>\d{{1,2}})(?:st|nd|rd|th)?\s+(?:of\s+)?(?P<mo>{_MO})\b\.?(?:,?\s+(?P<y>\d{{4}}))?",
     re.I,
 )
-_REL = re.compile(rf"\b(?P<rel>next|last|this|coming|previous)\s+(?P<wd>{_WD})\b", re.I)
+_NUM = re.compile(rf"\b(?:(?P<wd>{_WD})\.?,?\s+)?(?P<m>\d{{1,2}})/(?P<d>\d{{1,2}})(?:/(?P<y>\d{{2,4}}))?\b", re.I)
+_REL = re.compile(rf"\b(?P<rel>next|nxt|nx|last|lst|this|coming|previous)\s+(?P<wd>{_WD})\b", re.I)
 _BARE_WD = re.compile(rf"\b(?P<wd>{_WD})\b", re.I)
 _ID_PATTERNS = {
     "plant": re.compile(r"\bP_[A-Z]{2}\b"),
@@ -68,6 +69,15 @@ def parse_date_phrase(text: str, *, today: date = TODAY, direction: str = "futur
     t = " ".join(text.strip().split())
     if m := _ISO.search(t):
         return ParsedDate(date(int(m[1]), int(m[2]), int(m[3])), "iso date")
+    if m := _NUM.search(t):
+        try:
+            y = int(m["y"]) if m["y"] else today.year
+            d = date(y + 2000 if y < 100 else y, int(m["m"]), int(m["d"]))
+        except ValueError:
+            return ParsedDate(None, f"invalid calendar date in {t!r}")
+        if m["wd"] and d.weekday() != WEEKDAYS[m["wd"].lower()]:
+            return ParsedDate(d, f"numeric date; weekday word disagrees ({d:%A})", weekday_mismatch=True)
+        return ParsedDate(d, "numeric month/day" + (" with matching weekday" if m["wd"] else ""))
     for pat in (_MD, _DM):
         if m := pat.search(t):
             try:
@@ -83,9 +93,9 @@ def parse_date_phrase(text: str, *, today: date = TODAY, direction: str = "futur
     if m := _REL.search(t):
         off = WEEKDAYS[m["wd"].lower()]
         rel = m["rel"].lower()
-        if rel == "next":
+        if rel in {"next", "nxt", "nx"}:
             return ParsedDate(_monday(today) + timedelta(days=7 + off), "'next <weekday>' = that weekday of next week")
-        if rel in {"last", "previous"}:
+        if rel in {"last", "lst", "previous"}:
             return ParsedDate(_monday(today) - timedelta(days=7 - off), "'last <weekday>' = that weekday of last week")
         return ParsedDate(_monday(today) + timedelta(days=off), "'this <weekday>' = that weekday of this week")
     low = t.lower()
@@ -95,7 +105,11 @@ def parse_date_phrase(text: str, *, today: date = TODAY, direction: str = "futur
         return ParsedDate(today + timedelta(days=1), "tomorrow")
     if low == "yesterday":
         return ParsedDate(today - timedelta(days=1), "yesterday")
-    if m := _BARE_WD.search(t):
+    leftover = _BARE_WD.sub(" ", t.lower())
+    leftover = re.sub(r"\b(on|the|this|coming|upcoming|by|at|end|of|day)\b|[^a-z0-9]", " ", leftover).split()
+    if (m := _BARE_WD.search(t)) and leftover:
+        return ParsedDate(None, f"weekday with extra words/digits not understood: {t!r}")
+    if m:
         off = WEEKDAYS[m["wd"].lower()]
         cand = _monday(today) + timedelta(days=off)
         if direction == "future" and cand < today:
@@ -233,6 +247,7 @@ class Resolved:
 
 
 CONFIDENCE_GATE = 0.7
+TIEBREAK_MIN_CONFIDENCE = 0.9
 
 
 def _date(
@@ -302,8 +317,17 @@ def _date(
 
 
 def build_incident(
-    world: World, index: EntityIndex, raw: RawIncident, *, event_id: str, n: int, event_text: str
+    world: World,
+    index: EntityIndex,
+    raw: RawIncident,
+    *,
+    event_id: str,
+    n: int,
+    event_text: str,
+    tiebreak=None,
 ) -> Resolved:
+    """`tiebreak(etype, mention, event_text) -> (id | None, confidence, why)` is an optional closed-set language-model
+    fallback used ONLY when the deterministic tables cannot resolve a mention. It can only pick from our own entities."""
     steps: list[ResolutionStep] = []
     ambs: list[Ambiguity] = []
     pen: list[float] = []
@@ -323,10 +347,31 @@ def build_incident(
         reason=raw.reason,
     )
 
+    use_tiebreak = tiebreak is not None and raw.category not in {"noise", "unconfirmed"}  # nothing acts on those
+
     def ent(field: str, etype: str, mention: str | None) -> str | None:
         if not mention:
             return None
         step = index.resolve(mention, etype)
+        if step.chosen is None and use_tiebreak and etype in {"plant", "part", "supplier"}:
+            pick, conf, why = tiebreak(etype, mention, event_text)
+            if pick is not None and conf >= TIEBREAK_MIN_CONFIDENCE:
+                step = ResolutionStep(
+                    mention=mention,
+                    entity_type=etype,
+                    candidates=[pick],
+                    chosen=pick,
+                    method="llm",
+                    note=f"not in the alias tables; closed-set model pick at {conf:.2f}: {why}",
+                )
+                pen.append(0.85)
+                ambs.append(
+                    Ambiguity(
+                        field=field,
+                        issue=f"{mention!r} resolved to {pick} by the language model, not by the alias table",
+                        options=[pick],
+                    )
+                )
         steps.append(step)
         if step.chosen is None:
             ambs.append(
@@ -362,6 +407,31 @@ def build_incident(
     spec.supplier_id = ent("supplier_id", "supplier", raw.supplier)
     spec.shipment_id = ent("shipment_id", "shipment", raw.shipment_id)
     spec.lot_id = ent("lot_id", "lot", raw.lot_id)
+
+    if raw.category in {"supplier_delay", "plant_outage", "quality_hold"}:
+        seen = index.scan(event_text)
+        for field, etype in (("plant_id", "plant"), ("part_id", "part"), ("supplier_id", "supplier")):
+            named = seen.get(etype, [])
+            needed = field == "plant_id" or (field == "part_id" and raw.category != "plant_outage")
+            if (
+                getattr(spec, field) is None
+                and needed
+                and len(named) == 1
+                and not any(a.field == field and a.blocking and "ambig" in a.issue for a in ambs)
+            ):
+                setattr(spec, field, named[0])
+                steps.append(
+                    ResolutionStep(
+                        mention=f"(not extracted) text names {named[0]}",
+                        entity_type=etype,
+                        candidates=named,
+                        chosen=named[0],
+                        method="alias",
+                        note="the model left it blank but the message names exactly one",
+                    )
+                )
+                pen.append(0.9)
+                ambs = [a for a in ambs if not (a.field == field and a.blocking)]
 
     if raw.category == "supplier_delay":
         spec.orig_eta = _date(world, raw.original_eta, field="orig_eta", steps=steps, ambs=ambs, penalties=pen)
@@ -549,6 +619,20 @@ def build_incident(
                     )
                 )
             spec.supplier_id = spec.supplier_id or lot.supplier_id
+
+    # a mention the tables did not know is harmless when the data identifies the same field (shipment / lot row)
+    for field in ("plant_id", "part_id", "supplier_id"):
+        if getattr(spec, field) is not None:
+            derived = [a for a in ambs if a.field == field and a.blocking and a.issue.startswith("cannot resolve")]
+            if derived:
+                ambs = [a for a in ambs if a not in derived]
+                ambs.append(
+                    Ambiguity(
+                        field=field,
+                        issue=f"{derived[0].issue.split('cannot resolve ')[1]} not recognised; value taken from the matching shipment/lot",
+                    )
+                )
+                pen.append(0.9)
 
     # cross-check: ids the text itself names but the LLM did not use
     seen = index.scan(event_text)
