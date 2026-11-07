@@ -1,6 +1,6 @@
 # Demo script (3 to 4 minutes)
 
-Written for whoever records the video. Every number below is from the final run (`runs/final/`, tag `final-run-1`) and is on screen
+Written for whoever records the video. Every number below is from the final run (`runs/final/`, tag `final-run-2`) and is on screen
 in the UI. `media/screenshots/` holds one still per beat as a backup if the live demo misbehaves.
 
 ## Before you press record
