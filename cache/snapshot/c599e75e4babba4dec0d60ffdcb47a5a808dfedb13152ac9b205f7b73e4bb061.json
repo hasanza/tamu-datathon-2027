@@ -1,0 +1,35 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "extract",
+  "latency_s": 4.773,
+  "parsed": {
+    "incidents": [
+      {
+        "category": "unconfirmed",
+        "evidence": "Rumor from a supplier rep: something may be off with a seat material coming up. No dates, no details, nothing confirmed.",
+        "plant": null,
+        "part": "seat material",
+        "supplier": null,
+        "shipment_id": null,
+        "lot_id": null,
+        "original_eta": null,
+        "new_eta": null,
+        "outage_start": null,
+        "outage_end": null,
+        "build_window_start": null,
+        "build_window_end": null,
+        "reason": "The report is explicitly described as an unconfirmed rumor with no specific dates, plant, or shipment details.",
+        "confidence": 0.95
+      }
+    ]
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "extract",
+    "input_tokens": 757,
+    "output_tokens": 200,
+    "cost_usd": 0.0
+  }
+}

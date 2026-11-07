@@ -1,0 +1,35 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "extract",
+  "latency_s": 5.48,
+  "parsed": {
+    "incidents": [
+      {
+        "category": "unconfirmed",
+        "evidence": "Someone on the floor mentioned a possible shortage of something electronic sometime soon. Not confirmed by anyone.",
+        "plant": null,
+        "part": null,
+        "supplier": null,
+        "shipment_id": null,
+        "lot_id": null,
+        "original_eta": null,
+        "new_eta": null,
+        "outage_start": null,
+        "outage_end": null,
+        "build_window_start": null,
+        "build_window_end": null,
+        "reason": "The report is hearsay about a possible shortage without specific part names, plants, or dates, and is explicitly stated as unconfirmed.",
+        "confidence": 0.95
+      }
+    ]
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "extract",
+    "input_tokens": 749,
+    "output_tokens": 195,
+    "cost_usd": 0.0
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "pipeline_version": "0.1.0",
+  "event_id": "E-13",
+  "received_at": "2027-03-08T10:41:00",
+  "source": "ops chat",
+  "text": "Someone on the floor mentioned a possible shortage of something electronic sometime soon. Not confirmed by anyone.",
+  "status": "escalated",
+  "classification": {
+    "category": "unconfirmed",
+    "confidence": 0.95,
+    "reason": "The report is hearsay about a possible shortage without specific part names, plants, or dates, and is explicitly stated as unconfirmed."
+  },
+  "incidents": [
+    {
+      "incident_id": "E-13#1",
+      "event_id": "E-13",
+      "category": "unconfirmed",
+      "confidence": 0.95,
+      "plant_id": null,
+      "part_id": null,
+      "supplier_id": null,
+      "shipment_id": null,
+      "lot_id": null,
+      "orig_eta": null,
+      "new_eta": null,
+      "outage_start": null,
+      "outage_end": null,
+      "build_window_start": null,
+      "build_window_end": null,
+      "raw_mentions": {},
+      "resolution_steps": [],
+      "ambiguities": [
+        {
+          "field": "specificity",
+          "issue": "no confirmed shipment, lot, plant or dates",
+          "options": [],
+          "blocking": true
+        }
+      ],
+      "reason": "The report is hearsay about a possible shortage without specific part names, plants, or dates, and is explicitly stated as unconfirmed."
+    }
+  ],
+  "paths": {},
+  "agents": [
+    {
+      "agent": "coordinator",
+      "started": "2027-03-08T10:41:00.001000",
+      "ended": "2027-03-08T10:41:00.002000",
+      "steps": [
+        {
+          "t": "2027-03-08T10:41:00.001000",
+          "kind": "llm",
+          "text": "Extracted 1 incident(s): unconfirmed",
+          "data": {
+            "model": "gemini-3.8-flash",
+            "input_tokens": 749,
+            "output_tokens": 195,
+            "cached": true
+          }
+        },
+        {
+          "t": "2027-03-08T10:41:00.001000",
+          "kind": "gate",
+          "text": "E-13#1: unconfirmed NOT actionable (confidence 0.95); no confirmed shipment, lot, plant or dates",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T10:41:00.002000",
+          "kind": "rehearse",
+          "text": "Rehearsed 1 actions on the twin: 1 ok, 0 failed. Invariants: ok",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T10:41:00.002000",
+          "kind": "execute",
+          "text": "Executed 1 calls via twin: 1 ok, 0 failed (0 writes, 0 verification reads)",
+          "data": null
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "seq": 1,
+      "incident_id": "E-13#1",
+      "agent": "coordinator",
+      "tool": "escalate",
+      "args": {
+        "reason": "E-13#1 (unconfirmed, source: ops chat): \"Someone on the floor mentioned a possible shortage of something electronic sometime soon. Not confirmed by anyone.\". Not actionable: no confirmed shipment, lot, plant or dates. Please confirm: which lot or shipment, which plant, and the dates. No operational action taken."
+      },
+      "justification": "Rule 8: unconfirmed or unclear -> escalate, no operational action for that part",
+      "path_ids": [],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    }
+  ],
+  "world_diff": {
+    "moved_pos": [],
+    "notified_dealers": [],
+    "loaners": [],
+    "held_lots": [],
+    "stopped_vins": [],
+    "contacted_customers": []
+  },
+  "counterfactual": null,
+  "llm": {
+    "calls": [
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "extract",
+        "input_tokens": 749,
+        "output_tokens": 195,
+        "cost_usd": 0.0,
+        "cached": true
+      }
+    ],
+    "total_cost_usd": 0.0
+  },
+  "summary": "Part of the message was not actionable and was escalated to a human.",
+  "decision_reason": "Acted on every confirmed incident: ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, live baseline matched before the first write. The unclear part was escalated without operational change (rule 8)."
+}

@@ -12,7 +12,7 @@ import uuid
 from collections.abc import Iterable
 
 from control_tower.data.loader import DATA_DIR, KIT_DIR
-from control_tower.schemas.action import WRITE_TOOLS, Action, Rehearsal
+from control_tower.schemas.action import WRITE_TOOLS, Action, Rehearsal, ToolResult
 
 
 def _enterprise_module():
@@ -38,6 +38,13 @@ class Twin:
             except self._tool_error as e:
                 results.append(Rehearsal(ok=False, error=str(e)))
         return results
+
+    def execute(self, key: str, tool: str, args: dict) -> ToolResult:
+        """One call in the world named `key` (used by the dry-run executor; the server has its own worlds)."""
+        try:
+            return ToolResult(ok=True, response=self._ent.call(key, tool, args))
+        except self._tool_error as e:
+            return ToolResult(ok=False, error=str(e))
 
     def state(self, key: str):
         return self._ent.state(key)

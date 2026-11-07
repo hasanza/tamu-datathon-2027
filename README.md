@@ -14,7 +14,27 @@ rehearse every corrective action on a digital twin, and execute it through MCP t
 | `docs/` | `SPEC.md` (what), `PLAN.md` (how), `WORKPLAN.md` (who/when), `ONBOARDING.md` (how we work), `BRAND.md`, `CONCEPTS.md`, `contracts.md` |
 | `traces/examples/` | Hand-written example traces the UI is built against |
 
-## Run
+## Run the pipeline
+
+```bash
+# 1. a fresh enterprise server (the world restarts empty each time it starts)
+uv run python hack_the_highway/enterprise_server.py --data hack_the_highway/data \
+  --events hack_the_highway/data/events.json --out runs/dev --port 8000 --overwrite
+# 2. all 15 events (needs GEMINI_API_KEY in .env, or replay from the cache as below)
+uv run python -m control_tower.run --all --out runs/dev
+# 3. grade the server's log on a fresh copy of the world against an independent oracle
+uv run python eval/replay_grader.py runs/dev/action_log.jsonl --traces traces/dev
+```
+
+No server and no API key: replay the whole run from the committed LLM cache, with the in-process twin as the enterprise:
+
+```bash
+LLM_CACHE_DIR=cache/snapshot LLM_REPLAY_ONLY=1 uv run python -m control_tower.run --all --dry-run --out runs/dev
+```
+
+Real traces of the current pipeline are in `traces/snapshot/`.
+
+## Setup
 
 ```bash
 uv sync

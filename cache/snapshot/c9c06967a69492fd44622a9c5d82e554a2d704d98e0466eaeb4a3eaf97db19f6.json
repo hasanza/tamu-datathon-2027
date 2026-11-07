@@ -1,0 +1,41 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "extract",
+  "latency_s": 6.066,
+  "parsed": {
+    "incidents": [
+      {
+        "category": "plant_outage",
+        "evidence": "a software outage on the line. We're dark from next Tuesday through next Thursday",
+        "plant": "Kentucky plant",
+        "part": null,
+        "supplier": null,
+        "shipment_id": null,
+        "lot_id": null,
+        "original_eta": null,
+        "new_eta": null,
+        "outage_start": {
+          "text": "next Tuesday",
+          "iso": "2027-03-16"
+        },
+        "outage_end": {
+          "text": "next Thursday",
+          "iso": "2027-03-18"
+        },
+        "build_window_start": null,
+        "build_window_end": null,
+        "reason": "The message reports a line stoppage at the Kentucky plant caused by a software outage with specified start and end dates.",
+        "confidence": 0.98
+      }
+    ]
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "extract",
+    "input_tokens": 761,
+    "output_tokens": 165,
+    "cost_usd": 0.0
+  }
+}

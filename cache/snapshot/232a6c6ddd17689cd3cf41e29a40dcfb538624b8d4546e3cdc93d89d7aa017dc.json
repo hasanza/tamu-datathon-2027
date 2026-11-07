@@ -1,0 +1,41 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "extract",
+  "latency_s": 5.606,
+  "parsed": {
+    "incidents": [
+      {
+        "category": "quality_hold",
+        "evidence": "Kestrel says the infotainment chip sent to Jackson had a faulty weld. Anything built Thursday Feb 25 through last Monday is suspect.",
+        "plant": "Jackson",
+        "part": "infotainment chip",
+        "supplier": "Kestrel",
+        "shipment_id": null,
+        "lot_id": null,
+        "original_eta": null,
+        "new_eta": null,
+        "outage_start": null,
+        "outage_end": null,
+        "build_window_start": {
+          "text": "Thursday Feb 25",
+          "iso": "2027-02-25"
+        },
+        "build_window_end": {
+          "text": "last Monday",
+          "iso": "2027-03-01"
+        },
+        "reason": "A supplier identified defective infotainment chips affecting vehicles built during a specific date window at the Jackson plant.",
+        "confidence": 0.98
+      }
+    ]
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "extract",
+    "input_tokens": 760,
+    "output_tokens": 177,
+    "cost_usd": 0.0
+  }
+}

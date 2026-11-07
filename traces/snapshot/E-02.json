@@ -1,0 +1,154 @@
+{
+  "pipeline_version": "0.1.0",
+  "event_id": "E-02",
+  "received_at": "2027-03-08T07:34:00",
+  "source": "ops chat",
+  "text": "Rumor from a supplier rep: something may be off with a seat material coming up. No dates, no details, nothing confirmed.",
+  "status": "escalated",
+  "classification": {
+    "category": "unconfirmed",
+    "confidence": 0.95,
+    "reason": "The report is explicitly described as an unconfirmed rumor with no specific dates, plant, or shipment details."
+  },
+  "incidents": [
+    {
+      "incident_id": "E-02#1",
+      "event_id": "E-02",
+      "category": "unconfirmed",
+      "confidence": 0.95,
+      "plant_id": null,
+      "part_id": null,
+      "supplier_id": null,
+      "shipment_id": null,
+      "lot_id": null,
+      "orig_eta": null,
+      "new_eta": null,
+      "outage_start": null,
+      "outage_end": null,
+      "build_window_start": null,
+      "build_window_end": null,
+      "raw_mentions": {
+        "part": "seat material"
+      },
+      "resolution_steps": [
+        {
+          "mention": "seat material",
+          "entity_type": "part",
+          "candidates": [],
+          "chosen": null,
+          "method": "unresolved",
+          "note": null
+        }
+      ],
+      "ambiguities": [
+        {
+          "field": "part_id",
+          "issue": "cannot resolve 'seat material'",
+          "options": [],
+          "blocking": true
+        },
+        {
+          "field": "part_id",
+          "issue": "named only vaguely; not a specific record",
+          "options": [],
+          "blocking": true
+        },
+        {
+          "field": "specificity",
+          "issue": "no confirmed shipment, lot, plant or dates",
+          "options": [],
+          "blocking": true
+        }
+      ],
+      "reason": "The report is explicitly described as an unconfirmed rumor with no specific dates, plant, or shipment details."
+    }
+  ],
+  "paths": {},
+  "agents": [
+    {
+      "agent": "coordinator",
+      "started": "2027-03-08T07:34:00.001000",
+      "ended": "2027-03-08T07:34:00.004000",
+      "steps": [
+        {
+          "t": "2027-03-08T07:34:00.001000",
+          "kind": "llm",
+          "text": "Extracted 1 incident(s): unconfirmed",
+          "data": {
+            "model": "gemini-3.8-flash",
+            "input_tokens": 757,
+            "output_tokens": 200,
+            "cached": true
+          }
+        },
+        {
+          "t": "2027-03-08T07:34:00.004000",
+          "kind": "gate",
+          "text": "E-02#1: unconfirmed NOT actionable (confidence 0.95); cannot resolve 'seat material'; named only vaguely; not a specific record; no confirmed shipment, lot, plant or dates",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:34:00.004000",
+          "kind": "rehearse",
+          "text": "Rehearsed 1 actions on the twin: 1 ok, 0 failed. Invariants: ok",
+          "data": null
+        },
+        {
+          "t": "2027-03-08T07:34:00.004000",
+          "kind": "execute",
+          "text": "Executed 1 calls via twin: 1 ok, 0 failed (0 writes, 0 verification reads)",
+          "data": null
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "seq": 1,
+      "incident_id": "E-02#1",
+      "agent": "coordinator",
+      "tool": "escalate",
+      "args": {
+        "reason": "E-02#1 (unconfirmed, source: ops chat): \"Rumor from a supplier rep: something may be off with a seat material coming up. No dates, no details, nothing confirmed.\". Not actionable: cannot resolve 'seat material'; named only vaguely; not a specific record; no confirmed shipment, lot, plant or dates. Please confirm: which part; which lot or shipment, which plant, and the dates. No operational action taken."
+      },
+      "justification": "Rule 8: unconfirmed or unclear -> escalate, no operational action for that part",
+      "path_ids": [],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        }
+      }
+    }
+  ],
+  "world_diff": {
+    "moved_pos": [],
+    "notified_dealers": [],
+    "loaners": [],
+    "held_lots": [],
+    "stopped_vins": [],
+    "contacted_customers": []
+  },
+  "counterfactual": null,
+  "llm": {
+    "calls": [
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "extract",
+        "input_tokens": 757,
+        "output_tokens": 200,
+        "cost_usd": 0.0,
+        "cached": true
+      }
+    ],
+    "total_cost_usd": 0.0
+  },
+  "summary": "Part of the message was not actionable and was escalated to a human.",
+  "decision_reason": "Acted on every confirmed incident: ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, live baseline matched before the first write. The unclear part was escalated without operational change (rule 8)."
+}

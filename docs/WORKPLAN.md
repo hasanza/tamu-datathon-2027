@@ -37,6 +37,12 @@ Ownership is enforced three ways: `.claude/rules/ownership.md` (path → owner, 
 
 See `ONBOARDING.md` for machine setup, assistant identity, git conventions and definition of done.
 
+## 0.0 Status (updated 2026-11-07 night)
+
+CORE has the whole pipeline working end to end: 15/15 events on the live organizers' server, 797 calls, 0 failed, independent grader 15/15 clean
+(`eval/replay_grader.py`). Remaining CORE work: auditor + LLM summaries (4.1, 4.2), paraphrase bench (4.4), policy decisions (SPEC §7 A2), UI shell (0.4),
+the final run (5.4). GLASS: everything UI/API/docs; real traces are in `traces/snapshot/`.
+
 ## 0.1 Standing answers (so nobody has to ask twice)
 
 - **Failed read calls**: the server logs any failing call as `ok:false`, read or write. We treat every failed call as counted
@@ -102,12 +108,12 @@ Deps use task ids. Hours are elapsed hackathon time.
 
 | ID | Owner | Task | Acceptance | Sens | AI | Deps |
 |---|---|---|---|---|---|---|
-| 2.1 | CORE | Resolver: aliases → names → rapidfuzz → candidates; relative-date rules (anchor Mon 2027-03-08, "next X" = next week's X, "last X" = previous week's X); data snapping (ETA Mondays, lot windows, plant/model compat); confidence formula | tests on all 15 event texts' mentions | C | heavy | 1.2 |
-| 2.2 | CORE | Extraction via `llm/adapter.py` (Gemini Flash-class model; Haiku 5.5 if an Anthropic key exists) structured output → `IncidentSpec[]` with raw mentions + proposed dates; prompt includes alias table + rules summary (cached prefix); fixture cache keyed by text hash (`--replay-llm`) | 15/15 categories correct; dates agree with resolver | C | heavy | 0.1, 2.1 |
+| 2.1 ✅ `core/2.1-2.2-understanding` | CORE | Resolver: aliases → names → rapidfuzz → candidates; relative-date rules (anchor Mon 2027-03-08, "next X" = next week's X, "last X" = previous week's X); data snapping (ETA Mondays, lot windows, plant/model compat); confidence formula | tests on all 15 event texts' mentions | C | heavy | 1.2 |
+| 2.2 ✅ `core/2.1-2.2-understanding` | CORE | Extraction via `llm/adapter.py` (Gemini Flash-class model; Haiku 5.5 if an Anthropic key exists) structured output → `IncidentSpec[]` with raw mentions + proposed dates; prompt includes alias table + rules summary (cached prefix); fixture cache keyed by text hash (`--replay-llm`) | 15/15 categories correct; dates agree with resolver | C | heavy | 0.1, 2.1 |
 | 2.3 ✅ planner logic (tests green; wired by 3.1) | CORE | Supply Chain planner: affected POs → earliest feasible slot (SPEC §5, A1/A2 config flags) → reschedule/transfer actions with paths | E-11 yields 6 reschedules + 3 transfers; rehearsal passes | C | heavy | 1.3, 1.4 |
 | 2.4 ✅ planner logic (tests green; wired by 3.1) | CORE | Dealer & Care planner: one notify per dealer, loaner priority within pool, templated messages | E-04 assigns exactly pool-limited loaners in priority order | C | heavy | 2.3 |
 | 2.5 ✅ planner logic (tests green; wired by 3.1) | CORE | Quality planner: lot match, vehicle split, hold/stop_sale/notify_customer | E-03: 1 + 37 + 150 actions; rehearsal passes | C | light | 1.3 |
-| 2.6 | CORE | Oracle (`eval/oracle.py`): expected action set per incident straight from rules, independent code path from planners where possible | oracle == planner on 10 incidents | H | light | 2.3–2.5 |
+| 2.6 ✅ `core/2.1-2.2-understanding` | CORE | Oracle (`eval/oracle.py`): expected action set per incident straight from rules, independent code path from planners where possible | oracle == planner on 10 incidents | H | light | 2.3–2.5 |
 | 2.7 | GLASS | Graph Path view: React Flow + ELK layout, typed node styles, collapsed group nodes ("110 vehicles · 37 dealers", expandable), path highlight on hover of an action | 3 example traces render clearly; 260-vehicle case stays readable | M | heavy | 1.7 |
 | 2.8 | GLASS | Agents Timeline: swimlanes per agent, steps with kind icons (llm/graph/plan/rehearse/execute), click → detail drawer with raw data | — | M | heavy | 1.7 |
 | 2.9 | GLASS | Actions & Audit tabs: actions table (tool, args, rehearsal ✔, result ✔/✖, justification, path link); world-diff before/after cards | — | M | heavy | 1.7 |
@@ -117,9 +123,9 @@ Deps use task ids. Hours are elapsed hackathon time.
 
 | ID | Owner | Task | Acceptance | Sens | AI | Deps |
 |---|---|---|---|---|---|---|
-| 3.1 | CORE | Coordinator: ingest → extract → resolve → gate (noise/unconfirmed/confidence) → dispatch → shared WorldState → rehearse → execute via MCP client → trace writer; emits SSE pipe events | one event runs end-to-end with a real server | C | heavy | 2.2–2.5, 1.5 |
-| 3.2 | CORE | Full 15-event run on a fresh server; inspect `action_log.jsonl`: zero `ok:false`, compound consistent | `grep '"ok": false' == 0` | C | light | 3.1 |
-| 3.3 | CORE | Replay grader: replay log on a fresh twin, diff final state vs oracle; report table | all 15 green or explained | H | light | 2.6, 3.2 |
+| 3.1 ✅ `core/2.1-2.2-understanding` | CORE | Coordinator: ingest → extract → resolve → gate (noise/unconfirmed/confidence) → dispatch → shared WorldState → rehearse → execute via MCP client → trace writer; emits SSE pipe events | one event runs end-to-end with a real server | C | heavy | 2.2–2.5, 1.5 |
+| 3.2 ✅ `core/2.1-2.2-understanding` | CORE | Full 15-event run on a fresh server; inspect `action_log.jsonl`: zero `ok:false`, compound consistent | `grep '"ok": false' == 0` | C | light | 3.1 |
+| 3.3 ✅ `core/2.1-2.2-understanding` | CORE | Replay grader: replay log on a fresh twin, diff final state vs oracle; report table | all 15 green or explained | H | light | 2.6, 3.2 |
 | 3.4 | GLASS | Wire UI to live API: "Run feed" button → `POST /api/run?all=1`; SSE drives feed animation, agent steps, action rows in real time | live demo of 15 events arriving one by one | M | heavy | 1.6, 3.1 |
 | 3.5 | GLASS | Escalation inbox (right rail): escalated events with reason, "what would make this actionable", acknowledge button (UI-only) | — | L | light | 1.7 |
 | 3.6 | GLASS | KPI header: events processed, actions, failed calls, escalations, LLM cost, models used | — | L | light | 1.6 |
