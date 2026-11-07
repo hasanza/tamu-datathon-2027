@@ -26,16 +26,25 @@ Ownership is enforced three ways: `.claude/rules/ownership.md` (path → owner, 
 6. **Both do the trace audit** (task 4.7): read every event's trace against the handbook rules, and also step through one
    event by hand (server + curl + the twin) so each of you can explain the whole flow to the judges.
 
-### Path ownership (`.claude/rules/ownership.md`)
+### Path ownership (mirror of `.claude/rules/ownership.md`, which wins on any conflict)
 
 | Owner | Paths |
 |---|---|
-| CORE | `src/control_tower/{data,graph,understanding,agents,world,schemas}/`, `src/control_tower/run.py`, `eval/oracle.py`, `eval/replay_grader.py`, `eval/paraphrase_bench.py`, `tests/unit/`, `CLAUDE.md`, `.claude/`, `docs/SPEC.md`, `docs/PLAN.md`, `docs/contracts.md` |
-| GLASS | `ui/`, `api/`, `src/control_tower/mcp/`, `eval/reports/`, `docs/BRAND.md`, `docs/design_card.md`, `docs/server-notes.md`, `README.md`, `media/` |
+| CORE | `src/control_tower/**` except `mcp/`, `eval/oracle.py`, `eval/replay_grader.py`, `eval/paraphrase_bench.py`, `tests/**` except `tests/glass/`, `scripts/`, `CLAUDE.md`, `.claude/`, `docs/SPEC.md`, `docs/PLAN.md`, `docs/contracts.md`, `pyproject.toml` |
+| GLASS | `ui/`, `api/`, `src/control_tower/mcp/`, `tests/glass/`, `eval/reports/`, `docs/BRAND.md`, `docs/design_card.md`, `docs/server-notes.md`, `README.md`, `media/` |
 | shared (sync only) | `.mcp.json`, `traces/examples/`, `docs/WORKPLAN.md`, `docs/ONBOARDING.md`, `.gitignore` |
 | nobody | `hack_the_highway/**` (organizers' kit, hash-checked by a test), `.env` |
 
 See `ONBOARDING.md` for machine setup, assistant identity, git conventions and definition of done.
+
+## 0.1 Standing answers (so nobody has to ask twice)
+
+- **Failed read calls**: the server logs any failing call as `ok:false`, read or write. We treat every failed call as counted
+  against efficiency, whatever the grader does. The twin rehearsal validates arguments before any call, so reads never fail either.
+- **`.mcp.json` shows "failed"** until task 1.5 lands. Expected.
+- **Example traces are fixtures**, not ground truth: `E-12.json` is deliberately truncated (4 of 14 dealers, says so in its summary).
+  The UI always treats `trace.actions` as the complete list; real traces replace the fixtures at task 3.2.
+- **Final run artifacts** live in `runs/final/` (action log, models.json) and `traces/final/` (traces); both are tracked.
 
 ## 1. Frozen contracts (CORE writes by H1)
 
@@ -45,7 +54,7 @@ IncidentSpec  {incident_id, event_id, category, confidence, plant_id?, part_id?,
                raw_mentions{...}, resolution_steps[{mention, candidates[], chosen, method}], ambiguities[], reason}
 Action        {seq, incident_id, agent, tool, args, justification, path_ids[], rehearsal:{ok, error?}, result?:{ok, error?, response?}}
 GraphPath     {nodes[{id,type,label}], edges[{from,to,type}]}
-Trace         {event_id, received_at, source, text, status: processing|done|escalated|noise,
+Trace         {event_id, received_at, source, text, status: queued|processing|done|escalated|noise|failed,
                classification{category, confidence, reason}, incidents[IncidentSpec], paths{incident_id: GraphPath[]},
                agents[{agent, started, ended, steps[{t, kind, text, data?}]}], actions[Action],
                world_diff{moved_pos[], notified_dealers[], loaners[], held_lots[], stopped_vins[], contacted_customers[]},

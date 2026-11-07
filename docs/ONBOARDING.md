@@ -98,7 +98,7 @@ then show me the diff summary and the commit message before committing.
 
 | Topic | Decision |
 |---|---|
-| Secrets | Only CORE's machine holds `GEMINI_API_KEY`. GLASS runs the UI from `traces/examples/` and later from traces CORE commits to a `traces-final/` folder for the demo. |
+| Secrets | Only CORE's machine holds `GEMINI_API_KEY`. GLASS runs the UI from `traces/examples/` and later from the traces CORE commits to `traces/final/` for the demo. |
 | LLM cache | Extractions cached by text hash in `cache/llm/*.json` (gitignored except the final run's cache, committed so the demo can run with `--replay-llm` and no network). |
 | Demo machine | CORE's laptop runs server + API + UI; GLASS's laptop is the fallback with the committed cache. Both rehearse 5.6. |
 | Determinism | Planner config (A1–A3 in SPEC §7) lives in one `policy.toml`; the final run's config is committed and cited in the design card. |
