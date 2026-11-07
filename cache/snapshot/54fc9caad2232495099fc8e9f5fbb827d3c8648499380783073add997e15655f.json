@@ -1,0 +1,19 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "audit",
+  "latency_s": 6.254,
+  "parsed": {
+    "agree": true,
+    "concerns": [],
+    "summary": "The quality hold incident, affected dates, and corrective actions faithfully reflect the alert regarding the heavy-duty wiring harness contamination at the Texas plant."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "audit",
+    "input_tokens": 1161,
+    "output_tokens": 696,
+    "cost_usd": 0.003481
+  }
+}

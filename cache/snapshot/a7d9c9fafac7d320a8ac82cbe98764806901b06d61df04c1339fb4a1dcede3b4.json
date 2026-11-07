@@ -1,0 +1,19 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "purpose": "audit",
+  "latency_s": 5.091,
+  "parsed": {
+    "agree": true,
+    "concerns": [],
+    "summary": "The plant outage at Jackson (P_MS) from 2027-03-26 through 2027-03-30 is correctly interpreted, and all affected production orders, dealer notifications, and loaner assignments follow policy."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "purpose": "audit",
+    "input_tokens": 1427,
+    "output_tokens": 604,
+    "cost_usd": 0.003335
+  }
+}

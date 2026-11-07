@@ -45,7 +45,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--dry-run", action="store_true", help="use the in-process twin instead of the server")
     ap.add_argument("--provider")
     ap.add_argument("--model")
-    ap.add_argument("--transfer-min-day", choices=["today", "disruption_end"], default="today")
+    ap.add_argument("--audit-model", help="model for the auditor (default: same as --model / provider default)")
+    ap.add_argument("--no-audit", action="store_true")
+    ap.add_argument("--no-explain", action="store_true")
+    ap.add_argument("--transfer-min-day", choices=["today", "disruption_end"], default="disruption_end")
     a = ap.parse_args(argv)
     if not (a.all or a.event):
         ap.error("pass --all or --event E-xx")
@@ -65,7 +68,7 @@ def main(argv: list[str] | None = None) -> int:
     wanted = [e for e in events if a.all or e["event_id"] in set(a.event)]
     coord = Coordinator(
         world, graph, index, twin, executor, traces_dir=traces_dir, sink=sink,
-        policy=Policy(transfer_min_day=a.transfer_min_day), provider=a.provider, model=a.model, use_tiebreak=True,
+        policy=Policy(transfer_min_day=a.transfer_min_day), provider=a.provider, model=a.model, use_tiebreak=True, use_audit=not a.no_audit, use_explain=not a.no_explain, audit_model=a.audit_model,
     )  # fmt: skip
 
     print(f"{len(wanted)} event(s) -> {executor.name}; traces in {traces_dir.relative_to(REPO_ROOT)}")

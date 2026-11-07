@@ -2,7 +2,7 @@
   "provider": "gemini",
   "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 1.394,
+  "latency_s": 1.242,
   "parsed": {
     "incidents": [
       {
@@ -10,7 +10,7 @@
         "evidence": "Our shipment SH-0182 of CAM-360 (surround-view camera kit) for Wacky Wheels Princeton (P_IN) was due 2027-03-15 and will now arrive 2027-03-18.",
         "plant": "Wacky Wheels Princeton (P_IN)",
         "part": "CAM-360 (surround-view camera kit)",
-        "supplier": "orbit.example",
+        "supplier": null,
         "shipment_id": "SH-0182",
         "lot_id": null,
         "original_eta": {
@@ -25,7 +25,7 @@
         "outage_end": null,
         "build_window_start": null,
         "build_window_end": null,
-        "reason": "The supplier states that an inbound shipment is arriving later than the originally scheduled due date.",
+        "reason": "An inbound shipment is arriving later than its original due date due to port congestion.",
         "confidence": 1.0
       }
     ]
@@ -35,7 +35,7 @@
     "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 815,
-    "output_tokens": 327,
-    "cost_usd": 0.001062
+    "output_tokens": 325,
+    "cost_usd": 0.001057
   }
 }

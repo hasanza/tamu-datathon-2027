@@ -33,12 +33,20 @@ DEFAULT_MODELS = {
     "gemini": os.environ.get("GEMINI_MODEL") or "gemini-3.5-flash-lite",
     "anthropic": os.environ.get("ANTHROPIC_MODEL") or "claude-haiku-5-5",
 }
+# The independent verifier is a different, stronger model than the high-volume workhorse (docs/PLAN.md, auditor bench).
+AUDIT_MODELS = {"gemini": "gemini-3.8-flash", "anthropic": "claude-sonnet-5-5"}
+
+
+def default_provider() -> str:
+    return os.environ.get("LLM_PROVIDER", "gemini")
+
+
 # USD per 1M tokens (input, output). A model without a price records cost 0.0 and exact token counts.
 PRICES: dict[str, tuple[float, float] | None] = {
     "claude-haiku-5-5": (0.10, 0.50),
     "claude-sonnet-5-5": (2.00, 10.00),
     "gemini-3.5-flash-lite": (0.30, 2.50),  # ai.google.dev/gemini-api/docs/pricing; output includes thinking tokens
-    "gemini-3.8-flash": None,  # price not recorded: used only as reference/paraphrase writer in evals
+    "gemini-3.8-flash": (0.75, 3.75),  # introductory price through 2026-12-31 (1.50/7.50 from 2027-01-01)
 }
 
 

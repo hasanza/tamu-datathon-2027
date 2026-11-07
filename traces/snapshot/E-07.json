@@ -8,7 +8,7 @@
   "classification": {
     "category": "noise",
     "confidence": 1.0,
-    "reason": "This is a brochure request which is unrelated to plant operations or supply chain incidents."
+    "reason": "This is a request for a brochure and has nothing to do with operations."
   },
   "incidents": [
     {
@@ -30,31 +30,31 @@
       "raw_mentions": {},
       "resolution_steps": [],
       "ambiguities": [],
-      "reason": "This is a brochure request which is unrelated to plant operations or supply chain incidents."
+      "reason": "This is a request for a brochure and has nothing to do with operations."
     }
   ],
   "paths": {},
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T08:59:01.020000",
-      "ended": "2027-03-08T08:59:01.020000",
+      "started": "2027-03-08T08:59:00.767000",
+      "ended": "2027-03-08T08:59:00.768000",
       "steps": [
         {
-          "t": "2027-03-08T08:59:01.020000",
+          "t": "2027-03-08T08:59:00.767000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): noise",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 743,
-            "output_tokens": 175,
+            "output_tokens": 52,
             "cached": false
           }
         },
         {
-          "t": "2027-03-08T08:59:01.020000",
+          "t": "2027-03-08T08:59:00.768000",
           "kind": "gate",
-          "text": "Noise -> no write tools, no escalation (rule 7). This is a brochure request which is unrelated to plant operations or supply chain incidents.",
+          "text": "Noise -> no write tools, no escalation (rule 7). This is a request for a brochure and has nothing to do with operations.",
           "data": null
         }
       ]
@@ -77,13 +77,22 @@
         "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 743,
-        "output_tokens": 175,
-        "cost_usd": 0.00066,
+        "output_tokens": 52,
+        "cost_usd": 0.000353,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "summarize",
+        "input_tokens": 273,
+        "output_tokens": 85,
+        "cost_usd": 0.000294,
         "cached": false
       }
     ],
-    "total_cost_usd": 0.00066
+    "total_cost_usd": 0.000647
   },
-  "summary": "Not an operational event. This is a brochure request which is unrelated to plant operations or supply chain incidents.",
+  "summary": "Dealer Pensacola, FL asks where to find the new brochure PDF. This is a request for a brochure and has nothing to do with operations.",
   "decision_reason": "No action: the message names no shipment, plant, part, lot or date and describes no disruption to production, dealers, loaners or owners (rule 7: noise gets no write tools)."
 }

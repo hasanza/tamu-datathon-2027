@@ -8,7 +8,7 @@
   "classification": {
     "category": "unconfirmed",
     "confidence": 0.95,
-    "reason": "The message reports a vague and unconfirmed possibility of a shortage without specific parts, shipments, or dates."
+    "reason": "The message reports a vague and unconfirmed potential shortage without specific parts, shipments, or dates."
   },
   "incidents": [
     {
@@ -37,41 +37,41 @@
           "blocking": true
         }
       ],
-      "reason": "The message reports a vague and unconfirmed possibility of a shortage without specific parts, shipments, or dates."
+      "reason": "The message reports a vague and unconfirmed potential shortage without specific parts, shipments, or dates."
     }
   ],
   "paths": {},
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T10:41:01.081000",
-      "ended": "2027-03-08T10:41:01.085000",
+      "started": "2027-03-08T10:41:01.124000",
+      "ended": "2027-03-08T10:41:01.128000",
       "steps": [
         {
-          "t": "2027-03-08T10:41:01.081000",
+          "t": "2027-03-08T10:41:01.124000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): unconfirmed",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 749,
-            "output_tokens": 190,
+            "output_tokens": 188,
             "cached": false
           }
         },
         {
-          "t": "2027-03-08T10:41:01.082000",
+          "t": "2027-03-08T10:41:01.124000",
           "kind": "gate",
           "text": "E-13#1: unconfirmed NOT actionable (confidence 0.95); no confirmed shipment, lot, plant or dates",
           "data": null
         },
         {
-          "t": "2027-03-08T10:41:01.084000",
+          "t": "2027-03-08T10:41:01.127000",
           "kind": "rehearse",
           "text": "Rehearsed 1 actions on the twin: 1 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T10:41:01.085000",
+          "t": "2027-03-08T10:41:01.128000",
           "kind": "execute",
           "text": "Executed 1 calls via twin: 1 ok, 0 failed (0 writes, 0 verification reads)",
           "data": null
@@ -119,13 +119,22 @@
         "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 749,
-        "output_tokens": 190,
-        "cost_usd": 0.0007,
+        "output_tokens": 188,
+        "cost_usd": 0.000695,
+        "cached": false
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "purpose": "summarize",
+        "input_tokens": 279,
+        "output_tokens": 62,
+        "cost_usd": 0.000239,
         "cached": false
       }
     ],
-    "total_cost_usd": 0.0007
+    "total_cost_usd": 0.000934
   },
-  "summary": "Part of the message was not actionable and was escalated to a human.",
-  "decision_reason": "Acted on every confirmed incident: ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, live baseline matched before the first write. The unclear part was escalated without operational change (rule 8)."
+  "summary": "An unconfirmed report regarding a possible shortage of something electronic sometime soon was received from the floor. The message was not actionable and was escalated to a human.",
+  "decision_reason": "The unclear part was escalated without operational change according to rule 8."
 }
