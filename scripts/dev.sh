@@ -10,7 +10,7 @@ for port in 8001 5173; do
   fi
 done
 [ -d ui/node_modules ] || (cd ui && npm install)
-export TRACES_DIR="${TRACES_DIR:-traces/snapshot}" RUN_DIR="${RUN_DIR:-runs/dev}"
+export TRACES_DIR="${TRACES_DIR:-traces/snapshot}" RUN_DIR="${RUN_DIR:-traces/snapshot}"
 uv run uvicorn api.app:app --host 127.0.0.1 --port 8001 &
 API=$!
 trap 'kill $API 2>/dev/null; pkill -P $API 2>/dev/null' EXIT INT TERM
