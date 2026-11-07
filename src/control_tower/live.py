@@ -34,8 +34,14 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=["server", "dry"], default="dry")
     ap.add_argument("--event", action="append", default=[])
+    ap.add_argument("--custom", help="JSON file with ONE judge-supplied event: sandbox run on the twin only")
     ap.add_argument("--pace", type=float, default=1.0)
     a = ap.parse_args(argv)
+    if (
+        a.custom
+    ):  # sandbox: twin world, own run/trace dirs (runs/custom, traces/custom); never touches runs/live or the server
+        (REPO_ROOT / "runs" / "custom").mkdir(parents=True, exist_ok=True)
+        return run.main(["--all", "--dry-run", "--out", "runs/custom", "--events-file", a.custom])
     shutil.rmtree(REPO_ROOT / "traces" / "live", ignore_errors=True)
     (REPO_ROOT / OUT).mkdir(parents=True, exist_ok=True)
     args = ["--out", OUT, "--pace", str(a.pace)]
