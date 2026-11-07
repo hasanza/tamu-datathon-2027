@@ -70,6 +70,23 @@ export function useLiveStream() {
     let closed = false;
     let opened = false;
 
+    // A run emits ~50 messages a second. Invalidating per message cancels the read in flight and starts another, so no
+    // read ever completes and the screen stays stale until the 15 s poll. Collect keys and flush them once per tick;
+    // never cancel a read that is already running (the next tick picks up anything newer).
+    const pending = new Map<string, readonly unknown[]>();
+    let flushTimer: number | undefined;
+    const flush = () => {
+      window.clearTimeout(flushTimer);
+      flushTimer = undefined;
+      for (const key of pending.values()) void qc.invalidateQueries({ queryKey: key }, { cancelRefetch: false });
+      pending.clear();
+    };
+    const refresh = (key: readonly unknown[], now = false) => {
+      pending.set(JSON.stringify(key), key);
+      if (now) flush();
+      else if (flushTimer === undefined) flushTimer = window.setTimeout(flush, 400);
+    };
+
     const connect = () => {
       // A replay stream starts from line 1 on every (re)connect: start the log empty so history is never appended twice.
       if (replay) setItems([]);
@@ -116,18 +133,21 @@ export function useLiveStream() {
               else n.add(eventId);
               return n;
             });
-            const refresh = () => {
-              void qc.invalidateQueries({ queryKey: ["trace", eventId] });
-              void qc.invalidateQueries({ queryKey: ["graph", eventId] });
-              void qc.invalidateQueries({ queryKey: ["actions", eventId] });
-            };
-            if (type === "event_done") {
-              // A fetch started before the trace was written may still be in flight (and end in a 404): drop it, then re-read.
-              void qc.cancelQueries({ queryKey: ["trace", eventId] }).then(refresh);
-            } else refresh();
+            const done = type === "event_done";
+            const keys = [["trace", eventId], ["graph", eventId], ["actions", eventId]] as const;
+            if (done) {
+              // A trace read started before the trace was written may still be in flight (and end in a 404): drop it, then re-read.
+              void qc.cancelQueries({ queryKey: ["trace", eventId] }).then(() => {
+                for (const k of keys) refresh(k, false);
+                refresh(["events"], true);
+                refresh(["kpis"], true);
+              });
+              return;
+            }
+            for (const k of keys) refresh(k);
           }
-          void qc.invalidateQueries({ queryKey: ["events"] });
-          void qc.invalidateQueries({ queryKey: ["kpis"] });
+          refresh(["events"]);
+          refresh(["kpis"]);
         });
       }
     };
@@ -135,6 +155,7 @@ export function useLiveStream() {
     return () => {
       closed = true;
       window.clearTimeout(timer);
+      window.clearTimeout(flushTimer);
       es?.close();
     };
   }, [qc, replay]);
