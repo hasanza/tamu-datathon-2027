@@ -2,7 +2,7 @@
 
 Source of truth: `src/control_tower/schemas/` (Pydantic v2). JSON Schema exports for the UI: `docs/schemas/*.schema.json`
 (regenerate with `uv run python scripts/export_schemas.py`). Fixtures: `traces/examples/E-12.json` (supplier delay, done),
-`traces/examples/E-05.json` (noise), `traces/examples/E-02.json` (unconfirmed → escalated). `tests/unit/test_contracts.py` keeps them valid.
+`traces/examples/E-05.json` (noise), `traces/examples/E-02.json` (unconfirmed → escalated). `tests/unit/test_contracts.py` keeps them valid. Fixtures are illustrative: `E-12.json` is truncated to 4 of 14 dealers; the UI must still treat `actions` as the complete list for any trace.
 
 ## Objects
 
