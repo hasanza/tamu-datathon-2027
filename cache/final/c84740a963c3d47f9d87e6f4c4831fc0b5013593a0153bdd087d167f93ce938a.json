@@ -2,7 +2,7 @@
   "provider": "gemini",
   "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 0.922,
+  "latency_s": 1.13,
   "parsed": {
     "incidents": [
       {
@@ -19,8 +19,8 @@
         "outage_end": null,
         "build_window_start": null,
         "build_window_end": null,
-        "reason": "The message discusses an unconfirmed possible shortage without specific shipment, lot, plant, or dates.",
-        "confidence": 0.9
+        "reason": "The message describes a vague and explicitly unconfirmed rumor without specific details.",
+        "confidence": 1.0
       }
     ]
   },
@@ -29,7 +29,7 @@
     "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 749,
-    "output_tokens": 126,
-    "cost_usd": 0.00054
+    "output_tokens": 138,
+    "cost_usd": 0.00057
   }
 }

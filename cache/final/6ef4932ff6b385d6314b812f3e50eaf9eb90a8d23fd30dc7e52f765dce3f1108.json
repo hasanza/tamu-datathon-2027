@@ -2,7 +2,7 @@
   "provider": "gemini",
   "model": "gemini-3.5-flash-lite",
   "purpose": "extract",
-  "latency_s": 0.918,
+  "latency_s": 1.31,
   "parsed": {
     "incidents": [
       {
@@ -25,7 +25,7 @@
           "text": "last Monday",
           "iso": "2027-03-01"
         },
-        "reason": "A specific part lot sent to a plant has a defect and a suspect build window.",
+        "reason": "This is a quality hold because a specific supplier and plant are identified with a defective part and a suspect build window.",
         "confidence": 1.0
       }
     ]
@@ -35,7 +35,7 @@
     "model": "gemini-3.5-flash-lite",
     "purpose": "extract",
     "input_tokens": 760,
-    "output_tokens": 203,
-    "cost_usd": 0.000736
+    "output_tokens": 269,
+    "cost_usd": 0.0009
   }
 }

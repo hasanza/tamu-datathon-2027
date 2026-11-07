@@ -8,7 +8,7 @@
   "classification": {
     "category": "quality_hold",
     "confidence": 1.0,
-    "reason": "The message reports a defective part lot with a specified suspect build window at a receiving plant."
+    "reason": "The message reports a defective part lot with a specified build window and receiving plant, which constitutes a quality hold."
   },
   "incidents": [
     {
@@ -95,7 +95,7 @@
         }
       ],
       "ambiguities": [],
-      "reason": "The message reports a defective part lot with a specified suspect build window at a receiving plant."
+      "reason": "The message reports a defective part lot with a specified build window and receiving plant, which constitutes a quality hold."
     }
   ],
   "paths": {
@@ -543,46 +543,46 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T10:58:01.032000",
-      "ended": "2027-03-08T10:58:06.071000",
+      "started": "2027-03-08T10:58:01.188000",
+      "ended": "2027-03-08T10:58:07.767000",
       "steps": [
         {
-          "t": "2027-03-08T10:58:01.032000",
+          "t": "2027-03-08T10:58:01.188000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): quality_hold",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 767,
-            "output_tokens": 188,
+            "output_tokens": 195,
             "cached": false
           }
         },
         {
-          "t": "2027-03-08T10:58:01.034000",
+          "t": "2027-03-08T10:58:01.190000",
           "kind": "gate",
           "text": "lot 'HARN-B at P_TX built 2027-02-22..2027-02-24' -> LOT-0017 via data_snap: exact lot window match",
           "data": null
         },
         {
-          "t": "2027-03-08T10:58:01.034000",
+          "t": "2027-03-08T10:58:01.191000",
           "kind": "gate",
           "text": "E-14#1: quality_hold confirmed, confidence 1.00 >= 0.7 -> act",
           "data": null
         },
         {
-          "t": "2027-03-08T10:58:01.041000",
+          "t": "2027-03-08T10:58:01.197000",
           "kind": "rehearse",
           "text": "Rehearsed 131 actions on the twin: 131 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T10:58:05.442000",
+          "t": "2027-03-08T10:58:07.084000",
           "kind": "audit",
-          "text": "Auditor agrees: The quality hold for moisture-contaminated wiring harnesses at the Texas plant is correctly interpreted and planned in accordance with policy.",
+          "text": "Auditor agrees: The quality hold incident for the heavy-duty wiring harness at the Texas plant accurately reflects the message and follows all policy rules.",
           "data": null
         },
         {
-          "t": "2027-03-08T10:58:06.071000",
+          "t": "2027-03-08T10:58:07.767000",
           "kind": "execute",
           "text": "Executed 131 calls via server: 131 ok, 0 failed (131 writes, 0 verification reads)",
           "data": null
@@ -591,17 +591,17 @@
     },
     {
       "agent": "quality",
-      "started": "2027-03-08T10:58:01.038000",
-      "ended": "2027-03-08T10:58:01.039000",
+      "started": "2027-03-08T10:58:01.194000",
+      "ended": "2027-03-08T10:58:01.195000",
       "steps": [
         {
-          "t": "2027-03-08T10:58:01.038000",
+          "t": "2027-03-08T10:58:01.194000",
           "kind": "graph",
           "text": "Lot LOT-0017 -> part HARN-B -> models using it -> POs at P_TX built 2027-02-22..2027-02-24: 6 POs, 180 vehicles (86 unsold at 36 dealers, 94 owners)",
           "data": null
         },
         {
-          "t": "2027-03-08T10:58:01.039000",
+          "t": "2027-03-08T10:58:01.195000",
           "kind": "plan",
           "text": "Hold LOT-0017; stop sale at 36 dealers; contact 94 owners once each.",
           "data": null
@@ -4474,8 +4474,8 @@
         "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 767,
-        "output_tokens": 188,
-        "cost_usd": 0.0007,
+        "output_tokens": 195,
+        "cost_usd": 0.000718,
         "cached": false
       },
       {
@@ -4483,22 +4483,22 @@
         "model": "gemini-3.8-flash",
         "purpose": "audit",
         "input_tokens": 1161,
-        "output_tokens": 456,
-        "cost_usd": 0.002581,
+        "output_tokens": 609,
+        "cost_usd": 0.003154,
         "cached": false
       },
       {
         "provider": "gemini",
         "model": "gemini-3.5-flash-lite",
         "purpose": "summarize",
-        "input_tokens": 358,
-        "output_tokens": 150,
-        "cost_usd": 0.000482,
+        "input_tokens": 360,
+        "output_tokens": 152,
+        "cost_usd": 0.000488,
         "cached": false
       }
     ],
-    "total_cost_usd": 0.003763
+    "total_cost_usd": 0.00436
   },
-  "summary": "Lot LOT-0017 consisting of heavy-duty wiring harnesses from Atlas Wire and Cable at Wacky Wheels San Antonio, built from 2027-02-22 to 2027-02-24, was placed on hold. A total of 86 unsold vehicles were stopped from sale at 36 dealers, and 94 owners of sold vehicles were contacted.",
-  "decision_reason": "The system acted on a confirmed incident because identifiers and dates were resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live baseline matched before the first write. The incident type handled was quality_hold."
+  "summary": "Lot LOT-0017, consisting of heavy-duty wiring harnesses from Atlas Wire and Cable at Wacky Wheels San Antonio and built from 2027-02-22 through 2027-02-24, was placed on hold. A total of 86 unsold vehicles were stopped from sale across 36 dealers, and 94 owners of sold vehicles were contacted.",
+  "decision_reason": "The control tower acted because this was a confirmed incident with IDs and dates resolved against the data, the rehearsal on the digital twin passed with zero failures, and the live schedule baseline matched before the first write. This triggered the quality hold response."
 }

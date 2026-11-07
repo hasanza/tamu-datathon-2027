@@ -274,8 +274,22 @@ def _date(
             llm_iso = None
     value, method, note = parsed.value, "exact", parsed.note
     if value is None and llm_iso is not None:
-        value, method, note = llm_iso, "llm", f"code could not parse {mention.text!r}; using the model's reading"
-        penalties.append(0.8)
+        ambs.append(
+            Ambiguity(
+                field=field,
+                issue=f"code could not parse the date {mention.text!r} (model read it as {llm_iso}); the model does not decide dates",
+                blocking=True,
+            )
+        )
+        steps.append(
+            ResolutionStep(
+                mention=mention.text,
+                entity_type="date",
+                method="unresolved",
+                note=f"model reading {llm_iso} not trusted",
+            )
+        )
+        return None
     elif value is None:
         ambs.append(Ambiguity(field=field, issue=f"cannot interpret date {mention.text!r}", blocking=True))
         steps.append(ResolutionStep(mention=mention.text, entity_type="date", method="unresolved", note=note))
@@ -390,6 +404,28 @@ def build_incident(
         # Nothing to act on. Record what could be resolved so the trace shows why it was not actionable.
         spec.plant_id = ent("plant_id", "plant", raw.plant) if raw.plant else None
         spec.part_id = ent("part_id", "part", raw.part) if raw.part else None
+        has_date = any(
+            getattr(raw, f) is not None
+            for f in ("original_eta", "new_eta", "outage_start", "outage_end", "build_window_start", "build_window_end")
+        )
+        if raw.category == "noise" and (raw.shipment_id or raw.lot_id or (raw.plant and has_date)):
+            ambs.append(
+                Ambiguity(
+                    field="specificity",
+                    issue="labelled noise but names a shipment, lot, or a plant with dates: a human should look",
+                    blocking=True,
+                )
+            )
+            steps.append(
+                ResolutionStep(
+                    mention=raw.evidence,
+                    entity_type="note",
+                    method="unresolved",
+                    note="noise guard: specific record named",
+                )
+            )
+            spec.resolution_steps, spec.ambiguities = steps, ambs
+            return Resolved(spec=spec, needs_human=True)
         if raw.category == "unconfirmed":
             for field, val in (("part_id", raw.part), ("supplier_id", raw.supplier)):
                 if val and getattr(spec, field) is None:
@@ -633,6 +669,20 @@ def build_incident(
                     )
                 )
                 pen.append(0.9)
+
+    # a lot id supplied by the model must be named in the text or match the stated build window
+    if raw.category == "quality_hold" and spec.lot_id and spec.lot_id in world.lots:
+        named_lots = index.scan(event_text).get("lot", [])
+        lot_ = world.lots[spec.lot_id]
+        w0, w1 = spec.build_window_start, spec.build_window_end
+        if spec.lot_id not in named_lots and w0 and w1 and (lot_.first_build_date, lot_.last_build_date) != (w0, w1):
+            ambs.append(
+                Ambiguity(
+                    field="lot_id",
+                    issue=f"{spec.lot_id} is not named in the message and its window {lot_.first_build_date}..{lot_.last_build_date} differs from the stated {w0}..{w1}",
+                    blocking=True,
+                )
+            )
 
     # cross-check: ids the text itself names but the LLM did not use
     seen = index.scan(event_text)

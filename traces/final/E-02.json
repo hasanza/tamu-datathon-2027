@@ -7,15 +7,15 @@
   "status": "escalated",
   "classification": {
     "category": "unconfirmed",
-    "confidence": 1.0,
-    "reason": "This is an unconfirmed rumor about a part without specific details or dates."
+    "confidence": 0.95,
+    "reason": "The message reports a vague, unconfirmed rumor about a part without specific dates, shipments, or lot numbers."
   },
   "incidents": [
     {
       "incident_id": "E-02#1",
       "event_id": "E-02",
       "category": "unconfirmed",
-      "confidence": 1.0,
+      "confidence": 0.95,
       "plant_id": null,
       "part_id": null,
       "supplier_id": null,
@@ -60,41 +60,41 @@
           "blocking": true
         }
       ],
-      "reason": "This is an unconfirmed rumor about a part without specific details or dates."
+      "reason": "The message reports a vague, unconfirmed rumor about a part without specific dates, shipments, or lot numbers."
     }
   ],
   "paths": {},
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T07:34:00.887000",
-      "ended": "2027-03-08T07:34:00.902000",
+      "started": "2027-03-08T07:34:01.115000",
+      "ended": "2027-03-08T07:34:01.131000",
       "steps": [
         {
-          "t": "2027-03-08T07:34:00.887000",
+          "t": "2027-03-08T07:34:01.115000",
           "kind": "llm",
           "text": "Extracted 1 incident(s): unconfirmed",
           "data": {
             "model": "gemini-3.5-flash-lite",
             "input_tokens": 757,
-            "output_tokens": 149,
+            "output_tokens": 201,
             "cached": false
           }
         },
         {
-          "t": "2027-03-08T07:34:00.892000",
+          "t": "2027-03-08T07:34:01.124000",
           "kind": "gate",
-          "text": "E-02#1: unconfirmed NOT actionable (confidence 1.00); cannot resolve 'seat material'; named only vaguely; not a specific record; no confirmed shipment, lot, plant or dates",
+          "text": "E-02#1: unconfirmed NOT actionable (confidence 0.95); cannot resolve 'seat material'; named only vaguely; not a specific record; no confirmed shipment, lot, plant or dates",
           "data": null
         },
         {
-          "t": "2027-03-08T07:34:00.894000",
+          "t": "2027-03-08T07:34:01.125000",
           "kind": "rehearse",
           "text": "Rehearsed 1 actions on the twin: 1 ok, 0 failed. Invariants: ok",
           "data": null
         },
         {
-          "t": "2027-03-08T07:34:00.902000",
+          "t": "2027-03-08T07:34:01.131000",
           "kind": "execute",
           "text": "Executed 1 calls via server: 1 ok, 0 failed (0 writes, 0 verification reads)",
           "data": null
@@ -142,22 +142,22 @@
         "model": "gemini-3.5-flash-lite",
         "purpose": "extract",
         "input_tokens": 757,
-        "output_tokens": 149,
-        "cost_usd": 0.0006,
+        "output_tokens": 201,
+        "cost_usd": 0.00073,
         "cached": false
       },
       {
         "provider": "gemini",
         "model": "gemini-3.5-flash-lite",
         "purpose": "summarize",
-        "input_tokens": 287,
-        "output_tokens": 77,
-        "cost_usd": 0.000279,
+        "input_tokens": 289,
+        "output_tokens": 71,
+        "cost_usd": 0.000264,
         "cached": false
       }
     ],
-    "total_cost_usd": 0.000879
+    "total_cost_usd": 0.000994
   },
-  "summary": "A rumor was received from a supplier rep stating that something may be off with a seat material coming up with no dates, no details, and nothing confirmed. Part of the message was not actionable and was escalated to a human.",
-  "decision_reason": "The unclear part was escalated with no operational change pursuant to rule 8."
+  "summary": "A supplier representative shared a rumor that something may be off with a seat material coming up without dates, details, or confirmation. Part of the message was not actionable and was escalated to a human.",
+  "decision_reason": "The unclear part was escalated with no operational change according to rule 8."
 }

@@ -1,0 +1,18 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "purpose": "summarize",
+  "latency_s": 0.867,
+  "parsed": {
+    "summary": "Wacky Wheels Lexington is down 2027-03-16 to 2027-03-18. 9 production orders were moved with 9 rescheduled at the same plant, 32 dealers notified once each for 79 customer orders, and 18 loaners assigned.",
+    "decision_reason": "Acted on confirmed plant_outage incident after ids and dates resolved against the data, rehearsal on the digital twin passed with zero failures, and the live schedule baseline matched before the first write."
+  },
+  "usage": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "purpose": "summarize",
+    "input_tokens": 340,
+    "output_tokens": 123,
+    "cost_usd": 0.00041
+  }
+}
