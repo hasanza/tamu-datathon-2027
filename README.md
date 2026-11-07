@@ -32,7 +32,7 @@ No server and no API key: replay the whole run from the committed LLM cache, wit
 LLM_CACHE_DIR=cache/snapshot LLM_REPLAY_ONLY=1 uv run python -m control_tower.run --all --dry-run --out runs/dev
 ```
 
-Real traces of the current pipeline are in `traces/snapshot/`.
+Real traces of the final run are in `traces/final/` (also the UI default via `traces/snapshot/`).
 
 ## Setup
 
@@ -42,7 +42,16 @@ uv run python hack_the_highway/enterprise_server.py --data hack_the_highway/data
 uv run pytest
 ```
 
-Models: `gemini-3.5-flash-lite` for extraction, entity tie-break and summaries (about $0.019 per full run) and `gemini-3.8-flash` as the independent auditor (about $0.030). Models used, token totals and cost for the submitted run: see `runs/final/models.json` (written by the pipeline) and the design card.
+## Models and final run
+
+Final clean run (`runs/final/`, `traces/final/`, tag `final-run-2`): 15 events, 10 acted, 3 noise, 2 escalated; 797 tool calls, 0 failed; independent grader 15/15; 40 LLM calls, $0.0498 in total, about 90 s.
+
+| Model (provider) | Role | Calls | Tokens in / out | Cost |
+|---|---|---|---|---|
+| `gemini-3.5-flash-lite` (Google) | extraction, entity tie-break, summaries | 30 | 16,752 / 5,233 | $0.0181 |
+| `gemini-3.8-flash` (Google) | independent auditor | 10 | 13,426 / 5,759 | $0.0317 |
+
+Source of truth: `runs/final/models.json` (written by the pipeline). No LLM call is made per action. Reproduce the identical log with no API key and no server: `LLM_CACHE_DIR=cache/final LLM_REPLAY_ONLY=1 uv run python -m control_tower.run --all --dry-run --out runs/dev`. Design card: `docs/design_card.md`.
 
 ## API and UI
 

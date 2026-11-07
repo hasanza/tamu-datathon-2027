@@ -1,7 +1,7 @@
 # Wacky Wheels Control Tower — design card
 
-*Hack the Highway · event-driven multi-agent operations control tower. Numbers below come from the current snapshot run
-(`traces/snapshot/`, `runs/dev/`, replay grader); the final run replaces them (task 5.4).*
+*Hack the Highway · event-driven multi-agent operations control tower. Numbers below come from the final clean run
+(`runs/final/`, `traces/final/`, tag `final-run-2`) and the replay grader.*
 
 ## 1. What it does
 Reads 15 free-text events, decides what each one is, finds everything it touches in a knowledge graph of the company,
@@ -45,13 +45,20 @@ Handbook rules 1–10 are implemented in code, not prompted. The LLM never choos
 - **Runtime failure:** captured, never retried blindly, event marked failed and escalated.
 
 ## 5. Policy decisions on ambiguous points (one `Policy` object, committed with the run)
-Affected orders claim slots in (original build date, PO id) order; a transferred order may land on the earliest free slot from today (literal reading of rule 3); transfer ties go to the lower plant id; loaners are assigned per entitled customer order within each dealer's pool.
+Affected orders claim slots in (original build date, PO id) order; a transferred order may land on the earliest free slot from today (literal reading of rule 3; E-09 has 2 and E-11 has 3 transfers, all landing Mar 8); transfer ties go to the lower plant id; loaners are assigned per entitled customer order within each dealer's pool.
 
-## 6. Evaluation (current snapshot)
-- **15/15 events clean** on the organizers' server: 797 tool calls, **0 failed**; independent replay grader (replays the log on a fresh twin and diffs against an oracle written from the rules) agrees on all 15.
+## 6. Evaluation (final run)
+- **15/15 events clean** on a fresh organizers' server: 10 acted, 3 noise, 2 escalated; **797 tool calls, 0 failed**; the independent replay grader (replays the log on a fresh twin and diffs against an oracle written from the rules) agrees on all 15; the auditor raised 0 blocking disagreements. The whole run took about 90 s with live LLM calls.
 - **Paraphrase robustness:** 90 rewrites (15 events × 6 styles — typos, formal email, disclaimer footer, nicknames, phone shorthand, digest with an unrelated item): **88/90 (98%)** for `gemini-3.8-flash`, **89/90 (99%)** for `gemini-3.5-flash-lite`; the misses are over-escalations on nickname-heavy rewrites (entities and dates right, but flagged for a human). See `eval/reports/paraphrase_bench.md`.
-- **Efficiency:** 39 LLM calls for all 15 events, about **$0.046** per full run; none per action (a quality hold is ~190 calls made by code).
-- **Models** (`runs/<run>/models.json`): `gemini-3.5-flash-lite` for extraction, tie-break and summaries; `gemini-3.8-flash` as auditor. Offline replay from a committed LLM cache runs the whole pipeline with no key.
+- **Efficiency:** 40 LLM calls for all 15 events, **$0.0498** per full run; none per action (a quality hold is up to 188 calls made by code).
+- **Models cited** (`runs/final/models.json`):
+
+  | Model | Role | Calls | Tokens in / out | Cost |
+  |---|---|---|---|---|
+  | `gemini-3.5-flash-lite` (Google) | extraction, entity tie-break, summaries | 30 | 16,752 / 5,233 | $0.0181 |
+  | `gemini-3.8-flash` (Google) | independent auditor | 10 | 13,426 / 5,759 | $0.0317 |
+
+- **Reproducible without a key:** `LLM_CACHE_DIR=cache/final LLM_REPLAY_ONLY=1 uv run python -m control_tower.run --all --dry-run` regenerates the identical action log from the committed cache.
 
 ## 7. Explainability and the UI
 Control-tower UI over the trace files: live event feed with category and confidence, graph path per event (grouped nodes for large sets), agent timeline, actions table with rehearsal and result per call, audit trail of what changed, escalation inbox and KPIs. A FastAPI layer serves traces, the action log and a live server-sent-events stream of a running pipeline.
@@ -59,4 +66,5 @@ Control-tower UI over the trace files: live event feed with category and confide
 ## 8. Known limits and next steps
 - Slot ordering and the transfer-day reading are policy choices the brief leaves open; both are one config line and the grader shows the effect.
 - Names that match no alias and no table row lower confidence and escalate rather than guess; on heavy-nickname rewrites that sometimes over-escalates (1–2 of 90 in the bench), which is the safe direction.
+- Latent cases this data does not trigger: a production order that cannot be placed anywhere (no free slot at any plant) gets no dealer notice, and a confirmed incident with zero affected orders adds one `escalate`.
 - Next: a local model for offline extraction, a wider paraphrase bench, per-customer loaner caps behind a flag.
