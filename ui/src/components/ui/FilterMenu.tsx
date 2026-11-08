@@ -57,7 +57,7 @@ export function FilterMenu<T extends string>({
           }}
           className="z-50 w-60 rounded-lg border border-line bg-surface p-1.5 shadow-lg"
         >
-          <ul role="group" aria-label={`${label} filter`} className="max-h-72 overflow-auto">
+          <ul role="group" aria-label={`${label} filter`} className="scroll-shadow-y max-h-72 overflow-auto">
             {options.map((o, i) => {
               const id = `fm-${label}-${o.value}`.replace(/\W+/g, "-");
               return (

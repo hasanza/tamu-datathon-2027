@@ -384,7 +384,7 @@ export function FlowView({ rows, status, correctionRounds, escalations, live = f
 
       {desktop ? (
         <div className="relative">
-        <div ref={scroller} onScroll={checkMore} className="overflow-x-auto rounded-lg border border-line bg-surface p-2" role="group" aria-label="Stages of this event">
+        <div ref={scroller} onScroll={checkMore} className="scroll-shadow-x overflow-x-auto rounded-lg border border-line bg-surface p-2" role="group" aria-label="Stages of this event">
           <div key={playKey} className="relative" style={{ width, height }}>
             <svg width={width} height={height} className="pointer-events-none absolute inset-0" aria-hidden>
               <defs>
@@ -446,11 +446,7 @@ export function FlowView({ rows, status, correctionRounds, escalations, live = f
           </div>
         </div>
         {moreRight && (
-          <div
-            className="pointer-events-none absolute inset-y-px right-px flex w-14 items-center justify-end rounded-r-lg pr-1.5"
-            style={{ background: "linear-gradient(to right, transparent, var(--surface))" }}
-            aria-hidden
-          >
+          <div className="pointer-events-none absolute inset-y-px right-px flex w-8 items-center justify-end pr-1.5" aria-hidden>
             <ChevronRight size={18} className="text-tx3" />
           </div>
         )}

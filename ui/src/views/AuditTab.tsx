@@ -146,7 +146,7 @@ export function AuditTab({ trace }: { trace: Trace }) {
       <Panel title="World diff: what changed">
         <div className="space-y-4">
           <DiffSection noun="moved production orders" count={d.moved_pos.length}>
-            <div className="max-h-72 overflow-auto rounded-md border border-line">
+            <div className="scroll-shadow-y max-h-72 overflow-auto rounded-md border border-line">
               <table className="w-full text-left text-[13px]">
                 <thead className="sticky top-0 bg-surface-2 text-[11px] uppercase tracking-wide text-tx3">
                   <tr>
@@ -191,7 +191,7 @@ export function AuditTab({ trace }: { trace: Trace }) {
           <p className="text-xs text-tx3">No model calls were made for this event (everything was decided by code).</p>
         ) : (
           <Disclosure summary="Show the model calls" count={calls.length}>
-          <div className="overflow-x-auto">
+          <div className="scroll-shadow-x overflow-x-auto">
             <table className="w-full text-left text-[13px]">
               <thead className="bg-surface-2 text-[11px] uppercase tracking-wide text-tx3">
                 <tr>

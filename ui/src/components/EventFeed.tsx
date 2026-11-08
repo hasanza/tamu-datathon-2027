@@ -177,7 +177,7 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
         <FilterSummary segments={segments} onClear={clearFilters} />
       </div>
 
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="scroll-shadow-y min-h-0 flex-1 overflow-y-auto [--shadow-surface:var(--bg)]">
         {loading && <Loading label="Loading events" />}
         {error && <ErrorBox message={error.message} onRetry={onRetry} />}
         {!loading && !error && rows.length === 0 && (

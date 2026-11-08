@@ -116,7 +116,7 @@ function IncidentsTable({ incidents }: { incidents: Incident[] }) {
       return n;
     });
   return (
-    <div className="overflow-x-auto">
+    <div className="scroll-shadow-x overflow-x-auto">
       <table className="w-full text-left text-[13px]">
         <thead className="bg-surface-2 text-[11px] uppercase tracking-wide text-tx3">
           <tr>

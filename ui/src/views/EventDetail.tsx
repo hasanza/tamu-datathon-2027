@@ -83,7 +83,7 @@ export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent
             Sandbox server · same agents and MCP client · scored log untouched
           </p>
         )}
-        <div role="tablist" aria-label="Event views" className="-mb-px flex gap-1 overflow-x-auto">
+        <div role="tablist" aria-label="Event views" className="scroll-shadow-x -mb-px flex gap-1 overflow-x-auto [--shadow-surface:var(--bg)]">
           {TABS.map((name) => (
             <button
               key={name}
@@ -118,7 +118,7 @@ export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent
         </div>
       </div>
 
-      <div id="tabpanel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="min-h-0 flex-1 overflow-y-auto p-4">
+      <div id="tabpanel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="scroll-shadow-y min-h-0 flex-1 overflow-y-auto p-4 [--shadow-surface:var(--bg)]">
         {loadingFirst && <Loading label="Loading trace" />}
         {trace.isError && !isNotFound(trace.error) && <ErrorBox message={(trace.error as Error).message} onRetry={() => void trace.refetch()} />}
         {queued && (

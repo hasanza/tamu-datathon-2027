@@ -79,7 +79,7 @@ export function KVGrid({ value, depth = 0 }: { value: Record<string, unknown> | 
 export function RawJson({ value }: { value: unknown }) {
   return (
     <Disclosure summary="JSON" className="mt-1">
-      <pre className="mono max-h-60 overflow-auto rounded-md border border-line bg-bg p-2 text-[11px] text-tx2">{JSON.stringify(value, null, 2)}</pre>
+      <pre className="scroll-shadow-y mono max-h-60 overflow-auto rounded-md border border-line bg-bg p-2 text-[11px] text-tx2 [--shadow-surface:var(--bg)]">{JSON.stringify(value, null, 2)}</pre>
     </Disclosure>
   );
 }
