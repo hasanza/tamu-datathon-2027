@@ -104,6 +104,12 @@ function HeaderStrip({ rows, trace, live }: { rows: OrchRow[]; trace?: Trace; li
 
 /* ---------- cards ---------- */
 
+/** Inline preview of a tool call's arguments and result. Real v2 values are long JSON (a whole incident, lists of orders); the full value is under "details". */
+const PREVIEW = 80;
+
+/** The v2 runtime sets a tool step's text to `name({...args})`: it only repeats the name and arguments the card already shows. */
+const echoesCall = (step: AgentStep) => !!step.tool && step.text.startsWith(`${step.tool}(`);
+
 const hasKeys = (o: Record<string, unknown> | null | undefined): o is Record<string, unknown> => !!o && Object.keys(o).length > 0;
 
 function Details({ step }: { step: AgentStep }) {
@@ -139,13 +145,13 @@ function Meta({ step, start }: { step: AgentStep; start: string }) {
   );
 }
 
-/** A thought can be long; show four lines and let the reader expand it. */
-function Thought({ text }: { text: string }) {
+/** Thoughts and hand-off briefs can be long (a task brief is ~450 characters): show a few lines, let the reader expand. */
+function Clamped({ text, italic = false }: { text: string; italic?: boolean }) {
   const [open, setOpen] = useState(false);
   const long = text.length > 170;
   return (
     <>
-      <p className={`break-words italic text-tx2 ${open || !long ? "" : "line-clamp-4"}`}>{text}</p>
+      <p className={`break-words text-tx2 ${italic ? "italic" : ""} ${open || !long ? "" : "line-clamp-4"}`}>{text}</p>
       {long && (
         <button onClick={() => setOpen(!open)} aria-expanded={open} className="text-[11px] text-tx3 hover:text-tx">
           {open ? "less" : "more"}
@@ -171,7 +177,7 @@ function Card({ row, start }: { row: OrchRow; start: string }) {
           <Chip color={STEP_META.thought.color}>Thought{step.turn != null ? ` ${step.turn}` : ""}</Chip>
           <Meta step={step} start={start} />
         </div>
-        <Thought text={step.text} />
+        <Clamped text={step.text} italic />
         <Details step={step} />
       </div>
     );
@@ -187,9 +193,9 @@ function Card({ row, start }: { row: OrchRow; start: string }) {
           <Meta step={step} start={start} />
         </div>
         <Mono className="break-all font-medium text-tx">{step.tool ?? "tool"}</Mono>
-        {hasKeys(step.args) && <p className="mono mt-0.5 break-all text-[11px] text-tx3">{clip(compactArgs(step.args), 160)}</p>}
-        <p className="mt-1 break-words text-tx2">{step.text}</p>
-        {hasKeys(step.result) && <p className="mono mt-0.5 break-all text-[11px] text-tx2">→ {clip(compactArgs(step.result), 160)}</p>}
+        {hasKeys(step.args) && <p className="mono mt-0.5 break-all text-[11px] text-tx3">{clip(compactArgs(step.args), PREVIEW)}</p>}
+        {!echoesCall(step) && <p className="mt-1 break-words text-tx2">{step.text}</p>}
+        {hasKeys(step.result) && <p className="mono mt-0.5 break-all text-[11px] text-tx2">→ {clip(compactArgs(step.result), PREVIEW)}</p>}
         <Details step={step} />
       </div>
     );
@@ -242,7 +248,7 @@ function MessageCard({ row, start }: { row: OrchRow; start: string }) {
         </span>
         <Meta step={step} start={start} />
       </div>
-      <p className="break-words text-tx2">{step.text}</p>
+      <Clamped text={step.text} />
       <Details step={step} />
     </div>
   );
