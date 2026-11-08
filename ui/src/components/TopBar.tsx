@@ -12,36 +12,27 @@ const NAV: { page: Page; label: string }[] = [
   { page: "about", label: "About" },
 ];
 
-function Kpi({ label, value, warn }: { label: string; value: React.ReactNode; warn?: boolean }) {
+/** After a run in this session: one line with the five numbers that matter (the live counters are in the run menu). */
+function RunSummary() {
+  const { data } = useKpis();
+  if (!data) return null;
+  const model = data.models.map((m) => m.replace(/^[^/]+\//, "")).join(" · ");
+  const parts = [
+    `${data.events_with_trace}/${data.events_total} handled`,
+    `${data.writes} writes`,
+    `${data.failed} failed`,
+    `${data.escalations} escalated`,
+    usd(data.cost_usd),
+    ...(model ? [model] : []),
+  ];
   return (
-    <div className="flex min-w-0 flex-col px-3 first:pl-0">
-      <span className="text-[10px] uppercase tracking-wide text-tx3">{label}</span>
-      <span className={`mono text-[13px] font-medium leading-5 ${warn ? "text-fail" : "text-tx"}`}>{value}</span>
-    </div>
+    <p aria-label="Last run" data-run-summary className="mono text-[11px] leading-4 text-tx3">
+      {parts.join(" · ")}
+    </p>
   );
 }
 
-export function KpiStrip() {
-  const { data, isError, isLoading } = useKpis();
-  if (isLoading) return <div className="px-4 py-1.5 text-[11px] text-tx3">Loading KPIs…</div>;
-  if (isError || !data) return <div className="px-4 py-1.5 text-[11px] text-tx3">KPIs unavailable (API unreachable)</div>;
-  return (
-    <div aria-label="Key performance indicators" className="flex flex-wrap items-center gap-y-1 divide-x divide-line px-4 py-1.5">
-      <Kpi label="Events handled" value={`${data.events_with_trace}/${data.events_total}`} />
-      <Kpi label="Writes" value={data.writes} />
-      <Kpi label="Failed calls" value={data.failed} warn={data.failed > 0} />
-      <Kpi label="Escalations" value={data.escalations} />
-      <Kpi label="LLM cost" value={usd(data.cost_usd)} />
-      <Kpi label="LLM calls" value={data.llm_calls} />
-      <Kpi
-        label="Models"
-        value={<span title={data.models.join(", ")}>{data.models.map((m) => m.replace(/^[^/]+\//, "")).join(" · ") || "-"}</span>}
-      />
-    </div>
-  );
-}
-
-export function TopBar({ page, go }: { page: Page; go: (p: Page) => void }) {
+export function TopBar({ page, go, version }: { page: Page; go: (p: Page) => void; version?: string }) {
   const { theme, toggle } = useTheme();
   const run = useRun();
   const reset = useReset();
@@ -50,9 +41,12 @@ export function TopBar({ page, go }: { page: Page; go: (p: Page) => void }) {
   return (
     <header className="shrink-0 border-b-2 border-brand bg-surface">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2">
-        <h1 className="text-lg font-semibold tracking-tight">
-          Wacky Wheels <span className="text-tx2">Control Tower</span>
-        </h1>
+        <div className="min-w-0">
+          <h1 className="text-lg font-semibold tracking-tight" title={version ? `Pipeline v${version}` : undefined}>
+            Wacky Wheels <span className="text-tx2">Control Tower</span>
+          </h1>
+          {page === "tower" && !running && status?.mode && <RunSummary />}
+        </div>
         <nav aria-label="Primary" className="flex items-center gap-1">
           {NAV.map((n) => (
             <button
@@ -115,11 +109,6 @@ export function TopBar({ page, go }: { page: Page; go: (p: Page) => void }) {
           </div>
         </div>
       </div>
-      {page === "tower" && (
-        <div className="border-t border-line">
-          <KpiStrip />
-        </div>
-      )}
     </header>
   );
 }

@@ -50,10 +50,10 @@ export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
           <h2 className="mono text-lg font-semibold">{event.event_id}</h2>
           <CategoryBadge category={t?.classification.category ?? event.category} />
-          <StatusChip status={status} />
+          {status !== "done" && <StatusChip status={status} />}
           <Chip color={TARGET_META[target].color} title={`Calls went to ${TARGET_META[target].where}`}>{TARGET_META[target].label}</Chip>
           <span className="flex items-center gap-1.5 text-xs text-tx3">
-            <SourceIcon source={event.source} /> {event.source} · <span className="mono">{dateTime(event.received_at)}</span>
+            <SourceIcon source={event.source} /> {event.source} · <span className="mono" title={dateTime(event.received_at)}>{event.received_at.split("T")[1]?.slice(0, 5) ?? ""}</span>
           </span>
           <div className="ml-auto flex items-center gap-3">
             <ConfidenceRing value={t?.classification.confidence ?? event.confidence} size={34} />
