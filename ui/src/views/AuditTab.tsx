@@ -19,8 +19,10 @@ function checks(t: Trace, target: "twin" | "server"): Check[] {
   const accepted = t.actions.filter((a) => a.result?.ok === true); // a missing result is not an acceptance
   // a skipped call never ran (an earlier write of its incident failed): count it apart from real failures
   const skipped = t.actions.filter((a) => a.skipped);
-  const failed = t.actions.filter((a) => a.result && !a.result.ok && !a.skipped);
-  const noResult = t.actions.length - accepted.length - failed.length - skipped.length;
+  // unknown = transport failure (outcome is not a server rejection, and the write may have happened)
+  const unknown = t.actions.filter((a) => a.result?.outcome === "unknown" && !a.skipped);
+  const failed = t.actions.filter((a) => a.result && !a.result.ok && !a.skipped && a.result.outcome !== "unknown");
+  const noResult = t.actions.length - accepted.length - failed.length - skipped.length - unknown.length;
   const who = target === "twin" ? "Twin" : "Server";
   const distinctWrites = new Set(writes.map((a) => a.tool)).size;
   const out: Check[] = [
@@ -32,9 +34,9 @@ function checks(t: Trace, target: "twin" | "server"): Check[] {
     {
       rule: `${who} accepted every call`,
       detail: t.actions.length
-        ? `${accepted.length}/${t.actions.length} calls returned ok${failed.length ? `, ${failed.length} failed` : ""}${skipped.length ? `, ${skipped.length} skipped after a failure (no retry)` : ""}${noResult ? ` (${noResult} without a result)` : ""}`
+        ? `${accepted.length}/${t.actions.length} calls returned ok${failed.length ? `, ${failed.length} failed` : ""}${unknown.length ? `, ${unknown.length} unknown (transport failure)` : ""}${skipped.length ? `, ${skipped.length} skipped after a failure (no retry)` : ""}${noResult ? ` (${noResult} without a result)` : ""}`
         : "no calls",
-      verdict: t.actions.length === 0 ? "na" : failed.length > 0 || skipped.length > 0 ? "fail" : noResult > 0 ? "na" : "pass",
+      verdict: t.actions.length === 0 ? "na" : failed.length > 0 || skipped.length > 0 || unknown.length > 0 ? "fail" : noResult > 0 ? "na" : "pass",
     },
   ];
   const byTransport = t.actions.reduce<Record<string, number>>((acc, a) => (a.transport ? { ...acc, [a.transport]: (acc[a.transport] ?? 0) + 1 } : acc), {});
