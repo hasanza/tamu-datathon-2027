@@ -1,5 +1,5 @@
 {
-  "pipeline_version": "0.2.0",
+  "pipeline_version": "0.2.2",
   "event_id": "E-05",
   "received_at": "2027-03-08T08:25:00",
   "source": "news wire",
@@ -8,7 +8,7 @@
   "classification": {
     "category": "noise",
     "confidence": 0.99,
-    "reason": "Request for a brochure PDF has no operational impact on vehicle production, supply chain, or quality."
+    "reason": "Inquiry regarding brochure PDF download location has no impact on operations."
   },
   "incidents": [
     {
@@ -30,7 +30,7 @@
       "raw_mentions": {},
       "resolution_steps": [],
       "ambiguities": [],
-      "reason": "Request for a brochure PDF has no operational impact on vehicle production, supply chain, or quality."
+      "reason": "Inquiry regarding brochure PDF download location has no impact on operations."
     }
   ],
   "paths": {
@@ -52,16 +52,16 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T08:25:03.722000",
-      "ended": "2027-03-08T08:25:19.855000",
+      "started": "2027-03-08T08:25:03.329000",
+      "ended": "2027-03-08T08:25:16.504000",
       "model": "gemini-3.8-flash",
       "llm_calls": 4,
-      "cost_usd": 0.016409,
+      "cost_usd": 0.015802,
       "steps": [
         {
-          "t": "2027-03-08T08:25:03.722000",
+          "t": "2027-03-08T08:25:03.329000",
           "kind": "thought",
-          "text": "The incoming message is a dealer asking for a brochure PDF, which is noise with no operational impact. I will register this as a noise incident.",
+          "text": "The incoming message is a brochure PDF inquiry from a dealer, which is unrelated to operations (supply chain delays, plant outages, quality holds). This falls strictly under 'noise'. I will register this incident.",
           "data": null,
           "turn": 1,
           "tool": null,
@@ -71,12 +71,13 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.004349
+          "cost_usd": 0.004171,
+          "task": "understand"
         },
         {
-          "t": "2027-03-08T08:25:03.722000",
+          "t": "2027-03-08T08:25:03.329000",
           "kind": "tool",
-          "text": "register_incidents({\"incidents\":[{\"category\":\"noise\",\"evidence\":\"Dealer Amarillo, TX asks where to find the new brochure PDF.\",\"plant\":null,\"part\":null,\"supplier\":null,\"shipment_id\":null,\"lot_id\":null,\"original_eta\":null,\"new_eta\":null,\"outage_start\":null,\"outage_end\":null,\"build_window_start\":null,\"build_window_end\":null,\"reason\":\"Request for a brochure PDF has no operational impact on vehicle production, supply chain, or quality.\",\"confidence\":0.99}]})",
+          "text": "register_incidents({\"incidents\":[{\"category\":\"noise\",\"evidence\":\"Dealer Amarillo, TX asks where to find the new brochure PDF.\",\"plant\":null,\"part\":null,\"supplier\":null,\"shipment_id\":null,\"lot_id\":null,\"original_eta\":null,\"new_eta\":null,\"outage_start\":null,\"outage_end\":null,\"build_window_start\":null,\"build_window_end\":null,\"reason\":\"Inquiry regarding brochure PDF download location has no impact on operations.\",\"confidence\":0.99}]})",
           "data": null,
           "turn": 1,
           "tool": "register_incidents",
@@ -96,7 +97,7 @@
                 "outage_end": null,
                 "build_window_start": null,
                 "build_window_end": null,
-                "reason": "Request for a brochure PDF has no operational impact on vehicle production, supply chain, or quality.",
+                "reason": "Inquiry regarding brochure PDF download location has no impact on operations.",
                 "confidence": 0.99
               }
             ]
@@ -119,12 +120,13 @@
           "from_agent": null,
           "transport": "in-process",
           "model": null,
-          "cost_usd": null
+          "cost_usd": null,
+          "task": "understand"
         },
         {
-          "t": "2027-03-08T08:25:07.569000",
+          "t": "2027-03-08T08:25:06.543000",
           "kind": "thought",
-          "text": "The incident E-05#1 was identified as noise (a dealer requesting a brochure PDF) with needs_human=false and no shipment, lot, or plant outage mentioned. I will drop it as noise using drop_noise.",
+          "text": "The registered incident E-05#1 is noise with needs_human=false and does not mention any shipment/lot id or plant with dates. We can safely drop this noise item.",
           "data": null,
           "turn": 2,
           "tool": null,
@@ -134,12 +136,13 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.004102
+          "cost_usd": 0.00432,
+          "task": "understand"
         },
         {
-          "t": "2027-03-08T08:25:07.570000",
+          "t": "2027-03-08T08:25:06.543000",
           "kind": "decision",
-          "text": "E-05#1: noise, no action. Brochure PDF request has no impact on automotive manufacturing or supply chain operations.",
+          "text": "E-05#1: noise, no action. Brochure PDF inquiry has no operational impact on vehicle manufacturing, parts supply, or quality.",
           "data": null,
           "turn": null,
           "tool": null,
@@ -149,18 +152,19 @@
           "from_agent": null,
           "transport": null,
           "model": null,
-          "cost_usd": null
+          "cost_usd": null,
+          "task": "understand"
         },
         {
-          "t": "2027-03-08T08:25:07.571000",
+          "t": "2027-03-08T08:25:06.543000",
           "kind": "tool",
-          "text": "drop_noise({\"incident_id\":\"E-05#1\",\"reason\":\"Brochure PDF request has no impact on automotive manufacturing or supply chain operations.\"})",
+          "text": "drop_noise({\"incident_id\":\"E-05#1\",\"reason\":\"Brochure PDF inquiry has no operational impact on vehicle manufacturing, parts supply, or quality.\"})",
           "data": null,
           "turn": 2,
           "tool": "drop_noise",
           "args": {
             "incident_id": "E-05#1",
-            "reason": "Brochure PDF request has no impact on automotive manufacturing or supply chain operations."
+            "reason": "Brochure PDF inquiry has no operational impact on vehicle manufacturing, parts supply, or quality."
           },
           "result": {
             "dropped": "E-05#1",
@@ -170,12 +174,13 @@
           "from_agent": null,
           "transport": "in-process",
           "model": null,
-          "cost_usd": null
+          "cost_usd": null,
+          "task": "understand"
         },
         {
-          "t": "2027-03-08T08:25:11.470000",
+          "t": "2027-03-08T08:25:09.125000",
           "kind": "thought",
-          "text": "The single incident E-05#1 was identified as noise and successfully dropped. With no actionable or confirmed incidents remaining, we proceed directly to finish.",
+          "text": "The sole incident E-05#1 has been dropped as noise. No actionable items remain. Calling finish to complete the event handling.",
           "data": null,
           "turn": 3,
           "tool": null,
@@ -185,12 +190,13 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.004006
+          "cost_usd": 0.004156,
+          "task": "finish"
         },
         {
-          "t": "2027-03-08T08:25:19.854000",
+          "t": "2027-03-08T08:25:16.503000",
           "kind": "decision",
-          "text": "Event settled (noise): A dealer in Amarillo, TX submitted an inquiry asking where to find the new brochure PDF. Event E-05#1 was determined to have no impact on automotive manufacturing or supply chain operations. Consequently, the inquiry was classified as noise and dismissed without operational impact.",
+          "text": "Event settled (noise): A dealer in Amarillo, TX inquired about where to find the new brochure PDF. Event E-05#1 had no operational impact on vehicle manufacturing, parts supply, or quality. The inquiry was dropped as noise, and no operational action was taken.",
           "data": null,
           "turn": null,
           "tool": null,
@@ -200,31 +206,33 @@
           "from_agent": null,
           "transport": null,
           "model": null,
-          "cost_usd": null
+          "cost_usd": null,
+          "task": "finish"
         },
         {
-          "t": "2027-03-08T08:25:19.855000",
+          "t": "2027-03-08T08:25:16.504000",
           "kind": "tool",
-          "text": "finish({\"summary_hint\":\"Inquiry from dealer in Amarillo regarding brochure PDF was identified as noise and dismissed without operational impact.\"})",
+          "text": "finish({\"summary_hint\":\"Inquiry about dealer brochure PDF dropped as noise with no operational impact.\"})",
           "data": null,
           "turn": 3,
           "tool": "finish",
           "args": {
-            "summary_hint": "Inquiry from dealer in Amarillo regarding brochure PDF was identified as noise and dismissed without operational impact."
+            "summary_hint": "Inquiry about dealer brochure PDF dropped as noise with no operational impact."
           },
           "result": {
             "finished": true,
             "status": "noise",
-            "summary": "A dealer in Amarillo, TX submitted an inquiry asking where to find the new brochure PDF. Event E-05#1 was determined to have no impact on automotive manufacturing or supply chain operations. Consequently, the inquiry was classified as noise and dismissed without operational impact."
+            "summary": "A dealer in Amarillo, TX inquired about where to find the new brochure PDF. Event E-05#1 had no operational impact on vehicle manufacturing, parts supply, or quality. The inquiry was dropped as noise, and no operational action was taken."
           },
           "to_agent": null,
           "from_agent": null,
           "transport": "in-process",
           "model": null,
-          "cost_usd": null
+          "cost_usd": null,
+          "task": "finish"
         },
         {
-          "t": "2027-03-08T08:25:19.855000",
+          "t": "2027-03-08T08:25:16.504000",
           "kind": "decision",
           "text": "Coordinator finished",
           "data": {
@@ -238,7 +246,8 @@
           "from_agent": null,
           "transport": null,
           "model": null,
-          "cost_usd": null
+          "cost_usd": null,
+          "task": "finish"
         }
       ]
     }
@@ -247,7 +256,9 @@
     "mode": "sequential",
     "correction_rounds": 0,
     "escalations": [],
-    "mcp_transport": "mcp/stdio"
+    "mcp_transport": "mcp/stdio",
+    "target": "scored",
+    "provider_failure": false
   },
   "actions": [],
   "world_diff": {
@@ -265,9 +276,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 4249,
-        "output_tokens": 310,
-        "cost_usd": 0.004349,
+        "input_tokens": 4401,
+        "output_tokens": 232,
+        "cost_usd": 0.004171,
         "cached": false,
         "attempts": 1
       },
@@ -275,9 +286,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 4464,
-        "output_tokens": 201,
-        "cost_usd": 0.004102,
+        "input_tokens": 4610,
+        "output_tokens": 230,
+        "cost_usd": 0.00432,
         "cached": false,
         "attempts": 1
       },
@@ -285,9 +296,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 4517,
-        "output_tokens": 165,
-        "cost_usd": 0.004006,
+        "input_tokens": 4666,
+        "output_tokens": 175,
+        "cost_usd": 0.004156,
         "cached": false,
         "attempts": 1
       },
@@ -295,15 +306,15 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "summarize",
-        "input_tokens": 299,
-        "output_tokens": 994,
-        "cost_usd": 0.003952,
+        "input_tokens": 297,
+        "output_tokens": 782,
+        "cost_usd": 0.003155,
         "cached": false,
         "attempts": 1
       }
     ],
-    "total_cost_usd": 0.016409
+    "total_cost_usd": 0.015802
   },
-  "summary": "A dealer in Amarillo, TX submitted an inquiry asking where to find the new brochure PDF. Event E-05#1 was determined to have no impact on automotive manufacturing or supply chain operations. Consequently, the inquiry was classified as noise and dismissed without operational impact.",
-  "decision_reason": "No action was taken because the message names no shipment, plant, part, lot, or date, and describes no disruption to production, dealers, loaners, or owners. Under rule 7, messages identified as noise receive no write tools."
+  "summary": "A dealer in Amarillo, TX inquired about where to find the new brochure PDF. Event E-05#1 had no operational impact on vehicle manufacturing, parts supply, or quality. The inquiry was dropped as noise, and no operational action was taken.",
+  "decision_reason": "No action was taken because the message names no shipment, plant, part, lot, or date and describes no disruption to production, dealers, loaners, or owners. In accordance with rule 7, noise receives no write tools."
 }
