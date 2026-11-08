@@ -173,6 +173,16 @@ export interface Orchestration {
   mcp_transport: string | null;
 }
 
+/** What came back from a call. `outcome` (v0.2.0): ok; failed = the server rejected it; unknown = transport failure
+ *  (an MCP timeout or exception: the write may or may not have happened, so the event stops and escalates). */
+export interface ToolResult {
+  ok: boolean;
+  error: string | null;
+  response: Record<string, unknown> | null;
+  http_status?: number | null;
+  outcome?: "ok" | "failed" | "unknown" | null;
+}
+
 export interface Action {
   seq: number;
   incident_id: string | null;
@@ -182,7 +192,7 @@ export interface Action {
   justification: string;
   path_ids: string[];
   rehearsal: { ok: boolean; error: string | null } | null;
-  result: { ok: boolean; error: string | null; response: Record<string, unknown> | null } | null;
+  result: ToolResult | null;
   transport?: Transport | null;
   /** v2: true when a failed write made this call not run ("skipped: dependency failed") */
   skipped?: boolean;
@@ -222,6 +232,8 @@ export interface LLMCall {
   output_tokens: number;
   cost_usd: number;
   cached: boolean;
+  /** v0.2.0: how many tries the call took (a schema error retries once) */
+  attempts?: number;
 }
 
 export interface Trace {
