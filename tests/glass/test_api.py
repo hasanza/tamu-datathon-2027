@@ -154,6 +154,19 @@ def test_stream_adds_top_level_event_id_to_payload(cfg):
     assert msg["event"] == "event_done" and json.loads(msg["data"]) == {"status": "noise", "event_id": "E-05"}
 
 
+def test_stream_passes_event_incoming_through(cfg):
+    # the runner announces every event about a second before it is received: the feed shows an "Incoming event..." row
+    cfg.stream_file.write_text(
+        json.dumps({"type": "event_incoming", "event_id": "E-07", "payload": {}})
+        + "\n"
+        + json.dumps({"type": "event_received", "event_id": "E-07", "payload": {"source": "ops chat"}})
+        + "\n"
+    )
+    got = _collect(cfg.stream_file, from_start=True, n=2)
+    assert [m["event"] for m in got] == ["event_incoming", "event_received"]
+    assert json.loads(got[0]["data"]) == {"event_id": "E-07"}
+
+
 def test_stream_replay_and_missing_file(cfg):
     assert _collect(cfg.stream_file, from_start=True, n=1) == []  # file absent: no crash, no messages
     cfg.stream_file.write_text(json.dumps({"type": "event_done", "payload": {"event_id": "E-05"}}) + "\n")

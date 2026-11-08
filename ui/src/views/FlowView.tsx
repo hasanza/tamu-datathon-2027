@@ -3,7 +3,7 @@ import { ChevronDown, ChevronRight, FastForward, RotateCcw, X } from "lucide-rea
 import type { AgentStep } from "../api/types";
 import { Chip, Mono, Panel } from "../components/ui/primitives";
 import { buildFlow, firstLine, type Flow, type FlowChip, type FlowNode, type Tone } from "../lib/flow";
-import { compactArgs, prettifyRepr, summarize, usd } from "../lib/format";
+import { compactArgs, prettifyRepr, summarize } from "../lib/format";
 import { useFollow } from "../lib/useFollow";
 import { emitTour } from "../lib/tour";
 import { FollowChip } from "../components/ui/FollowChip";
@@ -109,7 +109,7 @@ function NodeCard({
 }) {
   const color = LANE_META[node.lane].color;
   const shown = node.chips.slice(0, 4);
-  const meta = [node.turns ? `${node.turns} turns` : "", node.tools ? `${node.tools} tools` : "", node.cost ? usd(node.cost) : "", durationLabel(node.ms)].filter(Boolean).join(" · ");
+  const meta = durationLabel(node.ms); // how long the stage took; turns, tool counts and cost live in the Audit tab and the Run menu
   return (
     <button
       onClick={onClick}
@@ -122,12 +122,17 @@ function NodeCard({
     >
       <div className="flex items-center gap-1.5">
         <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: color }} aria-hidden />
-        <span className="truncate text-[12.5px] font-semibold text-tx">{node.title}</span>
+        <span data-flow-agent className="truncate text-[11.5px] font-semibold" style={{ color }}>
+          {LANE_META[node.lane].label}
+        </span>
         {active && <span className="ml-auto shrink-0 text-[10px] font-medium text-brand-bright">working…</span>}
       </div>
-      <div className="mono mt-0.5 truncate text-[10.5px] text-tx3" title={node.subtitle}>
-        {node.subtitle}
-      </div>
+      <div className="mt-0.5 truncate text-[12.5px] font-semibold text-tx">{node.title}</div>
+      {node.subtitle && (
+        <div className="mono truncate text-[10.5px] text-tx3" title={node.subtitle}>
+          {node.subtitle}
+        </div>
+      )}
       <p className="mt-1.5 line-clamp-3 text-[12px] leading-snug text-tx2">{node.summary}</p>
       <div className="mt-auto flex flex-wrap gap-1 pt-1.5">
         {shown.map((c, i) => (
@@ -171,7 +176,7 @@ function StepRow({ row }: { row: OrchRow }) {
     return (
       <li className="rounded-md border border-line bg-surface px-2.5 py-1.5 text-[12.5px]">
         <div className="flex flex-wrap items-center gap-1.5">
-          <Chip color={STEP_META.tool.color}>Tool call</Chip>
+          <Chip color={STEP_META.tool.color}>Call</Chip>
           <Chip color={BADGE_COLOR[badge]}>{badge}</Chip>
           <Mono className="font-medium text-tx">{step.tool ?? "tool"}</Mono>
           {echoesCall(step) && hasKeys(step.args) && (

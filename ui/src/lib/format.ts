@@ -46,6 +46,7 @@ export function safeStorage(key: string, value?: string): string | null {
   }
 }
 
+const EFFORT_KEYS = new Set(["turns", "llm_calls", "cost", "cost_usd", "model", "attempts", "tokens", "input_tokens", "output_tokens"]);
 const HINT_KEYS = ["category", "kind", "type", "tool", "name"];
 /** `incidents` -> `incident`, `po_ids` -> `po_id` (only for a count of exactly one). */
 const singular = (k: string) => (k.endsWith("s") && k.length > 2 ? k.slice(0, -1) : k);
@@ -70,6 +71,7 @@ export function summarize(value: Record<string, unknown>, max = 3): string {
   // counts and lists say more than identifiers do (`affected_count=9` over `plant_id=P_MS`): show those first
   const weight = (v: unknown) => (typeof v === "number" || Array.isArray(v) ? 0 : 1);
   const parts = Object.entries(value)
+    .filter(([k]) => !EFFORT_KEYS.has(k)) // turns, LLM calls and cost live in the Audit tab and the Run menu, not in the narrative
     .filter(([, v]) => v !== null && v !== undefined && v !== "" && v !== false)
     .map(([k, v], i) => ({ i, w: weight(v), text: part(k, v) }))
     .sort((a, b) => a.w - b.w || a.i - b.i)

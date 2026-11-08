@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Disclosure } from "../components/ui/Disclosure";
 import { KVGrid, RawJson } from "../components/ui/KeyValue";
 import type { AgentStep } from "../api/types";
-import { clock, offsetMs, prettifyRepr, usd } from "../lib/format";
+import { clock, offsetMs, prettifyRepr } from "../lib/format";
 
 /* Small pieces shared by the Timeline cards and the Flow view. */
 
@@ -16,8 +16,6 @@ export function Details({ step }: { step: AgentStep }) {
     ...(hasKeys(step.args) ? { args: step.args } : {}),
     ...(hasKeys(step.result) ? { result: step.result } : {}),
     ...(hasKeys(step.data) ? { data: step.data } : {}),
-    ...(step.model ? { model: step.model } : {}),
-    ...(step.cost_usd ? { cost_usd: step.cost_usd } : {}),
     ...(step.transport ? { transport: step.transport } : {}),
   };
   if (Object.keys(payload).length === 0) return null;
@@ -29,9 +27,9 @@ export function Details({ step }: { step: AgentStep }) {
   );
 }
 
-/** Time only: the lanes are narrow. Offset, model and cost are in the tooltip. */
+/** Time only: the lanes are narrow. The offset is in the tooltip (model and cost are in the Audit tab). */
 export function Meta({ step, start }: { step: AgentStep; start: string }) {
-  const tip = [offsetMs(start, step.t), step.model, step.cost_usd ? usd(step.cost_usd) : null].filter(Boolean).join(" · ");
+  const tip = offsetMs(start, step.t);
   return (
     <span className="mono text-[10px] text-tx3" title={tip}>
       {clock(step.t)}

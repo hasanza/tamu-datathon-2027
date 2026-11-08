@@ -86,8 +86,8 @@ export function Panel({ title, action, children, className = "", fill = false, a
   return (
     <section {...attrs} className={`rounded-lg border border-line bg-surface ${fill ? "flex flex-col xl:min-h-0" : ""} ${className}`}>
       {(title || action) && (
-        <header className="flex shrink-0 items-center justify-between gap-2 border-b border-line px-3 py-2">
-          <h3 className="text-[13px] font-semibold tracking-tight text-tx">{title}</h3>
+        <header className="@container flex shrink-0 items-center justify-between gap-2 border-b border-line px-3 py-2">
+          <h3 className="min-w-0 text-[13px] font-semibold tracking-tight text-tx">{title}</h3>
           {action}
         </header>
       )}

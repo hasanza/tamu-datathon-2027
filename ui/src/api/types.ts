@@ -284,6 +284,8 @@ export interface Brief {
   outcome: BriefOutcome;
   incidents: IncidentBrief[];
   gates: string[];
+  /** contract 0.2.4: the display strings the agents inferred (plant names, part/lot/shipment ids, models, dealers, dates) */
+  entities?: string[];
 }
 
 /** Row of GET /api/actions (the enterprise server's action_log.jsonl plus line and write flag). */
@@ -309,7 +311,7 @@ export interface Kpis {
   models: string[];
 }
 
-export type StreamType = "event_received" | "agent_step" | "action" | "event_done";
+export type StreamType = "event_incoming" | "event_received" | "agent_step" | "action" | "event_done";
 
 export type RunMode = "dry" | "server";
 /** GET /api/run/status. `mode` is null until a run was started in this API session (and after a reset). */

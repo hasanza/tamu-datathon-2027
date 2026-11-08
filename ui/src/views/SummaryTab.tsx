@@ -6,6 +6,7 @@ import { Disclosure } from "../components/ui/Disclosure";
 import { FollowUpControl, FollowUpList } from "../components/FollowUp";
 import { briefOf, whyOf } from "../lib/brief";
 import { prettifyRepr } from "../lib/format";
+import { Emphasis } from "../lib/emphasis";
 import { ImpactPanel } from "./ImpactPanel";
 
 function Id({ v }: { v: string | null }) {
@@ -196,19 +197,20 @@ const OUTCOME_COLOR: Record<BriefOutcome, string> = {
 
 /** The conclusion first: one line, its first word tinted by the outcome. */
 function Headline({ brief }: { brief: Brief }) {
+  const e = brief.entities;
   const [first, ...rest] = brief.headline.split(" ");
   return (
     <h3 data-headline className="text-[15px] font-semibold leading-snug text-tx">
-      <span style={{ color: OUTCOME_COLOR[brief.outcome] }}>{first}</span> {rest.join(" ")}
+      <span style={{ color: OUTCOME_COLOR[brief.outcome] }}>{first}</span> <Emphasis text={rest.join(" ")} entities={e} />
     </h3>
   );
 }
 
-function IncidentBlock({ inc }: { inc: IncidentBrief }) {
+function IncidentBlock({ inc, entities }: { inc: IncidentBrief; entities?: string[] }) {
   return (
     <section data-incident-block aria-label={inc.title} className="rounded-md border border-line bg-surface-2 px-3 py-2">
       <div className="flex flex-wrap items-baseline gap-x-2">
-        <span className="text-[13px] font-medium text-tx">{inc.title}</span>
+        <span className="text-[13px] font-medium text-tx"><Emphasis text={inc.title} entities={entities} /></span>
         {inc.window && <Mono className="text-[11.5px] text-tx3">{inc.window}</Mono>}
       </div>
       {inc.facts.length > 0 && (
@@ -224,7 +226,7 @@ function IncidentBlock({ inc }: { inc: IncidentBrief }) {
           ))}
         </dl>
       )}
-      {inc.note && <p className="mt-1 line-clamp-2 break-words text-[12.5px] text-tx2" title={prettifyRepr(inc.note)}>{prettifyRepr(inc.note)}</p>}
+      {inc.note && <p className="mt-1 line-clamp-2 break-words text-[12.5px] text-tx2" title={prettifyRepr(inc.note)}><Emphasis text={prettifyRepr(inc.note)} entities={entities} /></p>}
     </section>
   );
 }
@@ -246,7 +248,7 @@ export function SummaryTab({ trace }: { trace: Trace }) {
         )}
         <div className="mt-3 space-y-3">
           {brief.incidents.map((inc) => (
-            <IncidentBlock key={inc.incident_id} inc={inc} />
+            <IncidentBlock key={inc.incident_id} inc={inc} entities={brief.entities} />
           ))}
         </div>
         <div className="mt-3 border-l-[3px] border-brand-bright bg-surface-2 px-3 py-2">
@@ -262,7 +264,7 @@ export function SummaryTab({ trace }: { trace: Trace }) {
         </div>
         <div className="mt-2 flex flex-col items-start gap-1">
           <Disclosure summary="Read the full account">
-            <p className="max-w-3xl text-[14px] leading-relaxed text-tx">{trace.summary}</p>
+            <p className="max-w-3xl text-[14px] leading-relaxed text-tx"><Emphasis text={trace.summary} entities={brief.entities} /></p>
           </Disclosure>
           <Disclosure summary="Show the original message">
             <blockquote className="whitespace-pre-wrap rounded-md border border-line bg-bg px-3 py-2 text-[13px] text-tx2">{trace.text}</blockquote>
