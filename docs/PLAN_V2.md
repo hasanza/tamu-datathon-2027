@@ -36,14 +36,18 @@ event yields exactly one `dealer.notify` per dealer and one shared loaner pool (
    snapping to real shipment ETAs / lot windows. Output: `IncidentSpec[]` with ambiguities and confidence.
 3. **Gate** (LLM decides, rules constrain): noise → `drop_noise(reason)`; unconfirmed/unclear or blocking ambiguity or confidence < 0.7 → `escalate`;
    a "noise" item that names a shipment/lot or a plant with dates → `escalate` (never silently dropped). Confirmed incidents continue.
-4. **Delegate** (LLM): for each confirmed incident, in text order, `delegate(supply_chain_planner | customer_care_quality, task)`;
-   then once per event `delegate(dealer_network, ...)` and `delegate(customer_care_quality, ...)` with the union of affected orders / vehicles.
-   Specialists return a typed `SpecialistResult` (actions, findings, graph paths, reasoning summary).
+4. **Delegate** (LLM): **per incident**, in text order: `delegate(supply_chain_planner, incident)` for a delay/outage, or
+   `delegate(customer_care_quality, incident, task="quality_hold")` for a quality hold (hold + vehicle split + owner contacts).
+   **Once per event, after all incidents**: `delegate(dealer_network, union)` (notices for all affected orders, stop-sales for all in-stock affected
+   vehicles) and `delegate(customer_care_quality, union, task="loaners")` (pool checks + loaners, one shared pool per dealer).
+   The `delegate` tool enforces this: per-incident tasks once per incident, event-wide tasks once per event. Specialists return a typed
+   `SpecialistResult {actions, findings, paths, reasoning_summary}`; a second `submit_plan` for the same task **replaces** the first.
 5. **Validate** (code): `validate_plan()` runs the handbook rules (§4). Failures go back to the specialist as a correction task; after 2 failed
    rounds the incident is escalated with the findings. No fallback to a code-made plan.
 6. **Prove and act**: `execute()` = validators again → twin rehearsal of the full plan → auditor (second model) → MCP client execution in canonical
    order → failed-call handling (§5) → world diff and counterfactual.
 7. **Explain**: summary + decision reason (LLM, from a factual draft), per-agent reasoning already in the trace.
+   `finish` refuses while any confirmed incident has neither a validated plan nor an escalation (completion check), so the coordinator cannot stop early.
 
 Modes: `--sequential` (default; final run) or `--parallel N` (events are independent: "each event is handled in its own fresh copy of the world").
 
@@ -55,7 +59,10 @@ Turn = {"thought": str (the agent's reasoning for this step, shown to judges),
 ```
 - Each turn is one `complete_json(Turn-schema, system, user)` call. `user` = task brief + compact transcript (tool calls and results so far).
 - Limits: coordinator ≤ 24 turns, specialists ≤ 12; schema error → one retry with the error text; limit exceeded → error result → coordinator escalates.
-- Tool results are compact (ids, counts, dates). Large sets are summarized with counts and stored in the trace data, not in the prompt.
+- Tool results are compact (ids, counts, dates). A list longer than 20 items is returned as `{count, sample, handle}`; the full value lives in
+  `ctx.store[handle]` and later tools accept the handle in place of the list (opaque result handles). Slot reservations live in one event-wide
+  `SlotBoard` in `ctx`; `propose_slots` recomputes and replaces that incident's moves (idempotent). A correction round is a fresh specialist run with its
+  own turn budget.
 - Every turn is recorded as `AgentStep(kind="thought")` + `AgentStep(kind="tool"|"message"|"decision")` with cost and model.
 - Models per agent from `agents.toml` (repo root), env override `CT_MODEL_<AGENT_ID>`; default `gemini/gemini-3.8-flash` for all four and the auditor
   (auditor runs in a separate context). Swappable without code changes; the adapter already supports gemini and anthropic.
@@ -93,13 +100,19 @@ V1 affected set is exactly the traversal result (rules 1, 2, 6). V2 every affect
 `dealer.notify` per affected dealer with exactly its affected order ids (rule 4). V4 loaners: eligible tiers only, priority order, never beyond the pool,
 no assign on an empty pool (rule 5). V5 quality: the matched lot held; stop-sale exactly the in-stock affected VINs grouped per dealer; one owner contact per
 owner of a sold affected vehicle (rule 6). V6 nothing outside the affected set (rule 10). V7 ≥ 3 distinct write kinds per real incident (rule 9).
-V8 noise/unconfirmed → zero writes (rules 7, 8). Each failure is a structured finding `{incident_id, rule, expected, got}`.
+V8 noise/unconfirmed → zero write tools (`escalate` is not a write tool: `enterprise.py` marks it `writes: False`; rules 7, 8).
+V4 also requires every entitled customer to receive a loaner while the pool lasts (expected assignments exactly). V7 (rule 9 says "should")
+is a **warning** recorded in the trace, not a blocker: event-wide notices count for every incident whose orders they list. Findings are
+structured `{incident_id, rule, expected, got, severity}`; validators recompute expectations from the resolved `IncidentSpec` via the graph, so a
+specialist that passed an incomplete list to a tool is caught (what validators cannot catch is a wrong resolution upstream; the auditor covers that).
 
 ### 4.1 Escalation: when (and when not)
-Escalate (one `escalate` per incident, reason states what would make it actionable; zero writes for that incident) when:
+Escalate (one `escalate` per incident; the reason states what would make it actionable; no further writes for that incident) when:
 1. unconfirmed/unclear report (rule 8); 2. a required id/date cannot be resolved, or confidence < 0.7; 3. a "noise" item names a real record;
 4. a specialist plan still fails validators after two correction rounds; 5. twin rehearsal fails or the auditor raises a blocking concern;
 6. a write fails during execution (escalate the partial completion); 7. the server world is not fresh for the event.
+Circumstance 3 does not break rule 7: `escalate` is not a write tool, and the brief says "if a report is not specific or confirmed, escalate";
+a brochure that merely mentions a city stays noise (the guard needs a shipment/lot id, or a plant together with dates).
 Never escalate a confirmed incident because of a nickname or an odd date phrase: aliases, tables and the closed-set tie-break resolve first.
 In a compound event only the unclear part is escalated. Tests: one per circumstance + a must-not-escalate test on nickname-heavy rewrites.
 
@@ -108,9 +121,13 @@ In a compound event only the unclear part is escalated. Tests: one per circumsta
   (`stdio_client` + `StdioServerParameters`); `list_tools` at start; every enterprise call (reads included) is `session.call_tool("enterprise_act", ...)`
   or the typed read tools. Runs the asyncio loop in a dedicated thread; thread-safe (one lock around calls). Records `transport="mcp/stdio"` on each action.
   The twin sandbox (custom events, dry runs) keeps `TwinExecutor` (`transport="twin"`).
-- Canonical execution order per incident: moves → notices → loaner reads → loaners (delay/outage); hold → stop-sales → owner contacts (quality).
-- A failed write: no retry; remaining writes of that incident are marked `skipped (dependency failed)`; exactly one `escalate` with done/failed/skipped;
-  event status `failed`; summary, world diff and counterfactual are built from **successful** calls only. Other incidents in the event continue.
+- Reads (`mes.get_schedule`, `crm.loaner_availability`) are free and never penalized (handbook, Tools section).
+- Execution is **phased over the whole event**, which is what makes partial failure safe: (1) all moves for all incidents; (2) notices recomputed
+  from the moves that succeeded; (3) loaner reads, then loaners for the orders whose moves succeeded; (4) holds; (5) stop-sales; (6) owner contacts.
+- Failure semantics: a server-side rejection (error in the response) is `failed`; a transport failure (MCP timeout/exception) is `unknown` and
+  stops the event. Either way: no retry; dependent writes are marked `skipped` (`Action.skipped = true`, result error `skipped: dependency failed`);
+  exactly one `escalate` listing done / failed / skipped; event status `failed`; summary, diff and counterfactual from successful calls only.
+  A failed read aborts the event before any write (escalate). The run owns the enterprise server lifecycle (`live.py`); the MCP server is spawned per run.
 
 ## 6. Graph paths
 - Delay/outage summary paths end `… → CustomerOrder(grp) → Dealer(grp) / Customer(grp)`: add the customers group node (brief: "Dealer / Customer").
@@ -118,10 +135,11 @@ In a compound event only the unclear part is escalated. Tests: one per circumsta
   new edge type `MENTIONS` (additive). Every trace then has ≥ 1 path.
 
 ## 7. Contracts v0.2.0 (additive; `src/control_tower/schemas/trace.py`, `docs/contracts.md`)
-- `AgentRun.agent`: `"coordinator" | "supply_chain_planner" | "dealer_network" | "customer_care_quality"`; add `model: str | None`, `llm_calls: int`, `cost_usd: float`.
+- `AgentRun.agent`: accepts the new ids `"coordinator" | "supply_chain_planner" | "dealer_network" | "customer_care_quality"` **and** the v1 ids
+  (`supply_chain`, `dealer_care`, `quality`) so every existing trace still validates; v2 emits only the new ids; add `model: str | None`, `llm_calls: int`, `cost_usd: float`.
 - `StepKind` += `"thought" | "tool" | "message" | "decision"`. `AgentStep` += `turn: int | None`, `tool: str | None`, `args: dict | None`,
   `result: dict | None` (compact), `to_agent`, `from_agent`, `transport: "mcp/stdio" | "twin" | "in-process" | None`, `model`, `cost_usd`.
-- `Action` += `transport`. `LLMCall.purpose` += `"agent_turn"`. `Trace.pipeline_version = "0.2.0"`;
+- `Action` += `transport`, `skipped: bool = False`, `incident_ids: list[str]` (an event-wide notice lists every incident it serves). `LLMCall.purpose` += `"agent_turn"`. `Trace.pipeline_version = "0.2.0"`;
   `Trace.orchestration = {mode, correction_rounds, escalations: [{incident_id, reason}], mcp_transport}`.
 - SSE `agent_step` payload carries the new fields. Fixture: `traces/examples/v2/E-11.json`, `E-03.json`, `E-02.json` (real runs).
 
@@ -147,3 +165,15 @@ escalation test suite → paraphrase bench (inputs regenerated live) → one par
 ## 11. Risks
 Accuracy variance (mitigated: tools compute args; validators; three-run identity check). Agent reliability on Flash-class models (tight task briefs,
 one-call tools per domain, correction rounds). Cost/latency: ~150–250 LLM calls, $0.5–1.5 and ~8–10 min sequential per run (2–3 min parallel).
+
+## 12. Submission checklist (brief, "Submission Notes")
+`runs/final/action_log.jsonl` (15 events) · source code (repo at tag `v2-final-1`) · ontology export (`docs/ontology.mmd`, GraphML via
+`scripts/export_graph.py`, PNG `docs/ontology.png`) · a trace per event (`traces/final/E-*.json`) · demo video or screenshots (`media/`) ·
+summary + reason per event (in every trace and the UI) · one-page design card with architecture, LLM vs code, guardrails, evaluation **and what we
+would improve** (`docs/design_card.pdf`) · model citation (`runs/final/models.json`, README, design card).
+
+## 13. Reviewer notes considered and not adopted
+A read-only Codex review suggested cutting the agent loops, the MCP stdio client, the second-model auditor, parallel mode and cache removal as
+"not required by the brief". Decision (Hasan, 2026-11-08): the brief is read to the letter — a coordinator and three specialist *agents*, MCP-style
+execution, no hard-coding — and every response must be live. The deterministic recovery path the review asked for is the validator layer plus
+correction rounds; a silent fallback to a code-made plan was rejected because it would make the agents decorative.

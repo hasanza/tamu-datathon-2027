@@ -81,7 +81,7 @@ then show me the diff summary and the commit message before committing.
   Squash-merge at the 2-hour sync. Rebase your branch on `main` before opening the PR; resolve conflicts on your side.
   Never force-push `main`.
 - **Small and often**: commit every 30–45 minutes on your branch; push at least at every sync so the other person can pull.
-- **Do not commit**: `.env`, `runs/`, `traces/*.json` except `traces/examples/`, `node_modules`, `.venv`, LLM cache files.
+- **Do not commit**: `.env`, `runs/`, `traces/*.json` except `traces/examples/`, `node_modules`, `.venv`.
 - Remote: private GitHub repo under CORE's account, GLASS added as collaborator (`gh repo create --private`, `gh api` invite).
 
 ## 5. Definition of done (per task)
@@ -104,8 +104,8 @@ then show me the diff summary and the commit message before committing.
 | Topic | Decision |
 |---|---|
 | Secrets | Only CORE's machine holds `GEMINI_API_KEY`. GLASS runs the UI from `traces/examples/` and later from the traces CORE commits to `traces/final/` for the demo. |
-| LLM cache | Extractions cached by text hash in `cache/llm/*.json` (gitignored except the final run's cache, committed so the demo can run with `--replay-llm` and no network). |
-| Demo machine | CORE's laptop runs server + API + UI; GLASS's laptop is the fallback with the committed cache. Both rehearse 5.6. |
+| LLM cache | None. Every LLM response is live; the log is stable because tools compute the arguments. |
+| Demo machine | CORE's laptop runs server + API + UI; GLASS's laptop is the fallback (needs the Gemini key; no cache). Both rehearse 5.6. |
 | Determinism | Planner config (A1–A3 in SPEC §7) lives in one `policy.toml`; the final run's config is committed and cited in the design card. |
 | Issue tracking | No external tracker. Bugs go as rows at the bottom of `WORKPLAN.md` → "Issues" with owner and task id. |
 | Reviews | Opus `reviewer` subagent on every `core/*` PR touching planners/resolver/coordinator; GLASS self-reviews UI PRs with Sonnet. |
@@ -113,5 +113,5 @@ then show me the diff summary and the commit message before committing.
 | Logging | Python `logging` to `runs/<run>/pipeline.log`; the SSE stream is derived from the same events, not a second source. |
 | Model citation | The adapter writes `runs/<run>/models.json` (provider, model id, calls, tokens, cost); README and design card quote it. |
 | Submission packaging | `make package` → `submission/` with action_log.jsonl, traces/, ontology.png + graph.graphml, design_card.pdf, README, video link, source zip. |
-| Fallbacks | If Gemini quota fails live: switch provider by env var or run `--replay-llm`. If the UI breaks: FastAPI serves a static `/report/<event_id>` HTML from the trace. |
+| Fallbacks | If Gemini quota fails live: switch provider by env var or use the `--dry-run` twin for the enterprise side (the LLM is always live; there is no cache). If the UI breaks: FastAPI serves a static `/report/<event_id>` HTML from the trace. |
 | Judges' Q&A | Each person can walk any event end to end (trace audit 4.7). Keep `docs/qa-notes.md` with the five hardest questions and our answers (slot ordering, transfer rule, date convention, LLM vs code, why no failed calls). |

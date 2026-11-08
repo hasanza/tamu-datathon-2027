@@ -8,8 +8,8 @@ import json
 
 import pytest
 
-from control_tower.agents import coordinator as coord_mod
-from control_tower.agents.coordinator import Coordinator
+from control_tower.orchestration import coordinator as coord_mod
+from control_tower.orchestration.coordinator import Coordinator
 from control_tower.schemas.trace import LLMCall, Trace
 from control_tower.trace import Sink
 from control_tower.understanding.resolve import EntityIndex
@@ -193,7 +193,7 @@ def test_grader_catches_a_wrong_loaner(make, tmp_path):
 
 
 def _verdict(*concerns, agree=True):
-    from control_tower.agents.auditor import AuditConcern, AuditVerdict
+    from control_tower.orchestration.auditor import AuditConcern, AuditVerdict
 
     return AuditVerdict(agree=agree, concerns=[AuditConcern(**c) for c in concerns], summary="synthetic verdict")
 

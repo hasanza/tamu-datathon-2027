@@ -44,4 +44,4 @@ each dealer's pool. All in one `Policy` object recorded in each trace.
 - 15 events: 10 acted, 3 noise (E-05..07), 2 escalated (E-02, E-13). E-01 is compound (outage + delay, shared slots).
 - Compound E-01: 122 customer orders, 41 dealers, 26 loaners. Quality: E-03 110 stop-sale / 150 owners; E-14 86 / 94; E-15 40 / 76.
 - Live server run needs a fresh server (`--overwrite`); a re-run on a used server aborts safely (verification reads, escalate, no writes).
-- Offline replay: `LLM_CACHE_DIR=cache/snapshot LLM_REPLAY_ONLY=1 uv run python -m control_tower.run --all --dry-run` works with no key.
+- No cache, no offline replay: every LLM response is live; the log is stable because tools compute the arguments. `--dry-run` swaps only the enterprise for the in-process twin.

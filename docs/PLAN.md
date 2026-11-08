@@ -156,7 +156,7 @@ tamu-datathon-2027/
   tests/unit/                    # offline, < 10 s; includes data-integrity hash test
   traces/examples/               # E-12 (delay), E-05 (noise), E-02 (escalated) — UI fixtures
   docs/                          # SPEC, PLAN, WORKPLAN, ONBOARDING, BRAND, CONCEPTS, contracts, schemas/*.json, handoff/
-  runs/, traces/<run>/, cache/   # outputs (gitignored except final)
+  runs/, traces/<run>/   # outputs (gitignored except final)
 ```
 
 ## 8. Schedule
@@ -211,7 +211,7 @@ eval runner on Haiku. Runtime LLM (Gemini or Haiku via API key) is separate from
 | Quality events generate ~190 write calls each; slow or rate-limited | Pure code, batched by dealer; server is local; no LLM per action. |
 | Over-escalation (hurts accuracy on real incidents) | Confidence threshold tuned on the 15 events + paraphrase bench; clean structured events must score ~1.0. |
 | Running out of time on UI | React shell + feed + summary tab against example traces by hour 5; every later panel is additive. |
-| API key / quota hiccup at demo time (Gemini free tier is rate-limited) | Cache LLM outputs per event text hash; `--replay-llm` flag runs the whole pipeline from cached extractions; adapter can switch provider with one env var. |
+| API key / quota hiccup at demo time (Gemini free tier is rate-limited) | (v1 cached LLM outputs; removed in v2: every response is live.) The adapter can switch provider with one env var. |
 
 ## 11. Immediate next steps (when you say go)
 1. Confirm the three decisions in §6.

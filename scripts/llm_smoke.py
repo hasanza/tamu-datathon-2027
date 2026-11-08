@@ -31,7 +31,7 @@ def main() -> None:
         "Heads up: the Greensboro line will be down for maintenance from next Tuesday through "
         "next Wednesday; brake kits for it are unaffected."
     )
-    out, call = complete_json(Probe, system, user, "extract", provider=provider, model=model, use_cache=False)
+    out, call = complete_json(Probe, system, user, "extract", provider=provider, model=model)
     print(out.model_dump_json(indent=2))
     print(f"{call.provider}/{call.model}: {call.input_tokens} in, {call.output_tokens} out, ${call.cost_usd}")
     print("ledger total $", LEDGER.total_cost_usd)

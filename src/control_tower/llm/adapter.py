@@ -5,18 +5,15 @@ complete_json(schema, system, user, purpose) -> (parsed dict validated against s
 - Providers: "gemini" (google-genai) and "anthropic" (anthropic SDK). Selected by LLM_PROVIDER or per call.
 - Structured output: the provider is asked for JSON matching the schema; the result is validated with
   Pydantic. On validation failure we retry once with the error appended, then raise LLMValidationError.
-- Cache: sha256(provider, model, system, user, schema) -> cache/llm/<hash>.json.
-  LLM_REPLAY_ONLY=1 forbids network.
+- No cache: every response is live. (`LLMCall.cached` stays in the schema, always False.)
 - Usage: every call appends an LLMCall to the module Ledger; `Ledger.write(path)` produces
   runs/<run>/models.json.
 """
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
-import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Protocol
@@ -51,15 +48,19 @@ PRICES: dict[str, tuple[float, float] | None] = {
 
 
 class LLMError(RuntimeError):
-    pass
+    """A model call failed. `kind` is "provider" (SDK/network/config error) or "schema" (invalid output twice);
+    `attempts` is how many provider calls were actually made, `cost_usd` what they cost."""
+
+    def __init__(self, message: str, *, kind: str = "provider", attempts: int = 0, cost_usd: float = 0.0) -> None:
+        super().__init__(message)
+        self.kind = kind
+        self.attempts = attempts
+        self.cost_usd = cost_usd
 
 
 class LLMValidationError(LLMError):
-    pass
-
-
-class LLMReplayMiss(LLMError):
-    pass
+    def __init__(self, message: str, *, attempts: int = 0, cost_usd: float = 0.0) -> None:
+        super().__init__(message, kind="schema", attempts=attempts, cost_usd=cost_usd)
 
 
 @dataclass
@@ -190,15 +191,6 @@ def _cost(model: str, inp: int, out: int) -> float:
     return round(inp / 1e6 * price[0] + out / 1e6 * price[1], 6)
 
 
-def _cache_dir() -> Path:
-    return Path(os.environ.get("LLM_CACHE_DIR") or REPO_ROOT / "cache" / "llm")
-
-
-def _cache_key(provider: str, model: str, system: str, user: str, schema: dict[str, Any]) -> str:
-    blob = json.dumps([provider, model, system, user, schema], sort_keys=True, ensure_ascii=False)
-    return hashlib.sha256(blob.encode()).hexdigest()
-
-
 def complete_json[T: BaseModel](
     schema: type[T],
     system: str,
@@ -207,31 +199,27 @@ def complete_json[T: BaseModel](
     *,
     provider: str | None = None,
     model: str | None = None,
-    use_cache: bool = True,
 ) -> tuple[T, LLMCall]:
     """Ask the model for an object matching `schema`; return the validated instance and the usage record."""
     provider = provider or os.environ.get("LLM_PROVIDER", "gemini")
     model = model or DEFAULT_MODELS[provider]
     json_schema = schema.model_json_schema()
-    key = _cache_key(provider, model, system, user, json_schema)
-    cache_path = _cache_dir() / f"{key}.json"
-
-    if use_cache and cache_path.exists():
-        cached = json.loads(cache_path.read_text())
-        parsed = schema.model_validate(cached["parsed"])
-        call = LLMCall(**cached["usage"], cached=True)
-        LEDGER.calls.append(call)
-        return parsed, call
-
-    if os.environ.get("LLM_REPLAY_ONLY") == "1":
-        raise LLMReplayMiss(f"no cached response for {purpose} ({key[:12]}) and LLM_REPLAY_ONLY=1")
 
     backend = _backend(provider)
     attempt_user, last_error = user, None
     total_in = total_out = 0
     for _attempt in range(2):
-        t0 = time.perf_counter()
-        raw = backend.generate_json(model, system, attempt_user, json_schema)
+        try:
+            raw = backend.generate_json(model, system, attempt_user, json_schema)
+        except LLMError:
+            raise
+        except Exception as e:  # SDK / network errors (httpx timeouts, google API errors, ...)
+            raise LLMError(
+                f"{provider}/{model} call failed: {type(e).__name__}: {e}"[:500],
+                kind="provider",
+                attempts=_attempt + 1,
+                cost_usd=_cost(model, total_in, total_out),
+            ) from e
         total_in += raw.input_tokens
         total_out += raw.output_tokens
         try:
@@ -251,23 +239,12 @@ def complete_json[T: BaseModel](
             output_tokens=total_out,
             cost_usd=_cost(model, total_in, total_out),
             cached=False,
+            attempts=_attempt + 1,
         )
         LEDGER.calls.append(call)
-        if use_cache:
-            cache_path.parent.mkdir(parents=True, exist_ok=True)
-            cache_path.write_text(
-                json.dumps(
-                    {
-                        "provider": provider,
-                        "model": model,
-                        "purpose": purpose,
-                        "latency_s": round(time.perf_counter() - t0, 3),
-                        "parsed": parsed.model_dump(mode="json"),
-                        "usage": call.model_dump(exclude={"cached"}),
-                    },
-                    indent=2,
-                )
-                + "\n"
-            )
         return parsed, call
-    raise LLMValidationError(f"{provider}/{model} returned invalid {schema.__name__} twice: {last_error}")
+    raise LLMValidationError(
+        f"{provider}/{model} returned invalid {schema.__name__} twice: {last_error}",
+        attempts=2,
+        cost_usd=_cost(model, total_in, total_out),
+    )
