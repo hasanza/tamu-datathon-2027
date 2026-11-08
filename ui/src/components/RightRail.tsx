@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CheckCheck, Radio, RotateCcw, Trash2, TriangleAlert } from "lucide-react";
+import { CheckCheck, FlaskConical, Monitor, Radio, RotateCcw, Server, Trash2, TriangleAlert } from "lucide-react";
 import { stepSentence, toLiveStep, type ActivityItem } from "../api/stream";
 import { useRunStatus, useTraces } from "../api/hooks";
 import type { FeedEvent } from "../api/types";
 import { confirmClause, inboxOrder } from "../lib/escalation";
-import { TARGET_META, targetOf } from "../lib/target";
+import { whyOf } from "../lib/brief";
+import { TARGET_META, targetOf, type Target } from "../lib/target";
 import { FollowUpControl, FollowUpList } from "./FollowUp";
 import { prettifyRepr, safeStorage, summarize } from "../lib/format";
 import { firstSentence } from "../lib/flow";
@@ -85,33 +86,40 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
           <ul className="space-y-2.5" data-inbox="open">
             {open.map((t) => {
               const need = confirmClause(t);
+              const note = t.brief?.incidents.find((i) => i.note)?.note ?? null;
               return (
                 <li key={t.event_id} data-inbox-card className="relative rounded-lg border border-line border-l-[3px] border-l-warn bg-surface-2 p-2.5 text-[13px]">
                   {flash.has(t.event_id) && <div aria-hidden className="anim-flash pointer-events-none absolute inset-0 rounded-lg" />}
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
                     <button onClick={() => onSelect(t.event_id)} className="mono font-medium text-tx underline-offset-2 hover:underline">
                       {t.event_id}
                     </button>
-                    <span className="flex items-center gap-1.5">
-                      <Chip color={TARGET_META[targetOf(t)].color}>{TARGET_META[targetOf(t)].label}</Chip>
-                      <Chip color={t.status === "failed" ? "var(--fail)" : "var(--cat-unconfirmed)"}>{t.status}</Chip>
-                    </span>
+                    <Chip color={t.status === "failed" ? "var(--fail)" : "var(--cat-unconfirmed)"}>{t.status}</Chip>
+                    <TargetIcon target={targetOf(t)} />
                   </div>
-                  <p className="mt-1.5 text-tx2">{t.decision_reason}</p>
-                  {need && (
-                    <p className="mt-1.5 rounded-md border border-line bg-surface px-2 py-1.5 text-xs text-tx2">
-                      <span className="font-medium text-tx">Would make it actionable: </span>
-                      {need}
+                  {(need || note) && (
+                    <p className="mt-1.5 text-[13px] text-tx" data-inbox-needs>
+                      {need ? (
+                        <>
+                          <span className="font-semibold">Needs: </span>
+                          {need}
+                        </>
+                      ) : (
+                        note
+                      )}
                     </p>
                   )}
-                  <FollowUpControl trace={t} />
+                  <WhyLine reason={t.decision_reason} />
+                  <div className="mt-2 flex flex-wrap items-start gap-1.5 [&>button]:mt-0 [&>button]:gap-1 [&>button]:px-1.5 [&>button]:text-[11.5px] [&>div]:mt-0 [&>div]:basis-full" data-inbox-actions>
+                    <FollowUpControl trace={t} />
+                    <button
+                      onClick={() => setAcked((s) => new Set(s).add(ackKey(t.event_id)))} // functional: two quick clicks must both count
+                      className="inline-flex items-center gap-1 rounded-md border border-line px-2 py-1 text-xs text-tx2 hover:border-ok hover:text-tx"
+                    >
+                      <CheckCheck size={13} aria-hidden /> Acknowledge
+                    </button>
+                  </div>
                   <FollowUpList parentId={t.event_id} />
-                  <button
-                    onClick={() => setAcked((s) => new Set(s).add(ackKey(t.event_id)))} // functional: two quick clicks must both count
-                    className="mt-2 inline-flex items-center gap-1 rounded-md border border-line px-2 py-1 text-xs text-tx2 hover:border-ok hover:text-tx"
-                  >
-                    <CheckCheck size={13} aria-hidden /> Acknowledge
-                  </button>
                 </li>
               );
             })}
@@ -165,6 +173,34 @@ function KindChip({ it }: { it: ActivityItem }) {
   const kind = toLiveStep(it.payload, it.id)?.kind;
   const m = kind ? STEP_META[kind] : null;
   return m ? <Chip color={m.color}>{m.label}</Chip> : <span className="text-[10px] uppercase tracking-wide text-tx3">agent step</span>;
+}
+
+/** Where this event\'s calls went, as a small icon: the badge text and where it went are in the tooltip. */
+function TargetIcon({ target }: { target: Target }) {
+  const m = TARGET_META[target];
+  const I = target === "sandbox" ? FlaskConical : target === "dry" ? Monitor : Server;
+  return (
+    <span title={`${m.label}: calls went to ${m.where}`} aria-label={m.label} className="ml-auto inline-flex" style={{ color: m.color }}>
+      <I size={14} aria-hidden />
+    </span>
+  );
+}
+
+/** First sentence of the decision reason, the rest behind "more". */
+function WhyLine({ reason }: { reason: string }) {
+  const [open, setOpen] = useState(false);
+  const { why, rest } = whyOf(reason);
+  return (
+    <p className="mt-1 text-[12.5px] text-tx3" data-inbox-why>
+      {why}
+      {rest && open && <> {rest}</>}
+      {rest && (
+        <button onClick={() => setOpen(!open)} aria-expanded={open} className="ml-1 text-tx2 underline-offset-2 hover:text-tx hover:underline">
+          {open ? "less" : "more"}
+        </button>
+      )}
+    </p>
+  );
 }
 
 /** What one activity item says, from its structured payload fields (never the raw step text of a tool call). */
