@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { api, ApiError } from "../api/client";
-import { useRunMode, useToast } from "../state";
+import { PARALLEL_WORKERS, useRunMode, useToast } from "../state";
 
 /** Everything that depends on which run is on screen. Removed (not just invalidated) so a trace from the
  *  previous run can never be shown while the new run has not produced one yet. */
@@ -15,11 +15,12 @@ export function dropRunData(qc: QueryClient) {
 export function useRun() {
   const toast = useToast();
   const qc = useQueryClient();
-  const { mode } = useRunMode();
+  const { mode, order } = useRunMode();
   return useMutation({
-    mutationFn: (opts: { eventId?: string; all?: boolean }) => api.run({ ...opts, mode }),
+    // one event has nothing to run beside, so Parallel only applies to the whole feed
+    mutationFn: (opts: { eventId?: string; all?: boolean }) => api.run({ ...opts, mode, parallel: opts.all && order === "parallel" ? PARALLEL_WORKERS : undefined }),
     onSuccess: (_d, v) => {
-      const where = mode === "dry" ? "twin" : "fresh server";
+      const where = `${mode === "dry" ? "twin" : "fresh server"}${v.all ? `, ${order}` : ""}`;
       toast(v.all ? `Run started for the whole feed (${where})` : `Run started for ${v.eventId} (${where})`, "ok");
       dropRunData(qc);
     },

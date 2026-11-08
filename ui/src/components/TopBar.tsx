@@ -2,7 +2,7 @@ import { Moon, Play, Sun, Undo2 } from "lucide-react";
 import { useKpis, useRunStatus } from "../api/hooks";
 import type { Page } from "../lib/route";
 import { usd } from "../lib/format";
-import { useRunMode, useTheme } from "../state";
+import { useRunMode, useTheme, type RunOrder } from "../state";
 import { useReset, useRun } from "./useRun";
 
 const NAV: { page: Page; label: string }[] = [
@@ -44,7 +44,7 @@ export function TopBar({ page, go }: { page: Page; go: (p: Page) => void }) {
   const { theme, toggle } = useTheme();
   const run = useRun();
   const reset = useReset();
-  const { mode, setMode } = useRunMode();
+  const { mode, setMode, order, setOrder } = useRunMode();
   const status = useRunStatus().data;
   const running = !!status?.running;
   return (
@@ -67,7 +67,7 @@ export function TopBar({ page, go }: { page: Page; go: (p: Page) => void }) {
             </button>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-x-3 gap-y-2">
           {status?.mode && !running && (
             <button
               onClick={() => reset.mutate()}
@@ -89,6 +89,20 @@ export function TopBar({ page, go }: { page: Page; go: (p: Page) => void }) {
                 className={`rounded px-2 py-1 font-medium disabled:opacity-60 ${mode === m ? "bg-surface-2 text-tx" : "text-tx3 hover:text-tx"}`}
               >
                 {m === "dry" ? "Dry (twin)" : "Server"}
+              </button>
+            ))}
+          </div>
+          <div role="group" aria-label="Run order" className="flex rounded-md border border-line p-0.5 text-[12px]">
+            {(["sequential", "parallel"] as RunOrder[]).map((o) => (
+              <button
+                key={o}
+                aria-pressed={order === o}
+                disabled={running}
+                onClick={() => setOrder(o)}
+                title={o === "sequential" ? "Handle the events one by one (the default)" : "Handle several events side by side, each in its own fresh world"}
+                className={`rounded px-2 py-1 font-medium capitalize disabled:opacity-60 ${order === o ? "bg-surface-2 text-tx" : "text-tx3 hover:text-tx"}`}
+              >
+                {o}
               </button>
             ))}
           </div>

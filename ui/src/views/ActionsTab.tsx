@@ -4,7 +4,7 @@ import { useExecTarget, useLog } from "../api/hooks";
 import { isCustomId, WRITE_TOOLS, type Action, type AgentId, type Trace } from "../api/types";
 import { Chip, Empty, Mono, OkChip, Panel } from "../components/ui/primitives";
 import { clip, compactArgs } from "../lib/format";
-import { AGENT_META } from "../lib/meta";
+import { AGENT_META, transportMeta } from "../lib/meta";
 
 const PAGE = 100;
 
@@ -167,6 +167,7 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
               <th className="px-2 py-1.5">#</th>
               <th className="px-2 py-1.5">Agent</th>
               <th className="px-2 py-1.5">Tool</th>
+              <th className="px-2 py-1.5">Transport</th>
               <th className="px-2 py-1.5">Args</th>
               <th className="px-2 py-1.5">Justification</th>
               <th className="px-2 py-1.5">Path</th>
@@ -193,6 +194,9 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
                         <WriteChip tool={a.tool} />
                       </div>
                     </td>
+                    <td className="px-2 py-1.5">
+                      {transportMeta(a.transport) ? <Chip color={transportMeta(a.transport)!.color}>{transportMeta(a.transport)!.label}</Chip> : <span className="text-tx3">-</span>}
+                    </td>
                     <td className="max-w-64 px-2 py-1.5"><Mono className="break-all text-tx2" >{clip(compactArgs(a.args), 110)}</Mono></td>
                     <td className="max-w-72 px-2 py-1.5 text-xs text-tx2">{clip(a.justification, 130)}</td>
                     <td className="px-2 py-1.5">
@@ -213,7 +217,7 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
                   </tr>
                   {isOpen && (
                     <tr>
-                      <td colSpan={9} className="p-0"><ActionDetail a={a} /></td>
+                      <td colSpan={10} className="p-0"><ActionDetail a={a} /></td>
                     </tr>
                   )}
                 </Fragment>
@@ -221,7 +225,7 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
             })}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={9}><Empty title="No actions match the filters" /></td>
+                <td colSpan={10}><Empty title="No actions match the filters" /></td>
               </tr>
             )}
           </tbody>

@@ -77,6 +77,13 @@ export function toolBadge(step: { tool?: string | null; transport?: Transport | 
   if (CODE_TOOLS.has(t)) return "code";
   return "control";
 }
+/** Label and colour for where a call ran (contracts v0.2.0); null for v1 traces, which do not record it. */
+export function transportMeta(t: Transport | null | undefined): { label: string; color: string } | null {
+  if (!t) return null;
+  if (t === "mcp/stdio") return { label: "MCP", color: "var(--ok)" };
+  if (t === "twin") return { label: "twin", color: "var(--cat-compound)" };
+  return { label: "in-process", color: "var(--text-3)" };
+}
 export const BADGE_COLOR: Record<ToolBadge, string> = {
   MCP: "var(--ok)",
   twin: "var(--cat-compound)",
