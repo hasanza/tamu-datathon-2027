@@ -1,0 +1,8 @@
+@page { size: Letter; margin: 9mm 11mm; }
+body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 8.8pt; line-height: 1.24; color: #111; margin: 0; }
+h1 { font-size: 15pt; margin: 0 0 2pt; color: #b3101a; }
+h2 { font-size: 10pt; margin: 5pt 0 1.5pt; border-bottom: 1px solid #ccc; padding-bottom: 1pt; }
+p { margin: 0 0 3pt; text-align: justify; }
+ul { margin: 0 0 3pt 14pt; padding: 0; } li { margin: 0 0 1.5pt; }
+code { font-family: Menlo, monospace; font-size: 8.6pt; }
+em { color: #333; }
