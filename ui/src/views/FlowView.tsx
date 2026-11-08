@@ -4,6 +4,8 @@ import type { AgentStep } from "../api/types";
 import { Chip, Mono, Panel } from "../components/ui/primitives";
 import { buildFlow, firstLine, type Flow, type FlowChip, type FlowNode, type Tone } from "../lib/flow";
 import { compactArgs, prettifyRepr, summarize, usd } from "../lib/format";
+import { useFollow } from "../lib/useFollow";
+import { FollowChip } from "../components/ui/FollowChip";
 import { BADGE_COLOR, LANE_META, STEP_META, toolBadge } from "../lib/meta";
 import type { OrchRow } from "./OrchestrationTab";
 import { Clamped, DECISION_COLOR, Details, echoesCall, hasKeys } from "./orchParts";
@@ -307,9 +309,11 @@ export function FlowView({ rows, status, correctionRounds, escalations, live = f
   const timer = useRef<number | undefined>(undefined);
   const scroller = useRef<HTMLDivElement>(null);
   const [moreRight, setMoreRight] = useState(false);
+  const [viewW, setViewW] = useState(0);
   const checkMore = () => {
     const c = scroller.current;
     setMoreRight(!!c && c.scrollWidth - c.clientWidth - c.scrollLeft > 8);
+    if (c) setViewW(c.clientWidth);
   };
   const detail = useRef<HTMLDivElement>(null);
 
@@ -331,10 +335,25 @@ export function FlowView({ rows, status, correctionRounds, escalations, live = f
     window.addEventListener("resize", checkMore);
     return () => window.removeEventListener("resize", checkMore);
   }, [n, desktop]); // eslint-disable-line react-hooks/exhaustive-deps
-  // a live run grows to the right: keep the newest stage in view
+  // replay build-up: the stage whose turn it is (the nodes appear one after another)
+  const [replayIdx, setReplayIdx] = useState(0);
   useEffect(() => {
-    if (live && scroller.current) scroller.current.scrollTo({ left: scroller.current.scrollWidth, behavior: reduced ? "auto" : "smooth" });
-  }, [live, n, reduced]);
+    if (live || !animating || instant) return;
+    setReplayIdx(0);
+    const ts = flow.nodes.map((_, i) => window.setTimeout(() => setReplayIdx(i), i * step * 1000));
+    return () => ts.forEach((t) => window.clearTimeout(t));
+  }, [live, animating, instant, playKey, eventId]); // eslint-disable-line react-hooks/exhaustive-deps
+  // follow the active stage (live run: the newest; replay: the one appearing), centred, until the reader takes over
+  const activeId = live ? (flow.nodes[n - 1]?.id ?? null) : animating && !instant ? (flow.nodes[Math.min(replayIdx, n - 1)]?.id ?? null) : null;
+  const follow = useFollow({
+    scroller: () => scroller.current,
+    target: () => (activeId ? (scroller.current?.querySelector(`[data-flow-node="${activeId}"]`) as HTMLElement | null) : null),
+    axis: "x",
+    enabled: desktop && (live || (animating && !instant)),
+    activeKey: activeId,
+    resetKey: `${eventId}|${live}|${playKey}`,
+    reduced,
+  });
   // the detail opens below the strip (below the fold on a phone): bring it into view
   useEffect(() => {
     if (selected) detail.current?.scrollIntoView({ block: "nearest", behavior: reduced ? "auto" : "smooth" });
@@ -354,6 +373,8 @@ export function FlowView({ rows, status, correctionRounds, escalations, live = f
   const { placed, width, height } = useMemo(() => layout(flow), [flow]);
   const byId = useMemo(() => new Map(placed.map((p) => [p.node.id, p])), [placed]);
   const selNode = flow.nodes.find((x) => x.id === selected) ?? null;
+  // room to the right of the last stage so that it too can be centred (only when the strip overflows anyway)
+  const pad = desktop && width > viewW ? Math.round(viewW / 2) : 0;
   const delayOf = (i: number) => (instant || live || reduced ? 0 : i * step);
   const animate = !instant && !reduced;
   const toggle = (id: string) => setSelected((s) => (s === id ? null : id));
@@ -379,13 +400,14 @@ export function FlowView({ rows, status, correctionRounds, escalations, live = f
         <span className="text-[11px] text-tx3">
           {n} stages · click one to read what the agent did · the brief goes down, the result comes back up
         </span>
+        {follow.paused && <FollowChip onResume={follow.resume} />}
         <div className="ml-auto">{controls}</div>
       </div>
 
       {desktop ? (
         <div className="relative">
         <div ref={scroller} onScroll={checkMore} className="scroll-shadow-x overflow-x-auto rounded-lg border border-line bg-surface p-2" role="group" aria-label="Stages of this event">
-          <div key={playKey} className="relative" style={{ width, height }}>
+          <div key={playKey} className="relative" style={{ width: width + pad, height }}>
             <svg width={width} height={height} className="pointer-events-none absolute inset-0" aria-hidden>
               <defs>
                 <marker id="flow-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">

@@ -5,6 +5,8 @@ import type { LiveStep } from "../api/stream";
 import { Chip, Empty, Mono, Panel } from "../components/ui/primitives";
 import { Clamped, DECISION_COLOR, Details, Meta, echoesCall, hasKeys } from "./orchParts";
 import { FlowView } from "./FlowView";
+import { FollowChip } from "../components/ui/FollowChip";
+import { useFollow } from "../lib/useFollow";
 import { compactArgs, prettifyRepr, safeStorage, summarize, usd } from "../lib/format";
 import { BADGE_COLOR, LANE_META, LANES, laneOf, STEP_META, toolBadge, type LaneId } from "../lib/meta";
 
@@ -208,16 +210,35 @@ function MessageCard({ row, start }: { row: OrchRow; start: string }) {
 
 export function OrchestrationView({ rows, trace, live = false, empty }: { rows: OrchRow[]; trace?: Trace; live?: boolean; empty?: { title: string; hint: string } }) {
   const start = rows[0]?.step.t ?? "";
-  const endRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLOListElement>(null);
   const count = rows.length;
+  const [reduced, setReduced] = useState(() => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   useEffect(() => {
-    if (live && count > 0) endRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" }); // follow the run
-  }, [live, count]);
+    const m = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const on = () => setReduced(m.matches);
+    m.addEventListener("change", on);
+    return () => m.removeEventListener("change", on);
+  }, []);
+  // a live run: keep the newest card in the middle of the tab's scroller until the reader scrolls (then offer to resume)
+  const follow = useFollow({
+    scroller: () => listRef.current?.closest<HTMLElement>('[role="tabpanel"]') ?? null,
+    target: () => (listRef.current?.lastElementChild as HTMLElement | null) ?? null,
+    axis: "y",
+    enabled: live && count > 0,
+    activeKey: count,
+    resetKey: live,
+    reduced,
+  });
 
   if (count === 0) return empty ? <Empty title={empty.title} hint={empty.hint} /> : null;
   return (
     <div className="space-y-3">
       <HeaderStrip rows={rows} trace={trace} live={live} />
+      {follow.paused && (
+        <div className="sticky top-0 z-20 flex justify-end">
+          <FollowChip onResume={follow.resume} />
+        </div>
+      )}
       <Panel>
         {/* lane headers (desktop): one column per agent */}
         <div className="sticky top-0 z-10 -mx-3 -mt-3 mb-3 hidden grid-cols-4 gap-x-3 border-b border-line bg-surface px-3 py-2 md:grid">
@@ -237,7 +258,7 @@ export function OrchestrationView({ rows, trace, live = false, empty }: { rows: 
               <div key={l} className="border-l border-line/60" />
             ))}
           </div>
-          <ol className="relative space-y-2">
+          <ol ref={listRef} className="relative space-y-2">
             {rows.map((row) => {
               const from = LANES.indexOf(laneOf(row.step.from_agent ?? row.lane));
               const toLane = row.step.to_agent ? LANES.indexOf(laneOf(row.step.to_agent)) : -1;
@@ -259,8 +280,9 @@ export function OrchestrationView({ rows, trace, live = false, empty }: { rows: 
             })}
           </ol>
         </div>
-        <div ref={endRef} />
       </Panel>
+      {/* room below the newest card so that it can reach the middle of the scroller while a run is live */}
+      {live && <div aria-hidden className="h-[45vh]" />}
     </div>
   );
 }
