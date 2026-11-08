@@ -1,0 +1,409 @@
+{
+  "pipeline_version": "0.2.0",
+  "event_id": "E-02",
+  "received_at": "2027-03-08T07:34:00",
+  "source": "ops chat",
+  "text": "Rumor from a supplier rep: something may be off with a seat material coming up. No dates, no details, nothing confirmed.",
+  "status": "escalated",
+  "classification": {
+    "category": "unconfirmed",
+    "confidence": 0.95,
+    "reason": "The report is explicitly stated as a rumor with no dates, details, or confirmation."
+  },
+  "incidents": [
+    {
+      "incident_id": "E-02#1",
+      "event_id": "E-02",
+      "category": "unconfirmed",
+      "confidence": 0.95,
+      "plant_id": null,
+      "part_id": null,
+      "supplier_id": null,
+      "shipment_id": null,
+      "lot_id": null,
+      "orig_eta": null,
+      "new_eta": null,
+      "outage_start": null,
+      "outage_end": null,
+      "build_window_start": null,
+      "build_window_end": null,
+      "raw_mentions": {
+        "part": "seat material"
+      },
+      "resolution_steps": [
+        {
+          "mention": "seat material",
+          "entity_type": "part",
+          "candidates": [],
+          "chosen": null,
+          "method": "unresolved",
+          "note": null
+        }
+      ],
+      "ambiguities": [
+        {
+          "field": "part_id",
+          "issue": "cannot resolve 'seat material'",
+          "options": [],
+          "blocking": true
+        },
+        {
+          "field": "part_id",
+          "issue": "named only vaguely; not a specific record",
+          "options": [],
+          "blocking": true
+        },
+        {
+          "field": "specificity",
+          "issue": "no confirmed shipment, lot, plant or dates",
+          "options": [],
+          "blocking": true
+        }
+      ],
+      "reason": "The report is explicitly stated as a rumor with no dates, details, or confirmation."
+    }
+  ],
+  "paths": {
+    "E-02#1": [
+      {
+        "nodes": [
+          {
+            "id": "E-02",
+            "type": "Event",
+            "label": "Event E-02",
+            "group": null,
+            "count": null
+          }
+        ],
+        "edges": []
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent": "coordinator",
+      "started": "2027-03-08T07:34:04.811000",
+      "ended": "2027-03-08T07:34:19.170000",
+      "model": "gemini-3.8-flash",
+      "llm_calls": 4,
+      "cost_usd": 0.017352,
+      "steps": [
+        {
+          "t": "2027-03-08T07:34:04.811000",
+          "kind": "thought",
+          "text": "The incoming message describes an unconfirmed rumor with no specific dates, lots, or plants. I will register this as an unconfirmed incident.",
+          "data": null,
+          "turn": 1,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.004877
+        },
+        {
+          "t": "2027-03-08T07:34:04.815000",
+          "kind": "tool",
+          "text": "register_incidents({\"incidents\":[{\"category\":\"unconfirmed\",\"evidence\":\"Rumor from a supplier rep: something may be off with a seat material coming up. No dates, no details, nothing confirmed.\",\"plant\":null,\"part\":\"seat material\",\"supplier\":null,\"shipment_id\":null,\"lot_id\":null,\"original_eta\":null,\"new_eta\":null,\"outage_start\":null,\"outage_end\":null,\"build_window_start\":null,\"build_window_end\":null,\"reason\":\"The report is explicitly stated as a rumor with no dates, details, or confirmation.\",\"confidence\":0.95}]})",
+          "data": null,
+          "turn": 1,
+          "tool": "register_incidents",
+          "args": {
+            "incidents": [
+              {
+                "category": "unconfirmed",
+                "evidence": "Rumor from a supplier rep: something may be off with a seat material coming up. No dates, no details, nothing confirmed.",
+                "plant": null,
+                "part": "seat material",
+                "supplier": null,
+                "shipment_id": null,
+                "lot_id": null,
+                "original_eta": null,
+                "new_eta": null,
+                "outage_start": null,
+                "outage_end": null,
+                "build_window_start": null,
+                "build_window_end": null,
+                "reason": "The report is explicitly stated as a rumor with no dates, details, or confirmation.",
+                "confidence": 0.95
+              }
+            ]
+          },
+          "result": {
+            "count": 1,
+            "incidents": [
+              {
+                "category": "unconfirmed",
+                "confidence": 0.95,
+                "incident_id": "E-02#1",
+                "needs_human": true,
+                "actionable": false,
+                "ambiguities": [
+                  {
+                    "field": "part_id",
+                    "issue": "cannot resolve 'seat material'",
+                    "blocking": true
+                  },
+                  {
+                    "field": "part_id",
+                    "issue": "named only vaguely; not a specific record",
+                    "blocking": true
+                  },
+                  {
+                    "field": "specificity",
+                    "issue": "no confirmed shipment, lot, plant or dates",
+                    "blocking": true
+                  }
+                ]
+              }
+            ],
+            "next": "Gate each incident: drop_noise (noise only), escalate (unconfirmed / needs_human / unresolved), or delegate the actionable ones."
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null
+        },
+        {
+          "t": "2027-03-08T07:34:07.985000",
+          "kind": "thought",
+          "text": "Incident E-02#1 is unconfirmed and needs human review, lacking specific part, lot, shipment, plant, or date details. Escalating as per handbook rules.",
+          "data": null,
+          "turn": 2,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.004261
+        },
+        {
+          "t": "2027-03-08T07:34:07.986000",
+          "kind": "decision",
+          "text": "E-02#1: escalated. Unconfirmed rumor regarding seat material with no specific shipment, lot, plant, or dates.",
+          "data": {
+            "reason": "E-02#1 (unconfirmed, source: ops chat): \"Rumor from a supplier rep: something may be off with a seat material coming up. No dates, no details, nothing confirmed.\". Not actionable: Unconfirmed rumor regarding seat material with no specific shipment, lot, plant, or dates. What would make it actionable: Specific part ID or lot ID, supplier name, receiving plant, and suspect dates or shipment tracking. No operational action taken."
+          },
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null
+        },
+        {
+          "t": "2027-03-08T07:34:07.986000",
+          "kind": "tool",
+          "text": "escalate({\"incident_id\":\"E-02#1\",\"reason\":\"Unconfirmed rumor regarding seat material with no specific shipment, lot, plant, or dates.\",\"what_would_make_it_actionable\":\"Specific part ID or lot ID, supplier name, receiving plant, and suspect dates or shipment tracking.\"})",
+          "data": null,
+          "turn": 2,
+          "tool": "escalate",
+          "args": {
+            "incident_id": "E-02#1",
+            "reason": "Unconfirmed rumor regarding seat material with no specific shipment, lot, plant, or dates.",
+            "what_would_make_it_actionable": "Specific part ID or lot ID, supplier name, receiving plant, and suspect dates or shipment tracking."
+          },
+          "result": {
+            "escalated": "E-02#1",
+            "writes": 0,
+            "note": "queued; no write will be sent for this incident"
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null
+        },
+        {
+          "t": "2027-03-08T07:34:11.570000",
+          "kind": "thought",
+          "text": "The single incident E-02#1 has been escalated as an unconfirmed rumor with no actionable details. Per instructions, when nothing is actionable and all incidents are gated (escalated or noise), we go directly to finish.",
+          "data": null,
+          "turn": 3,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.00407
+        },
+        {
+          "t": "2027-03-08T07:34:19.151000",
+          "kind": "decision",
+          "text": "Event settled (escalated): An unconfirmed rumor from a supplier rep stating that something may be off with seat material was received via ops chat under identifier E-02#1. The message contained no dates, details, or confirmation, making it non-actionable due to missing shipment, lot, plant, or date specifics. Consequently, report E-02#1 was escalated to a human without any operational changes.",
+          "data": null,
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null
+        },
+        {
+          "t": "2027-03-08T07:34:19.151000",
+          "kind": "tool",
+          "text": "finish({\"summary_hint\":\"Escalated unconfirmed rumor regarding seat material due to lack of specific part, lot, plant, or dates.\"})",
+          "data": null,
+          "turn": 3,
+          "tool": "finish",
+          "args": {
+            "summary_hint": "Escalated unconfirmed rumor regarding seat material due to lack of specific part, lot, plant, or dates."
+          },
+          "result": {
+            "finished": true,
+            "status": "escalated",
+            "summary": "An unconfirmed rumor from a supplier rep stating that something may be off with seat material was received via ops chat under identifier E-02#1. The message contained no dates, details, or confirmation, making it non-actionable due to missing shipment, lot, plant, or date specifics. Consequently, report E-02#1 was escalated to a human without any operational changes."
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null
+        },
+        {
+          "t": "2027-03-08T07:34:19.151000",
+          "kind": "decision",
+          "text": "Coordinator finished",
+          "data": {
+            "outcome": "escalated"
+          },
+          "turn": 3,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null
+        },
+        {
+          "t": "2027-03-08T07:34:19.170000",
+          "kind": "execute",
+          "text": "escalate: E-02#1 (unconfirmed, source: ops chat): \"Rumor from a supplier rep: something may be off with a seat material coming up. No dates, no details, nothing confirmed.\". Not actionable: Unconfirmed rumor regarding seat material with no specific shipment, lot, plant, or dates. What would make it actionable",
+          "data": null,
+          "turn": null,
+          "tool": "escalate",
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "mcp/stdio",
+          "model": null,
+          "cost_usd": null
+        }
+      ]
+    }
+  ],
+  "orchestration": {
+    "mode": "sequential",
+    "correction_rounds": 0,
+    "escalations": [
+      {
+        "incident_id": "E-02#1",
+        "reason": "E-02#1 (unconfirmed, source: ops chat): \"Rumor from a supplier rep: something may be off with a seat material coming up. No dates, no details, nothing confirmed.\". Not actionable: Unconfirmed rumor regarding seat material with no specific shipment, lot, plant, or dates. What would make it actionable: Specific part ID or lot ID, supplier name, receiving plant, and suspect dates or shipment tracking. No operational action taken."
+      }
+    ],
+    "mcp_transport": "mcp/stdio"
+  },
+  "actions": [
+    {
+      "seq": 1,
+      "incident_id": "E-02#1",
+      "agent": "coordinator",
+      "tool": "escalate",
+      "args": {
+        "reason": "E-02#1 (unconfirmed, source: ops chat): \"Rumor from a supplier rep: something may be off with a seat material coming up. No dates, no details, nothing confirmed.\". Not actionable: Unconfirmed rumor regarding seat material with no specific shipment, lot, plant, or dates. What would make it actionable: Specific part ID or lot ID, supplier name, receiving plant, and suspect dates or shipment tracking. No operational action taken."
+      },
+      "justification": "Escalated to a human: not safe to act on (handbook rules 7/8: no operational action for it)",
+      "path_ids": [],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-02#1"
+      ]
+    }
+  ],
+  "world_diff": {
+    "moved_pos": [],
+    "notified_dealers": [],
+    "loaners": [],
+    "held_lots": [],
+    "stopped_vins": [],
+    "contacted_customers": []
+  },
+  "counterfactual": null,
+  "llm": {
+    "calls": [
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4263,
+        "output_tokens": 448,
+        "cost_usd": 0.004877,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4552,
+        "output_tokens": 226,
+        "cost_usd": 0.004261,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4651,
+        "output_tokens": 155,
+        "cost_usd": 0.00407,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "summarize",
+        "input_tokens": 455,
+        "output_tokens": 1014,
+        "cost_usd": 0.004144,
+        "cached": false,
+        "attempts": 1
+      }
+    ],
+    "total_cost_usd": 0.017352
+  },
+  "summary": "An unconfirmed rumor from a supplier rep stating that something may be off with seat material was received via ops chat under identifier E-02#1. The message contained no dates, details, or confirmation, making it non-actionable due to missing shipment, lot, plant, or date specifics. Consequently, report E-02#1 was escalated to a human without any operational changes.",
+  "decision_reason": "The report was not safe to act on and was handed to a human with no operational change in accordance with rule 8 regarding unconfirmed or unclear reports. Action could not be taken due to the absence of a specific part ID, lot ID, supplier name, receiving plant, and suspect dates or shipment tracking."
+}

@@ -14,7 +14,7 @@ from datetime import date
 from types import SimpleNamespace
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from control_tower.orchestration.auditor import audit, plan_digest
 from control_tower.orchestration.config import agent_config
@@ -138,8 +138,24 @@ def _log_planning_reads(ctx: EventContext) -> None:
 # ---------------------------------------------------------------------------------------------------------------
 
 
+class RawIncidentIn(RawIncident):
+    """RawIncident that also accepts a bare string for a date field (models often drop the {text, iso} wrapper)."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _bare_dates(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            data = {k: ({"text": v} if isinstance(v, str) and k in DATE_FIELDS else v) for k, v in data.items()}
+        return data
+
+
+DATE_FIELDS = {
+    "original_eta", "new_eta", "outage_start", "outage_end", "build_window_start", "build_window_end",
+}  # fmt: skip
+
+
 class RegisterArgs(BaseModel):
-    incidents: list[RawIncident] = Field(
+    incidents: list[RawIncidentIn] = Field(
         description="Your understanding of the message: one entry per distinct incident, in the order of the text"
     )
 

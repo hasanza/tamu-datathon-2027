@@ -23,7 +23,7 @@ executes. The handbook rules are enforced in code: you cannot skip a step, the t
 
 UNDERSTANDING (your first action is register_incidents). Read the message the way this guide describes, then pass \
 your reading to register_incidents as incidents: category, verbatim evidence, plant/part/supplier/shipment/lot \
-mentions exactly as written, date phrases exactly as written (with your best ISO guess), confidence, reason. Code \
+mentions exactly as written, date phrases exactly as written, each date field an object {{"text": phrase, "iso": best YYYY-MM-DD guess}}, confidence, reason. Code \
 then resolves names and dates; you never decide an id or a date yourself.
 --- guide ---
 {UNDERSTANDING_GUIDE}
