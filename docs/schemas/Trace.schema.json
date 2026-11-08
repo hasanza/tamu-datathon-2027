@@ -410,7 +410,7 @@
       "type": "object"
     },
     "Brief": {
-      "description": "v0.2.3: deterministic headline + per-incident fact rows + gates, built from the same counts as the summary.",
+      "description": "v0.2.3: deterministic headline + per-incident fact rows + gates, built from the same counts as the summary.\nv0.2.4: `entities` = display strings the agents inferred (the UI bolds them in the summary text).",
       "properties": {
         "headline": {
           "title": "Headline",
@@ -439,6 +439,13 @@
             "type": "string"
           },
           "title": "Gates",
+          "type": "array"
+        },
+        "entities": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Entities",
           "type": "array"
         }
       },
@@ -1371,7 +1378,7 @@
   },
   "properties": {
     "pipeline_version": {
-      "default": "0.2.3",
+      "default": "0.2.4",
       "title": "Pipeline Version",
       "type": "string"
     },

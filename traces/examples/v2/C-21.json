@@ -1,5 +1,5 @@
 {
-  "pipeline_version": "0.2.3",
+  "pipeline_version": "0.2.4",
   "event_id": "C-21",
   "received_at": "2027-03-08T09:00:00",
   "source": "supplier email",
@@ -508,6 +508,17 @@
         "note": "Lot ambiguous: the stated window overlaps LOT-0077 (Feb 22–24) and LOT-0078 (Feb 25–Mar 1); a human must pick one"
       }
     ],
-    "gates": []
+    "gates": [],
+    "entities": [
+      "Wacky Wheels Lexington",
+      "P_KY",
+      "HARN-B",
+      "heavy-duty wiring harness",
+      "built 2027-02-23 → 2027-02-26",
+      "LOT-0077",
+      "LOT-0078",
+      "Feb 22–24",
+      "Feb 25–Mar 1"
+    ]
   }
 }

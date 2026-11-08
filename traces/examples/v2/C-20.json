@@ -1,5 +1,5 @@
 {
-  "pipeline_version": "0.2.3",
+  "pipeline_version": "0.2.4",
   "event_id": "C-20",
   "received_at": "2027-03-08T09:00:00",
   "source": "plant alert",
@@ -4783,6 +4783,11 @@
       "pre-flight 50/50 accepted",
       "auditor agreed",
       "live baseline matched (3 slot, 11 pool reads)"
+    ],
+    "entities": [
+      "Wacky Wheels Greensboro",
+      "P_NC",
+      "2027-03-16 → 2027-03-17"
     ]
   }
 }

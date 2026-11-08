@@ -1,5 +1,5 @@
 {
-  "pipeline_version": "0.2.2",
+  "pipeline_version": "0.2.4",
   "event_id": "E-02",
   "received_at": "2027-03-08T07:34:00",
   "source": "ops chat",
