@@ -44,7 +44,7 @@ export function TopBar({ page, go }: { page: Page; go: (p: Page) => void }) {
   const { theme, toggle } = useTheme();
   const run = useRun();
   const reset = useReset();
-  const { mode, setMode, order, setOrder } = useRunMode();
+  const { order, setOrder } = useRunMode();
   const status = useRunStatus().data;
   const running = !!status?.running;
   return (
@@ -78,20 +78,6 @@ export function TopBar({ page, go }: { page: Page; go: (p: Page) => void }) {
               <Undo2 size={14} aria-hidden /> Back to snapshot
             </button>
           )}
-          <div role="group" aria-label="Run mode" className="flex rounded-md border border-line p-0.5 text-[12px]">
-            {(["dry", "server"] as const).map((m) => (
-              <button
-                key={m}
-                aria-pressed={mode === m}
-                disabled={running}
-                onClick={() => setMode(m)}
-                title={m === "dry" ? "Rehearse and execute on the in-process twin (no server needed)" : "Execute against a fresh organizers' enterprise server"}
-                className={`rounded px-2 py-1 font-medium disabled:opacity-60 ${mode === m ? "bg-surface-2 text-tx" : "text-tx3 hover:text-tx"}`}
-              >
-                {m === "dry" ? "Dry (twin)" : "Server"}
-              </button>
-            ))}
-          </div>
           <div role="group" aria-label="Run order" className="flex rounded-md border border-line p-0.5 text-[12px]">
             {(["sequential", "parallel"] as RunOrder[]).map((o) => (
               <button

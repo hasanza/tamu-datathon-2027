@@ -5,7 +5,7 @@ import { Chip, Mono, Panel } from "../components/ui/primitives";
 import { LANE_META, type LaneId } from "../lib/meta";
 
 /* About page for the v2 architecture (docs/PLAN_V2.md §2): a coordinator and three specialist LLM agents reason and
-   orchestrate; plain-code tools compute; the twin proves; an MCP client executes. */
+   orchestrate; plain-code tools compute; a sandbox pre-flight proves; an MCP client executes. */
 
 interface Stage {
   icon: ReactNode;
@@ -35,11 +35,11 @@ const STAGES: Stage[] = [
   },
   {
     icon: <FlaskConical size={18} />,
-    verb: "Twin proves",
-    who: "In-process twin",
+    verb: "Pre-flight proves",
+    who: "Sandbox copy of the enterprise",
     color: "var(--cat-compound)",
-    body: "The whole plan is rehearsed on a copy of the enterprise, then checked by a second model. If anything fails, nothing is sent.",
-    lines: ["Invariants checked", "Independent auditor model", "Gate: confidence and rehearsal"],
+    body: "Every plan is rehearsed on a sandbox copy before a single write is sent, then checked by a second model. If anything fails, nothing is sent.",
+    lines: ["Invariants checked", "Independent auditor model", "Gate: confidence and pre-flight"],
   },
   {
     icon: <Play size={18} />,
@@ -73,7 +73,7 @@ function Spoke({ lane, tools }: { lane: LaneId; tools: string[] }) {
 function HubDiagram() {
   const hub = LANE_META.coordinator;
   return (
-    <div className="space-y-2" role="img" aria-label="Coordinator in the middle, delegating to Supply Chain Planner, Dealer Network and Customer Care and Quality, then validating, rehearsing on the twin, auditing and executing through MCP">
+    <div className="space-y-2" role="img" aria-label="Coordinator in the middle, delegating to Supply Chain Planner, Dealer Network and Customer Care and Quality, then validating, running a pre-flight check on a sandbox copy, auditing and executing through MCP">
       <div className="flex flex-wrap items-center justify-center gap-2">
         <div className="rounded-lg border border-line bg-bg px-3 py-2 text-[12px] text-tx2">
           <FileText size={14} className="mr-1 inline text-tx3" aria-hidden /> event text
@@ -98,7 +98,7 @@ function HubDiagram() {
       </div>
       <div className="flex flex-wrap items-center justify-center gap-1.5 text-[12px] text-tx2">
         <ArrowDown size={14} className="text-tx3" aria-hidden />
-        {["validate (handbook as code)", "twin rehearsal", "auditor (second model)", "MCP client", "enterprise server"].map((s, i, a) => (
+        {["validate (handbook as code)", "pre-flight check (sandbox copy)", "auditor (second model)", "MCP client", "enterprise server"].map((s, i, a) => (
           <span key={s} className="inline-flex items-center gap-1.5">
             <span className="rounded-md border border-line bg-bg px-2 py-0.5">{s}</span>
             {i < a.length - 1 && <ArrowRight size={13} className="text-tx3" aria-hidden />}
@@ -117,10 +117,10 @@ export function AboutPage() {
         <h2 className="text-lg font-semibold tracking-tight">About</h2>
         <p className="mt-1 max-w-3xl text-[13px] text-tx2">
           Wacky Wheels Control Tower turns a stream of unstructured disruption reports into a small number of correct, explainable actions.
-          Four agents reason about each event; every number that changes the world comes from code, is proven on a twin first, and is then executed through MCP.
+          Four agents reason about each event; every number that changes the world comes from code, is proven by a pre-flight check on a sandbox copy first, and is then executed through MCP. Every plan is rehearsed on a sandbox copy before a single write is sent; judge events run on a private sandbox server through the same MCP client.
         </p>
         <p className="mt-2 inline-block rounded-md border-l-[3px] border-brand-bright bg-surface-2 px-3 py-1.5 text-[14px] font-medium text-tx">
-          Agents reason and orchestrate; tools compute; the twin proves; MCP executes.
+          Agents reason and orchestrate; tools compute; the sandbox proves; MCP executes.
         </p>
       </div>
 
@@ -184,7 +184,7 @@ export function AboutPage() {
         <Panel title="Guarantees">
           <ul className="space-y-1.5 text-[13px] text-tx2">
             <li>The policy handbook is enforced by validators written as code, rule by rule.</li>
-            <li>Nothing is written to the server unless the twin rehearsal passed.</li>
+            <li>Nothing is written to the server unless the pre-flight check on the sandbox copy passed.</li>
             <li>Unconfirmed or ambiguous reports are escalated to a human, never acted on.</li>
             <li>A failed call is not retried blindly: the rest of that incident is skipped and escalated with what was done.</li>
           </ul>

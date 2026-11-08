@@ -280,7 +280,10 @@ def test_reset_refused_while_running(client, monkeypatch):
 def test_custom_event_sandbox(client, cfg, monkeypatch):
     import subprocess as sp
 
+    seen = {}
+
     def fake_run(cmd, **kw):
+        seen["timeout"] = kw["timeout"]
         assert cmd[-2] == "--custom"
         ev = json.loads(Path(cmd[-1]).read_text())[0]
         assert ev["event_id"] == "C-01" and ev["text"] == "The Huntsville line is down Wednesday."
@@ -294,6 +297,8 @@ def test_custom_event_sandbox(client, cfg, monkeypatch):
     assert client.post("/api/custom", json={"text": "x"}).status_code == 422
     r = client.post("/api/custom", json={"text": "The Huntsville line is down Wednesday."})
     assert r.status_code == 200 and r.json()["event_id"] == "C-01"
+    assert r.json()["target"] == "sandbox"  # a custom event is a sandbox run (contract 0.2.2 will put it on the trace)
+    assert seen["timeout"] == 300  # a real LLM run is about two minutes
     assert client.get("/api/traces/C-01").json()["event_id"] == "C-01"
     ev = {e["event_id"]: e for e in client.get("/api/events").json()}
     assert ev["C-01"]["custom"] is True and "E-01" in ev
@@ -366,3 +371,13 @@ def test_custom_follow_up_appends_operator_details(client, cfg, monkeypatch):
     )
     ev = {e["event_id"]: e for e in client.get("/api/events").json()}
     assert ev["C-01"]["parent_id"] == "E-02"
+
+
+def test_run_defaults_to_the_scored_server_mode(client, monkeypatch):
+    import api.app as appmod
+
+    started = []
+    monkeypatch.setattr(appmod.subprocess, "Popen", lambda cmd, **kw: started.append(cmd) or FakeProc())
+    r = client.post("/api/run", params={"all": True})  # no mode: feed events always go to the scored server
+    assert r.status_code == 202 and r.json()["mode"] == "server"
+    assert started[0][started[0].index("--mode") + 1] == "server"

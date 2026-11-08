@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FlaskConical, Play } from "lucide-react";
 import { isNotFound, useTrace } from "../api/hooks";
 import { isCustomId, type FeedEvent, type Status } from "../api/types";
+import { TARGET_META, targetOf } from "../lib/target";
 import { SourceIcon } from "../components/EventFeed";
 import { useRun } from "../components/useRun";
 import { CategoryBadge, Chip, ConfidenceRing, Empty, ErrorBox, Loading, StatusChip } from "../components/ui/primitives";
@@ -30,6 +31,7 @@ export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent
   if (!event) return <Empty title="Select an event" hint="Pick an event from the feed (or press j / k) to see what the agents did and why." />;
 
   const t = trace.data;
+  const target = targetOf(t, event.event_id);
   const sandbox = isCustomId(event.event_id) || !!event.custom;
   const status: Status = processing ? "processing" : (t?.status ?? event.status);
   const queued = !t && !trace.isLoading && (!trace.isError || isNotFound(trace.error));
@@ -46,7 +48,7 @@ export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent
           <h2 className="mono text-lg font-semibold">{event.event_id}</h2>
           <CategoryBadge category={t?.classification.category ?? event.category} />
           <StatusChip status={status} />
-          {sandbox && <Chip color="var(--cat-compound)">Sandbox</Chip>}
+          <Chip color={TARGET_META[target].color} title={`Calls went to ${TARGET_META[target].where}`}>{TARGET_META[target].label}</Chip>
           <span className="flex items-center gap-1.5 text-xs text-tx3">
             <SourceIcon source={event.source} /> {event.source} · <span className="mono">{dateTime(event.received_at)}</span>
           </span>
@@ -66,7 +68,7 @@ export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent
         {sandbox && (
           <p className="flex items-center gap-1.5 rounded-md border border-line bg-surface-2 px-2.5 py-1.5 text-xs text-tx2">
             <FlaskConical size={13} className="shrink-0" style={{ color: "var(--cat-compound)" }} aria-hidden />
-            Sandbox run: rehearsed and executed on the digital twin. No calls reached the real enterprise server or the action log.
+            Sandbox run: executed through the same MCP client as the feed against a private sandbox copy of the enterprise server. The scored action log is untouched.
           </p>
         )}
         <div role="tablist" aria-label="Event views" className="-mb-px flex gap-1 overflow-x-auto">

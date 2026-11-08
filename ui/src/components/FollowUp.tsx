@@ -15,7 +15,8 @@ const MAX_DETAILS = 1000;
 
 /**
  * "Add details and re-run" for an escalated event. The operator adds what the escalation asked for; the API appends
- * it to the original text and runs the whole pipeline again in the SANDBOX (digital twin only). It never sends a real write.
+ * it to the original text and runs the whole pipeline again against a private sandbox copy of the enterprise server (the same
+ * mechanism as "Try your own event"). It never touches the scored action log.
  */
 export function FollowUpControl({ trace }: { trace: Trace }) {
   const [open, setOpen] = useState(false);
@@ -34,7 +35,7 @@ export function FollowUpControl({ trace }: { trace: Trace }) {
     try {
       const r = await api.followUp(trace.event_id, trimmed);
       await Promise.all([qc.invalidateQueries({ queryKey: ["events"] }), qc.invalidateQueries({ queryKey: ["kpis"] })]);
-      toast(`${r.event_id}: ${r.category.replace("_", " ")} (${r.status}). Follow-up to ${trace.event_id}, sandbox run, no real calls.`, "ok");
+      toast(`${r.event_id}: ${r.category.replace("_", " ")} (${r.status}). Follow-up to ${trace.event_id}, re-run in the sandbox.`, "ok");
       setDetails("");
       setOpen(false);
       openEvent(r.event_id);
@@ -79,7 +80,7 @@ export function FollowUpControl({ trace }: { trace: Trace }) {
         className="w-full resize-y rounded-md border border-line bg-bg px-2 py-1.5 text-[13px] text-tx placeholder:text-tx3 disabled:opacity-60"
       />
       <p className="flex items-center gap-1 text-[11px] text-tx3">
-        <FlaskConical size={11} aria-hidden /> Sandbox: rehearsed on the digital twin, nothing reaches the real server.
+        <FlaskConical size={11} aria-hidden /> Re-runs in the sandbox: a private copy of the enterprise server; the scored action log is never touched.
       </p>
       <div className="flex items-center gap-2">
         <span className="text-[11px] text-tx3" aria-live="polite">
@@ -117,7 +118,7 @@ export function FollowUpList({ parentId }: { parentId: string }) {
       <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-tx3">
         <CornerDownRight size={12} aria-hidden /> Follow-ups ({rows.length})
       </div>
-      <p className="text-[11px] text-tx3">Sandbox: twin only, nothing reached the real server.</p>
+      <p className="text-[11px] text-tx3">Re-run in the sandbox: a private copy of the enterprise server; the scored action log was not touched.</p>
       <ul className="mt-1 space-y-1">
         {rows.map((r) => (
           <li key={r.event_id}>

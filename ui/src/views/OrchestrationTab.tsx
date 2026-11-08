@@ -7,7 +7,7 @@ import { clock, compactArgs, offsetMs, summarize, usd } from "../lib/format";
 import { BADGE_COLOR, LANE_META, LANES, laneOf, STEP_META, toolBadge, type LaneId } from "../lib/meta";
 
 /* The Orchestration view (PLAN_V2 §8): four swimlanes, time flowing down. Cards are Thought (the agent's reasoning),
-   Tool call (name, args, result, MCP / twin / graph badge), Message (an arrow between two lanes) and Decision
+   Tool call (name, args, result, MCP / graph badge), Message (an arrow between two lanes) and Decision
    (gate passed, plan validated, correction round, escalated, executed). v1 traces (old agent ids and step kinds)
    render too: their steps map onto the same lanes as generic cards. */
 
