@@ -15,6 +15,8 @@ import os
 import sys
 import time
 import traceback
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import httpx
@@ -25,6 +27,7 @@ from control_tower.llm.adapter import LEDGER
 from control_tower.orchestration.config import agent_config
 from control_tower.orchestration.coordinator import Coordinator
 from control_tower.planning.policy import Policy
+from control_tower.schemas.trace import Trace
 from control_tower.trace import Sink
 from control_tower.understanding.resolve import EntityIndex
 from control_tower.world.executor import HttpExecutor, McpExecutor, TwinExecutor
@@ -47,6 +50,31 @@ def _apply_model_overrides(provider: str | None, model: str | None, audit_model:
         os.environ["CT_MODEL_AUDITOR"] = audit_model
 
 
+def run_feed(
+    handle: Callable[[dict], Trace], events: list[dict], *, parallel: int = 1, pace: float = 0.0
+) -> list[tuple[dict, Trace | None, str, float]]:
+    """Handle `events`; returns (event, trace or None, traceback, wall seconds) IN EVENT ORDER.
+    parallel > 1 runs that many events at once (each has its own EventContext and its own world on the enterprise);
+    one event crashing never stops the others."""
+
+    def one(ev: dict) -> tuple[dict, Trace | None, str, float]:
+        t0 = time.perf_counter()
+        try:
+            return ev, handle(ev), "", time.perf_counter() - t0
+        except Exception:  # never let one event stop the feed
+            return ev, None, traceback.format_exc(), time.perf_counter() - t0
+
+    if parallel <= 1:
+        out = []
+        for i, ev in enumerate(events):
+            if i and pace:
+                time.sleep(pace)
+            out.append(one(ev))
+        return out
+    with ThreadPoolExecutor(max_workers=parallel, thread_name_prefix="event") as pool:
+        return list(pool.map(one, events))
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--all", action="store_true")
@@ -64,10 +92,15 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--no-explain", action="store_true")
     ap.add_argument("--events-file", help="JSON list of events to run instead of the organizers' feed (sandbox runs)")
     ap.add_argument("--pace", type=float, default=0.0, help="seconds to wait between events (live demo)")
+    ap.add_argument(
+        "--parallel", type=int, default=1, metavar="N", help="handle N events at once (default 1 = sequential)"
+    )
     ap.add_argument("--transfer-min-day", choices=["today", "disruption_end"], default="today")
     a = ap.parse_args(argv)
     if not (a.all or a.event):
         ap.error("pass --all or --event E-xx")
+    if a.parallel < 1:
+        ap.error("--parallel must be >= 1")
 
     _apply_model_overrides(a.provider, a.model, a.audit_model)
     out = (REPO_ROOT / a.out) if not Path(a.out).is_absolute() else Path(a.out)
@@ -93,23 +126,21 @@ def main(argv: list[str] | None = None) -> int:
     coord = Coordinator(
         world, graph, index, twin, executor, traces_dir=traces_dir, sink=sink,
         policy=Policy(transfer_min_day=a.transfer_min_day), use_tiebreak=True, use_audit=not a.no_audit, use_explain=not a.no_explain,
+        mode="parallel" if a.parallel > 1 else "sequential",
     )  # fmt: skip
 
-    print(f"{len(wanted)} event(s) -> {executor.name}; traces in {traces_dir.relative_to(REPO_ROOT)}")
+    print(
+        f"{len(wanted)} event(s) -> {executor.name} [{coord.mode} x{a.parallel}]; traces in {traces_dir.relative_to(REPO_ROOT)}"
+    )
     t0, rows, failed_events = time.perf_counter(), [], 0
-    for i, ev in enumerate(wanted):
-        if i and a.pace:
-            time.sleep(a.pace)
-        t_ev = time.perf_counter()
-        try:
-            tr = coord.handle(ev)
-        except Exception:  # never let one event stop the feed
+    for ev, tr, tb, wall in run_feed(coord.handle, wanted, parallel=a.parallel, pace=a.pace):
+        if tr is None:
             failed_events += 1
-            print(f"{ev['event_id']}: CRASH\n{traceback.format_exc()}", file=sys.stderr)
+            print(f"{ev['event_id']}: CRASH\n{tb}", file=sys.stderr)
             continue
-        writes = sum(a.writes and bool(a.result and a.result.ok) for a in tr.actions)
-        bad = sum(bool(a.result and not a.result.ok and not a.skipped) for a in tr.actions)
-        skipped = sum(a.skipped for a in tr.actions)
+        writes = sum(x.writes and bool(x.result and x.result.ok) for x in tr.actions)
+        bad = sum(bool(x.result and not x.result.ok and not x.skipped) for x in tr.actions)
+        skipped = sum(x.skipped for x in tr.actions)
         turns = sum(s.kind == "thought" for r in tr.agents for s in r.steps)
         llm_calls = sum(c.attempts for c in tr.llm.calls)
         rows.append(
@@ -123,11 +154,10 @@ def main(argv: list[str] | None = None) -> int:
                 bad,
             )
         )
-        wall = time.perf_counter() - t_ev
         print(
             f"{tr.event_id}  {tr.status:9} {tr.classification.category:15} conf={tr.classification.confidence:.2f}  calls={len(tr.actions):4} writes={writes:4} failed={bad} skipped={skipped} "
             f"turns={turns} llm={llm_calls} ${tr.llm.total_cost_usd:.4f} {wall:.0f}s"
-        )
+        )  # fmt: skip
 
     LEDGER.write(out / "models.json")
     total_calls = sum(r[4] for r in rows)

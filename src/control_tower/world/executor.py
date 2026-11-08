@@ -219,6 +219,7 @@ class TwinExecutor:
     def __init__(self, log_path: Path | None = None) -> None:
         self._twin = Twin()
         self._log = log_path
+        self._log_lock = threading.Lock()
         if log_path:
             log_path.parent.mkdir(parents=True, exist_ok=True)
             log_path.write_text("")
@@ -226,6 +227,7 @@ class TwinExecutor:
     def call(self, event_id: str, tool: str, args: dict[str, Any]) -> ToolResult:
         res = self._twin.execute(event_id, tool, args)
         if self._log:
-            with open(self._log, "a", encoding="utf-8") as f:
-                f.write(json.dumps({"event_id": event_id, "tool": tool, "args": args, "ok": res.ok}) + "\n")
+            line = json.dumps({"event_id": event_id, "tool": tool, "args": args, "ok": res.ok}) + "\n"
+            with self._log_lock, open(self._log, "a", encoding="utf-8") as f:
+                f.write(line)
         return res

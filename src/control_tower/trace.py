@@ -4,6 +4,7 @@ time, so the UI shows a coherent 2027-03-08 timeline while durations stay honest
 from __future__ import annotations
 
 import json
+import threading
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -27,14 +28,16 @@ class Sink:
 
     def __init__(self, path: Path | None) -> None:
         self.path = path
+        self._lock = threading.Lock()  # parallel runs: one JSON line per write, never interleaved
         if path:
             path.parent.mkdir(parents=True, exist_ok=True)
 
     def emit(self, type_: str, event_id: str, payload: dict[str, Any]) -> None:
         if not self.path:
             return
-        with open(self.path, "a", encoding="utf-8") as f:
-            f.write(json.dumps({"type": type_, "event_id": event_id, "payload": payload}, default=str) + "\n")
+        line = json.dumps({"type": type_, "event_id": event_id, "payload": payload}, default=str) + "\n"
+        with self._lock, open(self.path, "a", encoding="utf-8") as f:
+            f.write(line)
 
 
 class Timeline:
