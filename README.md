@@ -1,8 +1,12 @@
 # Wacky Wheels Control Tower
 
 Event-driven multi-agent operations control tower for the **Hack the Highway** datathon (Hitachi Digital Services).
-One coordinator and three specialist agents read messy operational events, traverse a knowledge graph of the company,
-rehearse every corrective action on a digital twin, and execute it through MCP tools against the mock enterprise server.
+A coordinator and three specialist LLM agents read messy operational events, traverse a knowledge graph of the company with plain-code tools,
+rehearse every corrective action on a digital twin, and execute it through an MCP client against the mock enterprise server.
+**Agents reason and orchestrate; tools compute; the twin proves; MCP executes.**
+
+> **Status: v2 (branch `v2`), documentation draft.** The architecture sections below follow `docs/PLAN_V2.md`; every figure marked `TODO(v2 final run)` is filled in from the v2 final run.
+> The v1 pipeline with deterministic specialists is tag `final-run-2` on `main` (15/15 clean, 797 calls, 0 failed, $0.0498).
 
 | Folder | What |
 |---|---|
@@ -42,16 +46,61 @@ uv run python hack_the_highway/enterprise_server.py --data hack_the_highway/data
 uv run pytest
 ```
 
+## Architecture
+
+```
+event ─▶ COORDINATOR (LLM agent, hub) ──delegate──▶ SUPPLY CHAIN PLANNER      (LLM agent)
+         understand · resolve · gate     ──────────▶ DEALER NETWORK            (LLM agent)
+         delegate · validate · execute   ──────────▶ CUSTOMER CARE & QUALITY  (LLM agent)
+         explain · escalate to a human         each agent calls plain-code tools (graph, planners, composers)
+              └─▶ validators (handbook as code) ─▶ twin rehearsal ─▶ auditor (2nd model) ─▶ MCP client ─▶ enterprise server
+```
+
+Hub and spoke: specialists never call each other; every hand-off goes through the coordinator, is validated and is recorded. The **Orchestration** tab of the UI
+shows every agent turn, tool call and message live.
+
+## LLM versus code
+
+| LLM agents (reasoning, recorded turn by turn) | Plain code (tools and validators) |
+|---|---|
+| read the event, categorise it, split compound messages | name → id resolution, relative dates from 2027-03-08, snapping to real ETAs and lot windows |
+| gate: noise, unconfirmed, or confirmed | graph traversal and the affected sets |
+| choose which specialist to delegate to and with what task | slot planning, loaner ranking, notice and stop-sale composition |
+| explain the result; a second model audits the plan | handbook rules 1–10 as validators, twin rehearsal, MCP execution, failed-call handling |
+
+No LLM response is cached: every one is live. The numbers that change the world come from tools and are checked by validators.
+
+## Guardrails
+
+- Validators recompute the expected plan through the graph; a failed validator sends the plan back to the specialist, and after two failed rounds the incident is escalated (no silent fallback to a plan written by code).
+- One `escalate` per unclear, unconfirmed or failed incident, saying what would make it actionable; a confirmed incident is never escalated over a nickname or an odd date phrase.
+- Nothing is sent unless the whole event rehearsed cleanly on the twin and passed the second-model audit.
+- MCP execution is phased over the event; a failed write is never retried: dependent writes are `skipped` and one `escalate` lists done, failed and skipped. A transport failure (`unknown`) stops the event.
+- Custom events and follow-ups run on the twin only and never reach the real server or the action log.
+
+## What we would improve
+
+Stronger models and few-shot examples for the coordinator, a second independent entity-resolution pass for high-impact incidents, explicit tested paths for two latent cases our data does not trigger
+(an order that cannot be placed anywhere, a confirmed incident with zero affected orders), a real approval path to live systems, and an offline mode with a local model. Details: `docs/design_card.md` §7.
+
+## Ontology
+
+The company knowledge graph (12 node types, 18 typed relationships using 15 edge types) as a diagram, rendered from `docs/ontology.mmd`:
+
+![Ontology of the Wacky Wheels knowledge graph](docs/ontology.png)
+
+The full graph export is GraphML: `uv run python scripts/export_graph.py` writes `build/knowledge_graph.graphml`. Noise and unconfirmed events add a small per-event path
+`Event -MENTIONS-> entity` inside their trace; those nodes are not part of the company graph. The diagram source with the BRAND colours and ELK layout used for the PNG is `media/ontology-render.mmd`.
+
 ## Models and final run
 
-Final clean run (`runs/final/`, `traces/final/`, tag `final-run-2`): 15 events, 10 acted, 3 noise, 2 escalated; 797 tool calls, 0 failed; independent grader 15/15; 40 LLM calls, $0.0498 in total, about 90 s.
+`TODO(v2 final run)`: events acted / noise / escalated, tool calls, failed calls, grader result, LLM calls, total cost and run time, and one row per agent and for the auditor
+(model, calls, tokens in / out, cost) from `runs/final/models.json`. Per-agent models are set in `agents.toml`.
 
-| Model (provider) | Role | Calls | Tokens in / out | Cost |
-|---|---|---|---|---|
-| `gemini-3.5-flash-lite` (Google) | extraction, entity tie-break, summaries | 30 | 16,752 / 5,233 | $0.0181 |
-| `gemini-3.8-flash` (Google) | independent auditor | 10 | 13,426 / 5,759 | $0.0317 |
+v1 baseline (tag `final-run-2`): 15 events, 10 acted, 3 noise, 2 escalated; 797 tool calls, 0 failed; independent grader 15/15; 40 LLM calls, $0.0498, about 90 s
+(`gemini-3.5-flash-lite` 30 calls $0.0181; `gemini-3.8-flash` auditor 10 calls $0.0317).
 
-Source of truth: `runs/final/models.json` (written by the pipeline). No LLM call is made per action. There is no cache: every LLM response is live; the log is stable because tools compute the arguments. Design card: `docs/design_card.md`.
+Source of truth: `runs/final/models.json` (written by the pipeline). No LLM call is made per action. Design card: `docs/design_card.md`.
 
 ## API and UI
 
