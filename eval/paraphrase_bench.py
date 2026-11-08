@@ -1,14 +1,23 @@
-"""Task 4.4: robustness bench. A strong model rewrites each event in several messy styles; each candidate extraction model
-must still resolve the same facts. Ground truth = the resolved signature of the ORIGINAL event under the reference model.
+"""Task 4.4 (v2): robustness bench. A strong model rewrites each event in several messy styles; each candidate model, playing
+the COORDINATOR, must still understand the same facts. Ground truth = the resolved signature of the ORIGINAL event under
+the reference model (the first of --models).
 
-  PYTHONPATH=. uv run python eval/paraphrase_bench.py --models gemini-3.8-flash gemini-3.5-flash-lite [--per-event 6]
+  PYTHONPATH=. uv run python eval/paraphrase_bench.py --models gemini/gemini-3.8-flash gemini/gemini-3.5-flash-lite [--per-event 6]
+
+What is measured is the coordinator's understanding as the pipeline really does it: the hub agent loop runs live with its
+real system prompt and calls `register_incidents`; the signature is read from the incidents AFTER resolution (aliases,
+date snapping, closed-set tie-break) plus the needs_human flag. The old single-shot extract() path is not used. Only
+register_incidents is offered (no delegation, no writes), so a run costs a couple of model calls.
 
 Paraphrases are regenerated live on every run (no cache). The bench reports accuracy by model and style
 and lists every disagreement, because a paraphrase that altered a fact is a bench bug, not a model bug: read the failures.
+Report: eval/reports/paraphrase_bench.md
 """
 
 import argparse
+import dataclasses
 import json
+import os
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -16,9 +25,13 @@ from pydantic import BaseModel, Field
 
 from control_tower.data.loader import KIT_DIR, REPO_ROOT, load_world
 from control_tower.llm.adapter import _backend, complete_json
-from control_tower.understanding.extract import extract
-from control_tower.understanding.resolve import EntityIndex, build_incident
-from control_tower.understanding.tiebreak import make_tiebreak
+from control_tower.orchestration.context import EventContext
+from control_tower.orchestration.coordinator_agent import PROMPT
+from control_tower.orchestration.coordinator_tools import cs
+from control_tower.orchestration.runtime import AgentSpec, run_agent
+from control_tower.orchestration.tools import REGISTRY
+from control_tower.trace import Sink, Timeline
+from control_tower.understanding.resolve import EntityIndex
 
 STYLES = [
     "a terse chat message with typos, abbreviations and no punctuation",
@@ -40,36 +53,60 @@ class Rewrite(BaseModel):
     text: str = Field(description="The rewritten message")
 
 
-def signature(world, index, ev_id, text, source, model):
-    res, _ = extract(source, "2027-03-08T08:00:00", text, model=model)
+class Done(BaseModel):
+    ok: bool = True
+
+
+BENCH_TASK = (
+    "BENCHMARK TASK: understand the message. Call register_incidents exactly once with your reading of INPUT.text, "
+    'then return final {"ok": true}. Do not try to gate, delegate or execute: only register_incidents is available.'
+)
+
+
+def signature(world, index, ev_id, text, source):
+    """Run the coordinator agent (model = 'provider/model' or a bare model) on the text up to register_incidents and
+    return the sorted resolved signatures of its non-noise incidents."""
+    captured: dict = {}
+    reg = REGISTRY["register_incidents"]
+
+    def fn(ctx, args):
+        out = reg.fn(ctx, args)
+        captured["ctx"] = ctx
+        return out
+
+    spec = AgentSpec("coordinator", "Coordinator", PROMPT, [dataclasses.replace(reg, fn=fn)], Done)
+    tl = Timeline(ev_id, "2027-03-08T08:00:00", Sink(None))
+    ctx = EventContext(
+        world=world, event_id=ev_id, index=index, event={"id": ev_id, "text": text, "source": source}, timeline=tl
+    )
+    ctx.state["opts"] = {"use_tiebreak": True}
+    payload = {"event_id": ev_id, "source": source, "received_at": "2027-03-08T08:00:00", "text": text}
+    res = run_agent(spec, BENCH_TASK, payload, ctx, tl)  # the model comes from CT_MODEL_COORDINATOR (set by use_model)
+    if "ctx" not in captured:
+        raise RuntimeError(res.error or "register_incidents was never called")
+    st = cs(ctx)
     sigs = []
-    tb = make_tiebreak(world, [], model=model)
-    for n, raw in enumerate(res.incidents, 1):
-        r = build_incident(world, index, raw, event_id=ev_id, n=n, event_text=text, tiebreak=tb)
-        s = r.spec
+    for iid, s in ctx.incidents.items():
         if s.category == "noise":
             continue
         sigs.append(
             (
-                s.category,
-                s.plant_id,
-                s.part_id,
-                s.shipment_id,
-                s.lot_id,
-                str(s.orig_eta),
-                str(s.new_eta),
-                str(s.outage_start),
-                str(s.outage_end),
-                r.needs_human,
+                s.category, s.plant_id, s.part_id, s.shipment_id, s.lot_id, str(s.orig_eta), str(s.new_eta),
+                str(s.outage_start), str(s.outage_end), st.needs_human.get(iid, False),
             )
-        )
+        )  # fmt: skip
     return sorted(sigs, key=str)
+
+
+def use_model(model: str) -> None:
+    """Point the coordinator agent at `model` ('provider/model') for the calls that follow (process-wide override)."""
+    os.environ["CT_MODEL_COORDINATOR"] = model
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--models", nargs="+", default=["gemini-3.8-flash", "gemini-3.5-flash-lite"])
-    ap.add_argument("--writer", default="gemini-3.8-flash")
+    ap.add_argument("--models", nargs="+", default=["gemini/gemini-3.8-flash", "gemini/gemini-3.5-flash-lite"])
+    ap.add_argument("--writer", default="gemini-3.8-flash", help="paraphrase writer model (provider from LLM_PROVIDER)")
     ap.add_argument("--per-event", type=int, default=len(STYLES))
     ap.add_argument("--report", type=Path, default=REPO_ROOT / "eval" / "reports" / "paraphrase_bench.md")
     a = ap.parse_args()
@@ -89,18 +126,23 @@ def main() -> None:
         variants = list(pool.map(write, jobs))
     print(f"{len(variants)} paraphrases written by {a.writer}")
 
-    truth = {
-        ev["event_id"]: signature(world, index, ev["event_id"], ev["text"], ev["source"], a.models[0]) for ev in events
-    }
+    use_model(a.models[0])
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        truth = dict(
+            pool.map(
+                lambda ev: (ev["event_id"], signature(world, index, ev["event_id"], ev["text"], ev["source"])), events
+            )
+        )
     lines = [
         f"# Paraphrase robustness bench\n\n{len(variants)} rewrites ({len(events)} events x {a.per_event} styles), writer {a.writer}. Ground truth: original event under {a.models[0]}.\n"
     ]
     for model in a.models:
+        use_model(model)
 
-        def run(v, model=model):
+        def run(v):
             ev, style, text = v
             try:
-                return v, signature(world, index, ev["event_id"], text, ev["source"], model)
+                return v, signature(world, index, ev["event_id"], text, ev["source"])
             except Exception as e:  # a model that fails to answer is a failure, not a crash
                 return v, [("ERROR", str(e)[:80])]
 

@@ -45,3 +45,28 @@ each dealer's pool. All in one `Policy` object recorded in each trace.
 - Compound E-01: 122 customer orders, 41 dealers, 26 loaners. Quality: E-03 110 stop-sale / 150 owners; E-14 86 / 94; E-15 40 / 76.
 - Live server run needs a fresh server (`--overwrite`); a re-run on a used server aborts safely (verification reads, escalate, no writes).
 - No cache, no offline replay: every LLM response is live; the log is stable because tools compute the arguments. `--dry-run` swaps only the enterprise for the in-process twin.
+
+## v2 answers (agents + MCP)
+**Why agents at all, when code plans?** The brief asks for a coordinator and specialist agents. The agents read, decide and orchestrate (what is noise, what to escalate,
+which specialist runs, how to fix a failed validation); the tools they call compute exact arguments. So the agent layer has real decisions and real reasoning in
+the trace, while the numbers that are scored stay exact. A coordinator hub + three specialists (Supply Chain, Dealer Network, Customer Care & Quality), each with
+its own model in `agents.toml`.
+
+**Why an MCP client?** The enterprise is reached through MCP tools like the brief's example setup: `McpExecutor` spawns the MCP server over stdio and every call, reads
+included, is a `call_tool`. The transport is recorded on each action. `--executor http` and `--dry-run` exist for comparison and tests.
+
+**Why validators?** An LLM agent can forget a dealer or notify twice. The handbook rules (V1..V8) are plain code that recompute the expected set from the resolved incident
+and the graph; a failure goes back to the specialist as a correction round (at most 2), then the incident is escalated. There is no fallback plan made by code, so what
+is executed is what the agents produced and the validators accepted. No write is sent before validators, the twin rehearsal and the auditor pass.
+
+**What happens on a failed call?** A server rejection is `failed`, a transport failure is `unknown`; neither is retried. Dependent writes are `skipped` (marked in the
+trace), exactly one `escalate` lists done / failed / skipped, the event status is `failed`, and the summary and counterfactual use only the successful calls. A failed
+read aborts the event before any write.
+
+**Why no cache?** A cache would make a rerun look identical by construction and hide model variance. Every run calls the models live; the identity runs below show the
+action log is stable anyway, because the tools compute the arguments and the validators reject deviations.
+
+**How did we verify it?** (1) `eval/run_identity.py`: K full runs on fresh servers, per-event (tool, args) multisets identical across runs and against the v1 final run
+(TODO result of the final K=3). (2) `eval/replay_grader.py` replays the action log on a fresh twin against the deterministic oracle (TODO 15/15). (3) Auditor bench
+(planted mistakes) and paraphrase bench (coordinator understanding on rewritten events, regenerated live). (4) Escalation suite: one test per PLAN_V2 section 4.1 circumstance
+plus a must-not-escalate test. (5) A cold audit of the new traces by a second model family (Codex), TODO findings. (6) One parallel run graded 15/15 (TODO).

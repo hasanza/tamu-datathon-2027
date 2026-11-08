@@ -96,6 +96,8 @@ class AgentStep(BaseModel):
     transport: Transport | None = None
     model: str | None = None
     cost_usd: float | None = None
+    # v0.2.1: stage grouping for the UI (specialists: delegated task; coordinator: phase; message: delegated task)
+    task: str | None = None
 
 
 class AgentRun(BaseModel):
@@ -175,7 +177,7 @@ class Orchestration(BaseModel):
 
 
 class Trace(BaseModel):
-    pipeline_version: str = "0.2.0"
+    pipeline_version: str = "0.2.1"
     event_id: str
     received_at: datetime
     source: str

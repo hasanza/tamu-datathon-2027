@@ -4,6 +4,7 @@ time, so the UI shows a coherent 2027-03-08 timeline while durations stay honest
 from __future__ import annotations
 
 import json
+import threading
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -27,14 +28,16 @@ class Sink:
 
     def __init__(self, path: Path | None) -> None:
         self.path = path
+        self._lock = threading.Lock()  # parallel runs: one JSON line per write, never interleaved
         if path:
             path.parent.mkdir(parents=True, exist_ok=True)
 
     def emit(self, type_: str, event_id: str, payload: dict[str, Any]) -> None:
         if not self.path:
             return
-        with open(self.path, "a", encoding="utf-8") as f:
-            f.write(json.dumps({"type": type_, "event_id": event_id, "payload": payload}, default=str) + "\n")
+        line = json.dumps({"type": type_, "event_id": event_id, "payload": payload}, default=str) + "\n"
+        with self._lock, open(self.path, "a", encoding="utf-8") as f:
+            f.write(line)
 
 
 class Timeline:
@@ -45,20 +48,26 @@ class Timeline:
         self.sink = sink
         self.runs: dict[str, AgentRun] = {}
         self.llm_calls: list[LLMCall] = []
+        self._task: dict[str, str | None] = {}
 
     def now(self) -> datetime:
         return self._base + timedelta(seconds=round(time.perf_counter() - self._t0, 3))
+
+    def set_task(self, agent: str, task: str | None) -> None:
+        """Set the agent's current task / phase; later steps without an explicit task= inherit it."""
+        self._task[agent] = task
 
     def step(
         self, agent: str, kind: StepKind, text: str, data: dict[str, Any] | None = None, **extra: Any
     ) -> AgentStep:
         """Append a step. `extra` carries the v0.2.0 fields (turn, tool, args, result, to_agent, from_agent,
-        transport, model, cost_usd)."""
+        transport, model, cost_usd, task)."""
         t = self.now()
         run = self.runs.get(agent)
         if run is None:
             run = self.runs[agent] = AgentRun(agent=agent, started=t)  # type: ignore[arg-type]
         run.ended = t
+        extra.setdefault("task", self._task.get(agent))
         step = AgentStep(t=t, kind=kind, text=text, data=data, **extra)
         run.steps.append(step)
         self.sink.emit("agent_step", self.event_id, {"agent": agent, **step.model_dump(mode="json")})
