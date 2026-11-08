@@ -28,4 +28,4 @@ Source of truth: `src/control_tower/schemas/` (Pydantic v2). JSON Schema exports
 
 ## Changelog
 - 2026-11-07 v0.1.0 — initial contracts (task 0.3).
-- 2026-11-08 v0.2.0 — v2 agent fields; additive
+- 2026-11-08 v0.2.0 — v2 agent fields; additive (also ToolResult.outcome ok|failed|unknown + http_status, LLMCall.attempts)

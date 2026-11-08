@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 Tool = Literal[
     "mes.get_schedule",
@@ -50,6 +50,15 @@ class ToolResult(BaseModel):
     ok: bool
     error: str | None = None
     response: dict[str, Any] | None = None
+    # v0.2.0: "failed" = the server rejected the call; "unknown" = transport error, a write may have committed.
+    outcome: Literal["ok", "failed", "unknown"] | None = None
+    http_status: int | None = None
+
+    @model_validator(mode="after")
+    def _derive_outcome(self) -> ToolResult:
+        if self.outcome is None:
+            self.outcome = "ok" if self.ok else "failed"
+        return self
 
 
 class Action(BaseModel):

@@ -48,11 +48,19 @@ PRICES: dict[str, tuple[float, float] | None] = {
 
 
 class LLMError(RuntimeError):
-    pass
+    """A model call failed. `kind` is "provider" (SDK/network/config error) or "schema" (invalid output twice);
+    `attempts` is how many provider calls were actually made, `cost_usd` what they cost."""
+
+    def __init__(self, message: str, *, kind: str = "provider", attempts: int = 0, cost_usd: float = 0.0) -> None:
+        super().__init__(message)
+        self.kind = kind
+        self.attempts = attempts
+        self.cost_usd = cost_usd
 
 
 class LLMValidationError(LLMError):
-    pass
+    def __init__(self, message: str, *, attempts: int = 0, cost_usd: float = 0.0) -> None:
+        super().__init__(message, kind="schema", attempts=attempts, cost_usd=cost_usd)
 
 
 @dataclass
@@ -201,7 +209,17 @@ def complete_json[T: BaseModel](
     attempt_user, last_error = user, None
     total_in = total_out = 0
     for _attempt in range(2):
-        raw = backend.generate_json(model, system, attempt_user, json_schema)
+        try:
+            raw = backend.generate_json(model, system, attempt_user, json_schema)
+        except LLMError:
+            raise
+        except Exception as e:  # SDK / network errors (httpx timeouts, google API errors, ...)
+            raise LLMError(
+                f"{provider}/{model} call failed: {type(e).__name__}: {e}"[:500],
+                kind="provider",
+                attempts=_attempt + 1,
+                cost_usd=_cost(model, total_in, total_out),
+            ) from e
         total_in += raw.input_tokens
         total_out += raw.output_tokens
         try:
@@ -221,7 +239,12 @@ def complete_json[T: BaseModel](
             output_tokens=total_out,
             cost_usd=_cost(model, total_in, total_out),
             cached=False,
+            attempts=_attempt + 1,
         )
         LEDGER.calls.append(call)
         return parsed, call
-    raise LLMValidationError(f"{provider}/{model} returned invalid {schema.__name__} twice: {last_error}")
+    raise LLMValidationError(
+        f"{provider}/{model} returned invalid {schema.__name__} twice: {last_error}",
+        attempts=2,
+        cost_usd=_cost(model, total_in, total_out),
+    )

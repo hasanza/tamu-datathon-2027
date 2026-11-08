@@ -64,12 +64,12 @@ class Timeline:
         self.sink.emit("agent_step", self.event_id, {"agent": agent, **step.model_dump(mode="json")})
         return step
 
-    def usage(self, agent: str, model: str | None, cost_usd: float) -> None:
+    def usage(self, agent: str, model: str | None, cost_usd: float, calls: int = 1) -> None:
         """Account one LLM call against an agent's run (llm_calls, cost_usd, model)."""
         run = self.runs.get(agent)
         if run is None:
             run = self.runs[agent] = AgentRun(agent=agent, started=self.now())  # type: ignore[arg-type]
-        run.llm_calls += 1
+        run.llm_calls += calls
         run.cost_usd = round(run.cost_usd + cost_usd, 6)
         run.model = model or run.model
 

@@ -154,6 +154,7 @@ class LLMCall(BaseModel):
     output_tokens: int
     cost_usd: float
     cached: bool = False
+    attempts: int = 1  # provider calls behind this record (2 when the schema retry fired)
 
 
 class LLMUsage(BaseModel):

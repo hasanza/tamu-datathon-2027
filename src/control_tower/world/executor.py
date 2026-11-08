@@ -33,12 +33,19 @@ class Executor(Protocol):
 
 
 def _to_result(r: dict[str, Any]) -> ToolResult:
-    """Server JSON (+ http_status) -> ToolResult, the same shape for every transport."""
+    """Server JSON (+ http_status) -> ToolResult, the same shape for every transport.
+    status 200 -> ok; a server rejection (400/404...) -> outcome "failed"; status 0 (the enterprise server was
+    unreachable or dropped the connection) -> outcome "unknown", because a write may already have committed."""
     r = dict(r)
-    status = r.pop("http_status", 0)
+    status = int(r.pop("http_status", 0) or 0)
     if status == 200 and "error" not in r:
-        return ToolResult(ok=True, response=r)
-    return ToolResult(ok=False, error=str(r.get("error", f"http {status}")), response=None)
+        return ToolResult(ok=True, response=r, http_status=status)
+    return ToolResult(
+        ok=False,
+        error=str(r.get("error", f"http {status}")),
+        outcome="unknown" if status == 0 else "failed",
+        http_status=status,
+    )
 
 
 class HttpExecutor:
@@ -65,27 +72,36 @@ class McpExecutor:
 
     def __init__(self, base_url: str, *, startup_timeout: float = 30.0, call_timeout: float = 60.0) -> None:
         self._base_url = base_url
+        self._startup_timeout = startup_timeout
         self._call_timeout = call_timeout
         self._lock = threading.Lock()
         self._ready = threading.Event()
         self._startup_error: BaseException | None = None
+        self._closed = False
+        self._up = False
         self._loop = asyncio.new_event_loop()
         self._stop: asyncio.Event | None = None
+        self._task: asyncio.Task | None = None
         self._session: Any = None
         self.tools: list[str] = []
         self._thread = threading.Thread(target=self._run, name="mcp-client", daemon=True)
         self._thread.start()
-        if not self._ready.wait(startup_timeout):
+        if not self._ready.wait(startup_timeout + 5):
             self.close()
             raise RuntimeError(f"MCP server did not start within {startup_timeout}s")
         if self._startup_error is not None:
+            err = self._startup_error
             self.close()
-            raise RuntimeError(f"MCP client failed to start: {self._startup_error!r}") from self._startup_error
+            raise RuntimeError(f"MCP client failed to start: {err!r}") from err
 
     # -- event-loop thread -------------------------------------------------------------------------------------
     def _run(self) -> None:
         asyncio.set_event_loop(self._loop)
-        self._loop.run_until_complete(self._main())
+        self._task = self._loop.create_task(self._main())
+        try:
+            self._loop.run_until_complete(self._task)
+        except BaseException:  # noqa: BLE001 - cancellation / startup failure already recorded by _main
+            pass
 
     async def _main(self) -> None:
         from mcp import ClientSession, StdioServerParameters
@@ -99,59 +115,93 @@ class McpExecutor:
         )
         try:
             async with stdio_client(params) as (read, write), ClientSession(read, write) as session:
-                await session.initialize()
-                listed = await session.list_tools()
+                await asyncio.wait_for(session.initialize(), self._startup_timeout)
+                listed = await asyncio.wait_for(session.list_tools(), self._startup_timeout)
                 self.tools = sorted(t.name for t in listed.tools)
                 missing = REQUIRED_MCP_TOOLS - set(self.tools)
                 if missing:
                     raise RuntimeError(f"MCP server is missing tools {sorted(missing)}; has {self.tools}")
                 self._session = session
+                self._up = True
                 self._ready.set()
                 await self._stop.wait()
         except BaseException as e:  # noqa: BLE001 - reported to the constructor / to callers
             if not self._ready.is_set():
                 self._startup_error = e
-                self._ready.set()
-            else:
-                self._session = None
+        finally:
+            self._session = None
+            self._ready.set()
 
     # -- public API --------------------------------------------------------------------------------------------
     def call(self, event_id: str, tool: str, args: dict[str, Any]) -> ToolResult:
-        if self._session is None:
-            return ToolResult(ok=False, error="MCP session is closed")
         with self._lock:
+            session = self._session
+            if self._closed or session is None:
+                return ToolResult(ok=False, error="MCP executor is closed", outcome="unknown")
             fut = asyncio.run_coroutine_threadsafe(
-                self._session.call_tool("enterprise_act", {"event_id": event_id, "tool": tool, "args": args}),
+                session.call_tool("enterprise_act", {"event_id": event_id, "tool": tool, "args": args}),
                 self._loop,
             )
             try:
                 res = fut.result(self._call_timeout)
-            except Exception as e:  # noqa: BLE001
+            except BaseException as e:  # noqa: BLE001 - timeout or transport error: the write may have committed
                 fut.cancel()
-                return ToolResult(ok=False, error=f"MCP call failed: {type(e).__name__}: {e}")
+                return ToolResult(ok=False, error=f"MCP transport error: {type(e).__name__}: {e}", outcome="unknown")
         return _to_result(self._parse(res))
 
     @staticmethod
     def _parse(res: Any) -> dict[str, Any]:
-        structured = getattr(res, "structuredContent", None)
+        """CallToolResult -> the server's JSON dict (snake_case attrs of the installed SDK; camelCase as fallback)."""
+        structured = getattr(res, "structured_content", None)
+        if structured is None:
+            structured = getattr(res, "structuredContent", None)
+        is_error = bool(getattr(res, "is_error", getattr(res, "isError", False)))
+        text = "".join(getattr(c, "text", "") for c in (getattr(res, "content", None) or []))
+        body: Any
         if isinstance(structured, dict):
             # FastMCP-style servers may wrap a dict return as {"result": {...}}
-            if set(structured) == {"result"} and isinstance(structured["result"], dict):
-                return structured["result"]
-            return structured
-        text = "".join(getattr(c, "text", "") for c in (res.content or []))
-        try:
-            body = json.loads(text)
-        except ValueError:
-            return {"error": f"MCP returned non-JSON content: {text[:200]}", "http_status": 0}
-        if getattr(res, "isError", False) and isinstance(body, dict):
-            body.setdefault("error", text[:200])
-        return body if isinstance(body, dict) else {"result": body, "http_status": 0}
+            body = (
+                structured["result"]
+                if set(structured) == {"result"} and isinstance(structured["result"], dict)
+                else structured
+            )
+        else:
+            try:
+                body = json.loads(text)
+            except ValueError:
+                return {"error": f"MCP returned non-JSON content: {text[:200]}", "http_status": 0}
+            if not isinstance(body, dict):
+                body = {"result": body, "http_status": 0}
+        body = dict(body)
+        if is_error:  # a tool-level MCP error, whichever representation carried the payload
+            body.setdefault("error", text[:200] or "MCP tool error")
+            body.setdefault("http_status", 0)
+            if body["http_status"] == 200:
+                body["http_status"] = 500
+        return body
 
     def close(self) -> None:
-        if self._stop is not None and self._loop.is_running():
-            self._loop.call_soon_threadsafe(self._stop.set)
+        """Idempotent. Waits for an in-flight call, then stops the client task, the thread and the loop."""
+        with self._lock:
+            if self._closed:
+                return
+            self._closed = True
+            self._session = None
+        if self._loop.is_running():
+
+            def _shutdown() -> None:
+                if self._up and self._stop is not None:
+                    self._stop.set()  # clean exit of the stdio/session context managers
+                elif self._task is not None:
+                    self._task.cancel()  # still starting up (or hung): cancel the owning task
+
+            self._loop.call_soon_threadsafe(_shutdown)
         self._thread.join(timeout=10)
+        if self._thread.is_alive() and self._task is not None:
+            self._loop.call_soon_threadsafe(self._task.cancel)
+            self._thread.join(timeout=10)
+        if not self._thread.is_alive():
+            self._loop.close()
 
     def __enter__(self) -> McpExecutor:
         return self

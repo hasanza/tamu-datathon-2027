@@ -55,6 +55,35 @@
           ],
           "default": null,
           "title": "Response"
+        },
+        "outcome": {
+          "anyOf": [
+            {
+              "enum": [
+                "ok",
+                "failed",
+                "unknown"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outcome"
+        },
+        "http_status": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Http Status"
         }
       },
       "required": [

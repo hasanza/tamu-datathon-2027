@@ -112,7 +112,7 @@ def test_turn_requires_exactly_one_action():
 def test_registry_and_render():
     assert {"echo", "lookup_record"} <= set(REGISTRY)
     text = render_tools(tools_for("coordinator"))
-    assert "lookup_record(record_id: string)" in text and "[graph]" in text
+    assert "lookup_record" in text and "[graph]" in text and "record_id" in text
     assert REGISTRY["lookup_record"].args_schema["required"] == ["record_id"]
 
 

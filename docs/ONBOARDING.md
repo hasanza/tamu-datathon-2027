@@ -113,5 +113,5 @@ then show me the diff summary and the commit message before committing.
 | Logging | Python `logging` to `runs/<run>/pipeline.log`; the SSE stream is derived from the same events, not a second source. |
 | Model citation | The adapter writes `runs/<run>/models.json` (provider, model id, calls, tokens, cost); README and design card quote it. |
 | Submission packaging | `make package` → `submission/` with action_log.jsonl, traces/, ontology.png + graph.graphml, design_card.pdf, README, video link, source zip. |
-| Fallbacks | If Gemini quota fails live: switch provider by env var or run `--replay-llm`. If the UI breaks: FastAPI serves a static `/report/<event_id>` HTML from the trace. |
+| Fallbacks | If Gemini quota fails live: switch provider by env var or use the `--dry-run` twin for the enterprise side (the LLM is always live; there is no cache). If the UI breaks: FastAPI serves a static `/report/<event_id>` HTML from the trace. |
 | Judges' Q&A | Each person can walk any event end to end (trace audit 4.7). Keep `docs/qa-notes.md` with the five hardest questions and our answers (slot ordering, transfer rule, date convention, LLM vs code, why no failed calls). |

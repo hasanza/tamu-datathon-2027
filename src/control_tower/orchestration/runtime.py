@@ -7,6 +7,7 @@ the args and the final result, feeds compact results back, and records every tur
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass
 from typing import Any
 
@@ -88,6 +89,7 @@ def run_agent(spec: AgentSpec, task: str, payload: dict[str, Any], ctx: ToolCont
     transcript: list[tuple[str, dict, Any]] = []
     feedback: str | None = None  # set when the previous reply was rejected; a second rejection in a row ends the run
     llm_calls, cost = 0, 0.0
+    run_id = uuid.uuid4().hex[:8]  # makes stored_key handles unique across runs / correction rounds
 
     def fail(msg: str, n: int) -> AgentResult:
         timeline.step(spec.agent_id, "decision", f"{spec.display_name} stopped: {msg}", data={"error": msg}, turn=n)
@@ -104,15 +106,14 @@ def run_agent(spec: AgentSpec, task: str, payload: dict[str, Any], ctx: ToolCont
                 model=cfg.model,
             )
         except LLMError as e:
-            llm_calls += 2  # complete_json had already retried once before giving up
-            if feedback is not None:
-                return fail(f"model reply invalid twice: {e}"[:300], n)
-            feedback = f"schema error: {e}"[:600]
-            continue
-        llm_calls += 1
+            # complete_json already made its single schema retry; a failure here is terminal for this agent run.
+            llm_calls += e.attempts
+            cost += e.cost_usd
+            return fail(f"LLM {e.kind} error after {e.attempts} attempt(s): {e}"[:400], n)
+        llm_calls += call.attempts
         cost += call.cost_usd
         timeline.llm(call)
-        timeline.usage(spec.agent_id, cfg.model, call.cost_usd)
+        timeline.usage(spec.agent_id, cfg.model, call.cost_usd, call.attempts)
         timeline.step(spec.agent_id, "thought", turn.thought, turn=n, model=cfg.model, cost_usd=call.cost_usd)
 
         problem: str | None = None
@@ -141,7 +142,7 @@ def run_agent(spec: AgentSpec, task: str, payload: dict[str, Any], ctx: ToolCont
                         out = jsonable(t.fn(ctx, args))
                     except Exception as e:  # a failing tool is information for the agent, not a crash
                         out = {"error": f"{type(e).__name__}: {e}"}
-                    small = compact(out, ctx.store, f"{ctx.event_id}:{spec.agent_id}:{n}:{name}")
+                    small = compact(out, ctx.store, f"{ctx.event_id}:{spec.agent_id}:{run_id}:{n}:{name}")
                     clean_args = args.model_dump(mode="json")
                     transcript.append((name, clean_args, small))
                     timeline.step(

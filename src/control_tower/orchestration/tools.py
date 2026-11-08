@@ -83,16 +83,10 @@ def tools_for(agent_id: str) -> list[ToolSpec]:
 
 
 def render_tools(specs: list[ToolSpec]) -> str:
-    """Text for the system prompt: one block per tool with its kind, purpose and args."""
-    blocks = []
-    for t in specs:
-        props = t.args_schema.get("properties", {})
-        required = set(t.args_schema.get("required", []))
-        args = ", ".join(
-            f"{k}{'' if k in required else '?'}: {v.get('type', v.get('anyOf', 'any'))}" for k, v in props.items()
-        )
-        blocks.append(f"- {t.name}({args})  [{t.kind}]\n    {t.description}")
-    return "\n".join(blocks)
+    """Text for the system prompt: one block per tool with its kind, purpose and full args JSON schema."""
+    return "\n".join(
+        f"- {t.name}  [{t.kind}]\n    {t.description}\n    args schema: {compact_json(t.args_schema)}" for t in specs
+    )
 
 
 def jsonable(obj: Any) -> Any:
@@ -114,16 +108,17 @@ def jsonable(obj: Any) -> Any:
 
 def compact(value: Any, store: dict[str, Any], prefix: str, *, limit: int = 20, sample: int = 5) -> Any:
     """Shrink a tool result for the prompt: lists longer than `limit` become
-    ``{count, sample, stored_key}`` and the full list goes to ``store[stored_key]``."""
+    ``{count, sample, stored_key}`` and the full list goes to ``store[stored_key]``.
+    `prefix` must be unique per tool call; the key adds the field path and element index so siblings never collide."""
     if isinstance(value, list):
         if len(value) > limit:
             store[prefix] = value
             return {
                 "count": len(value),
-                "sample": [compact(v, store, f"{prefix}[]") for v in value[:sample]],
+                "sample": [compact(v, store, f"{prefix}[{i}]") for i, v in enumerate(value[:sample])],
                 "stored_key": prefix,
             }
-        return [compact(v, store, f"{prefix}[]") for v in value]
+        return [compact(v, store, f"{prefix}[{i}]") for i, v in enumerate(value)]
     if isinstance(value, dict):
         return {k: compact(v, store, f"{prefix}.{k}") for k, v in value.items()}
     return value
