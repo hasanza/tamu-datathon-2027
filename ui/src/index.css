@@ -216,3 +216,91 @@ code,
     background-attachment: local, local, scroll, scroll;
   }
 }
+
+/* ---------------- Tutorial (Driver.js popovers): brand-red border so they never read as part of the UI ---------------- */
+.driver-popover.ct-tour-popover {
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid var(--brand-bright);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+  max-width: 340px;
+  font-family: inherit;
+}
+.ct-tour-popover .driver-popover-title {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+.ct-tour-popover .driver-popover-description {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.ct-tour-popover .driver-popover-progress-text {
+  color: var(--text-3);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+}
+.ct-tour-popover .driver-popover-footer button {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 4px 10px;
+  text-shadow: none;
+}
+.ct-tour-popover .driver-popover-footer button:hover:not(:disabled) {
+  border-color: var(--brand-bright);
+}
+.ct-tour-popover .driver-popover-footer button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.ct-tour-popover .driver-popover-next-btn {
+  background: var(--brand);
+  border-color: var(--brand-bright);
+  color: #fff;
+}
+.ct-tour-popover .ct-tour-skip {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-3);
+  margin-right: auto;
+}
+.ct-tour-popover:not(.ct-tour-hint) .driver-popover-close-btn {
+  display: none; /* Esc and Skip end a modal tour */
+}
+.ct-tour-popover .driver-popover-close-btn {
+  color: var(--text-3);
+}
+.ct-tour-popover .ct-tour-waiting {
+  margin-top: 6px;
+  color: var(--brand-bright);
+  font-size: 12px;
+  font-weight: 500;
+}
+.ct-tour-popover .driver-popover-arrow-side-left { border-left-color: var(--brand-bright); }
+.ct-tour-popover .driver-popover-arrow-side-right { border-right-color: var(--brand-bright); }
+.ct-tour-popover .driver-popover-arrow-side-top { border-top-color: var(--brand-bright); }
+.ct-tour-popover .driver-popover-arrow-side-bottom { border-bottom-color: var(--brand-bright); }
+/* the quiet hint (phase 2) never blocks: the page stays fully usable; the target just gets an outline */
+.ct-tour-nonblocking .driver-active-element {
+  outline: 2px solid var(--brand-bright);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+body.ct-tour-nonblocking .driver-overlay,
+body.ct-tour-nonblocking .driver-overlay * {
+  pointer-events: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .driver-popover,
+  .driver-overlay,
+  .driver-popover * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

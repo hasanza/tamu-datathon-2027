@@ -3,6 +3,7 @@ import { FlaskConical, Loader2, Send, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { api, ApiError } from "../api/client";
 import { WRITE_TOOLS } from "../api/types";
+import { emitTour } from "../lib/tour";
 import { useToast } from "../state";
 
 export const MIN_CHARS = 8;
@@ -61,6 +62,7 @@ export function CustomEventCard({ onCreated }: { onCreated: (id: string) => void
   const submit = async () => {
     if (tooShort || busy) return;
     setBusy(true);
+    emitTour("run-started"); // the tutorial follows a judge event too (its C-nn arrives with the stream)
     try {
       const r = await api.custom(trimmed);
       await Promise.all([qc.invalidateQueries({ queryKey: ["events"] }), qc.invalidateQueries({ queryKey: ["kpis"] })]);
@@ -84,6 +86,7 @@ export function CustomEventCard({ onCreated }: { onCreated: (id: string) => void
   if (!open)
     return (
       <button
+        data-tour="custom"
         onClick={() => setOpen(true)}
         className="flex w-full items-center gap-2 rounded-lg border border-brand bg-surface-2 px-3 py-2 text-left text-[13px] font-medium text-tx hover:border-brand-bright"
       >
@@ -94,7 +97,7 @@ export function CustomEventCard({ onCreated }: { onCreated: (id: string) => void
     );
 
   return (
-    <section aria-label="Try your own event" className="space-y-2 rounded-lg border border-brand bg-surface-2 p-3">
+    <section data-tour="custom" aria-label="Try your own event" className="space-y-2 rounded-lg border border-brand bg-surface-2 p-3">
       <div className="flex items-center gap-2">
         <FlaskConical size={15} className="text-brand-bright" aria-hidden />
         <h3 className="text-[13px] font-semibold">Try your own event</h3>

@@ -5,6 +5,8 @@ import { EventFeed } from "./components/EventFeed";
 import { ActivityLog, EscalationInbox } from "./components/RightRail";
 import { TopBar } from "./components/TopBar";
 import { useRoute } from "./lib/route";
+import { useTour } from "./components/useTour";
+import { useRunStatus } from "./api/hooks";
 import { AboutPage } from "./views/AboutPage";
 import { EventDetail } from "./views/EventDetail";
 import { OntologyPage } from "./views/OntologyPage";
@@ -26,6 +28,7 @@ export default function App() {
     window.addEventListener("ct-reset-all", clearAll);
     return () => window.removeEventListener("ct-reset-all", clearAll);
   }, [clearAll]);
+  useTour({ tower: route.page === "tower", selectedId, feedReady: !!events.data?.length, runState: useRunStatus().data?.state });
   const presetTotal = (events.data ?? []).filter((e) => !e.custom).length || 15;
   const selected = feedEvents?.find((e) => e.event_id === selectedId);
   const trace = useTrace(selectedId);
