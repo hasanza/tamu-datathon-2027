@@ -7,7 +7,8 @@ import { confirmClause, inboxOrder } from "../lib/escalation";
 import { whyOf } from "../lib/brief";
 import { TARGET_META, targetOf, type Target } from "../lib/target";
 import { FollowUpControl, FollowUpList } from "./FollowUp";
-import { prettifyRepr, safeStorage, summarize } from "../lib/format";
+import { prettifyRepr, safeStorage, summarize, timeAgo } from "../lib/format";
+import { useNow } from "../lib/useNow";
 import { firstSentence } from "../lib/flow";
 import { LANE_META, laneOf, STEP_META } from "../lib/meta";
 import { Chip, Empty, Mono, Panel } from "./ui/primitives";
@@ -28,6 +29,7 @@ const ACKED_INLINE_MAX = 4;
 export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | undefined; onSelect: (id: string) => void }) {
   const ids = useMemo(() => (events ?? []).filter((e) => e.status === "escalated" || e.status === "failed").sort(inboxOrder).map((e) => e.event_id), [events]);
   const { traces, loading, failed } = useTraces(ids);
+  const now = useNow();
   // An acknowledgement belongs to one run: the same event escalates again in the next run and must reappear.
   const run = String(useRunStatus().data?.started ?? "snapshot");
   const ackKey = (id: string) => `${run}|${id}`;
@@ -71,6 +73,16 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
       fill
       attrs={{ "data-inbox": "" }}
       className="w-full max-w-[36rem] xl:flex-[1.8]"
+      action={
+        open.length > 1 ? (
+          <button
+            onClick={() => setAcked((s) => new Set([...s, ...open.map((t) => ackKey(t.event_id))]))}
+            className="inline-flex items-center gap-1 rounded-md border border-line px-2 py-1 text-[11px] text-tx2 hover:border-ok hover:text-tx"
+          >
+            <CheckCheck size={12} aria-hidden /> Acknowledge all
+          </button>
+        ) : undefined
+      }
       title={
         <span className="flex items-center gap-2">
           <TriangleAlert size={14} style={{ color: "var(--warn)" }} aria-hidden /> Escalation inbox
@@ -101,6 +113,11 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
                       {t.event_id}
                     </button>
                     <Chip color={t.status === "failed" ? "var(--fail)" : "var(--cat-unconfirmed)"}>{t.status}</Chip>
+                    {timeAgo(t.received_at, now) && (
+                      <span className="text-[11px] text-tx3" title={t.received_at.replace("T", " ").slice(0, 19)}>
+                        {timeAgo(t.received_at, now)}
+                      </span>
+                    )}
                     <TargetIcon target={targetOf(t)} />
                   </div>
                   {(need || note) && (
@@ -266,6 +283,7 @@ export function ActivityLog({
   clear: () => void;
   onSelect: (id: string) => void;
 }) {
+  const now = useNow();
   return (
     <Panel
       fill
@@ -323,7 +341,9 @@ export function ActivityLog({
                   ) : (
                     <span className="text-[10px] uppercase tracking-wide text-tx3">{it.type.replace("_", " ")}</span>
                   )}
-                  <Mono className="ml-auto text-tx3">{new Date(it.at).toLocaleTimeString([], { hour12: false })}</Mono>
+                  <span className="ml-auto" title={new Date(it.at).toLocaleTimeString([], { hour12: false })}>
+                    <Mono className="text-tx3">{timeAgo(it.at, now) ?? new Date(it.at).toLocaleTimeString([], { hour12: false })}</Mono>
+                  </span>
                 </div>
                 <ActivityBody it={it} />
               </div>

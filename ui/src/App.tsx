@@ -6,6 +6,7 @@ import { ActivityLog, EscalationInbox } from "./components/RightRail";
 import { TopBar } from "./components/TopBar";
 import { useRoute } from "./lib/route";
 import { useTour } from "./components/useTour";
+import { ShortcutsDialog, useShortcuts } from "./components/Shortcuts";
 import { useRunStatus } from "./api/hooks";
 import { AboutPage } from "./views/AboutPage";
 import { EventDetail } from "./views/EventDetail";
@@ -29,6 +30,7 @@ export default function App() {
     return () => window.removeEventListener("ct-reset-all", clearAll);
   }, [clearAll]);
   useTour({ tower: route.page === "tower", selectedId, feedReady: !!events.data?.length, runState: useRunStatus().data?.state });
+  const keys = useShortcuts(selectedId);
   const presetTotal = (events.data ?? []).filter((e) => !e.custom).length || 15;
   const selected = feedEvents?.find((e) => e.event_id === selectedId);
   const trace = useTrace(selectedId);
@@ -46,6 +48,7 @@ export default function App() {
 
   return (
     <div className="flex h-full flex-col">
+      <ShortcutsDialog open={keys.help} onOpenChange={keys.setHelp} />
       <TopBar page={route.page} go={go} version={lastVersion.current} finished={stream.finished} total={presetTotal} activityCount={stream.items.length} />
       <main className="min-h-0 flex-1 overflow-y-auto xl:overflow-hidden">
         {route.page === "ontology" && <OntologyPage />}

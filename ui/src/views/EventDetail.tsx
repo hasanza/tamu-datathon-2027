@@ -15,7 +15,7 @@ import { LiveOrchestration, OrchestrationTab } from "./OrchestrationTab";
 import type { LiveStep } from "../api/stream";
 import { SummaryTab } from "./SummaryTab";
 
-const TABS = ["Summary", "Orchestration", "Graph", "Actions", "Audit"] as const;
+export const TABS = ["Summary", "Orchestration", "Graph", "Actions", "Audit"] as const;
 type Tab = (typeof TABS)[number];
 
 /** Nothing selected: say what to do first. One quick pick per category (the first event of each), the two ways to start a run. */

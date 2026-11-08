@@ -7,6 +7,7 @@ import type { Trace } from "../api/types";
 import { confirmClause, followUpsOf, openEvent } from "../lib/escalation";
 import { clip } from "../lib/format";
 import { useToast } from "../state";
+import { Disclosure } from "./ui/Disclosure";
 import { failureMessage } from "./CustomEventCard";
 import { CategoryBadge, Mono, StatusChip } from "./ui/primitives";
 
@@ -115,9 +116,7 @@ export function FollowUpList({ parentId }: { parentId: string }) {
   const summary = (id: string) => traces.find((t) => t.event_id === id)?.summary;
   return (
     <div className="mt-2">
-      <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-tx3">
-        <CornerDownRight size={12} aria-hidden /> Follow-ups ({rows.length})
-      </div>
+      <Disclosure summary={<span className="inline-flex items-center gap-1"><CornerDownRight size={12} aria-hidden /> Follow-ups</span>} count={rows.length}>
       <p className="text-[11px] text-tx3">Re-run in the sandbox: a private copy of the enterprise server; the scored action log was not touched.</p>
       <ul className="mt-1 space-y-1">
         {rows.map((r) => (
@@ -136,6 +135,7 @@ export function FollowUpList({ parentId }: { parentId: string }) {
           </li>
         ))}
       </ul>
+      </Disclosure>
     </div>
   );
 }
