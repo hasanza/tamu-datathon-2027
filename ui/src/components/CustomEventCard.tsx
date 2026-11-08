@@ -24,6 +24,7 @@ export const EXAMPLES: { label: string; text: string }[] = [
 export function failureMessage(e: unknown): string {
   if (e instanceof ApiError) {
     if (e.status === 422) return `That text was rejected: ${e.message}`;
+    if (e.status === 404) return `Could not find that event: ${e.message}`;
     if (e.status === 504) return "The pipeline took too long on this event. Try a shorter message.";
     if (e.status === 409) return e.message;
     // The API appends the tail of the pipeline's stderr to a 500 (library warnings, tracebacks): not for a toast.

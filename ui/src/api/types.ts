@@ -52,10 +52,14 @@ export interface FeedEvent {
   confidence: number | null;
   /** true for an event typed in by a user (sandbox: twin only, never the real server) */
   custom?: boolean;
+  /** custom events created by "Add details and re-run": the event this one follows up on */
+  parent_id?: string | null;
 }
 
 /** Custom events are ids C-nn; they run on the twin only and live in traces/custom. */
 export const isCustomId = (id: string) => /^C-\d{2}$/.test(id);
+/** C-14 -> 14 (newest custom event has the highest number); 0 for anything else. */
+export const customNumber = (id: string) => (isCustomId(id) ? Number(id.slice(2)) : 0);
 
 export interface ResolutionStep {
   mention: string;
