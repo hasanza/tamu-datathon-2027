@@ -315,7 +315,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         cfg.custom_stream_file.write_text("")  # connected Activity streams reset now; the run then appends live
         tmp = cfg.custom_dir / f"{eid}.input.json"
         tmp.write_text(json.dumps([ev]), encoding="utf-8")
-        cmd = [sys.executable, "-m", "control_tower.live", "--custom", str(tmp)]
+        # the pipeline writes where the API reads: pass the dirs instead of relying on matching defaults
+        cmd = [
+            sys.executable,
+            "-m",
+            "control_tower.live",
+            "--custom",
+            str(tmp),
+            "--run-dir",
+            str(cfg.custom_run_dir),
+            "--traces-dir",
+            str(cfg.custom_dir),
+        ]
         try:
             r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, timeout=CUSTOM_TIMEOUT_S)  # noqa: S603
         except subprocess.TimeoutExpired as e:
@@ -334,17 +345,33 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "target": getattr(t.orchestration, "target", None) or "sandbox",
         }
 
-    runner: dict[str, Any] = {"proc": None, "mode": None, "started": None}
+    runner: dict[str, Any] = {"proc": None, "mode": None, "started": None, "stderr": None}
     initial_dirs = (cfg.traces_dir, cfg.run_dir)  # what the server was started with: the committed snapshot
+
+    def stderr_line(code: int) -> str | None:
+        """The line that says why a run ended badly: the `ABORTED:` line if there is one, else the last stderr line."""
+        path = runner["stderr"]
+        if not path or not Path(path).exists():
+            return None
+        lines = [
+            ln.strip() for ln in Path(path).read_text(encoding="utf-8", errors="replace").splitlines() if ln.strip()
+        ]
+        aborted = [ln for ln in lines if ln.startswith("ABORTED:")]
+        return (aborted[-1] if aborted else (lines[-1] if lines else None)) if code != 0 else None
 
     def runner_state() -> dict[str, Any]:
         proc = runner["proc"]
         running = proc is not None and proc.poll() is None
+        code = None if proc is None or running else proc.returncode
+        # exit 2 is the pipeline giving up on purpose (provider unavailable, or the sandbox server did not start)
+        state = None if code is None else "done" if code == 0 else "aborted" if code == 2 else "failed"
         return {
             "running": running,
             "mode": runner["mode"],
-            "exit_code": None if proc is None or running else proc.returncode,
+            "exit_code": code,
             "started": runner["started"],
+            "state": state,
+            "message": stderr_line(code) if code is not None else None,
         }
 
     @app.get("/api/run/status")
@@ -386,7 +413,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         cfg.stream_file.write_text(
             ""
         )  # connected SSE tailers see the truncation now, before the pipeline starts writing
-        runner["proc"] = subprocess.Popen(cmd, cwd=ROOT)  # noqa: S603
+        runner["stderr"] = str(cfg.run_dir / "run.stderr")
+        with open(runner["stderr"], "wb") as err:  # the child keeps its own copy of the descriptor
+            runner["proc"] = subprocess.Popen(cmd, cwd=ROOT, stderr=err)  # noqa: S603
         runner["mode"], runner["started"] = mode, time.time()
         return runner_state()
 
@@ -396,7 +425,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if runner_state()["running"]:
             raise HTTPException(409, "a run is in progress; wait for it to finish")
         cfg.traces_dir, cfg.run_dir = initial_dirs
-        runner.update(proc=None, mode=None, started=None)
+        runner.update(proc=None, mode=None, started=None, stderr=None)
         return runner_state()
 
     @app.get("/api/stream")
