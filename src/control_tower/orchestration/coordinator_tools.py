@@ -73,6 +73,7 @@ class CoordState:
     failed: bool = False
     failure_text: str = ""
     audit_note: str = ""
+    fresh_reads: tuple[int, int] = (0, 0)  # (slot reads, pool reads) the freshness step checked
     log: list[Action] = field(default_factory=list)  # every Action of the trace, in order
     logged_reads: set[int] = field(default_factory=set)
     summary: str | None = None
@@ -1161,6 +1162,7 @@ def execute(ctx: EventContext, args: NoArgs) -> dict[str, Any]:
         flush_escalations(ctx)
         return {"status": "escalated", "writes_sent": 0, "why": stale}
     lot = any(ctx.incidents[i].category == "quality_hold" for i in ids)
+    st.fresh_reads = (len(vreads), len(ctx.state.get("pools") or {}))
     tl(ctx).step(
         CO, "execute",
         f"Freshness: {len(vreads)} slot reads, {len(ctx.state.get('pools') or {})} pool reads matched the baseline"
@@ -1257,11 +1259,17 @@ def draft(ctx: EventContext, error: str | None = None) -> tuple[str, str]:
             "unclear reports are escalated): " + (" ".join(st.escalated.values())[:400] or (error or ""))
         )
     else:
+        ns, npool = st.fresh_reads
         reason = (
             "Acted on every confirmed incident: ids and dates resolved against the data, the handbook validators passed, "
             "the pre-flight check on a sandbox copy of the enterprise passed, "
             + (f"the auditor agreed ({st.audit_note}), " if st.audit_note else "")
-            + "and the live schedule baseline matched before the first write."
+            + (
+                f"and the live world matched the planning baseline before the first write ({ns} slot reads, {npool} pool reads)."
+                if ns or npool
+                else "no live baseline read applies to a quality hold (the enterprise exposes no lot-state read), "
+                "so the pre-flight check and the auditor were the gates."
+            )
             + (" The unclear part was escalated without operational change (rule 8)." if st.escalated else "")
             + (" A call failed at execution, so the remainder was escalated." if st.failed else "")
         )

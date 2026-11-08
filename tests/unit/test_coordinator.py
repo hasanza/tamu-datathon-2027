@@ -343,6 +343,7 @@ def test_e11_acts_matches_v1_and_runs_four_agents(rig, world, graph):
     assert t.summary.startswith("Scripted") and t.llm.total_cost_usd == 0
     assert t.world_diff.moved_pos and t.counterfactual.customers_affected > 0
     assert t.paths["E-11#1"] and rig.log.read_text().count("\n") >= len(writes(t))
+    assert "matched the planning baseline" in ct.draft(rig.ctx)[1]
     tools = [a.tool for a in writes(t)]  # phase order: moves, notices, loaners
     last_move = max(i for i, x in enumerate(tools) if x.startswith("mes."))
     assert last_move < tools.index("dealer.notify") < tools.index("crm.assign_loaner")
@@ -715,6 +716,8 @@ def test_e03_quality_hold(rig, world, graph):
     (fresh,) = [x for x in _exec_steps(t) if x.startswith("Freshness:")]
     assert "0 slot reads, 0 pool reads" in fresh and "lot state is not verifiable" in fresh
     assert not any(a.tool == "crm.assign_loaner" for a in t.actions)  # no loaners task for a quality-only event
+    reason = ct.draft(rig.ctx)[1]  # the draft is the source of truth the explain step paraphrases
+    assert "schedule baseline matched" not in reason and "no live baseline read applies" in reason
 
 
 # --- the escalation circumstances of PLAN_V2 4.1 (one per circumstance) and the nickname guard ------------------
