@@ -23,7 +23,7 @@ Source of truth: `src/control_tower/schemas/` (Pydantic v2). JSON Schema exports
 - `status`: `queued` → `processing` → one of `done` (acted), `escalated` (escalate only), `noise` (nothing), `failed` (runtime error, also escalated).
 - A `noise` or `escalated` trace has no write actions. A `done` trace has ≥3 distinct write tools and every write action has `rehearsal.ok == true`.
 - Collapsed graph nodes use ids `grp:<kind>:<incident_id>` and carry `group` + `count`; the UI renders them as expandable.
-- SSE event types (`GET /api/stream`): `event_received`, `agent_step`, `action`, `event_done`; payloads are the matching objects above plus `event_id`.
+- SSE event types (`GET /api/stream`): `event_incoming`, `event_received`, `agent_step`, `action`, `event_done`; payloads are the matching objects above plus `event_id`.
 - FastAPI endpoints: `GET /api/events`, `GET /api/traces/{event_id}`, `GET /api/actions`, `GET /api/graph/{event_id}`, `GET /api/kpis`, `POST /api/run?event_id=&all=`, `GET /api/stream`.
 
 ## Changelog
@@ -33,3 +33,4 @@ Source of truth: `src/control_tower/schemas/` (Pydantic v2). JSON Schema exports
 - 2026-11-08 v0.2.2 — Orchestration.target scored|sandbox|dry: which enterprise the writes went to (feed events → the scored server; judge events → a private sandbox server through the same MCP client; dry → in-process twin)
 - 2026-11-08 v0.2.2 (same bump) — Orchestration.provider_failure bool: the LLM provider was unavailable, the event is `failed`, nothing executed, no escalate sent; re-run it
 - 2026-11-08 v0.2.3 — Trace.brief (additive): deterministic headline + per-incident fact rows + gates for the UI
+- 2026-11-08 v0.2.4 — additive: `Brief.entities: list[str]` (display strings the agents inferred, de-duplicated, first-seen order; each appears verbatim in the brief text so the UI can bold it); new stream type `event_incoming` with payload `{received_at, source}`, emitted by the runner ~`--lead` seconds (default 1.0, jittered 0.8-1.4x) before `event_received`

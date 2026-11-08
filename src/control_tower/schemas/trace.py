@@ -196,16 +196,18 @@ class IncidentBrief(BaseModel):
 
 
 class Brief(BaseModel):
-    """v0.2.3: deterministic headline + per-incident fact rows + gates, built from the same counts as the summary."""
+    """v0.2.3: deterministic headline + per-incident fact rows + gates, built from the same counts as the summary.
+    v0.2.4: `entities` = display strings the agents inferred (the UI bolds them in the summary text)."""
 
     headline: str
     outcome: Literal["acted", "escalated", "noise", "failed", "partial"]
     incidents: list[IncidentBrief] = Field(default_factory=list)
     gates: list[str] = Field(default_factory=list)
+    entities: list[str] = Field(default_factory=list)
 
 
 class Trace(BaseModel):
-    pipeline_version: str = "0.2.3"
+    pipeline_version: str = "0.2.4"
     event_id: str
     received_at: datetime
     source: str
