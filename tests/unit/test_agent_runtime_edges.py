@@ -115,3 +115,17 @@ def test_render_tools_includes_full_schema():
 
     text = render_tools([ToolSpec("t", "x", "code", "d", Args, lambda c, a: {})])
     assert '"enum":["a","b"]' in text and "$defs" in text
+
+
+def test_summarize_args():
+    from control_tower.orchestration.tools import summarize_args
+
+    assert summarize_args({"incidents": [{"category": "noise"}]}) == "1 incident (noise)"
+    assert summarize_args({"po_ids": list("123456789")}) == "9 po_ids"
+    assert summarize_args({"by_dealer": "h:E-1:by_dealer:3"}) == "by_dealer list"
+    assert summarize_args({"x": None, "y": "", "z": False}) == ""
+    assert summarize_args({"meta": {"a": 1, "b": 2}}) == "meta 2 fields"
+    s = summarize_args({"plant_id": "P_MS", "n": 3, "po_ids": ["a", "b"], "note": "x" * 40, "extra": 1})
+    assert s.startswith("2 po_ids · plant_id P_MS · n 3") and s.endswith("+2 more")
+    assert summarize_args({"note": "x" * 40}) == "note " + "x" * 23 + "…"
+    assert summarize_args({"tools": [{"tool": "a"}, {"tool": "b"}, {"tool": "a"}]}) == "3 tools (a, b)"

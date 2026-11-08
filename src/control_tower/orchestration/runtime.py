@@ -15,7 +15,15 @@ from pydantic import BaseModel, ValidationError, model_validator
 
 from control_tower.llm.adapter import LLMError, complete_json
 from control_tower.orchestration.config import agent_config
-from control_tower.orchestration.tools import ToolContext, ToolSpec, compact, compact_json, jsonable, render_tools
+from control_tower.orchestration.tools import (
+    ToolContext,
+    ToolSpec,
+    compact,
+    compact_json,
+    jsonable,
+    render_tools,
+    summarize_args,
+)
 from control_tower.trace import Timeline
 
 
@@ -172,7 +180,7 @@ def run_agent(
                     timeline.step(
                         spec.agent_id,
                         "tool",
-                        f"{name}({compact_json(clean_args)})",
+                        f"{name} · {summarize_args(clean_args)}" if clean_args else name,
                         tool=name,
                         args=clean_args,
                         result=small if isinstance(small, dict) else {"value": small},

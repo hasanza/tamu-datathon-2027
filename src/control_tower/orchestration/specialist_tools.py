@@ -63,7 +63,7 @@ def resolve(ctx: EventContext, ref: Any) -> Any:
     """Handle string / {stored_key} dict -> the stored value; dicts are resolved value by value; anything else as is."""
     if isinstance(ref, str):
         if ref not in ctx.store:
-            raise ValueError(f"unknown handle {ref!r}; pass a handle exactly as a tool returned it")
+            raise ValueError(f"unknown handle '{ref}'; pass a handle exactly as a tool returned it")
         return ctx.store[ref]
     if isinstance(ref, dict):
         if "stored_key" in ref:
@@ -89,7 +89,7 @@ def _id_list(ctx: EventContext, ref: Any, what: str) -> list[str]:
 def _spec(ctx: EventContext, incident_id: str):
     spec = ctx.incidents.get(incident_id)
     if spec is None:
-        raise ValueError(f"unknown incident_id {incident_id!r}; known: {list(ctx.incidents)}")
+        raise ValueError(f"unknown incident_id '{incident_id}'; known: {list(ctx.incidents)}")
     return spec
 
 

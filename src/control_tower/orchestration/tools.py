@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import re
 import typing
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -126,6 +127,46 @@ def compact(value: Any, store: dict[str, Any], prefix: str, *, limit: int = 20, 
 
 def compact_json(value: Any) -> str:
     return json.dumps(value, separators=(",", ":"), default=str, ensure_ascii=False)
+
+
+_HANDLE = re.compile(r"^h:\S+")
+_KIND_KEYS = ("category", "kind", "type", "tool", "name")
+
+
+def _singular(key: str) -> str:
+    return key[:-1] if key.endswith("s") and len(key) > 1 else key
+
+
+def summarize_args(value: dict[str, Any], max_parts: int = 3) -> str:
+    """One readable line for a tool call's arguments (mirrors the UI's summarize()): counts first, then scalars."""
+    counts: list[str] = []
+    scalars: list[str] = []
+    for key, v in value.items():
+        if v is None or v == "" or v is False:
+            continue
+        if isinstance(v, str) and _HANDLE.match(v):
+            counts.append(f"{key} list")
+        elif isinstance(v, list | tuple):
+            n = len(v)
+            kinds: list[str] = []
+            for item in v:
+                if isinstance(item, dict):
+                    k = next((item[c] for c in _KIND_KEYS if isinstance(item.get(c), str) and item[c]), None)
+                    if k and k not in kinds:
+                        kinds.append(k)
+            label = _singular(key) if n == 1 else key
+            counts.append(f"{n} {label}" + (f" ({', '.join(kinds)})" if kinds else ""))
+        elif isinstance(v, dict):
+            counts.append(f"{key} {len(v)} fields")
+        elif isinstance(v, str):
+            scalars.append(f"{key} {v if len(v) <= 24 else v[:23] + '…'}")
+        else:
+            scalars.append(f"{key} {v}")
+    parts = counts + scalars
+    out = parts[:max_parts]
+    if len(parts) > max_parts:
+        out.append(f"+{len(parts) - max_parts} more")
+    return " · ".join(out)
 
 
 # --- sample tools (stream B adds the real ones) -----------------------------------------------------------------
