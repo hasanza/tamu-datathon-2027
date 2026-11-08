@@ -3,12 +3,15 @@ import { ChevronDown, ChevronRight, Network, Pencil, Eye } from "lucide-react";
 import { useLog } from "../api/hooks";
 import { isCustomId, WRITE_TOOLS, type Action, type AgentId, type Trace } from "../api/types";
 import { FilterMenu } from "../components/ui/FilterMenu";
+import { KV, KVGrid, RawJson } from "../components/ui/KeyValue";
 import { Chip, Empty, Mono, OkChip, Panel } from "../components/ui/primitives";
 import { clip, compactArgs } from "../lib/format";
 import { AGENT_META, transportMeta } from "../lib/meta";
 import { TARGET_META, targetOf } from "../lib/target";
 
 const PAGE = 100;
+
+const asObject = (v: unknown): Record<string, unknown> => (v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : { value: v });
 
 function ActionDetail({ a, target }: { a: Action; target: ReturnType<typeof targetOf> }) {
   const tr = transportMeta(a.transport, target);
@@ -25,8 +28,8 @@ function ActionDetail({ a, target }: { a: Action; target: ReturnType<typeof targ
             <Chip color={tr.color}>{tr.label}</Chip>
           </div>
         )}
-        {a.rehearsal?.error && <p className="text-fail">Rehearsal error: {a.rehearsal.error}</p>}
-        {a.result?.error && <p className="text-fail">Result error: {a.result.error}</p>}
+        {a.rehearsal?.error && <p className="text-fail">Rehearsal error: <Mono>{a.rehearsal.error}</Mono></p>}
+        {a.result?.error && <p className="text-fail">Result error: <Mono>{a.result.error}</Mono></p>}
         {a.path_ids.length > 0 && (
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-wide text-tx3">Graph path</div>
@@ -37,14 +40,15 @@ function ActionDetail({ a, target }: { a: Action; target: ReturnType<typeof targ
       <div className="space-y-2">
         <div>
           <div className="text-[11px] font-semibold uppercase tracking-wide text-tx3">Arguments</div>
-          <pre className="mono max-h-40 overflow-auto rounded-md border border-line bg-bg p-2 text-[11px] text-tx2">{JSON.stringify(a.args, null, 2)}</pre>
+          <KVGrid value={a.args} />
         </div>
         {a.result?.response && (
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-wide text-tx3">Server response</div>
-            <pre className="mono max-h-40 overflow-auto rounded-md border border-line bg-bg p-2 text-[11px] text-tx2">{JSON.stringify(a.result.response, null, 2)}</pre>
+            <KVGrid value={asObject(a.result.response)} />
           </div>
         )}
+        <RawJson value={{ args: a.args, ...(a.result?.response ? { response: a.result.response } : {}) }} />
       </div>
     </div>
   );
@@ -187,7 +191,7 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
                       </div>
                       <div className="mt-0.5 text-[11.5px] leading-snug text-tx3">{clip(a.justification, 60)}</div>
                     </td>
-                    <td className="max-w-64 px-2 py-1.5"><Mono className="break-all text-tx2" >{clip(compactArgs(a.args), 110)}</Mono></td>
+                    <td className="max-w-64 px-2 py-1.5" title={compactArgs(a.args)}><KV value={a.args} /></td>
                     <td className="px-2 py-1.5">
                       {a.path_ids.length > 0 ? (
                         <button

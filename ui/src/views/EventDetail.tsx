@@ -27,6 +27,15 @@ export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent
   useEffect(() => {
     setFocus(null);
   }, [id]);
+  // the Activity rail asks for a tab ("open this event's Orchestration")
+  useEffect(() => {
+    const on = (e: Event) => {
+      const want = (e as CustomEvent<string>).detail;
+      if ((TABS as readonly string[]).includes(want)) setTab(want as Tab);
+    };
+    window.addEventListener("ct-open-tab", on);
+    return () => window.removeEventListener("ct-open-tab", on);
+  }, []);
 
   if (!event) return <Empty title="Select an event" hint="Pick an event from the feed (or press j / k) to see what the agents did and why." />;
 

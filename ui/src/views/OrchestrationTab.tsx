@@ -5,7 +5,7 @@ import type { LiveStep } from "../api/stream";
 import { Chip, Empty, Mono, Panel } from "../components/ui/primitives";
 import { Clamped, DECISION_COLOR, Details, Meta, echoesCall, hasKeys } from "./orchParts";
 import { FlowView } from "./FlowView";
-import { compactArgs, safeStorage, summarize, usd } from "../lib/format";
+import { compactArgs, prettifyRepr, safeStorage, summarize, usd } from "../lib/format";
 import { BADGE_COLOR, LANE_META, LANES, laneOf, STEP_META, toolBadge, type LaneId } from "../lib/meta";
 
 /* The Orchestration view (PLAN_V2 §8): four swimlanes, time flowing down. Cards are Thought (the agent's reasoning),
@@ -135,12 +135,12 @@ function Card({ row, start }: { row: OrchRow; start: string }) {
           <Meta step={step} start={start} />
         </div>
         <Mono className="break-all font-medium text-tx">{step.tool ?? "tool"}</Mono>
-        {hasKeys(step.args) && (
+        {echoesCall(step) && hasKeys(step.args) && (
           <p className="mono mt-0.5 truncate text-[11px] text-tx3" title={compactArgs(step.args)}>
             {summarize(step.args)}
           </p>
         )}
-        {!echoesCall(step) && <p className="mt-1 break-words text-tx2">{step.text}</p>}
+        {!echoesCall(step) && <p className="mt-1 break-words text-tx2">{prettifyRepr(step.text)}</p>}
         {hasKeys(step.result) && (
           <p className="mono mt-0.5 truncate text-[11px] text-tx2" title={compactArgs(step.result)}>
             → {summarize(step.result)}
@@ -159,7 +159,7 @@ function Card({ row, start }: { row: OrchRow; start: string }) {
           <Chip color={c}>Decision</Chip>
           <Meta step={step} start={start} />
         </div>
-        <p className="break-words font-medium text-tx">{step.text}</p>
+        <p className="break-words font-medium text-tx">{prettifyRepr(step.text)}</p>
         <Details step={step} />
       </div>
     );
@@ -173,7 +173,7 @@ function Card({ row, start }: { row: OrchRow; start: string }) {
         <Chip color={m.color}>{m.label}</Chip>
         <Meta step={step} start={start} />
       </div>
-      <p className="break-words text-tx2">{step.text}</p>
+      <p className="break-words text-tx2">{prettifyRepr(step.text)}</p>
       <Details step={step} />
     </div>
   );

@@ -1,5 +1,6 @@
 import type { AgentId, AgentStep } from "../api/types";
 import type { OrchRow } from "../views/OrchestrationTab";
+import { prettifyRepr } from "./format";
 import { LANE_META, laneOf, type LaneId } from "./meta";
 
 /* The Flow view's model (docs: CORE #68). A trace is a long list of steps; this groups consecutive steps into STAGE NODES:
@@ -66,12 +67,12 @@ const taskLabel = (t: string | null | undefined) => (t ? (TASK_LABEL[t] ?? t.rep
 
 const clipText = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1).trimEnd()}…` : s);
 export function firstSentence(text: string, n = 150): string {
-  const flat = text.replace(/\s+/g, " ").trim();
+  const flat = prettifyRepr(text).replace(/\s+/g, " ").trim();
   const m = /^(.+?[.!?])(\s|$)/.exec(flat);
   return clipText(m?.[1] ?? flat, n);
 }
 /** First line of a thought for the collapsed detail row. */
-export const firstLine = (text: string, n = 140) => clipText(text.split("\n")[0]?.trim() ?? "", n);
+export const firstLine = (text: string, n = 140) => clipText(prettifyRepr(text).split("\n")[0]?.trim() ?? "", n);
 
 const GENERIC_DECISION = /submitted its result|^Coordinator finished$/i;
 const isFinishMarker = (s: AgentStep) => (s.kind === "decision" && /^Event settled/i.test(s.text)) || (s.kind === "tool" && s.tool === "finish");
@@ -299,7 +300,10 @@ export function buildFlow(rows: OrchRow[], context: FlowContext = {}): Flow {
       stage("understand", first, "Understand the message", "read, resolve, gate", understandChips(first));
       stage("finish", last, "Finish", "settle and explain", finishChips(last, ctx));
     } else {
-      stage("validate", get("validate"), "Validate the plan", "handbook rules as code", validateChips(get("validate"), ctx));
+      // coordinator steps tagged understand/delegate that come after the last specialist returned (it reviewing the results)
+      // belong to the validation stage; dropping them would lose steps from the trace
+      const validating = pending.filter((r) => ["understand", "delegate", "validate"].includes(r.step.task ?? ""));
+      stage("validate", validating, "Validate the plan", "handbook rules as code", validateChips(validating, ctx));
       stage("execute", get("execute"), "Pre-flight, audit, execute", "sandbox check, second model, MCP", executeChips(get("execute")));
       stage("finish", get("finish"), "Finish", "settle and explain", finishChips(get("finish"), ctx));
     }
