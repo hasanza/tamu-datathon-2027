@@ -174,6 +174,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         except ValidationError as e:
             raise HTTPException(500, f"{p.name} does not match the Trace contract: {e.error_count()} errors") from e
 
+    def custom_files() -> list[Path]:
+        """Finished custom traces only (C-nn.json). A run in flight keeps its input as C-nn.input.json in the same directory,
+        which a plain C-*.json glob also matches: it crashed /api/events (not a Trace) and the next-id arithmetic."""
+        if not cfg.custom_dir.exists():
+            return []
+        return sorted(p for p in cfg.custom_dir.glob("C-*.json") if EVENT_ID.match(p.stem))
+
     def all_traces() -> dict[str, Trace]:
         out = {}
         for p in sorted(cfg.traces_dir.glob("E-*.json")):
@@ -200,7 +207,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     "confidence": t.classification.confidence if t else None,
                 }
             )
-        for p in sorted(cfg.custom_dir.glob("C-*.json")) if cfg.custom_dir.exists() else []:
+        for p in custom_files():
             t = load_trace(p.stem)
             if t:
                 out.append(
@@ -288,7 +295,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         else:
             raise HTTPException(422, "give text, or parent_id with details")
         cfg.custom_dir.mkdir(parents=True, exist_ok=True)
-        n = 1 + max([int(p.stem[2:]) for p in cfg.custom_dir.glob("C-*.json")] or [0])
+        n = 1 + max([int(p.stem[2:]) for p in custom_files()] or [0])
         if n > 99:
             raise HTTPException(409, "custom event limit reached (C-99)")
         eid = f"C-{n:02d}"

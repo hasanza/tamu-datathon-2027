@@ -299,6 +299,35 @@ def test_custom_event_sandbox(client, cfg, monkeypatch):
     assert ev["C-01"]["custom"] is True and "E-01" in ev
 
 
+def test_custom_run_in_flight_does_not_break_events_or_numbering(client, cfg, monkeypatch):
+    """While a custom event runs, its input file C-nn.input.json sits next to the finished traces. v2 runs take a minute,
+    so the window is long: /api/events used to answer 500 (the input is not a Trace) and a second POST crashed on int('01.input')."""
+    import subprocess as sp
+
+    cfg.custom_dir.mkdir(parents=True, exist_ok=True)
+    done = json.loads((ROOT / "traces/examples/E-05.json").read_text())
+    done.update(event_id="C-01", text="finished earlier")
+    (cfg.custom_dir / "C-01.json").write_text(json.dumps(done))
+    (cfg.custom_dir / "C-02.input.json").write_text(
+        json.dumps([{"event_id": "C-02", "text": "still running"}])
+    )  # in flight
+
+    r = client.get("/api/events")
+    assert r.status_code == 200
+    assert [e["event_id"] for e in r.json() if e.get("custom")] == ["C-01"]  # the input file is not an event
+
+    def fake_run(cmd, **kw):  # a second submission while C-02 is still in flight takes the next free number
+        ev = json.loads(Path(cmd[-1]).read_text())[0]
+        assert ev["event_id"] == "C-02"
+        done.update(event_id=ev["event_id"], text=ev["text"])
+        (cfg.custom_dir / f"{ev['event_id']}.json").write_text(json.dumps(done))
+        return sp.CompletedProcess(cmd, 0, "", "")
+
+    monkeypatch.setattr("api.app.subprocess.run", fake_run)
+    r = client.post("/api/custom", json={"text": "A second message arrives while the first is running."})
+    assert r.status_code == 200 and r.json()["event_id"] == "C-02"
+
+
 def test_stream_tails_run_and_custom_streams_together(tmp_path):
     a, b = tmp_path / "run.ndjson", tmp_path / "custom.ndjson"
     a.write_text("")
