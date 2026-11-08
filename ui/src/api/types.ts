@@ -15,7 +15,17 @@ export type Tool =
   | "crm.notify_customer"
   | "quality.hold_lot"
   | "escalate";
-export type AgentId = "coordinator" | "supply_chain" | "dealer_care" | "quality";
+/** v1 trace ids (traces/snapshot) and v2 ids (PLAN_V2 §7). Both are valid; lib/meta.ts maps them onto the four lanes. */
+export type AgentId =
+  | "coordinator"
+  | "supply_chain"
+  | "dealer_care"
+  | "quality"
+  | "supply_chain_planner"
+  | "dealer_network"
+  | "customer_care_quality";
+/** Where a tool call ran (contracts v0.2.0): the real MCP client, the in-process twin, or plain in-process code. */
+export type Transport = "mcp/stdio" | "twin" | "in-process";
 
 export const WRITE_TOOLS: ReadonlySet<string> = new Set([
   "mes.reschedule",
@@ -40,7 +50,21 @@ export type NodeType =
   | "Lot"
   | "Vehicle"
   | "Day";
-export type StepKind = "llm" | "graph" | "plan" | "rehearse" | "audit" | "execute" | "gate" | "note";
+export type StepKind =
+  // v1
+  | "llm"
+  | "graph"
+  | "plan"
+  | "rehearse"
+  | "audit"
+  | "execute"
+  | "gate"
+  | "note"
+  // v2 (PLAN_V2 §7)
+  | "thought"
+  | "tool"
+  | "message"
+  | "decision";
 
 export interface FeedEvent {
   event_id: string;
@@ -119,12 +143,32 @@ export interface AgentStep {
   kind: StepKind;
   text: string;
   data: Record<string, unknown> | null;
+  // v2 additions, all optional so v1 traces stay valid
+  turn?: number | null;
+  tool?: string | null;
+  args?: Record<string, unknown> | null;
+  result?: Record<string, unknown> | null;
+  to_agent?: AgentId | null;
+  from_agent?: AgentId | null;
+  transport?: Transport | null;
+  model?: string | null;
+  cost_usd?: number | null;
 }
 export interface AgentRun {
   agent: AgentId;
   started: string;
   ended: string | null;
   steps: AgentStep[];
+  model?: string | null;
+  llm_calls?: number;
+  cost_usd?: number;
+}
+
+export interface Orchestration {
+  mode: "sequential" | "parallel";
+  correction_rounds: number;
+  escalations: { incident_id: string; reason: string }[];
+  mcp_transport: string | null;
 }
 
 export interface Action {
@@ -137,6 +181,7 @@ export interface Action {
   path_ids: string[];
   rehearsal: { ok: boolean; error: string | null } | null;
   result: { ok: boolean; error: string | null; response: Record<string, unknown> | null } | null;
+  transport?: Transport | null;
 }
 
 export interface MovedPO {
@@ -166,7 +211,7 @@ export interface Counterfactual {
 export interface LLMCall {
   provider: string;
   model: string;
-  purpose: "extract" | "audit" | "summarize" | "resolve" | "paraphrase";
+  purpose: "extract" | "audit" | "summarize" | "resolve" | "paraphrase" | "agent_turn";
   input_tokens: number;
   output_tokens: number;
   cost_usd: number;
@@ -190,6 +235,8 @@ export interface Trace {
   llm: { calls: LLMCall[]; total_cost_usd: number };
   summary: string;
   decision_reason: string;
+  /** v2 only (contracts v0.2.0) */
+  orchestration?: Orchestration | null;
 }
 
 /** Row of GET /api/actions (the enterprise server's action_log.jsonl plus line and write flag). */

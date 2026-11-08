@@ -7,15 +7,16 @@ import { useRun } from "../components/useRun";
 import { CategoryBadge, Chip, ConfidenceRing, Empty, ErrorBox, Loading, StatusChip } from "../components/ui/primitives";
 import { dateTime } from "../lib/format";
 import { ActionsTab } from "./ActionsTab";
-import { AgentsTab } from "./AgentsTab";
 import { AuditTab } from "./AuditTab";
 import { GraphTab } from "./GraphTab";
+import { LiveOrchestration, OrchestrationTab } from "./OrchestrationTab";
+import type { LiveStep } from "../api/stream";
 import { SummaryTab } from "./SummaryTab";
 
-const TABS = ["Summary", "Agents", "Graph", "Actions", "Audit"] as const;
+const TABS = ["Summary", "Orchestration", "Graph", "Actions", "Audit"] as const;
 type Tab = (typeof TABS)[number];
 
-export function EventDetail({ event, processing }: { event: FeedEvent | undefined; processing: boolean }) {
+export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent | undefined; processing: boolean; liveSteps?: LiveStep[] }) {
   const id = event?.event_id ?? null;
   const trace = useTrace(id);
   const run = useRun();
@@ -113,10 +114,12 @@ export function EventDetail({ event, processing }: { event: FeedEvent | undefine
               hint={processing ? "The agents are working on this event. The trace appears here when it completes." : "This event has not been run through the pipeline. Use Run this event, or Run feed in the top bar."}
             />
             <blockquote className="rounded-lg border border-line bg-surface p-3 text-[13px] text-tx2">{event.text}</blockquote>
+            {/* the agents work for seconds to minutes before the trace exists: stream their cards meanwhile */}
+            {processing && liveSteps && liveSteps.length > 0 && <LiveOrchestration steps={liveSteps} />}
           </div>
         )}
         {t && tab === "Summary" && <SummaryTab key={t.event_id} trace={t} />}
-        {t && tab === "Agents" && <AgentsTab key={t.event_id} trace={t} />}
+        {t && tab === "Orchestration" && <OrchestrationTab key={t.event_id} trace={t} />}
         {t && tab === "Graph" && <GraphTab key={t.event_id} trace={t} focus={focus} onClearFocus={() => setFocus(null)} />}
         {t && tab === "Actions" && <ActionsTab key={t.event_id} trace={t} onShowOnGraph={showOnGraph} />}
         {t && tab === "Audit" && <AuditTab key={t.event_id} trace={t} />}
