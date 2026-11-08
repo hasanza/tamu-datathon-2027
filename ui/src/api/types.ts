@@ -24,7 +24,7 @@ export type AgentId =
   | "supply_chain_planner"
   | "dealer_network"
   | "customer_care_quality";
-/** Where a tool call ran (contracts v0.2.0): the real MCP client, the in-process twin, or plain in-process code. */
+/** How a call reached the enterprise (contracts v0.2.0): the MCP client, a dry-run in-process copy ("twin" in old traces), or plain code. */
 export type Transport = "mcp/stdio" | "twin" | "in-process";
 
 export const WRITE_TOOLS: ReadonlySet<string> = new Set([
@@ -76,13 +76,13 @@ export interface FeedEvent {
   status: Status;
   category: EventCategory | null;
   confidence: number | null;
-  /** true for an event typed in by a user (sandbox: twin only, never the real server) */
+  /** true for an event typed in by a user (runs against a private sandbox server, never the scored one) */
   custom?: boolean;
   /** custom events created by "Add details and re-run": the event this one follows up on */
   parent_id?: string | null;
 }
 
-/** Custom events are ids C-nn; they run on the twin only and live in traces/custom. */
+/** Custom events are ids C-nn; they run against a private sandbox server and live in traces/custom. */
 export const isCustomId = (id: string) => /^C-\d{2}$/.test(id);
 /** C-14 -> 14 (newest custom event has the highest number); 0 for anything else. */
 export const customNumber = (id: string) => (isCustomId(id) ? Number(id.slice(2)) : 0);
@@ -167,6 +167,8 @@ export interface AgentRun {
 }
 
 export interface Orchestration {
+  /** contract 0.2.2: where the calls went. Absent on older traces (see lib/target.ts for the fallback). */
+  target?: "scored" | "sandbox" | "dry" | null;
   mode: "sequential" | "parallel";
   correction_rounds: number;
   escalations: { incident_id: string; reason: string }[];

@@ -1,6 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { CheckCircle2, Info, XCircle } from "lucide-react";
-import type { RunMode } from "./api/types";
 import { safeStorage } from "./lib/format";
 
 /* ---------- theme ---------- */
@@ -8,16 +7,11 @@ type Theme = "dark" | "light";
 const ThemeCtx = createContext<{ theme: Theme; toggle: () => void }>({ theme: "dark", toggle: () => {} });
 export const useTheme = () => useContext(ThemeCtx);
 
-/* ---------- run mode (Dry = in-process twin, Server = a fresh organizers' server) ---------- */
+/* ---------- run order (Sequential | Parallel). Feed events always go to the scored server: there is no mode to pick. ---------- */
 export type RunOrder = "sequential" | "parallel";
 /** Events are independent worlds, so a run can handle them one by one (default, used for the final run) or side by side. */
 export const PARALLEL_WORKERS = 4;
-const RunModeCtx = createContext<{ mode: RunMode; setMode: (m: RunMode) => void; order: RunOrder; setOrder: (o: RunOrder) => void }>({
-  mode: "dry",
-  setMode: () => {},
-  order: "sequential",
-  setOrder: () => {},
-});
+const RunModeCtx = createContext<{ order: RunOrder; setOrder: (o: RunOrder) => void }>({ order: "sequential", setOrder: () => {} });
 export const useRunMode = () => useContext(RunModeCtx);
 
 /* ---------- toasts ---------- */
@@ -38,17 +32,12 @@ export function AppProviders({ children }: { children: ReactNode }) {
   }, [theme]);
   const themeValue = useMemo(() => ({ theme, toggle: () => setTheme((t) => (t === "dark" ? "light" : "dark")) }), [theme]);
 
-  const [mode, setModeState] = useState<RunMode>(() => (safeStorage("ct-run-mode") === "server" ? "server" : "dry"));
-  const setMode = useCallback((m: RunMode) => {
-    setModeState(m);
-    safeStorage("ct-run-mode", m);
-  }, []);
   const [order, setOrderState] = useState<RunOrder>(() => (safeStorage("ct-run-order") === "parallel" ? "parallel" : "sequential"));
   const setOrder = useCallback((o: RunOrder) => {
     setOrderState(o);
     safeStorage("ct-run-order", o);
   }, []);
-  const modeValue = useMemo(() => ({ mode, setMode, order, setOrder }), [mode, setMode, order, setOrder]);
+  const modeValue = useMemo(() => ({ order, setOrder }), [order, setOrder]);
 
   const [toasts, setToasts] = useState<Toast[]>([]);
   const push = useCallback((text: string, kind: ToastKind = "info") => {

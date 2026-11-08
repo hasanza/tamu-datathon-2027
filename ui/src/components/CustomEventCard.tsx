@@ -36,8 +36,8 @@ export function failureMessage(e: unknown): string {
 }
 
 /**
- * "Try your own event": the text goes through the full pipeline in a sandbox (rehearsed on the digital twin,
- * never against the real enterprise server or the real action log). The request blocks for roughly 5-10 s.
+ * "Try your own event": the text goes through the same four agents and MCP client as the feed, against a private sandbox
+ * copy of the enterprise server (the scored action log is never touched). The request blocks for about a minute or two.
  */
 export function CustomEventCard({ onCreated }: { onCreated: (id: string) => void }) {
   const [open, setOpen] = useState(false);
@@ -55,7 +55,7 @@ export function CustomEventCard({ onCreated }: { onCreated: (id: string) => void
     try {
       const r = await api.custom(trimmed);
       await Promise.all([qc.invalidateQueries({ queryKey: ["events"] }), qc.invalidateQueries({ queryKey: ["kpis"] })]);
-      toast(`${r.event_id}: ${r.category.replace("_", " ")} (${r.status}). Sandbox run, no real calls.`, "ok");
+      toast(`${r.event_id}: ${r.category.replace("_", " ")} (${r.status}). Ran in the sandbox; the scored action log is untouched.`, "ok");
       setText("");
       setOpen(false);
       onCreated(r.event_id);
@@ -88,7 +88,8 @@ export function CustomEventCard({ onCreated }: { onCreated: (id: string) => void
         </button>
       </div>
       <p className="text-[11px] text-tx3">
-        Paste an operational message. It runs through the full pipeline in a sandbox: rehearsed on the digital twin, no calls to the real server.
+        Paste an operational message (ops chat, supplier email, dealer note…). It runs through the same four agents and MCP client as the feed,
+        against a private sandbox copy of the enterprise server; the scored action log is never touched.
       </p>
       <div className="flex flex-wrap gap-1" role="group" aria-label="Example events">
         {EXAMPLES.map((x) => (
@@ -130,7 +131,7 @@ export function CustomEventCard({ onCreated }: { onCreated: (id: string) => void
           {busy ? "Running the pipeline…" : "Submit"}
         </button>
       </div>
-      {busy && <p className="text-[11px] text-tx3">This takes a few seconds: understanding, planning, rehearsal, audit.</p>}
+      {busy && <p className="text-[11px] text-tx3">This can take a minute or two: the four agents read, plan, pre-flight check, audit and execute against the sandbox server.</p>}
     </section>
   );
 }

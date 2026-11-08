@@ -1,4 +1,5 @@
 import type { AgentId, EventCategory, NodeType, Status, StepKind, Transport } from "../api/types";
+import { TARGET_META, type Target } from "./target";
 
 export const CATEGORY_META: Record<EventCategory, { label: string; color: string }> = {
   supplier_delay: { label: "Supplier delay", color: "var(--cat-delay)" },
@@ -68,25 +69,26 @@ const CODE_TOOLS = new Set([
   "register_incidents", "resolve_entity", "resolve_date", "validate_plan", "propose_slots", "compose_notices",
   "compose_stop_sales", "rank_and_assign", "compose_hold", "compose_owner_contacts",
 ]);
-export type ToolBadge = "MCP" | "twin" | "graph" | "code" | "control";
+export type ToolBadge = "MCP" | "dry run" | "graph" | "code" | "control";
 export function toolBadge(step: { tool?: string | null; transport?: Transport | null }): ToolBadge {
   if (step.transport === "mcp/stdio") return "MCP";
-  if (step.transport === "twin") return "twin";
+  if (step.transport === "twin") return "dry run"; // old traces / developer dry runs: an in-process copy, nothing sent to a server
   const t = step.tool ?? "";
   if (GRAPH_TOOLS.has(t)) return "graph";
   if (CODE_TOOLS.has(t)) return "code";
   return "control";
 }
-/** Label and colour for where a call ran (contracts v0.2.0); null for v1 traces, which do not record it. */
-export function transportMeta(t: Transport | null | undefined): { label: string; color: string } | null {
+/** Label and colour for how a call reached the enterprise (contracts v0.2.0); null for v1 traces, which do not record it.
+ *  An MCP call says which server it went to: "MCP → sandbox server" or "MCP → scored server". */
+export function transportMeta(t: Transport | null | undefined, target: Target = "scored"): { label: string; color: string } | null {
   if (!t) return null;
-  if (t === "mcp/stdio") return { label: "MCP", color: "var(--ok)" };
-  if (t === "twin") return { label: "twin", color: "var(--cat-compound)" };
+  if (t === "mcp/stdio") return { label: `MCP → ${target === "dry" ? "dry run" : `${TARGET_META[target].short} server`}`, color: TARGET_META[target].color };
+  if (t === "twin") return { label: "dry run", color: "var(--text-3)" };
   return { label: "in-process", color: "var(--text-3)" };
 }
 export const BADGE_COLOR: Record<ToolBadge, string> = {
   MCP: "var(--ok)",
-  twin: "var(--cat-compound)",
+  "dry run": "var(--text-3)",
   graph: "var(--cat-unconfirmed)",
   code: "var(--cat-delay)",
   control: "var(--text-3)",

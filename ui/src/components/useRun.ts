@@ -11,17 +11,17 @@ export function dropRunData(qc: QueryClient) {
   void qc.invalidateQueries({ queryKey: ["runstatus"] });
 }
 
-/** POST /api/run in the mode picked in the top bar (Dry = in-process twin, Server = fresh organizers' server). */
+/** POST /api/run. Feed events always go to the scored organizers' server (the API default); only Sequential | Parallel is chosen here. */
 export function useRun() {
   const toast = useToast();
   const qc = useQueryClient();
-  const { mode, order } = useRunMode();
+  const { order } = useRunMode();
   return useMutation({
     // one event has nothing to run beside, so Parallel only applies to the whole feed
-    mutationFn: (opts: { eventId?: string; all?: boolean }) => api.run({ ...opts, mode, parallel: opts.all && order === "parallel" ? PARALLEL_WORKERS : undefined }),
+    mutationFn: (opts: { eventId?: string; all?: boolean }) => api.run({ ...opts, parallel: opts.all && order === "parallel" ? PARALLEL_WORKERS : undefined }),
     onSuccess: (_d, v) => {
-      const where = `${mode === "dry" ? "twin" : "fresh server"}${v.all ? `, ${order}` : ""}`;
-      toast(v.all ? `Run started for the whole feed (${where})` : `Run started for ${v.eventId} (${where})`, "ok");
+      const where = v.all ? ` (${order})` : "";
+      toast(v.all ? `Run started for the whole feed${where}` : `Run started for ${v.eventId}`, "ok");
       dropRunData(qc);
     },
     onError: (e) => {
