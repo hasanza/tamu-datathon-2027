@@ -20,7 +20,7 @@ from control_tower.orchestration.auditor import audit, plan_digest
 from control_tower.orchestration.config import agent_config
 from control_tower.orchestration.context import EventContext
 from control_tower.orchestration.explain import explain
-from control_tower.orchestration.report import MOVES, incident_sentence, ok, tool_counts
+from control_tower.orchestration.report import MOVES, incident_brief, incident_sentence, ok, tool_counts
 from control_tower.orchestration.runtime import run_agent
 from control_tower.orchestration.specialist_tools import CCQ, _lot_impact, _quality_reason, _replay_moves, _stamp, stash
 from control_tower.orchestration.specialists import SPECIALISTS
@@ -30,6 +30,7 @@ from control_tower.planning.quality import plan_quality
 from control_tower.planning.supply_chain import SlotBoard
 from control_tower.planning.validators import Finding, blocking, validate
 from control_tower.schemas.action import Action, Rehearsal, ToolResult
+from control_tower.schemas.trace import Brief, IncidentBrief
 from control_tower.understanding.resolve import EntityIndex, build_incident, parse_date_phrase
 from control_tower.understanding.schemas import RawIncident
 from control_tower.understanding.tiebreak import make_tiebreak
@@ -1252,6 +1253,87 @@ def _partial_sentence(ctx: EventContext, i: str) -> str:
         f"{i}: executed partially — done {_counts_text(done)}; failed {_counts_text(bad)}; "
         f"skipped {_counts_text(skp)}; the remainder was escalated to a human."
     )
+
+
+def _words(text: str, n: int) -> str:
+    return " ".join(text.replace("\n", " ").split()[:n]).rstrip(".,;:")
+
+
+def _plural(n: int, word: str) -> str:
+    return f"{n} {word}{'' if n == 1 else 's'}"
+
+
+def event_brief(ctx: EventContext, error: str | None = None) -> Brief:
+    """Deterministic headline, per-incident fact rows and gates for the UI, from the counts the coordinator tracks."""
+    st = cs(ctx)
+    status = status_of(ctx)
+    pf = ctx.state.get("provider_failure")
+    outcome = "partial" if st.partial else {"done": "acted"}.get(status, status)
+    items: list[IncidentBrief] = []
+    for i, s in ctx.incidents.items():
+        if i in st.escalated:
+            items.append(IncidentBrief(incident_id=i, category=s.category, title=_title(s), note=st.escalated[i][:200]))
+        elif i in st.dropped:
+            items.append(IncidentBrief(incident_id=i, category=s.category, title="Noise", note=st.dropped[i]))
+        elif s.category in ACTIONABLE and i in st.closed:
+            b = incident_brief(ctx.world, s, st.log)
+            if i in st.partial:
+                b.note = st.partial[i][:200]
+            items.append(b)
+    if pf:
+        return Brief(headline="Failed: LLM provider unavailable, nothing executed, re-run", outcome="failed")
+    acted = [b for b in items if b.facts]
+    sums: dict[str, int] = {}
+    for b in acted:
+        for f in b.facts:
+            if f.value.split()[0].isdigit():
+                sums[f.label] = sums.get(f.label, 0) + int(f.value.split()[0])
+    if outcome in {"acted", "partial"}:
+        n = len(acted) or len(items)
+        if any(b.category == "quality_hold" for b in acted) and not any(b.category != "quality_hold" for b in acted):
+            lots = [f.value for b in acted for f in b.facts if f.label == "Lot held"]
+            what = (f"lot {lots[0]} held, " if len(lots) == 1 else f"{len(lots)} lots held, ") + (
+                f"{sums.get('Stop-sales', 0)} VINs stopped, {sums.get('Owners contacted', 0)} owners contacted"
+            )
+        else:
+            what = ", ".join(
+                [
+                    f"{sums.get('Orders moved', 0)} orders moved",
+                    f"{len({a.args['dealer_id'] for a in st.log if ok(a) and a.tool == 'dealer.notify'})} dealers notified",
+                    f"{sums.get('Loaners', 0)} loaners",
+                ]
+            )
+        if outcome == "acted":
+            headline = f"Acted on {_plural(n, 'incident')}: {what}"
+        else:
+            headline = f"Partial: {what}, remainder escalated"
+        ns, npool = st.fresh_reads
+        sent = [a for a in st.log if a.rehearsal is not None]
+        good = sum(a.rehearsal.ok for a in sent)
+        gates = ["validators passed", f"pre-flight {good}/{len(sent)} accepted"]
+        gates.append("auditor unavailable" if st.audit_note == "auditor unavailable" else "auditor agreed")
+        gates.append(
+            f"live baseline matched ({ns} slot, {npool} pool reads)"
+            if ns or npool
+            else "no live read applies to a quality hold"
+        )
+        return Brief(headline=headline[:110], outcome=outcome, incidents=items, gates=gates)  # type: ignore[arg-type]
+    if outcome == "noise":
+        reason = _words(next(iter(st.dropped.values()), "") or "nothing actionable", 8)
+        return Brief(headline=f"Noise: {reason}, no action"[:110], outcome="noise", incidents=items)
+    if outcome == "failed":
+        why = _words(st.failure_text or error or "an unexpected error", 12)
+        return Brief(headline=f"Failed: {why}"[:110], outcome="failed", incidents=items)
+    cats = [s.category for s in ctx.incidents.values() if s.category in {"unconfirmed", *ACTIONABLE}]
+    cat = cats[0].replace("_", " ") if cats else "event"
+    why = _words(next((s.reason for s in ctx.incidents.values()), "") or error or "", 6)
+    return Brief(
+        headline=f"Escalated: {cat}{' ' + why if why else ''}, no action"[:110], outcome="escalated", incidents=items
+    )
+
+
+def _title(s: Any) -> str:
+    return s.category.replace("_", " ").capitalize() + f" · {s.incident_id}"
 
 
 def draft(ctx: EventContext, error: str | None = None) -> tuple[str, str]:
