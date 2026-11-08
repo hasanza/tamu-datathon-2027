@@ -1,6 +1,6 @@
 {
   "pipeline_version": "0.2.3",
-  "event_id": "C-19",
+  "event_id": "C-21",
   "received_at": "2027-03-08T09:00:00",
   "source": "supplier email",
   "text": "Quality bulletin from Volt Dynamics: the heavy-duty wiring harness lot we received at Lexington has a crimp defect. Affected builds ran from Feb 23 through Feb 26. Hold the lot and pull affected units.",
@@ -8,12 +8,12 @@
   "classification": {
     "category": "quality_hold",
     "confidence": 0.4,
-    "reason": "Quality bulletin reporting a crimp defect affecting builds in a specified date range."
+    "reason": "Quality bulletin reports a crimp defect affecting builds from Feb 23 through Feb 26 at Lexington."
   },
   "incidents": [
     {
-      "incident_id": "C-19#1",
-      "event_id": "C-19",
+      "incident_id": "C-21#1",
+      "event_id": "C-21",
       "category": "quality_hold",
       "confidence": 0.4,
       "plant_id": "P_KY",
@@ -95,17 +95,17 @@
           "blocking": true
         }
       ],
-      "reason": "Quality bulletin reporting a crimp defect affecting builds in a specified date range."
+      "reason": "Quality bulletin reports a crimp defect affecting builds from Feb 23 through Feb 26 at Lexington."
     }
   ],
   "paths": {
-    "C-19#1": [
+    "C-21#1": [
       {
         "nodes": [
           {
-            "id": "C-19",
+            "id": "C-21",
             "type": "Event",
-            "label": "Event C-19",
+            "label": "Event C-21",
             "group": null,
             "count": null
           },
@@ -133,17 +133,17 @@
         ],
         "edges": [
           {
-            "from": "C-19",
+            "from": "C-21",
             "to": "P_KY",
             "type": "MENTIONS"
           },
           {
-            "from": "C-19",
+            "from": "C-21",
             "to": "HARN-B",
             "type": "MENTIONS"
           },
           {
-            "from": "C-19",
+            "from": "C-21",
             "to": "SUP-05",
             "type": "MENTIONS"
           }
@@ -154,16 +154,16 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T09:00:04.220000",
-      "ended": "2027-03-08T09:00:21.461000",
+      "started": "2027-03-08T09:00:05.874000",
+      "ended": "2027-03-08T09:00:24.493000",
       "model": "gemini-3.8-flash",
       "llm_calls": 4,
-      "cost_usd": 0.019605,
+      "cost_usd": 0.020281,
       "steps": [
         {
-          "t": "2027-03-08T09:00:04.221000",
+          "t": "2027-03-08T09:00:05.874000",
           "kind": "thought",
-          "text": "I will register the quality bulletin incident from Volt Dynamics regarding a crimp defect in the heavy-duty wiring harness received at Lexington, affecting builds from Feb 23 through Feb 26.",
+          "text": "I will register the quality bulletin incident from Volt Dynamics regarding a crimp defect on heavy-duty wiring harness at Lexington with build window Feb 23 through Feb 26.",
           "data": null,
           "turn": 1,
           "tool": null,
@@ -173,11 +173,11 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.00493,
+          "cost_usd": 0.005609,
           "task": "understand"
         },
         {
-          "t": "2027-03-08T09:00:04.226000",
+          "t": "2027-03-08T09:00:05.879000",
           "kind": "tool",
           "text": "register_incidents · 1 incident (quality_hold)",
           "data": null,
@@ -187,7 +187,7 @@
             "incidents": [
               {
                 "category": "quality_hold",
-                "evidence": "Quality bulletin from Volt Dynamics: the heavy-duty wiring harness lot we received at Lexington has a crimp defect. Affected builds ran from Feb 23 through Feb 26.",
+                "evidence": "Quality bulletin from Volt Dynamics: the heavy-duty wiring harness lot we received at Lexington has a crimp defect. Affected builds ran from Feb 23 through Feb 26. Hold the lot and pull affected units.",
                 "plant": "Lexington",
                 "part": "heavy-duty wiring harness",
                 "supplier": "Volt Dynamics",
@@ -205,7 +205,7 @@
                   "text": "Feb 26",
                   "iso": null
                 },
-                "reason": "Quality bulletin reporting a crimp defect affecting builds in a specified date range.",
+                "reason": "Quality bulletin reports a crimp defect affecting builds from Feb 23 through Feb 26 at Lexington.",
                 "confidence": 0.95
               }
             ]
@@ -221,7 +221,7 @@
                 "build_window_start": "2027-02-23",
                 "build_window_end": "2027-02-26",
                 "confidence": 0.4,
-                "incident_id": "C-19#1",
+                "incident_id": "C-21#1",
                 "needs_human": true,
                 "actionable": false,
                 "ambiguities": [
@@ -247,9 +247,9 @@
           "task": "understand"
         },
         {
-          "t": "2027-03-08T09:00:08.676000",
+          "t": "2027-03-08T09:00:11.571000",
           "kind": "thought",
-          "text": "Incident C-19#1 has needs_human=true, confidence=0.4 (< 0.7), and an ambiguous lot_id spanning LOT-0077 and LOT-0078. Per handbook gate rules, we must escalate to a human operator for clarification.",
+          "text": "The registered incident C-21#1 has needs_human=true and confidence=0.4 due to an ambiguity where the build window overlaps multiple lots (LOT-0077 and LOT-0078). Under handbook gate rules, an incident with needs_human=true or confidence below 0.7 must be escalated.",
           "data": null,
           "turn": 2,
           "tool": null,
@@ -259,15 +259,15 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.005658,
+          "cost_usd": 0.005549,
           "task": "understand"
         },
         {
-          "t": "2027-03-08T09:00:08.677000",
+          "t": "2027-03-08T09:00:11.573000",
           "kind": "decision",
-          "text": "C-19#1: escalated. The stated build window (Feb 23 - Feb 26) overlaps multiple lots (LOT-0077 and LOT-0078) at Lexington, leaving the specific lot ambiguous.",
+          "text": "C-21#1: escalated. Stated build window overlaps multiple lots (LOT-0077 and LOT-0078) at Lexington, requiring human clarification of the exact affected lot.",
           "data": {
-            "reason": "C-19#1 (quality_hold, source: supplier email): \"Quality bulletin from Volt Dynamics: the heavy-duty wiring harness lot we received at Lexington has a crimp defect. Affected builds ran from Feb 23 through Feb 26.\". Not actionable: The stated build window (Feb 23 - Feb 26) overlaps multiple lots (LOT-0077 and LOT-0078) at Lexington, leaving the specific lot ambiguous. What would make it actionable: Confirmation of the exact lot id (LOT-0077, LOT-0078, or both) affected by the crimp defect. No operational action taken."
+            "reason": "C-21#1 (quality_hold, source: supplier email): \"Quality bulletin from Volt Dynamics: the heavy-duty wiring harness lot we received at Lexington has a crimp defect. Affected builds ran from Feb 23 through Feb 26. Hold the lot and pull affected units.\". Not actionable: Stated build window overlaps multiple lots (LOT-0077 and LOT-0078) at Lexington, requiring human clarification of the exact affected lot. What would make it actionable: Supplier or quality team confirmation of the specific lot id or whether both LOT-0077 and LOT-0078 are defective. No operational action taken."
           },
           "turn": null,
           "tool": null,
@@ -281,19 +281,19 @@
           "task": "understand"
         },
         {
-          "t": "2027-03-08T09:00:08.678000",
+          "t": "2027-03-08T09:00:11.574000",
           "kind": "tool",
-          "text": "escalate · incident_id C-19#1 · reason The stated build window… · what_would_make_it_actionable Confirmation of the exa…",
+          "text": "escalate · incident_id C-21#1 · reason Stated build window ove… · what_would_make_it_actionable Supplier or quality tea…",
           "data": null,
           "turn": 2,
           "tool": "escalate",
           "args": {
-            "incident_id": "C-19#1",
-            "reason": "The stated build window (Feb 23 - Feb 26) overlaps multiple lots (LOT-0077 and LOT-0078) at Lexington, leaving the specific lot ambiguous.",
-            "what_would_make_it_actionable": "Confirmation of the exact lot id (LOT-0077, LOT-0078, or both) affected by the crimp defect."
+            "incident_id": "C-21#1",
+            "reason": "Stated build window overlaps multiple lots (LOT-0077 and LOT-0078) at Lexington, requiring human clarification of the exact affected lot.",
+            "what_would_make_it_actionable": "Supplier or quality team confirmation of the specific lot id or whether both LOT-0077 and LOT-0078 are defective."
           },
           "result": {
-            "escalated": "C-19#1",
+            "escalated": "C-21#1",
             "writes": 0,
             "note": "queued; no write will be sent for this incident"
           },
@@ -305,9 +305,9 @@
           "task": "understand"
         },
         {
-          "t": "2027-03-08T09:00:12.653000",
+          "t": "2027-03-08T09:00:14.780000",
           "kind": "thought",
-          "text": "Incident C-19#1 has been escalated to human operations due to multiple overlapping lots (LOT-0077 and LOT-0078) for the build window. With no further actionable incidents, we proceed directly to finish.",
+          "text": "Incident C-21#1 has been escalated to a human because the build window overlaps multiple lots and needs human clarification. Since there are no remaining unhandled incidents or actionable tasks, we proceed directly to finish.",
           "data": null,
           "turn": 3,
           "tool": null,
@@ -317,13 +317,13 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.004453,
+          "cost_usd": 0.00457,
           "task": "finish"
         },
         {
-          "t": "2027-03-08T09:00:21.361000",
+          "t": "2027-03-08T09:00:24.389000",
           "kind": "decision",
-          "text": "Event settled (escalated): A supplier quality bulletin from Volt Dynamics reported that a heavy-duty wiring harness lot received at Lexington has a crimp defect affecting builds run from Feb 23 through Feb 26. Because this build window overlaps multiple lots, specifically LOT-0077 and LOT-0078, the exact lot to hold was ambiguous. The incident was escalated to a human without making any operational changes.",
+          "text": "Event settled (escalated): A supplier email from Volt Dynamics reported a crimp defect on the heavy-duty wiring harness lot received at Lexington, impacting builds that ran from Feb 23 through Feb 26. Message C-21#1 was escalated to a human without operational change because the stated build window overlapped multiple lots, specifically LOT-0077 and LOT-0078. Consequently, no automated hold on the lot or pull of affected units was executed.",
           "data": null,
           "turn": null,
           "tool": null,
@@ -337,19 +337,19 @@
           "task": "finish"
         },
         {
-          "t": "2027-03-08T09:00:21.362000",
+          "t": "2027-03-08T09:00:24.390000",
           "kind": "tool",
-          "text": "finish · summary_hint Escalated quality hold …",
+          "text": "finish · summary_hint Escalated quality bulle…",
           "data": null,
           "turn": 3,
           "tool": "finish",
           "args": {
-            "summary_hint": "Escalated quality hold bulletin for Lexington wiring harness due to build window ambiguity spanning multiple lots."
+            "summary_hint": "Escalated quality bulletin for Volt Dynamics wiring harness at Lexington due to ambiguous lot overlap across Feb 23-26."
           },
           "result": {
             "finished": true,
             "status": "escalated",
-            "summary": "A supplier quality bulletin from Volt Dynamics reported that a heavy-duty wiring harness lot received at Lexington has a crimp defect affecting builds run from Feb 23 through Feb 26. Because this build window overlaps multiple lots, specifically LOT-0077 and LOT-0078, the exact lot to hold was ambiguous. The incident was escalated to a human without making any operational changes."
+            "summary": "A supplier email from Volt Dynamics reported a crimp defect on the heavy-duty wiring harness lot received at Lexington, impacting builds that ran from Feb 23 through Feb 26. Message C-21#1 was escalated to a human without operational change because the stated build window overlapped multiple lots, specifically LOT-0077 and LOT-0078. Consequently, no automated hold on the lot or pull of affected units was executed."
           },
           "to_agent": null,
           "from_agent": null,
@@ -359,7 +359,7 @@
           "task": "finish"
         },
         {
-          "t": "2027-03-08T09:00:21.363000",
+          "t": "2027-03-08T09:00:24.390000",
           "kind": "decision",
           "text": "Coordinator finished",
           "data": {
@@ -377,9 +377,9 @@
           "task": "finish"
         },
         {
-          "t": "2027-03-08T09:00:21.461000",
+          "t": "2027-03-08T09:00:24.493000",
           "kind": "execute",
-          "text": "escalate: C-19#1 (quality_hold, source: supplier email): \"Quality bulletin from Volt Dynamics: the heavy-duty wiring harness lot we received at Lexington has a crimp defect. Affected builds ran from Feb 23 through Feb 26.\". Not actionable: The stated build window (Feb 23 - Feb 26) overlaps multiple lots (LOT-",
+          "text": "escalate: C-21#1 (quality_hold, source: supplier email): \"Quality bulletin from Volt Dynamics: the heavy-duty wiring harness lot we received at Lexington has a crimp defect. Affected builds ran from Feb 23 through Feb 26. Hold the lot and pull affected units.\". Not actionable: Stated build window overlaps mul",
           "data": null,
           "turn": null,
           "tool": "escalate",
@@ -400,8 +400,8 @@
     "correction_rounds": 0,
     "escalations": [
       {
-        "incident_id": "C-19#1",
-        "reason": "C-19#1 (quality_hold, source: supplier email): \"Quality bulletin from Volt Dynamics: the heavy-duty wiring harness lot we received at Lexington has a crimp defect. Affected builds ran from Feb 23 through Feb 26.\". Not actionable: The stated build window (Feb 23 - Feb 26) overlaps multiple lots (LOT-0077 and LOT-0078) at Lexington, leaving the specific lot ambiguous. What would make it actionable: Confirmation of the exact lot id (LOT-0077, LOT-0078, or both) affected by the crimp defect. No operational action taken."
+        "incident_id": "C-21#1",
+        "reason": "C-21#1 (quality_hold, source: supplier email): \"Quality bulletin from Volt Dynamics: the heavy-duty wiring harness lot we received at Lexington has a crimp defect. Affected builds ran from Feb 23 through Feb 26. Hold the lot and pull affected units.\". Not actionable: Stated build window overlaps multiple lots (LOT-0077 and LOT-0078) at Lexington, requiring human clarification of the exact affected lot. What would make it actionable: Supplier or quality team confirmation of the specific lot id or whether both LOT-0077 and LOT-0078 are defective. No operational action taken."
       }
     ],
     "mcp_transport": "mcp/stdio",
@@ -411,11 +411,11 @@
   "actions": [
     {
       "seq": 1,
-      "incident_id": "C-19#1",
+      "incident_id": "C-21#1",
       "agent": "coordinator",
       "tool": "escalate",
       "args": {
-        "reason": "C-19#1 (quality_hold, source: supplier email): \"Quality bulletin from Volt Dynamics: the heavy-duty wiring harness lot we received at Lexington has a crimp defect. Affected builds ran from Feb 23 through Feb 26.\". Not actionable: The stated build window (Feb 23 - Feb 26) overlaps multiple lots (LOT-0077 and LOT-0078) at Lexington, leaving the specific lot ambiguous. What would make it actionable: Confirmation of the exact lot id (LOT-0077, LOT-0078, or both) affected by the crimp defect. No operational action taken."
+        "reason": "C-21#1 (quality_hold, source: supplier email): \"Quality bulletin from Volt Dynamics: the heavy-duty wiring harness lot we received at Lexington has a crimp defect. Affected builds ran from Feb 23 through Feb 26. Hold the lot and pull affected units.\". Not actionable: Stated build window overlaps multiple lots (LOT-0077 and LOT-0078) at Lexington, requiring human clarification of the exact affected lot. What would make it actionable: Supplier or quality team confirmation of the specific lot id or whether both LOT-0077 and LOT-0078 are defective. No operational action taken."
       },
       "justification": "Escalated to a human: not safe to act on (handbook rules 7/8: no operational action for it)",
       "path_ids": [],
@@ -435,7 +435,7 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-19#1"
+        "C-21#1"
       ]
     }
   ],
@@ -455,8 +455,8 @@
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
         "input_tokens": 4433,
-        "output_tokens": 428,
-        "cost_usd": 0.00493,
+        "output_tokens": 609,
+        "cost_usd": 0.005609,
         "cached": false,
         "attempts": 1
       },
@@ -464,9 +464,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 4834,
-        "output_tokens": 542,
-        "cost_usd": 0.005658,
+        "input_tokens": 4849,
+        "output_tokens": 510,
+        "cost_usd": 0.005549,
         "cached": false,
         "attempts": 1
       },
@@ -474,9 +474,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 4968,
-        "output_tokens": 194,
-        "cost_usd": 0.004453,
+        "input_tokens": 4973,
+        "output_tokens": 224,
+        "cost_usd": 0.00457,
         "cached": false,
         "attempts": 1
       },
@@ -484,28 +484,28 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "summarize",
-        "input_tokens": 495,
-        "output_tokens": 1118,
-        "cost_usd": 0.004564,
+        "input_tokens": 486,
+        "output_tokens": 1117,
+        "cost_usd": 0.004553,
         "cached": false,
         "attempts": 1
       }
     ],
-    "total_cost_usd": 0.019605
+    "total_cost_usd": 0.020281
   },
-  "summary": "A supplier quality bulletin from Volt Dynamics reported that a heavy-duty wiring harness lot received at Lexington has a crimp defect affecting builds run from Feb 23 through Feb 26. Because this build window overlaps multiple lots, specifically LOT-0077 and LOT-0078, the exact lot to hold was ambiguous. The incident was escalated to a human without making any operational changes.",
-  "decision_reason": "Under rule 8, unclear or unconfirmed reports must be escalated without operational change. The message was not safe to act on because the specified build window spans multiple lots at Lexington, leaving the target lot ambiguous.",
+  "summary": "A supplier email from Volt Dynamics reported a crimp defect on the heavy-duty wiring harness lot received at Lexington, impacting builds that ran from Feb 23 through Feb 26. Message C-21#1 was escalated to a human without operational change because the stated build window overlapped multiple lots, specifically LOT-0077 and LOT-0078. Consequently, no automated hold on the lot or pull of affected units was executed.",
+  "decision_reason": "Under rule 8, unconfirmed or unclear reports are escalated without operational change because the bulletin was not safe to act on automatically. The stated build window created an ambiguous overlap between LOT-0077 and LOT-0078 at Lexington, requiring human clarification of the exact affected lot.",
   "brief": {
-    "headline": "Escalated: quality hold Quality bulletin reporting a crimp defect, no action",
+    "headline": "Escalated: quality hold, lot ambiguous (LOT-0077 or LOT-0078), no action",
     "outcome": "escalated",
     "incidents": [
       {
-        "incident_id": "C-19#1",
+        "incident_id": "C-21#1",
         "category": "quality_hold",
-        "title": "Quality hold · C-19#1",
-        "window": null,
+        "title": "Quality hold · heavy-duty wiring harness (HARN-B) at Wacky Wheels Lexington (P_KY)",
+        "window": "built 2027-02-23 → 2027-02-26",
         "facts": [],
-        "note": "C-19#1 (quality_hold, source: supplier email): \"Quality bulletin from Volt Dynamics: the heavy-duty wiring harness lot we received at Lexington has a crimp defect. Affected builds ran from Feb 23 thro"
+        "note": "Lot ambiguous: the stated window overlaps LOT-0077 (Feb 22–24) and LOT-0078 (Feb 25–Mar 1); a human must pick one"
       }
     ],
     "gates": []
