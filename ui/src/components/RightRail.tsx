@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCheck, Radio, RotateCcw, Trash2, TriangleAlert } from "lucide-react";
 import { stepSentence, toLiveStep, type ActivityItem } from "../api/stream";
 import { useRunStatus, useTraces } from "../api/hooks";
@@ -32,6 +32,22 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
   const ackKey = (id: string) => `${run}|${id}`;
   const [acked, setAcked] = useState<Set<string>>(readAcked);
   const [showAcked, setShowAcked] = useState(false);
+  // a card that appears while the panel is open flashes once (no continuous motion: it would distract)
+  const seen = useRef<Set<string> | null>(null);
+  const [flash, setFlash] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    if (loading || failed) return;
+    const now = traces.map((t) => t.event_id);
+    if (seen.current === null) {
+      if (now.length > 0 || ids.length === 0) seen.current = new Set(now);
+      return;
+    }
+    const fresh = now.filter((i) => !seen.current?.has(i));
+    if (fresh.length > 0) {
+      fresh.forEach((i) => seen.current?.add(i));
+      setFlash((s) => new Set([...s, ...fresh]));
+    }
+  }, [traces, loading, failed, ids.length]);
   useEffect(() => void safeStorage("ct-acked", JSON.stringify([...acked])), [acked]);
   const restore = (id: string) =>
     setAcked((s) => {
@@ -50,8 +66,8 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
       className="xl:flex-[1.8]"
       title={
         <span className="flex items-center gap-2">
-          <TriangleAlert size={14} style={{ color: "var(--cat-unconfirmed)" }} aria-hidden /> Escalation inbox
-          <Chip color="var(--cat-unconfirmed)">
+          <TriangleAlert size={14} style={{ color: "var(--warn)" }} aria-hidden /> Escalation inbox
+          <Chip color={open.length > 0 ? "var(--warn)" : "var(--text-3)"}>
             {open.length} open{done.length > 0 ? ` · ${done.length} acknowledged` : ""}
           </Chip>
         </span>
@@ -70,7 +86,8 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
             {open.map((t) => {
               const need = confirmClause(t);
               return (
-                <li key={t.event_id} className="rounded-lg border border-line bg-surface-2 p-2.5 text-[13px]">
+                <li key={t.event_id} data-inbox-card className="relative rounded-lg border border-line border-l-[3px] border-l-warn bg-surface-2 p-2.5 text-[13px]">
+                  {flash.has(t.event_id) && <div aria-hidden className="anim-flash pointer-events-none absolute inset-0 rounded-lg" />}
                   <div className="flex items-center justify-between gap-2">
                     <button onClick={() => onSelect(t.event_id)} className="mono font-medium text-tx underline-offset-2 hover:underline">
                       {t.event_id}
@@ -215,7 +232,7 @@ export function ActivityLog({
         <span className="flex items-center gap-2">
           <Radio size={14} aria-hidden /> Activity
           <span role="status" className="inline-flex items-center gap-1 text-[11px] font-medium" style={{ color: live ? "var(--ok)" : "var(--text-3)" }}>
-            <span className={`h-1.5 w-1.5 rounded-full ${live ? "anim-pulse bg-ok" : "bg-tx3"}`} />
+            <span className={`h-1.5 w-1.5 rounded-full ${live ? "bg-ok" : "bg-tx3"}`} />
             {live ? "Live" : "Reconnecting"}
           </span>
         </span>

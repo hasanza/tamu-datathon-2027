@@ -108,11 +108,11 @@ export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent
               }}
               tabIndex={tab === name ? 0 : -1}
               className={`whitespace-nowrap border-b-2 px-3 py-2 text-[13px] font-medium ${
-                tab === name ? "border-brand-bright text-tx" : "border-transparent text-tx3 hover:text-tx"
+                tab === name ? "border-brand-bright font-semibold text-tx" : "border-transparent text-tx3 hover:text-tx"
               }`}
             >
               {name}
-              {name === "Actions" && t ? <span className="mono ml-1.5 text-[11px] text-tx3">{t.actions.length}</span> : null}
+              {name === "Actions" && t ? <span className={`mono ml-1.5 text-[11px] ${tab === name ? "text-tx" : "text-tx3"}`}>{t.actions.length}</span> : null}
             </button>
           ))}
         </div>

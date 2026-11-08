@@ -260,6 +260,30 @@ export interface Trace {
   decision_reason: string;
   /** v2 only (contracts v0.2.0) */
   orchestration?: Orchestration | null;
+  /** contract 0.2.3: the scannable account of the event; null/absent on older traces */
+  brief?: Brief | null;
+}
+
+/** Contract 0.2.3 `Trace.brief`: what the Summary tab shows first. */
+export interface BriefFact {
+  label: string;
+  value: string;
+  detail?: string | null;
+}
+export interface IncidentBrief {
+  incident_id: string;
+  category: EventCategory;
+  title: string;
+  window?: string | null;
+  facts: BriefFact[];
+  note?: string | null;
+}
+export type BriefOutcome = "acted" | "escalated" | "noise" | "failed" | "partial";
+export interface Brief {
+  headline: string;
+  outcome: BriefOutcome;
+  incidents: IncidentBrief[];
+  gates: string[];
 }
 
 /** Row of GET /api/actions (the enterprise server's action_log.jsonl plus line and write flag). */
