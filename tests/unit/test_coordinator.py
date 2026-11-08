@@ -658,7 +658,7 @@ def test_rehearsal_failure_escalates_with_no_writes(rig, monkeypatch, twin):
     dn, ccq = lazy_scripts(rig)
     rig.script([register(E11_RAW), *acting_flow(["E-11#1"])], sc=sc_script("E-11#1"), dn=dn, ccq=ccq)
     t = rig.run(ev("E-11"))
-    assert t.status == "escalated" and not writes(t) and "rehearsal" in esc(t)[0].args["reason"]
+    assert t.status == "escalated" and not writes(t) and "pre-flight check" in esc(t)[0].args["reason"]
 
 
 def test_stale_live_world_escalates_before_any_write(rig):

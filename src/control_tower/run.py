@@ -107,7 +107,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--event", action="append", default=[], help="event id, repeatable")
     ap.add_argument("--out", default="runs/dev")
     ap.add_argument("--server", default="http://127.0.0.1:8000")
-    ap.add_argument("--dry-run", action="store_true", help="use the in-process twin instead of the server")
+    ap.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="use the in-process sandbox copy of the enterprise instead of a server (developers)",
+    )
     ap.add_argument(
         "--sandbox", action="store_true", help="the server is a private sandbox, not the scored one (judge events)"
     )
