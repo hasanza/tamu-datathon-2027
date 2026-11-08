@@ -91,7 +91,7 @@ export function Panel({ title, action, children, className = "", fill = false }:
           {action}
         </header>
       )}
-      <div className={`p-3 ${fill ? "xl:min-h-0 xl:flex-1 xl:overflow-y-auto" : ""}`}>{children}</div>
+      <div className={`p-3 ${fill ? "scroll-shadow-y xl:min-h-0 xl:flex-1 xl:overflow-y-auto" : ""}`}>{children}</div>
     </section>
   );
 }

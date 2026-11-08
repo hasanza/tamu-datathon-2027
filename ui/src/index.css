@@ -181,3 +181,38 @@ code,
     animation: none;
   }
 }
+
+/*
+ * Pure-CSS scroll shadows (Lea Verou / Bramus, no JavaScript): the covers use background-attachment: local, so they scroll
+ * with the content and hide the shadow at the end the reader has reached; the shadows are fixed (scroll) to the box edges.
+ * Net effect: a shadow shows only on a side that still has content. --shadow-surface must equal the colour behind the
+ * container (default: the panel surface); set it per container where the background differs.
+ */
+@layer components {
+  .scroll-shadow-y,
+  .scroll-shadow-x {
+    --shadow-surface: var(--surface);
+    --shadow-color: color-mix(in srgb, var(--text) 18%, transparent);
+    background-repeat: no-repeat;
+  }
+  .scroll-shadow-y {
+    background-image:
+      linear-gradient(var(--shadow-surface) 30%, transparent),
+      linear-gradient(transparent, var(--shadow-surface) 70%),
+      linear-gradient(var(--shadow-color), transparent),
+      linear-gradient(transparent, var(--shadow-color));
+    background-position: top, bottom, top, bottom;
+    background-size: 100% 28px, 100% 28px, 100% 14px, 100% 14px;
+    background-attachment: local, local, scroll, scroll;
+  }
+  .scroll-shadow-x {
+    background-image:
+      linear-gradient(to right, var(--shadow-surface) 30%, transparent),
+      linear-gradient(to left, var(--shadow-surface) 30%, transparent),
+      linear-gradient(to right, var(--shadow-color), transparent),
+      linear-gradient(to left, var(--shadow-color), transparent);
+    background-position: left, right, left, right;
+    background-size: 28px 100%, 28px 100%, 14px 100%, 14px 100%;
+    background-attachment: local, local, scroll, scroll;
+  }
+}

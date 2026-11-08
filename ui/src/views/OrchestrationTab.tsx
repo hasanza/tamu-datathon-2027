@@ -218,7 +218,7 @@ export function OrchestrationView({ rows, trace, live = false, empty }: { rows: 
   return (
     <div className="space-y-3">
       <HeaderStrip rows={rows} trace={trace} live={live} />
-      <Panel className="overflow-hidden">
+      <Panel>
         {/* lane headers (desktop): one column per agent */}
         <div className="sticky top-0 z-10 -mx-3 -mt-3 mb-3 hidden grid-cols-4 gap-x-3 border-b border-line bg-surface px-3 py-2 md:grid">
           {LANES.map((l) => (

@@ -158,7 +158,7 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
         </div>
       </Panel>
 
-      <div className="overflow-x-auto rounded-lg border border-line bg-surface">
+      <div className="scroll-shadow-x overflow-x-auto rounded-lg border border-line bg-surface">
         <table className="w-full text-left text-[13px]">
           <thead className="bg-surface-2 text-[11px] uppercase tracking-wide text-tx3">
             <tr>
