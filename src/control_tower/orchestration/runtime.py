@@ -82,7 +82,24 @@ def _user(task: str, payload: dict[str, Any], transcript: list[tuple[str, dict, 
     return "\n\n".join(parts)
 
 
-def run_agent(spec: AgentSpec, task: str, payload: dict[str, Any], ctx: ToolContext, timeline: Timeline) -> AgentResult:
+_PHASE = {
+    **dict.fromkeys(("register_incidents", "resolve_entity", "resolve_date", "drop_noise", "escalate"), "understand"),
+    "delegate": "delegate",
+    "validate_plan": "validate",
+    "execute": "execute",
+    "finish": "finish",
+}
+
+
+def run_agent(
+    spec: AgentSpec,
+    task: str,
+    payload: dict[str, Any],
+    ctx: ToolContext,
+    timeline: Timeline,
+    task_name: str | None = None,
+) -> AgentResult:
+    """`task` is the brief text; `task_name` (default: `task`) is the short delegated task stamped on the steps."""
     cfg = agent_config(spec.agent_id)
     system = _system(spec)
     tools = {t.name: t for t in spec.tools}
@@ -90,6 +107,9 @@ def run_agent(spec: AgentSpec, task: str, payload: dict[str, Any], ctx: ToolCont
     feedback: str | None = None  # set when the previous reply was rejected; a second rejection in a row ends the run
     llm_calls, cost = 0, 0.0
     run_id = uuid.uuid4().hex[:8]  # makes stored_key handles unique across runs / correction rounds
+
+    if spec.agent_id != "coordinator":
+        timeline.set_task(spec.agent_id, task_name or task)
 
     def fail(msg: str, n: int) -> AgentResult:
         timeline.step(spec.agent_id, "decision", f"{spec.display_name} stopped: {msg}", data={"error": msg}, turn=n)
@@ -114,6 +134,8 @@ def run_agent(spec: AgentSpec, task: str, payload: dict[str, Any], ctx: ToolCont
         cost += call.cost_usd
         timeline.llm(call)
         timeline.usage(spec.agent_id, cfg.model, call.cost_usd, call.attempts)
+        if spec.agent_id == "coordinator" and turn.final is None and turn.action_tool in _PHASE:
+            timeline.set_task(spec.agent_id, _PHASE[turn.action_tool])
         timeline.step(spec.agent_id, "thought", turn.thought, turn=n, model=cfg.model, cost_usd=call.cost_usd)
 
         problem: str | None = None

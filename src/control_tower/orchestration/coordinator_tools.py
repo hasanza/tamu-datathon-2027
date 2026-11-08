@@ -674,14 +674,21 @@ def delegate(ctx: EventContext, args: DelegateArgs) -> dict[str, Any]:
     spec_obj = SPECIALISTS[agent_id]
     tline = tl(ctx)
     tline.step(
-        CO, "message", task_text, from_agent=CO, to_agent=agent_id, data={"task": args.task, "incident_id": inc},
+        CO, "message", task_text, from_agent=CO, to_agent=agent_id, data={"task": args.task, "incident_id": inc}, task=args.task,
     )  # fmt: skip
-    res = run_agent(spec_obj, task_text, payload, ctx, tline)
+    res = run_agent(spec_obj, task_text, payload, ctx, tline, task_name=args.task)
     submitted = ctx.plan.results.get(key)
     if res.error or res.final is None or submitted is None:
         st.errors[key] = st.errors.get(key, 0) + 1
         why = res.error or "the agent finished without submitting a plan"
-        tline.step(agent_id, "message", f"{spec_obj.display_name} failed: {why}", from_agent=agent_id, to_agent=CO)
+        tline.step(
+            agent_id,
+            "message",
+            f"{spec_obj.display_name} failed: {why}",
+            from_agent=agent_id,
+            to_agent=CO,
+            task=args.task,
+        )
         return {"error": f"{spec_obj.display_name} produced no plan: {why}", "turns": res.turns,
                 "hint": "retry once, otherwise escalate the incident"}  # fmt: skip
     st.done[key] = st.done.get(key, 0) + 1
@@ -695,6 +702,7 @@ def delegate(ctx: EventContext, args: DelegateArgs) -> dict[str, Any]:
         agent_id, "message",
         f"{submitted.reasoning_summary or 'plan submitted'} ({submitted.actions_count} actions)",
         from_agent=agent_id, to_agent=CO, data={k: out[k] for k in ("task", "incident_id", "actions_count", "findings")},
+        task=args.task,
     )  # fmt: skip
     return out
 

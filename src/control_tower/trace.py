@@ -45,20 +45,26 @@ class Timeline:
         self.sink = sink
         self.runs: dict[str, AgentRun] = {}
         self.llm_calls: list[LLMCall] = []
+        self._task: dict[str, str | None] = {}
 
     def now(self) -> datetime:
         return self._base + timedelta(seconds=round(time.perf_counter() - self._t0, 3))
+
+    def set_task(self, agent: str, task: str | None) -> None:
+        """Set the agent's current task / phase; later steps without an explicit task= inherit it."""
+        self._task[agent] = task
 
     def step(
         self, agent: str, kind: StepKind, text: str, data: dict[str, Any] | None = None, **extra: Any
     ) -> AgentStep:
         """Append a step. `extra` carries the v0.2.0 fields (turn, tool, args, result, to_agent, from_agent,
-        transport, model, cost_usd)."""
+        transport, model, cost_usd, task)."""
         t = self.now()
         run = self.runs.get(agent)
         if run is None:
             run = self.runs[agent] = AgentRun(agent=agent, started=t)  # type: ignore[arg-type]
         run.ended = t
+        extra.setdefault("task", self._task.get(agent))
         step = AgentStep(t=t, kind=kind, text=text, data=data, **extra)
         run.steps.append(step)
         self.sink.emit("agent_step", self.event_id, {"agent": agent, **step.model_dump(mode="json")})
