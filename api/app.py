@@ -181,6 +181,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             return []
         return sorted(p for p in cfg.custom_dir.glob("C-*.json") if EVENT_ID.match(p.stem))
 
+    def custom_numbers() -> list[int]:
+        """Numbers already taken by custom events: finished traces (C-nn.json) AND runs in flight (C-nn.input.json).
+        A second submission while a run is going must not reuse that run's number (two pipelines would overwrite each other)."""
+        if not cfg.custom_dir.exists():
+            return []
+        found = (re.fullmatch(r"C-(\d{2})(?:\.input)?\.json", p.name) for p in cfg.custom_dir.glob("C-*.json"))
+        return [int(m.group(1)) for m in found if m]
+
     def all_traces() -> dict[str, Trace]:
         out = {}
         for p in sorted(cfg.traces_dir.glob("E-*.json")):
@@ -295,7 +303,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         else:
             raise HTTPException(422, "give text, or parent_id with details")
         cfg.custom_dir.mkdir(parents=True, exist_ok=True)
-        n = 1 + max([int(p.stem[2:]) for p in custom_files()] or [0])
+        n = 1 + max(custom_numbers() or [0])
         if n > 99:
             raise HTTPException(409, "custom event limit reached (C-99)")
         eid = f"C-{n:02d}"

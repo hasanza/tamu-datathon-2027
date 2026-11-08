@@ -316,16 +316,17 @@ def test_custom_run_in_flight_does_not_break_events_or_numbering(client, cfg, mo
     assert r.status_code == 200
     assert [e["event_id"] for e in r.json() if e.get("custom")] == ["C-01"]  # the input file is not an event
 
-    def fake_run(cmd, **kw):  # a second submission while C-02 is still in flight takes the next free number
+    def fake_run(cmd, **kw):  # a second submission while C-02 is still in flight must NOT reuse C-02: it takes C-03
         ev = json.loads(Path(cmd[-1]).read_text())[0]
-        assert ev["event_id"] == "C-02"
+        assert ev["event_id"] == "C-03"
         done.update(event_id=ev["event_id"], text=ev["text"])
         (cfg.custom_dir / f"{ev['event_id']}.json").write_text(json.dumps(done))
         return sp.CompletedProcess(cmd, 0, "", "")
 
     monkeypatch.setattr("api.app.subprocess.run", fake_run)
     r = client.post("/api/custom", json={"text": "A second message arrives while the first is running."})
-    assert r.status_code == 200 and r.json()["event_id"] == "C-02"
+    assert r.status_code == 200 and r.json()["event_id"] == "C-03"
+    assert (cfg.custom_dir / "C-02.input.json").exists()  # the run in flight was not disturbed
 
 
 def test_stream_tails_run_and_custom_streams_together(tmp_path):
