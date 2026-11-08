@@ -1,6 +1,6 @@
 # Wacky Wheels Control Tower: design card
 
-*Hack the Highway, Hitachi track. Team: Hasan Raza and Ibrahim (CORE and GLASS). Model: Google **gemini-3.8-flash** for all four agents and the auditor.*
+*Hack the Highway, Hitachi track. Team: Hasan Raza and Muhammad Ibrahime. Model: Google **gemini-3.8-flash** for all four agents and the auditor.*
 
 ## What it does
 
