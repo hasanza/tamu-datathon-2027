@@ -32,3 +32,4 @@ Source of truth: `src/control_tower/schemas/` (Pydantic v2). JSON Schema exports
 - 2026-11-08 v0.2.1 — AgentStep.task (additive): specialist steps carry the delegated task, coordinator steps the phase understand|delegate|validate|execute|finish, message steps the delegated task
 - 2026-11-08 v0.2.2 — Orchestration.target scored|sandbox|dry: which enterprise the writes went to (feed events → the scored server; judge events → a private sandbox server through the same MCP client; dry → in-process twin)
 - 2026-11-08 v0.2.2 (same bump) — Orchestration.provider_failure bool: the LLM provider was unavailable, the event is `failed`, nothing executed, no escalate sent; re-run it
+- 2026-11-08 v0.2.3 — Trace.brief (additive): deterministic headline + per-incident fact rows + gates for the UI

@@ -141,6 +141,7 @@ def test_provider_outage_fails_the_event_and_sends_nothing(rig):  # noqa: F811
     assert t.status == "failed" and t.orchestration.provider_failure
     assert t.actions == [] and t.orchestration.escalations == [] and rig.log.read_text() == ""
     assert "LLM provider unavailable" in t.summary and "nothing executed; re-run this event" in t.decision_reason
+    assert t.brief.outcome == "failed" and t.brief.headline.startswith("Failed: LLM provider unavailable")
 
 
 def test_two_provider_failures_abort_the_run(monkeypatch, tmp_path, capsys):

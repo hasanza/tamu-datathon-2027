@@ -180,8 +180,32 @@ class Orchestration(BaseModel):
     provider_failure: bool = False
 
 
+class Fact(BaseModel):
+    label: str
+    value: str
+    detail: str | None = None
+
+
+class IncidentBrief(BaseModel):
+    incident_id: str
+    category: str
+    title: str
+    window: str | None = None
+    facts: list[Fact] = Field(default_factory=list)
+    note: str | None = None
+
+
+class Brief(BaseModel):
+    """v0.2.3: deterministic headline + per-incident fact rows + gates, built from the same counts as the summary."""
+
+    headline: str
+    outcome: Literal["acted", "escalated", "noise", "failed", "partial"]
+    incidents: list[IncidentBrief] = Field(default_factory=list)
+    gates: list[str] = Field(default_factory=list)
+
+
 class Trace(BaseModel):
-    pipeline_version: str = "0.2.2"
+    pipeline_version: str = "0.2.3"
     event_id: str
     received_at: datetime
     source: str
@@ -198,3 +222,4 @@ class Trace(BaseModel):
     llm: LLMUsage = Field(default_factory=LLMUsage)
     summary: str
     decision_reason: str
+    brief: Brief | None = None  # v0.2.3

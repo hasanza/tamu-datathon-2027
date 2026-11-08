@@ -357,6 +357,18 @@
           ],
           "default": null,
           "title": "Cost Usd"
+        },
+        "task": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Task"
         }
       },
       "required": [
@@ -395,6 +407,46 @@
         "issue"
       ],
       "title": "Ambiguity",
+      "type": "object"
+    },
+    "Brief": {
+      "description": "v0.2.3: deterministic headline + per-incident fact rows + gates, built from the same counts as the summary.",
+      "properties": {
+        "headline": {
+          "title": "Headline",
+          "type": "string"
+        },
+        "outcome": {
+          "enum": [
+            "acted",
+            "escalated",
+            "noise",
+            "failed",
+            "partial"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "incidents": {
+          "items": {
+            "$ref": "#/$defs/IncidentBrief"
+          },
+          "title": "Incidents",
+          "type": "array"
+        },
+        "gates": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Gates",
+          "type": "array"
+        }
+      },
+      "required": [
+        "headline",
+        "outcome"
+      ],
+      "title": "Brief",
       "type": "object"
     },
     "Classification": {
@@ -489,6 +541,36 @@
         "reason"
       ],
       "title": "Escalation",
+      "type": "object"
+    },
+    "Fact": {
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        },
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detail"
+        }
+      },
+      "required": [
+        "label",
+        "value"
+      ],
+      "title": "Fact",
       "type": "object"
     },
     "GraphEdge": {
@@ -617,6 +699,60 @@
         "edges"
       ],
       "title": "GraphPath",
+      "type": "object"
+    },
+    "IncidentBrief": {
+      "properties": {
+        "incident_id": {
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "category": {
+          "title": "Category",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "window": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Window"
+        },
+        "facts": {
+          "items": {
+            "$ref": "#/$defs/Fact"
+          },
+          "title": "Facts",
+          "type": "array"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        }
+      },
+      "required": [
+        "incident_id",
+        "category",
+        "title"
+      ],
+      "title": "IncidentBrief",
       "type": "object"
     },
     "IncidentSpec": {
@@ -997,6 +1133,21 @@
           ],
           "default": null,
           "title": "Mcp Transport"
+        },
+        "target": {
+          "default": "scored",
+          "enum": [
+            "scored",
+            "sandbox",
+            "dry"
+          ],
+          "title": "Target",
+          "type": "string"
+        },
+        "provider_failure": {
+          "default": false,
+          "title": "Provider Failure",
+          "type": "boolean"
         }
       },
       "title": "Orchestration",
@@ -1220,7 +1371,7 @@
   },
   "properties": {
     "pipeline_version": {
-      "default": "0.2.0",
+      "default": "0.2.3",
       "title": "Pipeline Version",
       "type": "string"
     },
@@ -1323,6 +1474,17 @@
     "decision_reason": {
       "title": "Decision Reason",
       "type": "string"
+    },
+    "brief": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Brief"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     }
   },
   "required": [

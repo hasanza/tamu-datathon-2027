@@ -718,6 +718,15 @@ def test_e03_quality_hold(rig, world, graph):
     assert not any(a.tool == "crm.assign_loaner" for a in t.actions)  # no loaners task for a quality-only event
     reason = ct.draft(rig.ctx)[1]  # the draft is the source of truth the explain step paraphrases
     assert "schedule baseline matched" not in reason and "no live baseline read applies" in reason
+    b = t.brief
+    assert b.outcome == "acted" and b.headline.startswith("Acted on 1 incident: lot LOT-0130 held, ")
+    (ib,) = b.incidents
+    assert [f.label for f in ib.facts] == ["Lot held", "Stop-sales", "Owners contacted"]
+    assert ib.facts[1].value.endswith(" VINs") and ib.facts[1].detail.startswith("at ")
+    assert str(len(t.world_diff.stopped_vins)) == ib.facts[1].value.split()[0]
+    assert b.gates[-1] == "no live read applies to a quality hold"
+    if os.environ.get("CT_DUMP"):
+        print(b.model_dump_json(indent=1))
 
 
 # --- the escalation circumstances of PLAN_V2 4.1 (one per circumstance) and the nickname guard ------------------
@@ -1086,3 +1095,51 @@ def test_gate_step_text_has_no_repr_quotes(rig):
     t = rig.run(ev("E-11"))
     gates = [s for r in t.agents for s in r.steps if s.kind == "gate"]
     assert gates and all("'" not in s.text and '"Jacksn"' in s.text for s in gates), [s.text for s in gates]
+
+
+# --- Trace.brief (contract 0.2.3) ----------------------------------------------------------------------------------
+
+
+def test_e01_brief_rows_match_the_sentence(rig, world):
+    dn, ccq = lazy_scripts(rig)
+    rig.script([register(*E01_RAW), *acting_flow(["E-01#1", "E-01#2"])], sc=sc_for("E-01#1", "E-01#2"), dn=dn, ccq=ccq)
+    t = rig.run(ev("E-01"))
+    b = t.brief
+    assert b and b.outcome == "acted" and len(b.incidents) == 2
+    if os.environ.get("CT_DUMP"):
+        print(b.model_dump_json(indent=1))
+    assert b.headline.startswith("Acted on 2 incidents") and len(b.headline) <= 110
+    by = {i.incident_id: i for i in b.incidents}
+    for spec in t.incidents:
+        ib = by[spec.incident_id]
+        want = ["Orders moved", "Dealers notified", "Loaners"]
+        assert [f.label for f in ib.facts] == (["Shipment", *want] if spec.category == "supplier_delay" else want)
+        f = {x.label: x for x in ib.facts}
+        sentence = ct.incident_sentence(world, spec, t.actions)
+        assert f"{f['Orders moved'].value} " in sentence and f"{f['Dealers notified'].value} dealers" in sentence
+        assert f"{f['Dealers notified'].detail}".split()[0] in sentence
+    assert sum(int(i.facts[-3].value) for i in b.incidents) == int(b.headline.split(": ")[1].split(" orders")[0])
+    distinct = len({a.args["dealer_id"] for a in t.actions if a.tool == "dealer.notify" and a.result.ok})
+    assert f", {distinct} dealers notified, " in b.headline  # distinct dealers, not the per-incident sum
+    assert b.gates[0] == "validators passed" and b.gates[1].startswith("pre-flight ")
+
+
+def test_e02_brief_is_escalated_with_a_note(rig):
+    rig.script([
+        register(UNCONFIRMED),
+        T("escalate", {"incident_id": "E-02#1", "reason": "rumor, no dates or ids",
+                       "what_would_make_it_actionable": "the shipment or lot id"}),
+        T("finish", {}),
+    ])  # fmt: skip
+    b = rig.run(ev("E-02", "Rumor from a supplier rep: something may be off with a seat material.")).brief
+    assert b.outcome == "escalated" and b.headline.startswith("Escalated:") and b.gates == []
+    assert b.incidents[0].facts == [] and b.incidents[0].note
+
+
+def test_e05_brief_is_noise(rig):
+    rig.script(
+        [register(NOISE), T("drop_noise", {"incident_id": "E-05#1", "reason": "brochure request"}), T("finish", {})]
+    )
+    b = rig.run(ev("E-05", "Dealer Amarillo, TX asks where to find the new brochure PDF.")).brief
+    assert b.outcome == "noise" and b.headline == "Noise: brochure request, no action"
+    assert b.incidents[0].facts == [] and b.incidents[0].note == "brochure request"

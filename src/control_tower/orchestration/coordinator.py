@@ -22,6 +22,7 @@ from control_tower.orchestration.coordinator_tools import (
     _queue_escalation,
     cs,
     draft,
+    event_brief,
     flush_escalations,
     status_of,
 )
@@ -165,7 +166,7 @@ class Coordinator:
             ),
             actions=st.log, world_diff=diff, counterfactual=cf,
             llm=LLMUsage(calls=tl.llm_calls, total_cost_usd=round(sum(c.cost_usd for c in tl.llm_calls), 6)),
-            summary=summary, decision_reason=reason,
+            summary=summary, decision_reason=reason, brief=event_brief(ctx, error),
         )  # fmt: skip
         write_trace(self.traces_dir, ev["event_id"], trace.model_dump_json(indent=2, by_alias=True))
         self.sink.emit(
