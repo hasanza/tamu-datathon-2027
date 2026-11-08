@@ -27,6 +27,26 @@ A re-run on a used server aborts safely (the freshness check finds a changed wor
 | `--provider P --model M`, `--audit-model M` | Override the model of every agent / the auditor for this run. |
 | `--no-audit`, `--no-explain` | Skip the auditor or the explanation LLM calls (cheaper experiments only). |
 
+## Judge-supplied events
+A custom event (UI "Add event" -> `POST /api/custom` -> `python -m control_tower.live --custom <file>`) is handled exactly like a feed event:
+the same four agents and the same MCP client, but against a PRIVATE instance of the organisers' server that `live.py` starts for that
+one event (`enterprise_server.py --events <file> --out runs/custom/sandbox/<event_id> --port <free> --overwrite`) and stops afterwards.
+The organisers' server only accepts event ids it was started with, so the scored server cannot take these events; each custom event (and each
+follow-up) gets a fresh server and a fresh world. The sandbox action log is `runs/custom/sandbox/<event_id>/action_log.jsonl` and is **never
+submitted**; the scored log is only `runs/live` / `runs/dev`. Traces go to `traces/custom/<id>.json` with `orchestration.target = "sandbox"`
+(`scored` for feed events, `dry` for `--dry-run`); the stream is `runs/custom/events.ndjson`. The in-process twin is used only for the
+pre-flight rehearsal, `--dry-run`, and the grader/oracle.
+`live.py --custom` also takes `--run-dir` (default `runs/custom`; the sandbox, stream and models land under it) and `--traces-dir`
+(default `traces/custom`); `run.py` takes `--traces-dir` (default `traces/<name of --out>`).
+
+## LLM provider outages
+`complete_json` retries transient provider errors (HTTP 429/500/502/503/504, timeouts, connection errors, RESOURCE_EXHAUSTED, UNAVAILABLE,
+DEADLINE_EXCEEDED, "overloaded") up to `CT_LLM_RETRIES` (default 5) provider calls with sleeps 2, 4, 8, 16 s (`CT_LLM_BACKOFF_S` sets the base)
+plus up to 1 s jitter, or the delay the provider asks for (capped at 60 s). 400/401/403/404 and bad keys fail at once. `attempts` counts every provider call.
+If the coordinator itself cannot get an answer, the event is **failed** (`orchestration.provider_failure = true`): no `escalate` is sent, nothing is
+written, and the summary says to re-run it. After 2 consecutive such events the run aborts (loud `ABORTED:` line on stderr, exit code 2, no further
+events started); `live.py` passes the exit code on.
+
 `live.py` (the UI's "Run feed") starts its own server on a free port and forwards `--parallel`; `POST /api/run?parallel=4` does the same.
 
 ## Models per agent: `agents.toml`

@@ -14,7 +14,7 @@ import pytest
 
 from control_tower.graph.traverse import impact_outage, impact_supplier_delay
 from control_tower.llm import adapter
-from control_tower.llm.adapter import RawResponse
+from control_tower.llm.adapter import LLMValidationError, RawResponse
 from control_tower.orchestration import coordinator as coord_mod
 from control_tower.orchestration import coordinator_tools as ct
 from control_tower.orchestration import runtime
@@ -101,7 +101,8 @@ class FakeLLM:
             agent = who
             assert agent, system[:80]
             q = self.scripts[agent]
-            assert q, f"no scripted reply left for {agent}"
+            if not q:  # a dead loop that is NOT a provider outage (kind "schema")
+                raise LLMValidationError(f"no scripted reply left for {agent}")
             reply = q.pop(0)
             reply = reply() if callable(reply) else reply
         self.calls[agent] += 1

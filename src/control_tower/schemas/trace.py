@@ -174,10 +174,14 @@ class Orchestration(BaseModel):
     correction_rounds: int = 0
     escalations: list[Escalation] = Field(default_factory=list)
     mcp_transport: str | None = None
+    # v0.2.2: which enterprise the writes went to (scored server | private sandbox server | in-process twin)
+    target: Literal["scored", "sandbox", "dry"] = "scored"
+    # v0.2.2: the LLM provider was unavailable (quota/outage) so the event was NOT decided: status failed, nothing executed
+    provider_failure: bool = False
 
 
 class Trace(BaseModel):
-    pipeline_version: str = "0.2.1"
+    pipeline_version: str = "0.2.2"
     event_id: str
     received_at: datetime
     source: str

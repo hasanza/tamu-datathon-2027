@@ -120,7 +120,9 @@ In a compound event only the unclear part is escalated. Tests: one per circumsta
 - `McpExecutor` (`world/executor.py`): spawns `python -m control_tower.mcp.server` over stdio with the `mcp` SDK `ClientSession`
   (`stdio_client` + `StdioServerParameters`); `list_tools` at start; every enterprise call (reads included) is `session.call_tool("enterprise_act", ...)`
   or the typed read tools. Runs the asyncio loop in a dedicated thread; thread-safe (one lock around calls). Records `transport="mcp/stdio"` on each action.
-  The twin sandbox (custom events, dry runs) keeps `TwinExecutor` (`transport="twin"`).
+  Judge-supplied (custom) events run on a PRIVATE sandbox instance of the organisers' server (`live.py --custom` spawns it with `--events <file>`, out `runs/custom/sandbox/<id>`)
+  through the same MCP client and the same four agents; its action log is never submitted (trace `orchestration.target="sandbox"`). Dry runs keep `TwinExecutor` (`transport="twin"`, target `dry`);
+  the twin is otherwise used only for the pre-flight rehearsal and the grader/oracle.
 - Reads (`mes.get_schedule`, `crm.loaner_availability`) are free and never penalized (handbook, Tools section). They are the only reads the enterprise exposes (slot and loaner-pool
   state); lot state has no read tool, so a quality-only event has nothing to verify live and the freshness step says so in the trace.
 - Execution is **phased over the whole event**, which is what makes partial failure safe: (1) all moves for all incidents; (2) notices recomputed
