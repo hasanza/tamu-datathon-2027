@@ -337,13 +337,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         all: bool = False,
         mode: str = Query(default="dry", pattern="^(dry|server)$"),
         pace: float = Query(default=1.0, ge=0, le=10),
+        parallel: int = Query(default=1, ge=1, le=8),
     ) -> dict[str, Any]:
         """Start the pipeline in a subprocess (control_tower.live). mode=server uses a fresh organizers' server."""
         if not event_id and not all:
             raise HTTPException(422, "give event_id=E-nn or all=true")
         if runner_state()["running"]:
             raise HTTPException(409, "a run is already in progress")
-        cmd = [sys.executable, "-m", "control_tower.live", "--mode", mode, "--pace", str(pace)]
+        cmd = [
+            sys.executable,
+            "-m",
+            "control_tower.live",
+            "--mode",
+            mode,
+            "--pace",
+            str(pace),
+            "--parallel",
+            str(parallel),
+        ]
         if event_id:
             cmd += ["--event", event_id]
         cfg.traces_dir, cfg.run_dir = ROOT / "traces" / "live", ROOT / "runs" / "live"

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import importlib
 import sys
+import threading
 import uuid
 from collections.abc import Iterable
 
@@ -26,25 +27,28 @@ class Twin:
         mod = _enterprise_module()
         self._tool_error = mod.ToolError
         self._ent = mod.Enterprise(str(data_dir or DATA_DIR))
+        self._lock = threading.RLock()  # parallel events share one Twin: serialise access to the Enterprise object
 
     def rehearse(self, actions: Iterable[Action]) -> list[Rehearsal]:
         """Run the actions in order in a brand-new world. A failing step is reported; later steps still run."""
         key = f"rehearsal-{uuid.uuid4().hex}"
         results: list[Rehearsal] = []
-        for a in actions:
-            try:
-                self._ent.call(key, a.tool, a.args)
-                results.append(Rehearsal(ok=True))
-            except self._tool_error as e:
-                results.append(Rehearsal(ok=False, error=str(e)))
+        with self._lock:
+            for a in actions:
+                try:
+                    self._ent.call(key, a.tool, a.args)
+                    results.append(Rehearsal(ok=True))
+                except self._tool_error as e:
+                    results.append(Rehearsal(ok=False, error=str(e)))
         return results
 
     def execute(self, key: str, tool: str, args: dict) -> ToolResult:
         """One call in the world named `key` (used by the dry-run executor; the server has its own worlds)."""
-        try:
-            return ToolResult(ok=True, response=self._ent.call(key, tool, args))
-        except self._tool_error as e:
-            return ToolResult(ok=False, error=str(e))
+        with self._lock:
+            try:
+                return ToolResult(ok=True, response=self._ent.call(key, tool, args))
+            except self._tool_error as e:
+                return ToolResult(ok=False, error=str(e))
 
     def state(self, key: str):
         return self._ent.state(key)
