@@ -58,7 +58,7 @@ run calls the model live.
 
 ## Evaluation
 
-A full run on a fresh server scores 15 of 15 on the replay grader with 0 failed calls, about 230 model calls and about
-0.90 USD. A cold audit by a different model family recomputed all 15 events from the CSVs with zero deviations. On 90
+The submitted run on a fresh server scores 15 of 15 on the replay grader: 879 tool calls over MCP, 0 failed calls,
+235 model calls, 0.92 USD, 6.5 minutes with three events in parallel. A cold audit by a different model family recomputed all 15 events from the CSVs with zero deviations. On 90
 paraphrased events (typos, formal email, nicknames, phone shorthand, digests) the coordinator understood 88, and the two
 misses escalated rather than acted. See the design card for the full list.

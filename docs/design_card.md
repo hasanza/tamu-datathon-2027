@@ -26,9 +26,9 @@ The model does what needs judgment: reading messy wording, deciding the category
 
 ## Evaluation
 
-- **Replay.** Full run of the 15 events on a fresh scored server: 15 of 15 correct on the replay grader, 766 writes, 0 failed calls, 230 model calls, 0 retries, about 0.90 USD, 17 minutes sequential. A cold audit by a different model family (OpenAI Codex) recomputed all 15 events from the CSVs: zero deviations.
+- **Replay.** The submitted run of the 15 events on a fresh scored server, three events handled in parallel: 15 of 15 correct on the replay grader, 879 tool calls over MCP, 0 failed calls, 235 model calls, 0.92 USD, 6.5 minutes (an earlier sequential run took 17 minutes for the same result). A cold audit by a different model family (OpenAI Codex) recomputed all 15 events from the CSVs: zero deviations.
 - **Robustness.** Paraphrase bench, 90 live rewrites in six styles (typos, formal email, legal footer, nicknames, phone shorthand, digest with an unrelated item): 88 of 90 understood, the two misses over-escalate rather than act. An escalation suite of 13 tests covers every escalation circumstance plus a must-not-escalate case; an auditor bench with planted mistakes checks the auditor catches what the message shows without blocking correct plans.
-- **Stability without a cache.** Three full runs on fresh servers compared tool-for-tool and argument-for-argument, plus one parallel run (three events at a time) graded the same way. *[Figures entered at the final run.]*
+- **Stability without a cache.** The sequential run and the parallel run produced the same graded outcome on every event; a tool-for-tool comparison script (`eval/run_identity.py`) is in the repo for larger samples.
 
 ## What we would improve
 
