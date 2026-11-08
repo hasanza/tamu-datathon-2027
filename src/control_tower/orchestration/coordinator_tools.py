@@ -8,6 +8,7 @@ State lives in `ctx.state["coord"]` (a `CoordState`); options (explain / audit /
 
 from __future__ import annotations
 
+import re
 from collections import Counter
 from dataclasses import dataclass, field, replace
 from datetime import date
@@ -20,7 +21,16 @@ from control_tower.orchestration.auditor import audit, plan_digest
 from control_tower.orchestration.config import agent_config
 from control_tower.orchestration.context import EventContext
 from control_tower.orchestration.explain import explain
-from control_tower.orchestration.report import MOVES, incident_brief, incident_sentence, ok, tool_counts
+from control_tower.orchestration.report import (
+    MOVES,
+    ambiguity_ids,
+    blocking_ambiguity,
+    escalated_brief,
+    incident_brief,
+    incident_sentence,
+    ok,
+    tool_counts,
+)
 from control_tower.orchestration.runtime import run_agent
 from control_tower.orchestration.specialist_tools import CCQ, _lot_impact, _quality_reason, _replay_moves, _stamp, stash
 from control_tower.orchestration.specialists import SPECIALISTS
@@ -1272,7 +1282,7 @@ def event_brief(ctx: EventContext, error: str | None = None) -> Brief:
     items: list[IncidentBrief] = []
     for i, s in ctx.incidents.items():
         if i in st.escalated:
-            items.append(IncidentBrief(incident_id=i, category=s.category, title=_title(s), note=st.escalated[i][:200]))
+            items.append(escalated_brief(ctx.world, s, st.escalated[i]))
         elif i in st.dropped:
             items.append(IncidentBrief(incident_id=i, category=s.category, title="Noise", note=st.dropped[i]))
         elif s.category in ACTIONABLE and i in st.closed:
@@ -1319,21 +1329,60 @@ def event_brief(ctx: EventContext, error: str | None = None) -> Brief:
         )
         return Brief(headline=headline[:110], outcome=outcome, incidents=items, gates=gates)  # type: ignore[arg-type]
     if outcome == "noise":
-        reason = _words(next(iter(st.dropped.values()), "") or "nothing actionable", 8)
+        reason = _short_reason(next(iter(st.dropped.values()), "") or "nothing actionable")
         return Brief(headline=f"Noise: {reason}, no action"[:110], outcome="noise", incidents=items)
     if outcome == "failed":
         why = _words(st.failure_text or error or "an unexpected error", 12)
         return Brief(headline=f"Failed: {why}"[:110], outcome="failed", incidents=items)
-    cats = [s.category for s in ctx.incidents.values() if s.category in {"unconfirmed", *ACTIONABLE}]
-    cat = cats[0].replace("_", " ") if cats else "event"
-    why = _words(next((s.reason for s in ctx.incidents.values()), "") or error or "", 6)
-    return Brief(
-        headline=f"Escalated: {cat}{' ' + why if why else ''}, no action"[:110], outcome="escalated", incidents=items
+    return Brief(headline=_escalated_headline(ctx, error), outcome="escalated", incidents=items)
+
+
+_BOUNDARY = re.compile(r"\. |; |, | and | but | because ")
+_DANGLING = {
+    "a", "an", "the", "of", "to", "and", "or", "but", "for", "with", "in", "at", "on", "by", "is", "as", "that",
+    "because", "from", "no", "not", "are", "was", "be",
+}  # fmt: skip
+
+
+def _tidy(text: str) -> str:
+    words = text.replace("\n", " ").split()
+    while words and (words[-1].rstrip(".,;:").lower() in _DANGLING or words[-1] in {",", ";"}):
+        words.pop()
+    return " ".join(words).rstrip(".,;: ")
+
+
+def _short_reason(text: str, cap: int = 60) -> str:
+    """First sentence or clause of a reason, at most `cap` chars, never ending in a conjunction or comma."""
+    text = " ".join(text.split())
+    m = _BOUNDARY.search(text)
+    head = text[: m.start()] if m else text
+    if len(head) > cap:
+        head = head[:cap].rsplit(" ", 1)[0]
+    head = _tidy(head)
+    first = head.split(" ", 1)[0] if head else ""
+    if first and first[0].isupper() and not (first.isupper() or any(c.isdigit() or c in "-_" for c in first)):
+        head = head[0].lower() + head[1:]
+    return head or "nothing actionable"
+
+
+def _escalated_headline(ctx: EventContext, error: str | None) -> str:
+    st = cs(ctx)
+    spec = next((s for i, s in ctx.incidents.items() if i in st.escalated), None) or next(
+        iter(ctx.incidents.values()), None
     )
-
-
-def _title(s: Any) -> str:
-    return s.category.replace("_", " ").capitalize() + f" · {s.incident_id}"
+    cat = spec.category.replace("_", " ") if spec and spec.category in ACTIONABLE else None
+    amb = blocking_ambiguity(spec) if spec and cat else None
+    if amb is not None:
+        ids = ambiguity_ids(amb, 2)
+        field_ = amb.field.removesuffix("_id").replace("_", " ")
+        opts = f" ({' or '.join(ids)})" if ids else ""
+        head = f"Escalated: {cat + ', ' if cat else ''}{field_} ambiguous{opts}, no action"
+    elif spec and cat and (st.executed or st.failed):
+        why = _short_reason(st.escalated.get(spec.incident_id) or st.failure_text or error or "an unexpected error", 50)
+        head = f"Escalated: {why}, nothing executed"
+    else:
+        head = f"Escalated: unconfirmed {cat or 'report'}, no action"
+    return head if len(head) <= 110 else _tidy(head[:107].rsplit(" ", 1)[0]) + "..."
 
 
 def draft(ctx: EventContext, error: str | None = None) -> tuple[str, str]:

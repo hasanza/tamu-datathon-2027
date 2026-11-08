@@ -6,7 +6,9 @@ trace: world diff, counterfactual, the minimal graph path for events nothing was
 
 from __future__ import annotations
 
+import re
 from collections import Counter
+from datetime import date
 from typing import Any
 
 from control_tower.data.loader import LOANER_TIERS, World
@@ -170,6 +172,71 @@ def incident_brief(world: World, spec: IncidentSpec, actions: list[Action]) -> I
             Fact(label="Owners contacted", value=str(owners)),
         ],
     )  # fmt: skip
+
+
+def _mon_day(d: date) -> str:
+    return f"{d:%b} {d.day}"
+
+
+def _range_words(a: str, b: str) -> str:
+    x, y = date.fromisoformat(a), date.fromisoformat(b)
+    return f"{_mon_day(x)}–{y.day}" if (x.year, x.month) == (y.year, y.month) else f"{_mon_day(x)}–{_mon_day(y)}"
+
+
+_OPTION = re.compile(r"^(\S+) (\d{4}-\d\d-\d\d)\.\.(\d{4}-\d\d-\d\d)$")
+
+
+def blocking_ambiguity(spec: IncidentSpec) -> Any:
+    return next((a for a in spec.ambiguities if a.blocking), None)
+
+
+def ambiguity_ids(amb: Any, n: int | None = None) -> list[str]:
+    ids = [o.split()[0] for o in amb.options if o.split()]
+    return ids[:n] if n else ids
+
+
+def ambiguity_note(amb: Any) -> str:
+    """The blocking ambiguity in plain words, with its options (dates as 'Mon D')."""
+    label = amb.field.removesuffix("_id").replace("_", " ").capitalize()
+    shown = []
+    for o in amb.options:
+        m = _OPTION.match(o)
+        shown.append(f"{m[1]} ({_range_words(m[2], m[3])})" if m else o)
+    issue = amb.issue.rstrip(".")
+    if issue.startswith("the stated window overlaps") and shown:
+        what = "the stated window overlaps " + (" and ".join(shown) if len(shown) <= 2 else ", ".join(shown))
+    else:
+        what = issue + (f" (options: {', '.join(shown)})" if shown else "")
+    return f"{label} ambiguous: {what}; a human must pick one"
+
+
+def escalated_brief(world: World, spec: IncidentSpec, text: str) -> IncidentBrief:
+    """An escalated incident keeps whatever resolved: same title style as the acted variants, plus the ambiguity."""
+    inc, cat = spec.incident_id, spec.category
+    amb = blocking_ambiguity(spec) if cat != "unconfirmed" else None
+    note = ambiguity_note(amb) if amb else text[:200]
+    plant = world.plants.get(spec.plant_id) if spec.plant_id else None
+    part = world.parts.get(spec.part_id) if spec.part_id else None
+    where = f" at {plant.name} ({plant.plant_id})" if plant else ""
+    title, window = None, None
+    if cat == "plant_outage" and plant:
+        title = f"Plant outage · {plant.name} ({plant.plant_id})"
+        if spec.outage_start and spec.outage_end:
+            window = f"{spec.outage_start} → {spec.outage_end}"
+    elif cat == "supplier_delay" and (plant or part or spec.supplier_id):
+        sup = world.suppliers.get(spec.supplier_id) if spec.supplier_id else None
+        bits = [x for x in (sup.name if sup else None, spec.part_id) if x]
+        title = "Supplier delay · " + " · ".join(bits) + (f" → {plant.name} ({plant.plant_id})" if plant else "")
+        if spec.orig_eta and spec.new_eta:
+            window = f"ETA {spec.orig_eta} → {spec.new_eta}"
+    elif cat == "quality_hold" and (plant or part or spec.supplier_id or spec.lot_id):
+        what = f"{part.name} ({part.part_id})" if part else (spec.lot_id or "lot")
+        title = f"Quality hold · {what}{where}"
+        if spec.build_window_start and spec.build_window_end:
+            window = f"built {spec.build_window_start} → {spec.build_window_end}"
+    if title is None:
+        title = "Unconfirmed · " + (cat.replace("_", " ") if cat != "unconfirmed" else "report")
+    return IncidentBrief(incident_id=inc, category=cat, title=title, window=window, note=note)
 
 
 def incident_sentence(world: World, spec: IncidentSpec, actions: list[Action]) -> str:
