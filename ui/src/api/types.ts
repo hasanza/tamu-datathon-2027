@@ -313,13 +313,21 @@ export type StreamType = "event_received" | "agent_step" | "action" | "event_don
 
 export type RunMode = "dry" | "server";
 /** GET /api/run/status. `mode` is null until a run was started in this API session (and after a reset). */
+/** GET /api/reset/preview: what "Reset everything" would remove from disk. */
+export interface ResetPreview {
+  judge_events: number;
+  live_traces: number;
+  live_log_rows: number;
+  running: boolean;
+}
+
 export interface RunStatus {
   running: boolean;
   mode: RunMode | null;
   exit_code: number | null;
   started: number | null;
   /** how the last run ended: done | aborted (the pipeline gave up on purpose: exit 2) | failed; null while running or before a run */
-  state?: "done" | "aborted" | "failed" | null;
+  state?: "done" | "aborted" | "failed" | "cancelled" | null;
   /** the stderr line that says why (the `ABORTED:` line for an abort) */
   message?: string | null;
 }

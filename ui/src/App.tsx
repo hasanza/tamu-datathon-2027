@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useEvents, useTrace } from "./api/hooks";
 import { useLiveStream } from "./api/stream";
 import { EventFeed } from "./components/EventFeed";
@@ -19,7 +19,14 @@ export default function App() {
     const known = new Set(events.data.map((e) => e.event_id));
     return [...events.data, ...stream.pendingCustom.filter((p) => !known.has(p.event_id)).map(({ at: _at, ...row }) => row)];
   }, [events.data, stream.pendingCustom]);
-  const selectedId = route.eventId ?? feedEvents?.[0]?.event_id ?? null;
+  // nothing is selected until the reader picks (or follows a deep link): the event pane then shows what to do first
+  const selectedId = route.eventId;
+  const { clearAll } = stream;
+  useEffect(() => {
+    window.addEventListener("ct-reset-all", clearAll);
+    return () => window.removeEventListener("ct-reset-all", clearAll);
+  }, [clearAll]);
+  const presetTotal = (events.data ?? []).filter((e) => !e.custom).length || 15;
   const selected = feedEvents?.find((e) => e.event_id === selectedId);
   const trace = useTrace(selectedId);
   const lastVersion = useRef<string>();
@@ -36,12 +43,12 @@ export default function App() {
 
   return (
     <div className="flex h-full flex-col">
-      <TopBar page={route.page} go={go} version={lastVersion.current} />
+      <TopBar page={route.page} go={go} version={lastVersion.current} finished={stream.finished} total={presetTotal} activityCount={stream.items.length} />
       <main className="min-h-0 flex-1 overflow-y-auto xl:overflow-hidden">
         {route.page === "ontology" && <OntologyPage />}
         {route.page === "about" && <AboutPage />}
         {route.page === "tower" && (
-          <div className="grid min-h-full grid-cols-1 md:grid-cols-[280px_1fr] xl:h-full xl:grid-cols-[320px_minmax(0,1fr)_340px]">
+          <div className="grid min-h-full grid-cols-1 md:grid-cols-[280px_1fr] xl:h-full xl:grid-cols-[minmax(280px,23fr)_minmax(0,54fr)_minmax(280px,23fr)]">
             <aside aria-label="Event feed" className="min-h-0 border-b border-line md:overflow-hidden md:border-b-0 md:border-r max-md:max-h-[420px]">
               <EventFeed
                 events={feedEvents}
@@ -55,7 +62,7 @@ export default function App() {
               />
             </aside>
             <section id="event-detail" aria-label="Event detail" className="min-h-0 min-w-0 md:overflow-hidden">
-              <EventDetail event={selected} processing={!!selectedId && stream.processing.has(selectedId)} liveSteps={selectedId ? stream.liveSteps[selectedId] : undefined} />
+              <EventDetail events={feedEvents} onSelect={select} event={selected} processing={!!selectedId && stream.processing.has(selectedId)} liveSteps={selectedId ? stream.liveSteps[selectedId] : undefined} />
             </section>
             <aside
               aria-label="Escalations and activity"

@@ -16,12 +16,17 @@ export const useRunMode = () => useContext(RunModeCtx);
 
 /* ---------- toasts ---------- */
 type ToastKind = "info" | "ok" | "error";
+export interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
 interface Toast {
   id: number;
   kind: ToastKind;
   text: string;
+  action?: ToastAction;
 }
-const ToastCtx = createContext<(text: string, kind?: ToastKind) => void>(() => {});
+const ToastCtx = createContext<(text: string, kind?: ToastKind, action?: ToastAction) => void>(() => {});
 export const useToast = () => useContext(ToastCtx);
 
 export function AppProviders({ children }: { children: ReactNode }) {
@@ -40,10 +45,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
   const modeValue = useMemo(() => ({ order, setOrder }), [order, setOrder]);
 
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const push = useCallback((text: string, kind: ToastKind = "info") => {
+  const push = useCallback((text: string, kind: ToastKind = "info", action?: ToastAction) => {
     const id = Date.now() + Math.random();
-    setToasts((t) => [...t, { id, kind, text }]);
-    window.setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 5000);
+    setToasts((t) => [...t, { id, kind, text, action }]);
+    // a toast with an action stays a little longer: there is something to click
+    window.setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), action ? 9000 : 5000);
   }, []);
 
   return (
@@ -65,7 +71,18 @@ export function AppProviders({ children }: { children: ReactNode }) {
               ) : (
                 <Info size={16} className="mt-0.5 shrink-0 text-tx2" aria-hidden />
               )}
-              {t.text}
+              <span className="min-w-0">{t.text}</span>
+              {t.action && (
+                <button
+                  onClick={() => {
+                    t.action?.onClick();
+                    setToasts((all) => all.filter((x) => x.id !== t.id));
+                  }}
+                  className="ml-1 shrink-0 rounded font-medium text-brand-bright underline-offset-2 hover:underline focus-visible:outline-2"
+                >
+                  {t.action.label}
+                </button>
+              )}
             </div>
           ))}
         </div>

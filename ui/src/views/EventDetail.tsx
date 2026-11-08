@@ -3,6 +3,7 @@ import { FlaskConical, Play } from "lucide-react";
 import { isNotFound, useTrace } from "../api/hooks";
 import { isCustomId, type FeedEvent, type Status } from "../api/types";
 import { TARGET_META, targetOf } from "../lib/target";
+import { CATEGORY_META } from "../lib/meta";
 import { SourceIcon } from "../components/EventFeed";
 import { useRun } from "../components/useRun";
 import { CategoryBadge, Chip, ConfidenceRing, Empty, ErrorBox, Loading, StatusChip } from "../components/ui/primitives";
@@ -17,7 +18,47 @@ import { SummaryTab } from "./SummaryTab";
 const TABS = ["Summary", "Orchestration", "Graph", "Actions", "Audit"] as const;
 type Tab = (typeof TABS)[number];
 
-export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent | undefined; processing: boolean; liveSteps?: LiveStep[] }) {
+/** Nothing selected: say what to do first. One quick pick per category (the first event of each), the two ways to start a run. */
+function PickEvent({ events, onSelect }: { events?: FeedEvent[]; onSelect?: (id: string) => void }) {
+  const picks = new Map<string, FeedEvent>();
+  for (const e of events ?? []) if (e.category && !picks.has(e.category)) picks.set(e.category, e);
+  return (
+    <div data-pick-event className="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
+      <div>
+        <h2 className="text-[16px] font-semibold text-tx">Pick an event from the feed</h2>
+        <p className="mt-1 max-w-md text-[13px] text-tx3">See what the four agents did with it and why. Or start something yourself:</p>
+      </div>
+      <div className="flex flex-wrap justify-center gap-2">
+        <button onClick={() => window.dispatchEvent(new Event("ct-run-feed"))} className="inline-flex items-center gap-1.5 rounded-md bg-brand px-3 py-1.5 text-[13px] font-medium text-white hover:bg-brand-bright">
+          <Play size={14} aria-hidden /> Run feed
+        </button>
+        <button onClick={() => window.dispatchEvent(new Event("ct-open-custom"))} className="inline-flex items-center gap-1.5 rounded-md border border-brand px-3 py-1.5 text-[13px] font-medium text-tx hover:border-brand-bright">
+          <FlaskConical size={14} className="text-brand-bright" aria-hidden /> Try your own event
+        </button>
+      </div>
+      {picks.size > 0 && (
+        <div className="flex max-w-xl flex-wrap justify-center gap-1.5" role="group" aria-label="Quick picks">
+          {[...picks.entries()].map(([cat, e]) => {
+            const m = CATEGORY_META[cat as keyof typeof CATEGORY_META];
+            return (
+              <button
+                key={cat}
+                onClick={() => onSelect?.(e.event_id)}
+                className="inline-flex items-center gap-1.5 rounded-md border border-line px-2 py-1 text-[12px] text-tx2 hover:border-brand-bright hover:text-tx"
+              >
+                <span className="h-2 w-2 rounded-full" style={{ background: m?.color }} aria-hidden />
+                {m?.label ?? cat}
+                <span className="mono text-tx3">{e.event_id}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function EventDetail({ event, processing, liveSteps, events, onSelect }: { event: FeedEvent | undefined; processing: boolean; liveSteps?: LiveStep[]; events?: FeedEvent[]; onSelect?: (id: string) => void }) {
   const id = event?.event_id ?? null;
   const trace = useTrace(id);
   const run = useRun();
@@ -37,7 +78,7 @@ export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent
     return () => window.removeEventListener("ct-open-tab", on);
   }, []);
 
-  if (!event) return <Empty title="Select an event" hint="Pick an event from the feed (or press j / k) to see what the agents did and why." />;
+  if (!event) return <PickEvent events={events} onSelect={onSelect} />;
 
   const t = trace.data;
   const target = targetOf(t, event.event_id);

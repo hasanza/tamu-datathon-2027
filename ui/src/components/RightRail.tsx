@@ -32,6 +32,11 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
   const run = String(useRunStatus().data?.started ?? "snapshot");
   const ackKey = (id: string) => `${run}|${id}`;
   const [acked, setAcked] = useState<Set<string>>(readAcked);
+  useEffect(() => {
+    const on = () => setAcked(new Set()); // "Reset everything"
+    window.addEventListener("ct-reset-all", on);
+    return () => window.removeEventListener("ct-reset-all", on);
+  }, []);
   const [showAcked, setShowAcked] = useState(false);
   // a card that appears while the panel is open flashes once (no continuous motion: it would distract)
   const seen = useRef<Set<string> | null>(null);
@@ -64,7 +69,7 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
   return (
     <Panel
       fill
-      className="xl:flex-[1.8]"
+      className="w-full max-w-[36rem] xl:flex-[1.8]"
       title={
         <span className="flex items-center gap-2">
           <TriangleAlert size={14} style={{ color: "var(--warn)" }} aria-hidden /> Escalation inbox
@@ -263,7 +268,7 @@ export function ActivityLog({
   return (
     <Panel
       fill
-      className="xl:flex-1"
+      className="w-full max-w-[36rem] xl:flex-1"
       title={
         <span className="flex items-center gap-2">
           <Radio size={14} aria-hidden /> Activity
