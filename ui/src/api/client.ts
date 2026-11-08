@@ -44,9 +44,9 @@ export const api = {
   graph: (id: string) => request<GraphPath>(`/api/graph/${id}`),
   kpis: () => request<Kpis>("/api/kpis"),
   /** `parallel` = number of events handled side by side; omitted = sequential (the API default). */
-  run: (opts: { eventId?: string; all?: boolean; mode: RunMode; parallel?: number }) =>
+  run: (opts: { eventId?: string; all?: boolean; mode?: RunMode; parallel?: number }) =>
     request<RunStatus>(
-      `/api/run?${opts.all ? "all=true" : `event_id=${encodeURIComponent(opts.eventId ?? "")}`}&mode=${opts.mode}${opts.parallel ? `&parallel=${opts.parallel}` : ""}`,
+      `/api/run?${opts.all ? "all=true" : `event_id=${encodeURIComponent(opts.eventId ?? "")}`}${opts.mode ? `&mode=${opts.mode}` : ""}${opts.parallel ? `&parallel=${opts.parallel}` : ""}`,
       { method: "POST" },
     ),
   custom: (text: string, source?: string) =>

@@ -280,7 +280,10 @@ def test_reset_refused_while_running(client, monkeypatch):
 def test_custom_event_sandbox(client, cfg, monkeypatch):
     import subprocess as sp
 
+    seen = {}
+
     def fake_run(cmd, **kw):
+        seen["timeout"] = kw["timeout"]
         assert cmd[-2] == "--custom"
         ev = json.loads(Path(cmd[-1]).read_text())[0]
         assert ev["event_id"] == "C-01" and ev["text"] == "The Huntsville line is down Wednesday."
@@ -294,9 +297,41 @@ def test_custom_event_sandbox(client, cfg, monkeypatch):
     assert client.post("/api/custom", json={"text": "x"}).status_code == 422
     r = client.post("/api/custom", json={"text": "The Huntsville line is down Wednesday."})
     assert r.status_code == 200 and r.json()["event_id"] == "C-01"
+    assert r.json()["target"] == "sandbox"  # a custom event is a sandbox run (contract 0.2.2 will put it on the trace)
+    assert seen["timeout"] == 300  # a real LLM run is about two minutes
     assert client.get("/api/traces/C-01").json()["event_id"] == "C-01"
     ev = {e["event_id"]: e for e in client.get("/api/events").json()}
     assert ev["C-01"]["custom"] is True and "E-01" in ev
+
+
+def test_custom_run_in_flight_does_not_break_events_or_numbering(client, cfg, monkeypatch):
+    """While a custom event runs, its input file C-nn.input.json sits next to the finished traces. v2 runs take a minute,
+    so the window is long: /api/events used to answer 500 (the input is not a Trace) and a second POST crashed on int('01.input')."""
+    import subprocess as sp
+
+    cfg.custom_dir.mkdir(parents=True, exist_ok=True)
+    done = json.loads((ROOT / "traces/examples/E-05.json").read_text())
+    done.update(event_id="C-01", text="finished earlier")
+    (cfg.custom_dir / "C-01.json").write_text(json.dumps(done))
+    (cfg.custom_dir / "C-02.input.json").write_text(
+        json.dumps([{"event_id": "C-02", "text": "still running"}])
+    )  # in flight
+
+    r = client.get("/api/events")
+    assert r.status_code == 200
+    assert [e["event_id"] for e in r.json() if e.get("custom")] == ["C-01"]  # the input file is not an event
+
+    def fake_run(cmd, **kw):  # a second submission while C-02 is still in flight must NOT reuse C-02: it takes C-03
+        ev = json.loads(Path(cmd[-1]).read_text())[0]
+        assert ev["event_id"] == "C-03"
+        done.update(event_id=ev["event_id"], text=ev["text"])
+        (cfg.custom_dir / f"{ev['event_id']}.json").write_text(json.dumps(done))
+        return sp.CompletedProcess(cmd, 0, "", "")
+
+    monkeypatch.setattr("api.app.subprocess.run", fake_run)
+    r = client.post("/api/custom", json={"text": "A second message arrives while the first is running."})
+    assert r.status_code == 200 and r.json()["event_id"] == "C-03"
+    assert (cfg.custom_dir / "C-02.input.json").exists()  # the run in flight was not disturbed
 
 
 def test_stream_tails_run_and_custom_streams_together(tmp_path):
@@ -336,3 +371,13 @@ def test_custom_follow_up_appends_operator_details(client, cfg, monkeypatch):
     )
     ev = {e["event_id"]: e for e in client.get("/api/events").json()}
     assert ev["C-01"]["parent_id"] == "E-02"
+
+
+def test_run_defaults_to_the_scored_server_mode(client, monkeypatch):
+    import api.app as appmod
+
+    started = []
+    monkeypatch.setattr(appmod.subprocess, "Popen", lambda cmd, **kw: started.append(cmd) or FakeProc())
+    r = client.post("/api/run", params={"all": True})  # no mode: feed events always go to the scored server
+    assert r.status_code == 202 and r.json()["mode"] == "server"
+    assert started[0][started[0].index("--mode") + 1] == "server"

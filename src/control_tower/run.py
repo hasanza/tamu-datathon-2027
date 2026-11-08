@@ -50,12 +50,21 @@ def _apply_model_overrides(provider: str | None, model: str | None, audit_model:
         os.environ["CT_MODEL_AUDITOR"] = audit_model
 
 
+ABORT_AFTER = 2  # consecutive provider-failed events that stop a run
+
+
+def _provider_failed(tr: Trace | None) -> bool:
+    return bool(getattr(getattr(tr, "orchestration", None), "provider_failure", False))
+
+
 def run_feed(
     handle: Callable[[dict], Trace], events: list[dict], *, parallel: int = 1, pace: float = 0.0
 ) -> list[tuple[dict, Trace | None, str, float]]:
     """Handle `events`; returns (event, trace or None, traceback, wall seconds) IN EVENT ORDER.
     parallel > 1 runs that many events at once (each has its own EventContext and its own world on the enterprise);
-    one event crashing never stops the others."""
+    one event crashing never stops the others. After ABORT_AFTER consecutive events (in processing order) that ended
+    with a provider failure the run stops: no further event is started (events already running finish), so the
+    result may be shorter than `events`."""
 
     def one(ev: dict) -> tuple[dict, Trace | None, str, float]:
         t0 = time.perf_counter()
@@ -64,15 +73,32 @@ def run_feed(
         except Exception:  # never let one event stop the feed
             return ev, None, traceback.format_exc(), time.perf_counter() - t0
 
+    out: list[tuple[dict, Trace | None, str, float]] = []
+    streak = 0
+
+    def note(r: tuple[dict, Trace | None, str, float]) -> bool:
+        nonlocal streak
+        out.append(r)
+        streak = streak + 1 if _provider_failed(r[1]) else 0
+        return streak >= ABORT_AFTER
+
     if parallel <= 1:
-        out = []
         for i, ev in enumerate(events):
             if i and pace:
                 time.sleep(pace)
-            out.append(one(ev))
+            if note(one(ev)):
+                break
         return out
     with ThreadPoolExecutor(max_workers=parallel, thread_name_prefix="event") as pool:
-        return list(pool.map(one, events))
+        futures = [pool.submit(one, ev) for ev in events]
+        stop = False
+        for f in futures:
+            if stop:
+                if not f.cancel():  # already running: let it finish and keep its result
+                    note(f.result())
+                continue
+            stop = note(f.result())
+    return out
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -81,7 +107,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--event", action="append", default=[], help="event id, repeatable")
     ap.add_argument("--out", default="runs/dev")
     ap.add_argument("--server", default="http://127.0.0.1:8000")
-    ap.add_argument("--dry-run", action="store_true", help="use the in-process twin instead of the server")
+    ap.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="use the in-process sandbox copy of the enterprise instead of a server (developers)",
+    )
+    ap.add_argument(
+        "--sandbox", action="store_true", help="the server is a private sandbox, not the scored one (judge events)"
+    )
     ap.add_argument(
         "--executor", choices=["mcp", "http"], default="mcp", help="server mode: MCP client (default) or direct HTTP"
     )
@@ -95,6 +128,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--parallel", type=int, default=1, metavar="N", help="handle N events at once (default 1 = sequential)"
     )
+    ap.add_argument("--traces-dir", help="where traces are written (default: traces/<name of --out>)")
     ap.add_argument("--transfer-min-day", choices=["today", "disruption_end"], default="today")
     a = ap.parse_args(argv)
     if not (a.all or a.event):
@@ -105,7 +139,11 @@ def main(argv: list[str] | None = None) -> int:
     _apply_model_overrides(a.provider, a.model, a.audit_model)
     out = (REPO_ROOT / a.out) if not Path(a.out).is_absolute() else Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
-    traces_dir = REPO_ROOT / "traces" / out.name
+    traces_dir = (
+        (REPO_ROOT / a.traces_dir if not Path(a.traces_dir).is_absolute() else Path(a.traces_dir))
+        if a.traces_dir
+        else REPO_ROOT / "traces" / out.name
+    )
     (out / "events.ndjson").write_text("")
     sink = Sink(out / "events.ndjson")
 
@@ -126,14 +164,13 @@ def main(argv: list[str] | None = None) -> int:
     coord = Coordinator(
         world, graph, index, twin, executor, traces_dir=traces_dir, sink=sink,
         policy=Policy(transfer_min_day=a.transfer_min_day), use_tiebreak=True, use_audit=not a.no_audit, use_explain=not a.no_explain,
-        mode="parallel" if a.parallel > 1 else "sequential",
+        mode="parallel" if a.parallel > 1 else "sequential", target="dry" if a.dry_run else "sandbox" if a.sandbox else "scored",
     )  # fmt: skip
 
-    print(
-        f"{len(wanted)} event(s) -> {executor.name} [{coord.mode} x{a.parallel}]; traces in {traces_dir.relative_to(REPO_ROOT)}"
-    )
+    print(f"{len(wanted)} event(s) -> {executor.name} [{coord.mode} x{a.parallel}]; traces in {traces_dir}")
     t0, rows, failed_events = time.perf_counter(), [], 0
-    for ev, tr, tb, wall in run_feed(coord.handle, wanted, parallel=a.parallel, pace=a.pace):
+    results = run_feed(coord.handle, wanted, parallel=a.parallel, pace=a.pace)
+    for ev, tr, tb, wall in results:
         if tr is None:
             failed_events += 1
             print(f"{ev['event_id']}: CRASH\n{tb}", file=sys.stderr)
@@ -165,6 +202,14 @@ def main(argv: list[str] | None = None) -> int:
           f"{len(LEDGER.calls)} LLM calls (${LEDGER.total_cost_usd}), {time.perf_counter() - t0:.1f}s")  # fmt: skip
     if hasattr(executor, "close"):
         executor.close()
+    if len(results) < len(wanted):
+        head = next((r[1].decision_reason for r in reversed(results) if _provider_failed(r[1])), "")[:200]
+        print(
+            f"ABORTED: LLM provider unavailable on {ABORT_AFTER} consecutive events ({head}); "
+            f"{len(wanted) - len(results)} of {len(wanted)} events not run; check the Gemini quota and re-run with --event ...",
+            file=sys.stderr,
+        )
+        return 2
     return 1 if failed_events else 0
 
 

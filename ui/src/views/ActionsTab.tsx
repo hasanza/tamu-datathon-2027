@@ -1,10 +1,11 @@
 import { Fragment, useMemo, useState } from "react";
 import { ChevronDown, ChevronRight, Network, Pencil, Eye } from "lucide-react";
-import { useExecTarget, useLog } from "../api/hooks";
+import { useLog } from "../api/hooks";
 import { isCustomId, WRITE_TOOLS, type Action, type AgentId, type Trace } from "../api/types";
 import { Chip, Empty, Mono, OkChip, Panel } from "../components/ui/primitives";
 import { clip, compactArgs } from "../lib/format";
 import { AGENT_META, transportMeta } from "../lib/meta";
+import { TARGET_META, targetOf } from "../lib/target";
 
 const PAGE = 100;
 
@@ -52,7 +53,7 @@ function ActionDetail({ a }: { a: Action }) {
 export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGraph: (ids: string[]) => void }) {
   const sandbox = isCustomId(trace.event_id); // no server log exists for sandbox events: trace.actions is the record
   const log = useLog(sandbox ? null : trace.event_id);
-  const target = useExecTarget(trace.event_id); // "twin" for a dry run started from the UI, "server" for the committed snapshot
+  const target = targetOf(trace); // scored | sandbox | dry: where this event's calls went
   const [tool, setTool] = useState<string | null>(null);
   const [agent, setAgent] = useState<string>("all");
   const [kind, setKind] = useState<"all" | "write" | "read">("all");
@@ -100,7 +101,7 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
             {log.data && (
               <>
                 {" "}
-                · {target} log: <span className="mono">{log.data.length}</span> calls, <span className="mono">{logOk}</span> ok
+                · {TARGET_META[target].short} log: <span className="mono">{log.data.length}</span> calls, <span className="mono">{logOk}</span> ok
                 {log.data.length !== trace.actions.length && <span className="text-warn"> (differs from trace)</span>}
               </>
             )}
@@ -195,7 +196,7 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
                       </div>
                     </td>
                     <td className="px-2 py-1.5">
-                      {transportMeta(a.transport) ? <Chip color={transportMeta(a.transport)!.color}>{transportMeta(a.transport)!.label}</Chip> : <span className="text-tx3">-</span>}
+                      {transportMeta(a.transport, target) ? <Chip color={transportMeta(a.transport, target)!.color}>{transportMeta(a.transport, target)!.label}</Chip> : <span className="text-tx3">-</span>}
                     </td>
                     <td className="max-w-64 px-2 py-1.5"><Mono className="break-all text-tx2" >{clip(compactArgs(a.args), 110)}</Mono></td>
                     <td className="max-w-72 px-2 py-1.5 text-xs text-tx2">{clip(a.justification, 130)}</td>
@@ -212,14 +213,14 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
                         <span className="text-tx3">-</span>
                       )}
                     </td>
-                    <td className="px-2 py-1.5"><OkChip ok={a.rehearsal?.ok} label="twin" /></td>
+                    <td className="px-2 py-1.5"><OkChip ok={a.rehearsal?.ok} label="pre-flight" /></td>
                     <td className="px-2 py-1.5">
                       {a.result?.outcome === "unknown" ? (
                         <Chip color="var(--warn)" title="Transport failure: the call may or may not have reached the server. The event stopped and was escalated.">unknown</Chip>
                       ) : a.skipped ? (
                         <Chip color="var(--warn)" title="Not run: an earlier write of this incident failed (no retry, the rest is skipped)">skipped</Chip>
                       ) : (
-                        <OkChip ok={a.result?.ok} label={target} />
+                        <OkChip ok={a.result?.ok} label={TARGET_META[target].short} />
                       )}
                     </td>
                   </tr>

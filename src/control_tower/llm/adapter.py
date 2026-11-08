@@ -14,6 +14,9 @@ from __future__ import annotations
 
 import json
 import os
+import random
+import re
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Protocol
@@ -184,6 +187,52 @@ def register_backend(provider: str, backend: Backend) -> None:
     _BACKENDS[provider] = backend
 
 
+_TRANSIENT_CODES = {429, 500, 502, 503, 504}
+_TRANSIENT_WORDS = ("RESOURCE_EXHAUSTED", "UNAVAILABLE", "DEADLINE_EXCEEDED", "overloaded")
+
+
+def _status_code(e: BaseException) -> int | None:
+    for attr in ("code", "status_code"):
+        v = getattr(e, attr, None)
+        if isinstance(v, int):
+            return v
+    r = getattr(e, "response", None)
+    v = getattr(r, "status_code", None)
+    return v if isinstance(v, int) else None
+
+
+def is_transient(e: BaseException) -> bool:
+    """429/5xx, timeouts, connection errors and the usual quota/overload wording are worth retrying; 4xx config errors are not."""
+    code = _status_code(e)
+    if code is not None:
+        return code in _TRANSIENT_CODES
+    if isinstance(e, TimeoutError | ConnectionError):
+        return True
+    name = type(e).__name__
+    if "Timeout" in name or "Connect" in name:
+        return True
+    msg = str(e)
+    return any(w.lower() in msg.lower() for w in _TRANSIENT_WORDS)
+
+
+def _server_delay(e: BaseException) -> float | None:
+    """Seconds the provider asked us to wait (Gemini: RetryInfo `retryDelay: "14s"`), if the error carries one."""
+    m = re.search(r"retry(?:Delay|_delay)\W{0,6}(?:seconds\W{0,4})?(\d+(?:\.\d+)?)", str(e), re.I)
+    if m:
+        return float(m.group(1))
+    m = re.search(r"retry in (\d+(?:\.\d+)?)s", str(e), re.I)
+    return float(m.group(1)) if m else None
+
+
+def _backoff(e: BaseException, n: int) -> float:
+    """Sleep before provider attempt n+1: base * 2^(n-1) (+ jitter), or the server's own delay, capped at 60 s."""
+    base = float(os.environ.get("CT_LLM_BACKOFF_S", "2"))
+    delay = _server_delay(e)
+    if delay is None:
+        delay = base * 2 ** (n - 1)
+    return min(60.0, delay) + random.uniform(0, min(1.0, base))
+
+
 def _cost(model: str, inp: int, out: int) -> float:
     price = PRICES.get(model)
     if not price:
@@ -208,18 +257,26 @@ def complete_json[T: BaseModel](
     backend = _backend(provider)
     attempt_user, last_error = user, None
     total_in = total_out = 0
+    max_calls = max(1, int(os.environ.get("CT_LLM_RETRIES", "5")))
+    calls = 0  # provider calls actually made (transient retries and the schema retry both count)
     for _attempt in range(2):
-        try:
-            raw = backend.generate_json(model, system, attempt_user, json_schema)
-        except LLMError:
-            raise
-        except Exception as e:  # SDK / network errors (httpx timeouts, google API errors, ...)
-            raise LLMError(
-                f"{provider}/{model} call failed: {type(e).__name__}: {e}"[:500],
-                kind="provider",
-                attempts=_attempt + 1,
-                cost_usd=_cost(model, total_in, total_out),
-            ) from e
+        while True:
+            calls += 1
+            try:
+                raw = backend.generate_json(model, system, attempt_user, json_schema)
+                break
+            except LLMError:
+                raise
+            except Exception as e:  # SDK / network errors (httpx timeouts, google API errors, ...)
+                if is_transient(e) and calls < max_calls:
+                    time.sleep(_backoff(e, calls))
+                    continue
+                raise LLMError(
+                    f"{provider}/{model} call failed: {type(e).__name__}: {e}"[:500],
+                    kind="provider",
+                    attempts=calls,
+                    cost_usd=_cost(model, total_in, total_out),
+                ) from e
         total_in += raw.input_tokens
         total_out += raw.output_tokens
         try:
@@ -239,12 +296,12 @@ def complete_json[T: BaseModel](
             output_tokens=total_out,
             cost_usd=_cost(model, total_in, total_out),
             cached=False,
-            attempts=_attempt + 1,
+            attempts=calls,
         )
         LEDGER.calls.append(call)
         return parsed, call
     raise LLMValidationError(
         f"{provider}/{model} returned invalid {schema.__name__} twice: {last_error}",
-        attempts=2,
+        attempts=calls,
         cost_usd=_cost(model, total_in, total_out),
     )

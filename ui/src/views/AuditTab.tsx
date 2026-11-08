@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { CheckCircle2, ChevronDown, ChevronRight, MinusCircle, XCircle } from "lucide-react";
-import { useExecTarget } from "../api/hooks";
 import { WRITE_TOOLS, type Trace } from "../api/types";
 import { Chip, Mono, Panel, Stat } from "../components/ui/primitives";
 import { usd } from "../lib/format";
+import { TARGET_META, targetOf, type Target } from "../lib/target";
 import { STEP_META } from "../lib/meta";
 
 type Verdict = "pass" | "fail" | "na";
@@ -13,7 +13,7 @@ interface Check {
   verdict: Verdict;
 }
 
-function checks(t: Trace, target: "twin" | "server"): Check[] {
+function checks(t: Trace, target: Target): Check[] {
   const writes = t.actions.filter((a) => WRITE_TOOLS.has(a.tool));
   const unrehearsed = writes.filter((a) => a.rehearsal?.ok !== true);
   const accepted = t.actions.filter((a) => a.result?.ok === true); // a missing result is not an acceptance
@@ -23,12 +23,12 @@ function checks(t: Trace, target: "twin" | "server"): Check[] {
   const unknown = t.actions.filter((a) => a.result?.outcome === "unknown" && !a.skipped);
   const failed = t.actions.filter((a) => a.result && !a.result.ok && !a.skipped && a.result.outcome !== "unknown");
   const noResult = t.actions.length - accepted.length - failed.length - skipped.length - unknown.length;
-  const who = target === "twin" ? "Twin" : "Server";
+  const who = TARGET_META[target].label; // "Scored server" | "Sandbox server" | "Dry run"
   const distinctWrites = new Set(writes.map((a) => a.tool)).size;
   const out: Check[] = [
     {
-      rule: "Twin rehearsal before any write",
-      detail: writes.length ? `${writes.length - unrehearsed.length}/${writes.length} write calls were rehearsed ok on the in-process twin` : "no write calls",
+      rule: "Pre-flight check before any write",
+      detail: writes.length ? `${writes.length - unrehearsed.length}/${writes.length} write calls were rehearsed ok on a sandbox copy of the enterprise` : "no write calls",
       verdict: writes.length === 0 ? "na" : unrehearsed.length === 0 ? "pass" : "fail",
     },
     {
@@ -43,7 +43,7 @@ function checks(t: Trace, target: "twin" | "server"): Check[] {
   if (Object.keys(byTransport).length > 0) {
     out.push({
       rule: "Execution transport",
-      detail: Object.entries(byTransport).map(([k, n]) => `${n} via ${k}`).join(", ") + ` (${t.orchestration?.mcp_transport ?? "mcp/stdio"} is the real MCP client; twin = in-process sandbox)`,
+      detail: Object.entries(byTransport).map(([k, n]) => `${n} via ${k}`).join(", ") + ` (mcp/stdio is the MCP client; target: ${TARGET_META[target].label.toLowerCase()}, ${TARGET_META[target].where})`,
       verdict: "na",
     });
   }
@@ -111,7 +111,7 @@ function DealerRow({ id, orders }: { id: string; orders: string[] }) {
 
 export function AuditTab({ trace }: { trace: Trace }) {
   const d = trace.world_diff;
-  const target = useExecTarget(trace.event_id);
+  const target = targetOf(trace);
   const cs = checks(trace, target);
   const gateSteps = trace.agents.flatMap((a) => a.steps.filter((s) => ["rehearse", "audit", "gate", "execute"].includes(s.kind)).map((s) => ({ agent: a.agent, s })));
   const calls = trace.llm.calls;

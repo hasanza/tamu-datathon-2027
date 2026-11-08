@@ -56,11 +56,13 @@ class Coordinator:
         use_audit: bool = True,
         use_explain: bool = True,
         mode: str = "sequential",
+        target: str = "scored",
     ) -> None:
         self.world, self.g, self.index, self.twin, self.executor = world, graph, index, twin, executor
         self.traces_dir, self.sink, self.policy = traces_dir, sink or Sink(None), policy
         self.opts = {"use_tiebreak": use_tiebreak, "use_audit": use_audit, "use_explain": use_explain}
         self.mode = mode
+        self.target = target
 
     # ------------------------------------------------------------------ public
     def handle(self, event: dict[str, Any]) -> Trace:
@@ -87,9 +89,21 @@ class Coordinator:
         error: str | None = res.error
         if error is None and not st.finished:
             error = "the coordinator ended without calling finish"
-        if error:
+        provider_down = (
+            bool(error) and res.error_kind == "provider" and not st.finished and not any(a.writes for a in st.log)
+        )
+        if provider_down:
+            # an outage is not a decision: no escalate call, no writes; the event is marked failed and must be re-run
+            head = (error or "")[:160]
+            ctx.state["provider_failure"] = (
+                f"LLM provider unavailable ({head}) after {res.error_attempts} attempts; nothing executed; re-run this event"
+            )
+            st.failed = True
+            ctx.timeline.step("coordinator", "decision", ctx.state["provider_failure"])
+        elif error:
             self._settle_unfinished(ctx, error)
-        flush_escalations(ctx)
+        if not provider_down:
+            flush_escalations(ctx)
         return self._assemble(ctx, tl, error)
 
     # ------------------------------------------------------------------ helpers
@@ -127,7 +141,10 @@ class Coordinator:
             a.seq = n
         specs = list(ctx.incidents.values())
         status = status_of(ctx)
-        if st.finished and st.summary:
+        pf = ctx.state.get("provider_failure")
+        if pf:
+            summary, reason = pf, pf
+        elif st.finished and st.summary:
             summary, reason = st.summary, st.reason or ""
         else:
             summary, reason = draft(ctx, error)
@@ -143,6 +160,8 @@ class Coordinator:
                 correction_rounds=st.correction_rounds,
                 escalations=[Escalation(**e) for e in st.escalations],
                 mcp_transport=getattr(self.executor, "transport", None),
+                target=self.target,  # type: ignore[arg-type]
+                provider_failure=bool(pf),
             ),
             actions=st.log, world_diff=diff, counterfactual=cf,
             llm=LLMUsage(calls=tl.llm_calls, total_cost_usd=round(sum(c.cost_usd for c in tl.llm_calls), 6)),

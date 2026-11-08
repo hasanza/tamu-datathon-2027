@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { CheckCheck, Radio, RotateCcw, Trash2, TriangleAlert } from "lucide-react";
 import type { ActivityItem } from "../api/stream";
 import { useRunStatus, useTraces } from "../api/hooks";
-import { isCustomId, type FeedEvent } from "../api/types";
+import type { FeedEvent } from "../api/types";
 import { confirmClause, newestFirst } from "../lib/escalation";
+import { TARGET_META, targetOf } from "../lib/target";
 import { FollowUpControl, FollowUpList } from "./FollowUp";
 import { safeStorage } from "../lib/format";
 import { Chip, Empty, Mono, Panel } from "./ui/primitives";
@@ -56,7 +57,7 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
                     {t.event_id}
                   </button>
                   <span className="flex items-center gap-1.5">
-                    {isCustomId(t.event_id) && <Chip color="var(--cat-compound)">Sandbox</Chip>}
+                    <Chip color={TARGET_META[targetOf(t)].color}>{TARGET_META[targetOf(t)].label}</Chip>
                     <Chip color={t.status === "failed" ? "var(--fail)" : "var(--cat-unconfirmed)"}>{t.status}</Chip>
                   </span>
                 </div>

@@ -1,6 +1,6 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { api, ApiError } from "./client";
-import { isCustomId, type RunMode, type Trace } from "./types";
+import type { Trace } from "./types";
 
 const noRetry404 = (count: number, err: unknown) => !(err instanceof ApiError && err.status === 404) && count < 2;
 
@@ -46,13 +46,6 @@ export const useRunStatus = () =>
     refetchInterval: (q) => (q.state.data?.running ? 1500 : 15000),
   });
 
-/** Where the numbers on screen came from: the committed snapshot was produced against the real server,
- *  a run started from this UI in dry mode ran against the in-process twin. */
-export function useExecTarget(eventId?: string): "twin" | "server" {
-  const mode: RunMode | null | undefined = useRunStatus().data?.mode;
-  if (eventId && isCustomId(eventId)) return "twin"; // sandbox events never touch the real server
-  return mode === "dry" ? "twin" : "server";
-}
 
 /** Traces for a set of event ids (used by the escalation inbox). Missing (404) traces are simply absent. */
 export function useTraces(ids: string[]): { traces: Trace[]; loading: boolean; failed: boolean } {

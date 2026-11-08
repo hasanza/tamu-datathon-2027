@@ -1,6 +1,6 @@
 """The Coordinator's tools (docs/PLAN_V2.md §2.2, §3.1, §4.1, §5). The coordinator agent reasons about WHAT to do; these
 tools enforce the guardrails in code: the noise guard, the delegation cadence, the correction-round cap, the completion
-check, "no write before the twin rehearsal, the audit and the live-freshness check passed", and failed-call handling.
+check, "no write before the pre-flight check, the audit and the live-freshness check passed", and failed-call handling.
 
 State lives in `ctx.state["coord"]` (a `CoordState`); options (explain / audit / tie-break switches) in
 `ctx.state["opts"]`.
@@ -1074,7 +1074,7 @@ def _desc(a: Action) -> str:
     "execute",
     {CO},
     "control",
-    "Prove and act. Validators again, then the digital-twin rehearsal of the whole plan, the independent audit, a "
+    "Prove and act. Validators again, then the pre-flight check of the whole plan on a sandbox copy of the enterprise, the independent audit, a "
     "live-freshness check, and only then the writes through the MCP client in phase order (moves, notices, loaners, "
     "holds, stop-sales, owner contacts). Refused while blocking findings exist or a needed task is missing. A failed "
     "write is not retried: its dependents are skipped and the event is escalated with done/failed/skipped.",
@@ -1117,11 +1117,11 @@ def execute(ctx: EventContext, args: NoArgs) -> dict[str, Any]:
     broken = [(a, r) for a, r in zip(rehearse, results, strict=True) if not r.ok]
     tl(ctx).step(
         CO, "rehearse",
-        f"Rehearsed {len(rehearse)} actions on the twin: {len(rehearse) - len(broken)} ok, {len(broken)} failed",
+        f"Pre-flight check on a sandbox copy of the enterprise: {len(rehearse)} actions rehearsed, {len(rehearse) - len(broken)} accepted, {len(broken)} rejected",
     )  # fmt: skip
     if broken:
         why = "; ".join(f"{_desc(a)}: {r.error}" for a, r in broken[:3])
-        _escalate_open(ctx, f"Plan rejected by the twin rehearsal, nothing executed: {why}")
+        _escalate_open(ctx, f"Plan rejected by the pre-flight check, nothing executed: {why}")
         flush_escalations(ctx)
         return {"status": "escalated", "writes_sent": 0, "why": f"rehearsal failed: {why}"}
     # 2. independent audit ---------------------------------------------------------------------------------------
@@ -1259,7 +1259,7 @@ def draft(ctx: EventContext, error: str | None = None) -> tuple[str, str]:
     else:
         reason = (
             "Acted on every confirmed incident: ids and dates resolved against the data, the handbook validators passed, "
-            "the digital-twin rehearsal passed, "
+            "the pre-flight check on a sandbox copy of the enterprise passed, "
             + (f"the auditor agreed ({st.audit_note}), " if st.audit_note else "")
             + "and the live schedule baseline matched before the first write."
             + (" The unclear part was escalated without operational change (rule 8)." if st.escalated else "")

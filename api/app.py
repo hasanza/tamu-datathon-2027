@@ -36,6 +36,8 @@ EVENT_ID = re.compile(r"^[EC]-\d{2}$")
 # Tools that are not writes (hack_the_highway/enterprise.py TOOLS[...]["writes"] is False). Hard-coded because
 # GET /tools omits the flag (docs/server-notes.md).
 NON_WRITE_TOOLS = {"mes.get_schedule", "crm.loaner_availability", "escalate"}
+# A real LLM run of a big event is about two minutes plus the sandbox server start.
+CUSTOM_TIMEOUT_S = 300
 SSE_TYPES = {"event_received", "agent_step", "action", "event_done"}
 
 
@@ -174,6 +176,21 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         except ValidationError as e:
             raise HTTPException(500, f"{p.name} does not match the Trace contract: {e.error_count()} errors") from e
 
+    def custom_files() -> list[Path]:
+        """Finished custom traces only (C-nn.json). A run in flight keeps its input as C-nn.input.json in the same directory,
+        which a plain C-*.json glob also matches: it crashed /api/events (not a Trace) and the next-id arithmetic."""
+        if not cfg.custom_dir.exists():
+            return []
+        return sorted(p for p in cfg.custom_dir.glob("C-*.json") if EVENT_ID.match(p.stem))
+
+    def custom_numbers() -> list[int]:
+        """Numbers already taken by custom events: finished traces (C-nn.json) AND runs in flight (C-nn.input.json).
+        A second submission while a run is going must not reuse that run's number (two pipelines would overwrite each other)."""
+        if not cfg.custom_dir.exists():
+            return []
+        found = (re.fullmatch(r"C-(\d{2})(?:\.input)?\.json", p.name) for p in cfg.custom_dir.glob("C-*.json"))
+        return [int(m.group(1)) for m in found if m]
+
     def all_traces() -> dict[str, Trace]:
         out = {}
         for p in sorted(cfg.traces_dir.glob("E-*.json")):
@@ -200,7 +217,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     "confidence": t.classification.confidence if t else None,
                 }
             )
-        for p in sorted(cfg.custom_dir.glob("C-*.json")) if cfg.custom_dir.exists() else []:
+        for p in custom_files():
             t = load_trace(p.stem)
             if t:
                 out.append(
@@ -272,8 +289,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.post("/api/custom")
     def custom(body: CustomEvent) -> dict[str, Any]:
-        """Run the full pipeline on a judge's own event text in a SANDBOX (in-process twin; never the real server or
-        the real action log). Blocks until the trace exists (a few seconds), then returns it as C-nn."""
+        """Run the full pipeline on a judge's own event text against a PRIVATE sandbox copy of the enterprise server (same four
+        agents and MCP client as the feed; the scored action log is never touched). Blocks until the trace exists (a real
+        LLM run is about two minutes), then returns it as C-nn with the `target` the trace records."""
         source = body.source
         if body.parent_id:  # follow-up: the operator adds details to an escalated (or any) event; re-run in the sandbox
             if not body.details:
@@ -288,7 +306,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         else:
             raise HTTPException(422, "give text, or parent_id with details")
         cfg.custom_dir.mkdir(parents=True, exist_ok=True)
-        n = 1 + max([int(p.stem[2:]) for p in cfg.custom_dir.glob("C-*.json")] or [0])
+        n = 1 + max(custom_numbers() or [0])
         if n > 99:
             raise HTTPException(409, "custom event limit reached (C-99)")
         eid = f"C-{n:02d}"
@@ -299,7 +317,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         tmp.write_text(json.dumps([ev]), encoding="utf-8")
         cmd = [sys.executable, "-m", "control_tower.live", "--custom", str(tmp)]
         try:
-            r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, timeout=180)  # noqa: S603
+            r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, timeout=CUSTOM_TIMEOUT_S)  # noqa: S603
         except subprocess.TimeoutExpired as e:
             raise HTTPException(504, "the pipeline took too long on this event") from e
         finally:
@@ -312,6 +330,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "status": t.status,
             "category": t.classification.category,
             "parent_id": body.parent_id,
+            # contract 0.2.2 puts it on the trace; until then a custom event is a sandbox run by definition
+            "target": getattr(t.orchestration, "target", None) or "sandbox",
         }
 
     runner: dict[str, Any] = {"proc": None, "mode": None, "started": None}
@@ -335,11 +355,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def run(
         event_id: str | None = Query(default=None, pattern=EVENT_ID.pattern),
         all: bool = False,
-        mode: str = Query(default="dry", pattern="^(dry|server)$"),
+        mode: str = Query(default="server", pattern="^(dry|server)$"),
         pace: float = Query(default=1.0, ge=0, le=10),
         parallel: int = Query(default=1, ge=1, le=8),
     ) -> dict[str, Any]:
-        """Start the pipeline in a subprocess (control_tower.live). mode=server uses a fresh organizers' server."""
+        """Start the pipeline in a subprocess (control_tower.live). Feed events always go to the scored organizers' server
+        (mode=server, the default); mode=dry (in-process twin, no server) stays for developers."""
         if not event_id and not all:
             raise HTTPException(422, "give event_id=E-nn or all=true")
         if runner_state()["running"]:

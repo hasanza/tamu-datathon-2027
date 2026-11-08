@@ -50,6 +50,8 @@ class AgentResult:
     turns: int
     llm_calls: int
     cost_usd: float
+    error_kind: str | None = None  # "provider" | "schema" when the loop died on an LLMError
+    error_attempts: int = 0
 
 
 PROTOCOL = """\
@@ -111,9 +113,9 @@ def run_agent(
     if spec.agent_id != "coordinator":
         timeline.set_task(spec.agent_id, task_name or task)
 
-    def fail(msg: str, n: int) -> AgentResult:
+    def fail(msg: str, n: int, kind: str | None = None, attempts: int = 0) -> AgentResult:
         timeline.step(spec.agent_id, "decision", f"{spec.display_name} stopped: {msg}", data={"error": msg}, turn=n)
-        return AgentResult(None, msg, n, llm_calls, round(cost, 6))
+        return AgentResult(None, msg, n, llm_calls, round(cost, 6), kind, attempts)
 
     for n in range(1, cfg.max_turns + 1):
         try:
@@ -129,7 +131,7 @@ def run_agent(
             # complete_json already made its single schema retry; a failure here is terminal for this agent run.
             llm_calls += e.attempts
             cost += e.cost_usd
-            return fail(f"LLM {e.kind} error after {e.attempts} attempt(s): {e}"[:400], n)
+            return fail(f"LLM {e.kind} error after {e.attempts} attempt(s): {e}"[:400], n, e.kind, e.attempts)
         llm_calls += call.attempts
         cost += call.cost_usd
         timeline.llm(call)
