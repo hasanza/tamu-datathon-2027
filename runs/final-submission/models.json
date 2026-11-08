@@ -1,0 +1,13 @@
+{
+  "models": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "calls": 235,
+      "input_tokens": 753241,
+      "output_tokens": 94703,
+      "cost_usd": 0.920061
+    }
+  ],
+  "total_cost_usd": 0.920061
+}

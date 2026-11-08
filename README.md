@@ -24,6 +24,7 @@ The one-page design card is `docs/design_card.pdf` (source `docs/design_card.md`
 | `eval/` | Replay grader, oracle, identity runs, paraphrase and auditor benches |
 | `traces/<run>/` | One JSON trace per event (summary, reasons, graph path, every agent step and tool call, audit) |
 | `runs/<run>/` | `action_log.jsonl` and `models.json` (model calls, tokens, cost) of a run |
+| `runs/final-submission/`, `traces/final-submission/` | The submitted run: action log, model usage, and the 15 traces (15 of 15 on the replay grader) |
 | `docs/` | Design card, ontology, contracts, plans, Q&A notes |
 
 ## Run it

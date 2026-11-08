@@ -1,0 +1,336 @@
+{
+  "pipeline_version": "0.2.4",
+  "event_id": "E-07",
+  "received_at": "2027-03-08T08:59:00",
+  "source": "news wire",
+  "text": "Dealer Pensacola, FL asks where to find the new brochure PDF.",
+  "status": "noise",
+  "classification": {
+    "category": "noise",
+    "confidence": 1.0,
+    "reason": "Brochure request is marketing/sales collateral inquiry and not an operational disruption."
+  },
+  "incidents": [
+    {
+      "incident_id": "E-07#1",
+      "event_id": "E-07",
+      "category": "noise",
+      "confidence": 1.0,
+      "plant_id": null,
+      "part_id": null,
+      "supplier_id": null,
+      "shipment_id": null,
+      "lot_id": null,
+      "orig_eta": null,
+      "new_eta": null,
+      "outage_start": null,
+      "outage_end": null,
+      "build_window_start": null,
+      "build_window_end": null,
+      "raw_mentions": {},
+      "resolution_steps": [],
+      "ambiguities": [],
+      "reason": "Brochure request is marketing/sales collateral inquiry and not an operational disruption."
+    }
+  ],
+  "paths": {
+    "E-07#1": [
+      {
+        "nodes": [
+          {
+            "id": "E-07",
+            "type": "Event",
+            "label": "Event E-07",
+            "group": null,
+            "count": null
+          }
+        ],
+        "edges": []
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent": "coordinator",
+      "started": "2027-03-08T08:59:04.993000",
+      "ended": "2027-03-08T08:59:16.699000",
+      "model": "gemini-3.8-flash",
+      "llm_calls": 4,
+      "cost_usd": 0.015017,
+      "steps": [
+        {
+          "t": "2027-03-08T08:59:04.993000",
+          "kind": "thought",
+          "text": "The incoming message is a dealer asking for a brochure PDF, which has nothing to do with JIT operations, production, or quality. It should be categorized as noise.",
+          "data": null,
+          "turn": 1,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.003878,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T08:59:04.994000",
+          "kind": "tool",
+          "text": "register_incidents · 1 incident (noise)",
+          "data": null,
+          "turn": 1,
+          "tool": "register_incidents",
+          "args": {
+            "incidents": [
+              {
+                "category": "noise",
+                "evidence": "Dealer Pensacola, FL asks where to find the new brochure PDF.",
+                "plant": null,
+                "part": null,
+                "supplier": null,
+                "shipment_id": null,
+                "lot_id": null,
+                "original_eta": null,
+                "new_eta": null,
+                "outage_start": null,
+                "outage_end": null,
+                "build_window_start": null,
+                "build_window_end": null,
+                "reason": "Brochure request is marketing/sales collateral inquiry and not an operational disruption.",
+                "confidence": 1.0
+              }
+            ]
+          },
+          "result": {
+            "count": 1,
+            "incidents": [
+              {
+                "category": "noise",
+                "confidence": 1.0,
+                "incident_id": "E-07#1",
+                "needs_human": false,
+                "actionable": false,
+                "ambiguities": []
+              }
+            ],
+            "next": "Gate each incident: drop_noise (noise only), escalate (unconfirmed / needs_human / unresolved), or delegate the actionable ones."
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T08:59:07.825000",
+          "kind": "thought",
+          "text": "Incident E-07#1 is classified as noise with needs_human=false and no shipment, lot, or plant dates mentioned. Dropping it as noise per handbook rules.",
+          "data": null,
+          "turn": 2,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.004279,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T08:59:07.826000",
+          "kind": "decision",
+          "text": "E-07#1: noise, no action. The message is a dealer inquiry about brochure marketing collateral and has no impact on manufacturing or supply chain operations.",
+          "data": null,
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T08:59:07.826000",
+          "kind": "tool",
+          "text": "drop_noise · incident_id E-07#1 · reason The message is a dealer…",
+          "data": null,
+          "turn": 2,
+          "tool": "drop_noise",
+          "args": {
+            "incident_id": "E-07#1",
+            "reason": "The message is a dealer inquiry about brochure marketing collateral and has no impact on manufacturing or supply chain operations."
+          },
+          "result": {
+            "dropped": "E-07#1",
+            "writes": 0
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T08:59:10.191000",
+          "kind": "thought",
+          "text": "Incident E-07#1 was identified as noise and successfully dropped. With no actionable operational incidents remaining, we proceed directly to finish.",
+          "data": null,
+          "turn": 3,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.004188,
+          "task": "finish"
+        },
+        {
+          "t": "2027-03-08T08:59:16.698000",
+          "kind": "decision",
+          "text": "Event settled (noise): A dealer in Pensacola, FL submitted an inquiry asking where to find the new brochure PDF. The message pertains strictly to brochure marketing collateral and has no impact on manufacturing or supply chain operations. Consequently, the non-operational inquiry was dropped as noise.",
+          "data": null,
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "finish"
+        },
+        {
+          "t": "2027-03-08T08:59:16.699000",
+          "kind": "tool",
+          "text": "finish · summary_hint Inquiry regarding broch…",
+          "data": null,
+          "turn": 3,
+          "tool": "finish",
+          "args": {
+            "summary_hint": "Inquiry regarding brochure PDF from Pensacola dealer dropped as non-operational noise."
+          },
+          "result": {
+            "finished": true,
+            "status": "noise",
+            "summary": "A dealer in Pensacola, FL submitted an inquiry asking where to find the new brochure PDF. The message pertains strictly to brochure marketing collateral and has no impact on manufacturing or supply chain operations. Consequently, the non-operational inquiry was dropped as noise."
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "finish"
+        },
+        {
+          "t": "2027-03-08T08:59:16.699000",
+          "kind": "decision",
+          "text": "Coordinator finished",
+          "data": {
+            "outcome": "noise"
+          },
+          "turn": 3,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "finish"
+        }
+      ]
+    }
+  ],
+  "orchestration": {
+    "mode": "parallel",
+    "correction_rounds": 0,
+    "escalations": [],
+    "mcp_transport": "mcp/stdio",
+    "target": "scored",
+    "provider_failure": false
+  },
+  "actions": [],
+  "world_diff": {
+    "moved_pos": [],
+    "notified_dealers": [],
+    "loaners": [],
+    "held_lots": [],
+    "stopped_vins": [],
+    "contacted_customers": []
+  },
+  "counterfactual": null,
+  "llm": {
+    "calls": [
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4401,
+        "output_tokens": 154,
+        "cost_usd": 0.003878,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4611,
+        "output_tokens": 219,
+        "cost_usd": 0.004279,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4669,
+        "output_tokens": 183,
+        "cost_usd": 0.004188,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "summarize",
+        "input_tokens": 302,
+        "output_tokens": 652,
+        "cost_usd": 0.002672,
+        "cached": false,
+        "attempts": 1
+      }
+    ],
+    "total_cost_usd": 0.015017
+  },
+  "summary": "A dealer in Pensacola, FL submitted an inquiry asking where to find the new brochure PDF. The message pertains strictly to brochure marketing collateral and has no impact on manufacturing or supply chain operations. Consequently, the non-operational inquiry was dropped as noise.",
+  "decision_reason": "No action was taken because the message names no shipment, plant, part, lot, or date, and describes no disruption to production, dealers, loaners, or owners. Under handbook rule 7, noise receives no write tools.",
+  "brief": {
+    "headline": "Noise: the message is a dealer inquiry about brochure marketing, no action",
+    "outcome": "noise",
+    "incidents": [
+      {
+        "incident_id": "E-07#1",
+        "category": "noise",
+        "title": "Noise",
+        "window": null,
+        "facts": [],
+        "note": "The message is a dealer inquiry about brochure marketing collateral and has no impact on manufacturing or supply chain operations."
+      }
+    ],
+    "gates": [],
+    "entities": []
+  }
+}

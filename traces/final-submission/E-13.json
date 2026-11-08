@@ -1,0 +1,437 @@
+{
+  "pipeline_version": "0.2.4",
+  "event_id": "E-13",
+  "received_at": "2027-03-08T10:41:00",
+  "source": "ops chat",
+  "text": "Someone on the floor mentioned a possible shortage of something electronic sometime soon. Not confirmed by anyone.",
+  "status": "escalated",
+  "classification": {
+    "category": "unconfirmed",
+    "confidence": 0.95,
+    "reason": "Vague hearsay report of a possible shortage lacking specific part details, plant, or dates, explicitly noted as unconfirmed."
+  },
+  "incidents": [
+    {
+      "incident_id": "E-13#1",
+      "event_id": "E-13",
+      "category": "unconfirmed",
+      "confidence": 0.95,
+      "plant_id": null,
+      "part_id": null,
+      "supplier_id": null,
+      "shipment_id": null,
+      "lot_id": null,
+      "orig_eta": null,
+      "new_eta": null,
+      "outage_start": null,
+      "outage_end": null,
+      "build_window_start": null,
+      "build_window_end": null,
+      "raw_mentions": {
+        "part": "something electronic"
+      },
+      "resolution_steps": [
+        {
+          "mention": "something electronic",
+          "entity_type": "part",
+          "candidates": [],
+          "chosen": null,
+          "method": "unresolved",
+          "note": null
+        }
+      ],
+      "ambiguities": [
+        {
+          "field": "part_id",
+          "issue": "cannot resolve \"something electronic\"",
+          "options": [],
+          "blocking": true
+        },
+        {
+          "field": "part_id",
+          "issue": "named only vaguely; not a specific record",
+          "options": [],
+          "blocking": true
+        },
+        {
+          "field": "specificity",
+          "issue": "no confirmed shipment, lot, plant or dates",
+          "options": [],
+          "blocking": true
+        }
+      ],
+      "reason": "Vague hearsay report of a possible shortage lacking specific part details, plant, or dates, explicitly noted as unconfirmed."
+    }
+  ],
+  "paths": {
+    "E-13#1": [
+      {
+        "nodes": [
+          {
+            "id": "E-13",
+            "type": "Event",
+            "label": "Event E-13",
+            "group": null,
+            "count": null
+          }
+        ],
+        "edges": []
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent": "coordinator",
+      "started": "2027-03-08T10:41:04.104000",
+      "ended": "2027-03-08T10:41:18.978000",
+      "model": "gemini-3.8-flash",
+      "llm_calls": 4,
+      "cost_usd": 0.016935,
+      "steps": [
+        {
+          "t": "2027-03-08T10:41:04.104000",
+          "kind": "thought",
+          "text": "I need to register the incoming message as an incident. The message describes an unconfirmed rumor about a possible shortage of something electronic without specific plant, part ID, shipment, or dates, and explicitly states it is not confirmed. Thus, the category is 'unconfirmed'.",
+          "data": null,
+          "turn": 1,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.00488,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T10:41:04.106000",
+          "kind": "tool",
+          "text": "register_incidents · 1 incident (unconfirmed)",
+          "data": null,
+          "turn": 1,
+          "tool": "register_incidents",
+          "args": {
+            "incidents": [
+              {
+                "category": "unconfirmed",
+                "evidence": "Someone on the floor mentioned a possible shortage of something electronic sometime soon. Not confirmed by anyone.",
+                "plant": null,
+                "part": "something electronic",
+                "supplier": null,
+                "shipment_id": null,
+                "lot_id": null,
+                "original_eta": null,
+                "new_eta": null,
+                "outage_start": null,
+                "outage_end": null,
+                "build_window_start": null,
+                "build_window_end": null,
+                "reason": "Vague hearsay report of a possible shortage lacking specific part details, plant, or dates, explicitly noted as unconfirmed.",
+                "confidence": 0.95
+              }
+            ]
+          },
+          "result": {
+            "count": 1,
+            "incidents": [
+              {
+                "category": "unconfirmed",
+                "confidence": 0.95,
+                "incident_id": "E-13#1",
+                "needs_human": true,
+                "actionable": false,
+                "ambiguities": [
+                  {
+                    "field": "part_id",
+                    "issue": "cannot resolve \"something electronic\"",
+                    "blocking": true
+                  },
+                  {
+                    "field": "part_id",
+                    "issue": "named only vaguely; not a specific record",
+                    "blocking": true
+                  },
+                  {
+                    "field": "specificity",
+                    "issue": "no confirmed shipment, lot, plant or dates",
+                    "blocking": true
+                  }
+                ]
+              }
+            ],
+            "next": "Gate each incident: drop_noise (noise only), escalate (unconfirmed / needs_human / unresolved), or delegate the actionable ones."
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T10:41:07.765000",
+          "kind": "thought",
+          "text": "Incident E-13#1 is an unconfirmed hearsay report of a shortage with needs_human=true and unresolved details. Per instructions, it must be escalated with a reason and what would make it actionable.",
+          "data": null,
+          "turn": 2,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.004605,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T10:41:07.766000",
+          "kind": "decision",
+          "text": "E-13#1: escalated. Vague hearsay report of a possible shortage of an unspecified electronic part with no plant, shipment, or date information.",
+          "data": {
+            "reason": "E-13#1 (unconfirmed, source: ops chat): \"Someone on the floor mentioned a possible shortage of something electronic sometime soon. Not confirmed by anyone.\". Not actionable: Vague hearsay report of a possible shortage of an unspecified electronic part with no plant, shipment, or date information. What would make it actionable: Confirmation of the specific part number, receiving plant, supplier/shipment ID, and expected dates or impact window. No operational action taken."
+          },
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T10:41:07.766000",
+          "kind": "tool",
+          "text": "escalate · incident_id E-13#1 · reason Vague hearsay report of… · what_would_make_it_actionable Confirmation of the spe…",
+          "data": null,
+          "turn": 2,
+          "tool": "escalate",
+          "args": {
+            "incident_id": "E-13#1",
+            "reason": "Vague hearsay report of a possible shortage of an unspecified electronic part with no plant, shipment, or date information.",
+            "what_would_make_it_actionable": "Confirmation of the specific part number, receiving plant, supplier/shipment ID, and expected dates or impact window."
+          },
+          "result": {
+            "escalated": "E-13#1",
+            "writes": 0,
+            "note": "queued; no write will be sent for this incident"
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T10:41:11.011000",
+          "kind": "thought",
+          "text": "The sole incident E-13#1 has been escalated as it is an unconfirmed, vague hearsay report. There are no confirmed actionable incidents remaining. Proceeding directly to finish.",
+          "data": null,
+          "turn": 3,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.004115,
+          "task": "finish"
+        },
+        {
+          "t": "2027-03-08T10:41:18.955000",
+          "kind": "decision",
+          "text": "Event settled (escalated): An unconfirmed message E-13#1 received from ops chat reported that someone on the floor mentioned a possible shortage of something electronic sometime soon. The report contained no specific plant, shipment, or date information and was not confirmed by anyone. The control tower escalated E-13#1 to a human for verification without making any operational changes.",
+          "data": null,
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "finish"
+        },
+        {
+          "t": "2027-03-08T10:41:18.956000",
+          "kind": "tool",
+          "text": "finish · summary_hint Unconfirmed hearsay of …",
+          "data": null,
+          "turn": 3,
+          "tool": "finish",
+          "args": {
+            "summary_hint": "Unconfirmed hearsay of an electronic parts shortage escalated for human verification."
+          },
+          "result": {
+            "finished": true,
+            "status": "escalated",
+            "summary": "An unconfirmed message E-13#1 received from ops chat reported that someone on the floor mentioned a possible shortage of something electronic sometime soon. The report contained no specific plant, shipment, or date information and was not confirmed by anyone. The control tower escalated E-13#1 to a human for verification without making any operational changes."
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "finish"
+        },
+        {
+          "t": "2027-03-08T10:41:18.956000",
+          "kind": "decision",
+          "text": "Coordinator finished",
+          "data": {
+            "outcome": "escalated"
+          },
+          "turn": 3,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "finish"
+        },
+        {
+          "t": "2027-03-08T10:41:18.978000",
+          "kind": "execute",
+          "text": "escalate: E-13#1 (unconfirmed, source: ops chat): \"Someone on the floor mentioned a possible shortage of something electronic sometime soon. Not confirmed by anyone.\". Not actionable: Vague hearsay report of a possible shortage of an unspecified electronic part with no plant, shipment, or date information. Wh",
+          "data": null,
+          "turn": null,
+          "tool": "escalate",
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "mcp/stdio",
+          "model": null,
+          "cost_usd": null,
+          "task": "finish"
+        }
+      ]
+    }
+  ],
+  "orchestration": {
+    "mode": "parallel",
+    "correction_rounds": 0,
+    "escalations": [
+      {
+        "incident_id": "E-13#1",
+        "reason": "E-13#1 (unconfirmed, source: ops chat): \"Someone on the floor mentioned a possible shortage of something electronic sometime soon. Not confirmed by anyone.\". Not actionable: Vague hearsay report of a possible shortage of an unspecified electronic part with no plant, shipment, or date information. What would make it actionable: Confirmation of the specific part number, receiving plant, supplier/shipment ID, and expected dates or impact window. No operational action taken."
+      }
+    ],
+    "mcp_transport": "mcp/stdio",
+    "target": "scored",
+    "provider_failure": false
+  },
+  "actions": [
+    {
+      "seq": 1,
+      "incident_id": "E-13#1",
+      "agent": "coordinator",
+      "tool": "escalate",
+      "args": {
+        "reason": "E-13#1 (unconfirmed, source: ops chat): \"Someone on the floor mentioned a possible shortage of something electronic sometime soon. Not confirmed by anyone.\". Not actionable: Vague hearsay report of a possible shortage of an unspecified electronic part with no plant, shipment, or date information. What would make it actionable: Confirmation of the specific part number, receiving plant, supplier/shipment ID, and expected dates or impact window. No operational action taken."
+      },
+      "justification": "Escalated to a human: not safe to act on (handbook rules 7/8: no operational action for it)",
+      "path_ids": [],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-13#1"
+      ]
+    }
+  ],
+  "world_diff": {
+    "moved_pos": [],
+    "notified_dealers": [],
+    "loaners": [],
+    "held_lots": [],
+    "stopped_vins": [],
+    "contacted_customers": []
+  },
+  "counterfactual": null,
+  "llm": {
+    "calls": [
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4407,
+        "output_tokens": 420,
+        "cost_usd": 0.00488,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4695,
+        "output_tokens": 289,
+        "cost_usd": 0.004605,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4802,
+        "output_tokens": 137,
+        "cost_usd": 0.004115,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "summarize",
+        "input_tokens": 422,
+        "output_tokens": 805,
+        "cost_usd": 0.003335,
+        "cached": false,
+        "attempts": 1
+      }
+    ],
+    "total_cost_usd": 0.016935
+  },
+  "summary": "An unconfirmed message E-13#1 received from ops chat reported that someone on the floor mentioned a possible shortage of something electronic sometime soon. The report contained no specific plant, shipment, or date information and was not confirmed by anyone. The control tower escalated E-13#1 to a human for verification without making any operational changes.",
+  "decision_reason": "Pursuant to rule 8, unconfirmed or unclear reports are escalated with no operational change because they are not safe to act on. The message represented vague hearsay lacking specific part numbers, receiving plants, and supplier or shipment confirmation.",
+  "brief": {
+    "headline": "Escalated: unconfirmed report, no action",
+    "outcome": "escalated",
+    "incidents": [
+      {
+        "incident_id": "E-13#1",
+        "category": "unconfirmed",
+        "title": "Unconfirmed · report",
+        "window": null,
+        "facts": [],
+        "note": "E-13#1 (unconfirmed, source: ops chat): \"Someone on the floor mentioned a possible shortage of something electronic sometime soon. Not confirmed by anyone.\". Not actionable: Vague hearsay report of a "
+      }
+    ],
+    "gates": [],
+    "entities": []
+  }
+}

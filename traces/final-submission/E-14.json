@@ -1,0 +1,6544 @@
+{
+  "pipeline_version": "0.2.4",
+  "event_id": "E-14",
+  "received_at": "2027-03-08T10:58:00",
+  "source": "ops chat",
+  "text": "Quality alert: Atlas says the heavy-duty wiring harness sent to the Texas plant had a moisture contamination. Anything built Monday Feb 22 through Wednesday Feb 24 is suspect.",
+  "status": "done",
+  "classification": {
+    "category": "quality_hold",
+    "confidence": 0.95,
+    "reason": "Moisture contamination on wiring harnesses affecting builds from Feb 22 to Feb 24 at the Texas plant."
+  },
+  "incidents": [
+    {
+      "incident_id": "E-14#1",
+      "event_id": "E-14",
+      "category": "quality_hold",
+      "confidence": 0.95,
+      "plant_id": "P_TX",
+      "part_id": "HARN-B",
+      "supplier_id": "SUP-07",
+      "shipment_id": null,
+      "lot_id": "LOT-0017",
+      "orig_eta": null,
+      "new_eta": null,
+      "outage_start": null,
+      "outage_end": null,
+      "build_window_start": "2027-02-22",
+      "build_window_end": "2027-02-24",
+      "raw_mentions": {
+        "plant": "the Texas plant",
+        "part": "heavy-duty wiring harness",
+        "supplier": "Atlas"
+      },
+      "resolution_steps": [
+        {
+          "mention": "the Texas plant",
+          "entity_type": "plant",
+          "candidates": [
+            "P_TX"
+          ],
+          "chosen": "P_TX",
+          "method": "alias",
+          "note": null
+        },
+        {
+          "mention": "heavy-duty wiring harness",
+          "entity_type": "part",
+          "candidates": [
+            "HARN-B"
+          ],
+          "chosen": "HARN-B",
+          "method": "alias",
+          "note": null
+        },
+        {
+          "mention": "Atlas",
+          "entity_type": "supplier",
+          "candidates": [
+            "SUP-07"
+          ],
+          "chosen": "SUP-07",
+          "method": "alias",
+          "note": null
+        },
+        {
+          "mention": "Monday Feb 22",
+          "entity_type": "date",
+          "candidates": [
+            "2027-02-22"
+          ],
+          "chosen": "2027-02-22",
+          "method": "exact",
+          "note": "explicit month/day with matching weekday"
+        },
+        {
+          "mention": "Wednesday Feb 24",
+          "entity_type": "date",
+          "candidates": [
+            "2027-02-24"
+          ],
+          "chosen": "2027-02-24",
+          "method": "exact",
+          "note": "explicit month/day with matching weekday"
+        },
+        {
+          "mention": "HARN-B at P_TX built 2027-02-22..2027-02-24",
+          "entity_type": "lot",
+          "candidates": [
+            "LOT-0017"
+          ],
+          "chosen": "LOT-0017",
+          "method": "data_snap",
+          "note": "exact lot window match"
+        }
+      ],
+      "ambiguities": [],
+      "reason": "Moisture contamination on wiring harnesses affecting builds from Feb 22 to Feb 24 at the Texas plant."
+    }
+  ],
+  "paths": {
+    "E-14#1": [
+      {
+        "nodes": [
+          {
+            "id": "LOT-0017",
+            "type": "Lot",
+            "label": "LOT-0017 · HARN-B @ P_TX · 02-22..02-24",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "HARN-B",
+            "type": "Part",
+            "label": "heavy-duty wiring harness",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "RANGER",
+            "type": "Model",
+            "label": "Ranger",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0001",
+            "type": "ProductionOrder",
+            "label": "PO-0001 · RANGER · P_TX · 02-22",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0001",
+            "type": "Vehicle",
+            "label": "25 vehicles",
+            "group": "vehicles",
+            "count": 25
+          },
+          {
+            "id": "grp:dealers_owners:PO-0001",
+            "type": "Dealer",
+            "label": "17 dealers / 9 owners",
+            "group": "dealers_owners",
+            "count": 25
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0017",
+            "to": "HARN-B",
+            "type": "OF_PART"
+          },
+          {
+            "from": "RANGER",
+            "to": "HARN-B",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0001",
+            "to": "RANGER",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0001",
+            "to": "PO-0001",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0001",
+            "to": "grp:dealers_owners:PO-0001",
+            "type": "AT_DEALER"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "LOT-0017",
+            "type": "Lot",
+            "label": "LOT-0017 · HARN-B @ P_TX · 02-22..02-24",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "HARN-B",
+            "type": "Part",
+            "label": "heavy-duty wiring harness",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "SUMMIT",
+            "type": "Model",
+            "label": "Summit",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0002",
+            "type": "ProductionOrder",
+            "label": "PO-0002 · SUMMIT · P_TX · 02-22",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0002",
+            "type": "Vehicle",
+            "label": "31 vehicles",
+            "group": "vehicles",
+            "count": 31
+          },
+          {
+            "id": "grp:dealers_owners:PO-0002",
+            "type": "Dealer",
+            "label": "23 dealers / 18 owners",
+            "group": "dealers_owners",
+            "count": 31
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0017",
+            "to": "HARN-B",
+            "type": "OF_PART"
+          },
+          {
+            "from": "SUMMIT",
+            "to": "HARN-B",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0002",
+            "to": "SUMMIT",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0002",
+            "to": "PO-0002",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0002",
+            "to": "grp:dealers_owners:PO-0002",
+            "type": "AT_DEALER"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "LOT-0017",
+            "type": "Lot",
+            "label": "LOT-0017 · HARN-B @ P_TX · 02-22..02-24",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "HARN-B",
+            "type": "Part",
+            "label": "heavy-duty wiring harness",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "RANGER",
+            "type": "Model",
+            "label": "Ranger",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0004",
+            "type": "ProductionOrder",
+            "label": "PO-0004 · RANGER · P_TX · 02-23",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0004",
+            "type": "Vehicle",
+            "label": "24 vehicles",
+            "group": "vehicles",
+            "count": 24
+          },
+          {
+            "id": "grp:dealers_owners:PO-0004",
+            "type": "Dealer",
+            "label": "17 dealers / 12 owners",
+            "group": "dealers_owners",
+            "count": 24
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0017",
+            "to": "HARN-B",
+            "type": "OF_PART"
+          },
+          {
+            "from": "RANGER",
+            "to": "HARN-B",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0004",
+            "to": "RANGER",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0004",
+            "to": "PO-0004",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0004",
+            "to": "grp:dealers_owners:PO-0004",
+            "type": "AT_DEALER"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "LOT-0017",
+            "type": "Lot",
+            "label": "LOT-0017 · HARN-B @ P_TX · 02-22..02-24",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "HARN-B",
+            "type": "Part",
+            "label": "heavy-duty wiring harness",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "SUMMIT",
+            "type": "Model",
+            "label": "Summit",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0005",
+            "type": "ProductionOrder",
+            "label": "PO-0005 · SUMMIT · P_TX · 02-23",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0005",
+            "type": "Vehicle",
+            "label": "34 vehicles",
+            "group": "vehicles",
+            "count": 34
+          },
+          {
+            "id": "grp:dealers_owners:PO-0005",
+            "type": "Dealer",
+            "label": "23 dealers / 20 owners",
+            "group": "dealers_owners",
+            "count": 34
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0017",
+            "to": "HARN-B",
+            "type": "OF_PART"
+          },
+          {
+            "from": "SUMMIT",
+            "to": "HARN-B",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0005",
+            "to": "SUMMIT",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0005",
+            "to": "PO-0005",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0005",
+            "to": "grp:dealers_owners:PO-0005",
+            "type": "AT_DEALER"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "LOT-0017",
+            "type": "Lot",
+            "label": "LOT-0017 · HARN-B @ P_TX · 02-22..02-24",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "HARN-B",
+            "type": "Part",
+            "label": "heavy-duty wiring harness",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "RANGER",
+            "type": "Model",
+            "label": "Ranger",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0007",
+            "type": "ProductionOrder",
+            "label": "PO-0007 · RANGER · P_TX · 02-24",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0007",
+            "type": "Vehicle",
+            "label": "36 vehicles",
+            "group": "vehicles",
+            "count": 36
+          },
+          {
+            "id": "grp:dealers_owners:PO-0007",
+            "type": "Dealer",
+            "label": "20 dealers / 18 owners",
+            "group": "dealers_owners",
+            "count": 36
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0017",
+            "to": "HARN-B",
+            "type": "OF_PART"
+          },
+          {
+            "from": "RANGER",
+            "to": "HARN-B",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0007",
+            "to": "RANGER",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0007",
+            "to": "PO-0007",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0007",
+            "to": "grp:dealers_owners:PO-0007",
+            "type": "AT_DEALER"
+          }
+        ]
+      },
+      {
+        "nodes": [
+          {
+            "id": "LOT-0017",
+            "type": "Lot",
+            "label": "LOT-0017 · HARN-B @ P_TX · 02-22..02-24",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "HARN-B",
+            "type": "Part",
+            "label": "heavy-duty wiring harness",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "SUMMIT",
+            "type": "Model",
+            "label": "Summit",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "PO-0008",
+            "type": "ProductionOrder",
+            "label": "PO-0008 · SUMMIT · P_TX · 02-24",
+            "group": null,
+            "count": null
+          },
+          {
+            "id": "grp:vehicles:PO-0008",
+            "type": "Vehicle",
+            "label": "30 vehicles",
+            "group": "vehicles",
+            "count": 30
+          },
+          {
+            "id": "grp:dealers_owners:PO-0008",
+            "type": "Dealer",
+            "label": "20 dealers / 17 owners",
+            "group": "dealers_owners",
+            "count": 30
+          }
+        ],
+        "edges": [
+          {
+            "from": "LOT-0017",
+            "to": "HARN-B",
+            "type": "OF_PART"
+          },
+          {
+            "from": "SUMMIT",
+            "to": "HARN-B",
+            "type": "USES_PART"
+          },
+          {
+            "from": "PO-0008",
+            "to": "SUMMIT",
+            "type": "OF_MODEL"
+          },
+          {
+            "from": "grp:vehicles:PO-0008",
+            "to": "PO-0008",
+            "type": "BUILT_BY"
+          },
+          {
+            "from": "grp:vehicles:PO-0008",
+            "to": "grp:dealers_owners:PO-0008",
+            "type": "AT_DEALER"
+          }
+        ]
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent": "coordinator",
+      "started": "2027-03-08T10:58:04.462000",
+      "ended": "2027-03-08T10:59:12.315000",
+      "model": "gemini-3.8-flash",
+      "llm_calls": 8,
+      "cost_usd": 0.037346,
+      "steps": [
+        {
+          "t": "2027-03-08T10:58:04.462000",
+          "kind": "thought",
+          "text": "Registering the quality alert from Atlas regarding heavy-duty wiring harness at the Texas plant for builds Monday Feb 22 through Wednesday Feb 24.",
+          "data": null,
+          "turn": 1,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.005085,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T10:58:04.463000",
+          "kind": "gate",
+          "text": "lot \"HARN-B at P_TX built 2027-02-22..2027-02-24\" -> LOT-0017 via data_snap: exact lot window match",
+          "data": null,
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T10:58:04.464000",
+          "kind": "tool",
+          "text": "register_incidents · 1 incident (quality_hold)",
+          "data": null,
+          "turn": 1,
+          "tool": "register_incidents",
+          "args": {
+            "incidents": [
+              {
+                "category": "quality_hold",
+                "evidence": "Quality alert: Atlas says the heavy-duty wiring harness sent to the Texas plant had a moisture contamination. Anything built Monday Feb 22 through Wednesday Feb 24 is suspect.",
+                "plant": "the Texas plant",
+                "part": "heavy-duty wiring harness",
+                "supplier": "Atlas",
+                "shipment_id": null,
+                "lot_id": null,
+                "original_eta": null,
+                "new_eta": null,
+                "outage_start": null,
+                "outage_end": null,
+                "build_window_start": {
+                  "text": "Monday Feb 22",
+                  "iso": null
+                },
+                "build_window_end": {
+                  "text": "Wednesday Feb 24",
+                  "iso": null
+                },
+                "reason": "Moisture contamination on wiring harnesses affecting builds from Feb 22 to Feb 24 at the Texas plant.",
+                "confidence": 0.95
+              }
+            ]
+          },
+          "result": {
+            "count": 1,
+            "incidents": [
+              {
+                "category": "quality_hold",
+                "plant_id": "P_TX",
+                "part_id": "HARN-B",
+                "supplier_id": "SUP-07",
+                "lot_id": "LOT-0017",
+                "build_window_start": "2027-02-22",
+                "build_window_end": "2027-02-24",
+                "confidence": 0.95,
+                "incident_id": "E-14#1",
+                "needs_human": false,
+                "actionable": true,
+                "ambiguities": []
+              }
+            ],
+            "next": "Gate each incident: drop_noise (noise only), escalate (unconfirmed / needs_human / unresolved), or delegate the actionable ones."
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T10:58:08.458000",
+          "kind": "thought",
+          "text": "Incident E-14#1 is a confirmed quality hold with all entities resolved and needs_human=false. Delegating quality_hold task to customer_care_quality.",
+          "data": null,
+          "turn": 2,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.004477,
+          "task": "delegate"
+        },
+        {
+          "t": "2027-03-08T10:58:08.458000",
+          "kind": "message",
+          "text": "quality_hold task for incident E-14#1. Resolved incident E-14#1: quality_hold · plant P_TX · part HARN-B · supplier SUP-07 · lot LOT-0017 · built 2027-02-22 → 2027-02-24 · confidence 0.95. Match the lot (match_lot), find the affected vehicles, compose the hold and the owner contacts, and submit (task=quality_hold, incident_id=E-14#1). The Dealer Network agent composes the stop-sales.",
+          "data": {
+            "task": "quality_hold",
+            "incident_id": "E-14#1"
+          },
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": "customer_care_quality",
+          "from_agent": "coordinator",
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "quality_hold"
+        },
+        {
+          "t": "2027-03-08T10:58:29.823000",
+          "kind": "tool",
+          "text": "delegate · agent customer_care_quality · task quality_hold · incident_id E-14#1",
+          "data": null,
+          "turn": 2,
+          "tool": "delegate",
+          "args": {
+            "agent": "customer_care_quality",
+            "task": "quality_hold",
+            "incident_id": "E-14#1",
+            "payload": null
+          },
+          "result": {
+            "agent": "customer_care_quality",
+            "task": "quality_hold",
+            "incident_id": "E-14#1",
+            "actions_count": 95,
+            "findings": {
+              "lot_id": "LOT-0017",
+              "holds": 1,
+              "owner_contacts": 94,
+              "unsold_to_stop": 86
+            },
+            "reasoning_summary": "Matched lot LOT-0017 for incident E-14#1 at plant P_TX for part HARN-B. Staged lot hold for LOT-0017 and generated 94 customer notifications for owners of sold affected vehicles out of 180 affected vehicles.",
+            "paths_count": 6,
+            "turns": 6,
+            "llm_calls": 6,
+            "cost_usd": 0.018706,
+            "correction_round": 0
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "delegate"
+        },
+        {
+          "t": "2027-03-08T10:58:32.669000",
+          "kind": "thought",
+          "text": "The per-incident quality_hold task is complete. There is a quality incident, so the event-wide task dealer_comms is required. Let's delegate dealer_comms to dealer_network.",
+          "data": null,
+          "turn": 3,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.004511,
+          "task": "delegate"
+        },
+        {
+          "t": "2027-03-08T10:58:32.670000",
+          "kind": "message",
+          "text": "dealer_comms task for the whole event E-14. 0 production orders were moved (payload.moved_po_ids). Compose exactly one dealer.notify per affected dealer for ALL moved orders of all incidents together; for each quality incident in payload.quality_incidents compose the stop-sales for its in-stock vehicles by dealer, then submit the dealer plan.",
+          "data": {
+            "task": "dealer_comms",
+            "incident_id": null
+          },
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": "dealer_network",
+          "from_agent": "coordinator",
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "dealer_comms"
+        },
+        {
+          "t": "2027-03-08T10:58:43.699000",
+          "kind": "tool",
+          "text": "delegate · agent dealer_network · task dealer_comms",
+          "data": null,
+          "turn": 3,
+          "tool": "delegate",
+          "args": {
+            "agent": "dealer_network",
+            "task": "dealer_comms",
+            "incident_id": null,
+            "payload": null
+          },
+          "result": {
+            "agent": "dealer_network",
+            "task": "dealer_comms",
+            "incident_id": null,
+            "actions_count": 36,
+            "findings": {
+              "notices": 0,
+              "stop_sales": 36
+            },
+            "reasoning_summary": "Processed quality incident E-14#1 by issuing 36 stop-sale orders covering 86 unsold in-stock vehicles across 36 dealers. No production orders were moved during event E-14, so no dealer notifications were necessary.",
+            "paths_count": 0,
+            "turns": 3,
+            "llm_calls": 3,
+            "cost_usd": 0.007928,
+            "correction_round": 0
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "delegate"
+        },
+        {
+          "t": "2027-03-08T10:58:47.534000",
+          "kind": "thought",
+          "text": "We have completed per-incident quality_hold delegation and dealer_comms delegation (since there is a quality incident). No orders moved, so loaners task is not required. Now we run validate_plan to verify the plan before execution.",
+          "data": null,
+          "turn": 4,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.005119,
+          "task": "validate"
+        },
+        {
+          "t": "2027-03-08T10:58:47.537000",
+          "kind": "decision",
+          "text": "Plan validated: 0 blocking finding(s), 0 warning(s)",
+          "data": {
+            "blocking": 0
+          },
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "validate"
+        },
+        {
+          "t": "2027-03-08T10:58:47.537000",
+          "kind": "tool",
+          "text": "validate_plan",
+          "data": null,
+          "turn": 4,
+          "tool": "validate_plan",
+          "args": {},
+          "result": {
+            "ok": true,
+            "blocking": 0,
+            "warnings": 0,
+            "by_incident": {},
+            "missing_tasks": []
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "validate"
+        },
+        {
+          "t": "2027-03-08T10:58:50.544000",
+          "kind": "thought",
+          "text": "The plan has been validated with no blocking findings and no missing tasks. Now proceed to execute the plan.",
+          "data": null,
+          "turn": 5,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.004393,
+          "task": "execute"
+        },
+        {
+          "t": "2027-03-08T10:58:50.550000",
+          "kind": "rehearse",
+          "text": "Pre-flight check on a sandbox copy of the enterprise: 131 actions rehearsed, 131 accepted, 0 rejected",
+          "data": null,
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "execute"
+        },
+        {
+          "t": "2027-03-08T10:58:55.976000",
+          "kind": "audit",
+          "text": "Auditor agrees: The quality hold incident for the moisture-contaminated wiring harnesses at the Texas plant is correctly interpreted and planned in full compliance with policy rules.",
+          "data": null,
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "execute"
+        },
+        {
+          "t": "2027-03-08T10:58:55.977000",
+          "kind": "execute",
+          "text": "Freshness: 0 slot reads, 0 pool reads matched the baseline; quality holds have no read tool in this enterprise, lot state is not verifiable",
+          "data": null,
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "execute"
+        },
+        {
+          "t": "2027-03-08T10:58:56.939000",
+          "kind": "execute",
+          "text": "Executed 131/131 writes via mcp: 0 failed, 0 unknown, 0 skipped",
+          "data": null,
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "execute"
+        },
+        {
+          "t": "2027-03-08T10:58:56.939000",
+          "kind": "tool",
+          "text": "execute",
+          "data": null,
+          "turn": 5,
+          "tool": "execute",
+          "args": {},
+          "result": {
+            "status": "executed",
+            "reads": 0,
+            "writes_ok": 131,
+            "writes_failed": 0,
+            "writes_unknown": 0,
+            "writes_skipped": 0,
+            "by_tool": {
+              "crm.notify_customer": 94,
+              "dealer.stop_sale": 36,
+              "quality.hold_lot": 1
+            }
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "execute"
+        },
+        {
+          "t": "2027-03-08T10:58:59.660000",
+          "kind": "thought",
+          "text": "All actions have been successfully executed without errors (1 hold, 36 stop-sales, 94 owner contacts). Now completing the event resolution with finish.",
+          "data": null,
+          "turn": 6,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.004507,
+          "task": "finish"
+        },
+        {
+          "t": "2027-03-08T10:59:12.315000",
+          "kind": "decision",
+          "text": "Event settled (done): Following an alert regarding moisture contamination in Atlas Wire and Cable heavy-duty wiring harnesses, lot LOT-0017 built between 2027-02-22 and 2027-02-24 at Wacky Wheels San Antonio was placed on hold. Across 36 dealers, 86 unsold vehicles were stopped from sale, and 94 owners of sold vehicles were contacted.",
+          "data": null,
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "finish"
+        },
+        {
+          "t": "2027-03-08T10:59:12.315000",
+          "kind": "tool",
+          "text": "finish · summary_hint Placed lot LOT-0017 on …",
+          "data": null,
+          "turn": 6,
+          "tool": "finish",
+          "args": {
+            "summary_hint": "Placed lot LOT-0017 on hold due to moisture contamination, issued 36 stop-sales for unsold vehicles, and contacted 94 affected vehicle owners."
+          },
+          "result": {
+            "finished": true,
+            "status": "done",
+            "summary": "Following an alert regarding moisture contamination in Atlas Wire and Cable heavy-duty wiring harnesses, lot LOT-0017 built between 2027-02-22 and 2027-02-24 at Wacky Wheels San Antonio was placed on hold. Across 36 dealers, 86 unsold vehicles were stopped from sale, and 94 owners of sold vehicles were contacted."
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "finish"
+        },
+        {
+          "t": "2027-03-08T10:59:12.315000",
+          "kind": "decision",
+          "text": "Coordinator finished",
+          "data": {
+            "outcome": "done"
+          },
+          "turn": 6,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "finish"
+        }
+      ]
+    },
+    {
+      "agent": "dealer_network",
+      "started": "2027-03-08T10:58:36.871000",
+      "ended": "2027-03-08T10:58:43.699000",
+      "model": "gemini-3.8-flash",
+      "llm_calls": 3,
+      "cost_usd": 0.007928,
+      "steps": [
+        {
+          "t": "2027-03-08T10:58:36.871000",
+          "kind": "thought",
+          "text": "No production orders moved (moved_po_ids is empty), so no dealer notices are needed. There is one quality incident E-14#1 with in-stock vehicles handle 'h:E-14:in_stock_by_dealer:4'. I will call compose_stop_sales for E-14#1.",
+          "data": null,
+          "turn": 1,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.002982,
+          "task": "dealer_comms"
+        },
+        {
+          "t": "2027-03-08T10:58:36.872000",
+          "kind": "tool",
+          "text": "compose_stop_sales · vins_by_dealer list · incident_id E-14#1",
+          "data": null,
+          "turn": 1,
+          "tool": "compose_stop_sales",
+          "args": {
+            "incident_id": "E-14#1",
+            "vins_by_dealer": "h:E-14:in_stock_by_dealer:4"
+          },
+          "result": {
+            "stop_sales": 36,
+            "dealers": {
+              "count": 36,
+              "sample": [
+                "D02",
+                "D03",
+                "D04",
+                "D06",
+                "D07"
+              ],
+              "stored_key": "E-14:dealer_network:3ba50395:1:compose_stop_sales.dealers"
+            },
+            "vins": 86
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "dealer_comms"
+        },
+        {
+          "t": "2027-03-08T10:58:40.492000",
+          "kind": "thought",
+          "text": "All stop-sale actions have been composed for incident E-14#1 (36 stop-sales for 86 in-stock VINs across 36 dealers). There are no moved production orders (moved_po_count = 0), so no dealer notices are required. We can now submit the dealer plan.",
+          "data": null,
+          "turn": 2,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.002431,
+          "task": "dealer_comms"
+        },
+        {
+          "t": "2027-03-08T10:58:40.493000",
+          "kind": "tool",
+          "text": "submit_dealer_plan · reasoning_summary Processed quality incid…",
+          "data": null,
+          "turn": 2,
+          "tool": "submit_dealer_plan",
+          "args": {
+            "reasoning_summary": "Processed quality incident E-14#1 by issuing 36 stop-sale orders covering 86 unsold in-stock vehicles across 36 dealers. No production orders were moved during event E-14, so no dealer notifications were necessary."
+          },
+          "result": {
+            "task": "dealer_comms",
+            "incident_id": null,
+            "actions_count": 36,
+            "action_ids": [],
+            "handle": "h:E-14:dealer_comms-action-ids:5",
+            "findings": {
+              "notices": 0,
+              "stop_sales": 36
+            },
+            "paths_count": 0,
+            "reasoning_summary": "Processed quality incident E-14#1 by issuing 36 stop-sale orders covering 86 unsold in-stock vehicles across 36 dealers. No production orders were moved during event E-14, so no dealer notifications were necessary."
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "dealer_comms"
+        },
+        {
+          "t": "2027-03-08T10:58:43.698000",
+          "kind": "thought",
+          "text": "The dealer plan has already been submitted with 36 stop-sales for incident E-14#1 and 0 dealer notices (since 0 production orders moved). Now returning the final specialist result.",
+          "data": null,
+          "turn": 3,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.002515,
+          "task": "dealer_comms"
+        },
+        {
+          "t": "2027-03-08T10:58:43.699000",
+          "kind": "decision",
+          "text": "Dealer Network submitted its result",
+          "data": {
+            "task": "dealer_comms",
+            "incident_id": null,
+            "actions_count": 36,
+            "action_ids": [],
+            "handle": "h:E-14:dealer_comms-action-ids:5",
+            "findings": {
+              "notices": 0,
+              "stop_sales": 36
+            },
+            "paths_count": 0,
+            "reasoning_summary": "Processed quality incident E-14#1 by issuing 36 stop-sale orders covering 86 unsold in-stock vehicles across 36 dealers. No production orders were moved during event E-14, so no dealer notifications were necessary."
+          },
+          "turn": 3,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "dealer_comms"
+        },
+        {
+          "t": "2027-03-08T10:58:43.699000",
+          "kind": "message",
+          "text": "Processed quality incident E-14#1 by issuing 36 stop-sale orders covering 86 unsold in-stock vehicles across 36 dealers. No production orders were moved during event E-14, so no dealer notifications were necessary. (36 actions)",
+          "data": {
+            "task": "dealer_comms",
+            "incident_id": null,
+            "actions_count": 36,
+            "findings": {
+              "notices": 0,
+              "stop_sales": 36
+            }
+          },
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": "coordinator",
+          "from_agent": "dealer_network",
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "dealer_comms"
+        }
+      ]
+    },
+    {
+      "agent": "customer_care_quality",
+      "started": "2027-03-08T10:58:11.149000",
+      "ended": "2027-03-08T10:58:29.823000",
+      "model": "gemini-3.8-flash",
+      "llm_calls": 6,
+      "cost_usd": 0.018706,
+      "steps": [
+        {
+          "t": "2027-03-08T10:58:11.149000",
+          "kind": "thought",
+          "text": "I will start by matching the lot for incident E-14#1 using match_lot.",
+          "data": null,
+          "turn": 1,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.002354,
+          "task": "quality_hold"
+        },
+        {
+          "t": "2027-03-08T10:58:11.150000",
+          "kind": "tool",
+          "text": "match_lot · incident_id E-14#1",
+          "data": null,
+          "turn": 1,
+          "tool": "match_lot",
+          "args": {
+            "incident_id": "E-14#1"
+          },
+          "result": {
+            "matched": true,
+            "lot": {
+              "lot_id": "LOT-0017",
+              "part_id": "HARN-B",
+              "plant_id": "P_TX",
+              "first_build_date": "2027-02-22",
+              "last_build_date": "2027-02-24",
+              "supplier_id": "SUP-07"
+            },
+            "candidates": [],
+            "source": "resolved lot id"
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "quality_hold"
+        },
+        {
+          "t": "2027-03-08T10:58:15.120000",
+          "kind": "thought",
+          "text": "Lot LOT-0017 is matched for incident E-14#1. Next, find the affected vehicles using affected_vehicles.",
+          "data": null,
+          "turn": 2,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.002857,
+          "task": "quality_hold"
+        },
+        {
+          "t": "2027-03-08T10:58:15.123000",
+          "kind": "tool",
+          "text": "affected_vehicles · lot_id LOT-0017 · incident_id E-14#1",
+          "data": null,
+          "turn": 2,
+          "tool": "affected_vehicles",
+          "args": {
+            "lot_id": "LOT-0017",
+            "incident_id": "E-14#1"
+          },
+          "result": {
+            "incident_id": "E-14#1",
+            "lot_id": "LOT-0017",
+            "production_orders": 6,
+            "vehicles": 180,
+            "in_stock_by_dealer": "h:E-14:in_stock_by_dealer:1",
+            "in_stock_counts": {
+              "D02": 2,
+              "D03": 4,
+              "D04": 2,
+              "D06": 5,
+              "D07": 2,
+              "D08": 5,
+              "D10": 2,
+              "D12": 1,
+              "D13": 2,
+              "D14": 2,
+              "D16": 1,
+              "D17": 1,
+              "D19": 1,
+              "D20": 2,
+              "D21": 3,
+              "D22": 2,
+              "D23": 3,
+              "D25": 6,
+              "D26": 2,
+              "D27": 2,
+              "D28": 1,
+              "D29": 1,
+              "D31": 2,
+              "D32": 4,
+              "D33": 1,
+              "D34": 3,
+              "D36": 2,
+              "D37": 1,
+              "D38": 2,
+              "D39": 2,
+              "D43": 3,
+              "D44": 2,
+              "D45": 7,
+              "D46": 3,
+              "D47": 1,
+              "D48": 1
+            },
+            "in_stock_total": 86,
+            "owners": "h:E-14:owners:2",
+            "owner_count": 94,
+            "sold_total": 94,
+            "paths_count": 6
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "quality_hold"
+        },
+        {
+          "t": "2027-03-08T10:58:18.605000",
+          "kind": "thought",
+          "text": "The lot LOT-0017 and affected vehicles are identified (86 in stock, 94 sold). Next step in quality_hold workflow is compose_hold for LOT-0017.",
+          "data": null,
+          "turn": 3,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.003108,
+          "task": "quality_hold"
+        },
+        {
+          "t": "2027-03-08T10:58:18.605000",
+          "kind": "tool",
+          "text": "compose_hold · lot_id LOT-0017 · incident_id E-14#1",
+          "data": null,
+          "turn": 3,
+          "tool": "compose_hold",
+          "args": {
+            "lot_id": "LOT-0017",
+            "incident_id": "E-14#1"
+          },
+          "result": {
+            "holds": 1,
+            "lot_id": "LOT-0017",
+            "incident_id": "E-14#1"
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "quality_hold"
+        },
+        {
+          "t": "2027-03-08T10:58:22.281000",
+          "kind": "thought",
+          "text": "I will compose owner contacts for the 94 sold affected vehicles using the owners handle 'h:E-14:owners:2' for incident E-14#1.",
+          "data": null,
+          "turn": 4,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.003317,
+          "task": "quality_hold"
+        },
+        {
+          "t": "2027-03-08T10:58:22.283000",
+          "kind": "tool",
+          "text": "compose_owner_contacts · owners list · incident_id E-14#1",
+          "data": null,
+          "turn": 4,
+          "tool": "compose_owner_contacts",
+          "args": {
+            "incident_id": "E-14#1",
+            "owners": "h:E-14:owners:2"
+          },
+          "result": {
+            "owner_contacts": 94,
+            "owners": 94
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "quality_hold"
+        },
+        {
+          "t": "2027-03-08T10:58:26.417000",
+          "kind": "thought",
+          "text": "All quality hold actions are staged: LOT-0017 was matched and held, and owner notifications were composed for all 94 sold vehicles across 180 affected vehicles. Now submitting the care plan for quality_hold.",
+          "data": null,
+          "turn": 5,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.003439,
+          "task": "quality_hold"
+        },
+        {
+          "t": "2027-03-08T10:58:26.418000",
+          "kind": "tool",
+          "text": "submit_care_plan · task quality_hold · incident_id E-14#1 · reasoning_summary Matched lot LOT-0017 fo…",
+          "data": null,
+          "turn": 5,
+          "tool": "submit_care_plan",
+          "args": {
+            "task": "quality_hold",
+            "incident_id": "E-14#1",
+            "reasoning_summary": "Matched lot LOT-0017 for incident E-14#1 at plant P_TX for part HARN-B. Staged lot hold for LOT-0017 and generated 94 customer notifications for owners of sold affected vehicles out of 180 affected vehicles."
+          },
+          "result": {
+            "task": "quality_hold",
+            "incident_id": "E-14#1",
+            "actions_count": 95,
+            "action_ids": [],
+            "handle": "h:E-14:quality_hold-action-ids:3",
+            "findings": {
+              "lot_id": "LOT-0017",
+              "holds": 1,
+              "owner_contacts": 94,
+              "unsold_to_stop": 86
+            },
+            "paths_count": 6,
+            "reasoning_summary": "Matched lot LOT-0017 for incident E-14#1 at plant P_TX for part HARN-B. Staged lot hold for LOT-0017 and generated 94 customer notifications for owners of sold affected vehicles out of 180 affected vehicles."
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "quality_hold"
+        },
+        {
+          "t": "2027-03-08T10:58:29.823000",
+          "kind": "thought",
+          "text": "Submit care plan has already completed successfully. I will output the final result now.",
+          "data": null,
+          "turn": 6,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.003631,
+          "task": "quality_hold"
+        },
+        {
+          "t": "2027-03-08T10:58:29.823000",
+          "kind": "decision",
+          "text": "Customer Care & Quality submitted its result",
+          "data": {
+            "task": "quality_hold",
+            "incident_id": "E-14#1",
+            "actions_count": 95,
+            "action_ids": [],
+            "handle": "h:E-14:quality_hold-action-ids:3",
+            "findings": {
+              "lot_id": "LOT-0017",
+              "holds": 1,
+              "owner_contacts": 94,
+              "unsold_to_stop": 86
+            },
+            "paths_count": 6,
+            "reasoning_summary": "Matched lot LOT-0017 for incident E-14#1 at plant P_TX for part HARN-B. Staged lot hold for LOT-0017 and generated 94 customer notifications for owners of sold affected vehicles out of 180 affected vehicles."
+          },
+          "turn": 6,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "quality_hold"
+        },
+        {
+          "t": "2027-03-08T10:58:29.823000",
+          "kind": "message",
+          "text": "Matched lot LOT-0017 for incident E-14#1 at plant P_TX for part HARN-B. Staged lot hold for LOT-0017 and generated 94 customer notifications for owners of sold affected vehicles out of 180 affected vehicles. (95 actions)",
+          "data": {
+            "task": "quality_hold",
+            "incident_id": "E-14#1",
+            "actions_count": 95,
+            "findings": {
+              "lot_id": "LOT-0017",
+              "holds": 1,
+              "owner_contacts": 94,
+              "unsold_to_stop": 86
+            }
+          },
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": "coordinator",
+          "from_agent": "customer_care_quality",
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "quality_hold"
+        }
+      ]
+    }
+  ],
+  "orchestration": {
+    "mode": "parallel",
+    "correction_rounds": 0,
+    "escalations": [],
+    "mcp_transport": "mcp/stdio",
+    "target": "scored",
+    "provider_failure": false
+  },
+  "actions": [
+    {
+      "seq": 1,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "quality.hold_lot",
+      "args": {
+        "lot_id": "LOT-0017"
+      },
+      "justification": "Rule 6: LOT-0017 (HARN-B at P_TX, built 2027-02-22..2027-02-24)",
+      "path_ids": [
+        "LOT-0017"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 2,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D02",
+        "vins": [
+          "AUR0000083",
+          "AUR0000220"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D02",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000083",
+        "D02"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 3,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D03",
+        "vins": [
+          "AUR0000008",
+          "AUR0000028",
+          "AUR0000090",
+          "AUR0000226"
+        ]
+      },
+      "justification": "Rule 6: 4 unsold vehicle(s) from LOT-0017 at D03",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000008",
+        "D03"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 4,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D04",
+        "vins": [
+          "AUR0000085",
+          "AUR0000191"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D04",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000085",
+        "D04"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 5,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D06",
+        "vins": [
+          "AUR0000024",
+          "AUR0000027",
+          "AUR0000052",
+          "AUR0000082",
+          "AUR0000188"
+        ]
+      },
+      "justification": "Rule 6: 5 unsold vehicle(s) from LOT-0017 at D06",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000024",
+        "D06"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 6,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D07",
+        "vins": [
+          "AUR0000020",
+          "AUR0000097"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D07",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000020",
+        "D07"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 7,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D08",
+        "vins": [
+          "AUR0000013",
+          "AUR0000117",
+          "AUR0000131",
+          "AUR0000171",
+          "AUR0000215"
+        ]
+      },
+      "justification": "Rule 6: 5 unsold vehicle(s) from LOT-0017 at D08",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000013",
+        "D08"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 8,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D10",
+        "vins": [
+          "AUR0000210",
+          "AUR0000229"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D10",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000210",
+        "D10"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 9,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D12",
+        "vins": [
+          "AUR0000046"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0017 at D12",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000046",
+        "D12"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 10,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D13",
+        "vins": [
+          "AUR0000047",
+          "AUR0000198"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D13",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000047",
+        "D13"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 11,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D14",
+        "vins": [
+          "AUR0000120",
+          "AUR0000195"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D14",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000120",
+        "D14"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 12,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D16",
+        "vins": [
+          "AUR0000136"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0017 at D16",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000136",
+        "D16"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 13,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D17",
+        "vins": [
+          "AUR0000107"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0017 at D17",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000107",
+        "D17"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 14,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D19",
+        "vins": [
+          "AUR0000105"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0017 at D19",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000105",
+        "D19"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 15,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D20",
+        "vins": [
+          "AUR0000042",
+          "AUR0000051"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D20",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000042",
+        "D20"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 16,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D21",
+        "vins": [
+          "AUR0000088",
+          "AUR0000089",
+          "AUR0000222"
+        ]
+      },
+      "justification": "Rule 6: 3 unsold vehicle(s) from LOT-0017 at D21",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000088",
+        "D21"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 17,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D22",
+        "vins": [
+          "AUR0000200",
+          "AUR0000225"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D22",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000200",
+        "D22"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 18,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D23",
+        "vins": [
+          "AUR0000010",
+          "AUR0000173",
+          "AUR0000230"
+        ]
+      },
+      "justification": "Rule 6: 3 unsold vehicle(s) from LOT-0017 at D23",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000010",
+        "D23"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 19,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D25",
+        "vins": [
+          "AUR0000011",
+          "AUR0000134",
+          "AUR0000178",
+          "AUR0000187",
+          "AUR0000204",
+          "AUR0000207"
+        ]
+      },
+      "justification": "Rule 6: 6 unsold vehicle(s) from LOT-0017 at D25",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000011",
+        "D25"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 20,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D26",
+        "vins": [
+          "AUR0000017",
+          "AUR0000096"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D26",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000017",
+        "D26"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 21,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D27",
+        "vins": [
+          "AUR0000003",
+          "AUR0000186"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D27",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000003",
+        "D27"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 22,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D28",
+        "vins": [
+          "AUR0000022"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0017 at D28",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000022",
+        "D28"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 23,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D29",
+        "vins": [
+          "AUR0000034"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0017 at D29",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000034",
+        "D29"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 24,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D31",
+        "vins": [
+          "AUR0000031",
+          "AUR0000132"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D31",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000031",
+        "D31"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 25,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D32",
+        "vins": [
+          "AUR0000100",
+          "AUR0000103",
+          "AUR0000169",
+          "AUR0000201"
+        ]
+      },
+      "justification": "Rule 6: 4 unsold vehicle(s) from LOT-0017 at D32",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000100",
+        "D32"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 26,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D33",
+        "vins": [
+          "AUR0000111"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0017 at D33",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000111",
+        "D33"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 27,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D34",
+        "vins": [
+          "AUR0000006",
+          "AUR0000019",
+          "AUR0000030"
+        ]
+      },
+      "justification": "Rule 6: 3 unsold vehicle(s) from LOT-0017 at D34",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000006",
+        "D34"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 28,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D36",
+        "vins": [
+          "AUR0000053",
+          "AUR0000172"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D36",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000053",
+        "D36"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 29,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D37",
+        "vins": [
+          "AUR0000015"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0017 at D37",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000015",
+        "D37"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 30,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D38",
+        "vins": [
+          "AUR0000174",
+          "AUR0000209"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D38",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000174",
+        "D38"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 31,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D39",
+        "vins": [
+          "AUR0000025",
+          "AUR0000123"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D39",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000025",
+        "D39"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 32,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D43",
+        "vins": [
+          "AUR0000126",
+          "AUR0000137",
+          "AUR0000217"
+        ]
+      },
+      "justification": "Rule 6: 3 unsold vehicle(s) from LOT-0017 at D43",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000126",
+        "D43"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 33,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D44",
+        "vins": [
+          "AUR0000109",
+          "AUR0000110"
+        ]
+      },
+      "justification": "Rule 6: 2 unsold vehicle(s) from LOT-0017 at D44",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000109",
+        "D44"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 34,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D45",
+        "vins": [
+          "AUR0000002",
+          "AUR0000023",
+          "AUR0000035",
+          "AUR0000121",
+          "AUR0000190",
+          "AUR0000194",
+          "AUR0000231"
+        ]
+      },
+      "justification": "Rule 6: 7 unsold vehicle(s) from LOT-0017 at D45",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000002",
+        "D45"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 35,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D46",
+        "vins": [
+          "AUR0000007",
+          "AUR0000093",
+          "AUR0000197"
+        ]
+      },
+      "justification": "Rule 6: 3 unsold vehicle(s) from LOT-0017 at D46",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000007",
+        "D46"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 36,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D47",
+        "vins": [
+          "AUR0000044"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0017 at D47",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000044",
+        "D47"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 37,
+      "incident_id": "E-14#1",
+      "agent": "dealer_network",
+      "tool": "dealer.stop_sale",
+      "args": {
+        "dealer_id": "D48",
+        "vins": [
+          "AUR0000219"
+        ]
+      },
+      "justification": "Rule 6: 1 unsold vehicle(s) from LOT-0017 at D48",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000219",
+        "D48"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 38,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0130",
+        "message": "Dear Ben Moore: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000032). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000032 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000032",
+        "C0130"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 39,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0226",
+        "message": "Dear Zoe Young: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000212). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000212 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000212",
+        "C0226"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 40,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0419",
+        "message": "Dear Eli Chen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000114). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000114 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000114",
+        "C0419"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 41,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0459",
+        "message": "Dear Lena Baker: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000116). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000116 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000116",
+        "C0459"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 42,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0630",
+        "message": "Dear Omar Lopez: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000037). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000037 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000037",
+        "C0630"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 43,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0641",
+        "message": "Dear Zoe Ford: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000099). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000099 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000099",
+        "C0641"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 44,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0643",
+        "message": "Dear Mia Lopez: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000203). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000203 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000203",
+        "C0643"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 45,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0664",
+        "message": "Dear Noah Ortiz: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000177). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000177 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000177",
+        "C0664"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 46,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0665",
+        "message": "Dear Eli Ortiz: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000128). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000128 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000128",
+        "C0665"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 47,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0789",
+        "message": "Dear Jon Nguyen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000021). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000021 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000021",
+        "C0789"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 48,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0804",
+        "message": "Dear Lena Clark: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000227). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000227 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000227",
+        "C0804"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 49,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0832",
+        "message": "Dear Sam Brown: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000005). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000005 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000005",
+        "C0832"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 50,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C0871",
+        "message": "Dear Zoe Chen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000206). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000206 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000206",
+        "C0871"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 51,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1006",
+        "message": "Dear Ava Baker: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000179). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000179 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000179",
+        "C1006"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 52,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1218",
+        "message": "Dear Mia Chen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000001). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000001 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000001",
+        "C1218"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 53,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1233",
+        "message": "Dear Sam Cole: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000095). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000095 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000095",
+        "C1233"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 54,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1244",
+        "message": "Dear Mia Ortiz: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000055). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000055 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000055",
+        "C1244"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 55,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1367",
+        "message": "Dear Raul Khan: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000130). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000130 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000130",
+        "C1367"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 56,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1373",
+        "message": "Dear Ben Nguyen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000127). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000127 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000127",
+        "C1373"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 57,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1380",
+        "message": "Dear Zoe Brown: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000183). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000183 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000183",
+        "C1380"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 58,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1508",
+        "message": "Dear Mia Baker: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000113). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000113 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000113",
+        "C1508"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 59,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1516",
+        "message": "Dear Ria Young: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000102). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000102 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000102",
+        "C1516"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 60,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1610",
+        "message": "Dear Ria Clark: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000133). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000133 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000133",
+        "C1610"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 61,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1629",
+        "message": "Dear Leo Hall: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000233). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000233 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000233",
+        "C1629"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 62,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1660",
+        "message": "Dear Jon Chen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000048). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000048 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000048",
+        "C1660"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 63,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1665",
+        "message": "Dear Lena Clark: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000214). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000214 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000214",
+        "C1665"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 64,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1735",
+        "message": "Dear Liam Smith: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000036). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000036 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000036",
+        "C1735"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 65,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1751",
+        "message": "Dear Dev Chen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000018). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000018 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000018",
+        "C1751"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 66,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1799",
+        "message": "Dear Omar Clark: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000234). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000234 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000234",
+        "C1799"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 67,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1800",
+        "message": "Dear Liam Garcia: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000086). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000086 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000086",
+        "C1800"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 68,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1808",
+        "message": "Dear Ava Davis: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000138). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000138 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000138",
+        "C1808"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 69,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1848",
+        "message": "Dear Lena Davis: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000232). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000232 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000232",
+        "C1848"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 70,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C1876",
+        "message": "Dear Sam Chen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000108). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000108 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000108",
+        "C1876"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 71,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2123",
+        "message": "Dear Lena Reyes: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000223). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000223 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000223",
+        "C2123"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 72,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2480",
+        "message": "Dear Ava Brown: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000135). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000135 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000135",
+        "C2480"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 73,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2499",
+        "message": "Dear Ava Hall: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000115). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000115 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000115",
+        "C2499"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 74,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2655",
+        "message": "Dear Dev Ortiz: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000119). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000119 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000119",
+        "C2655"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 75,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2789",
+        "message": "Dear Leo Smith: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000012). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000012 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000012",
+        "C2789"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 76,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2919",
+        "message": "Dear Noah Hall: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000216). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000216 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000216",
+        "C2919"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 77,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C2945",
+        "message": "Dear Maya Baker: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000228). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000228 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000228",
+        "C2945"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 78,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3102",
+        "message": "Dear Eli Silva: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000189). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000189 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000189",
+        "C3102"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 79,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3196",
+        "message": "Dear Ivy Hall: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000098). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000098 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000098",
+        "C3196"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 80,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3197",
+        "message": "Dear Omar Patel: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000112). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000112 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000112",
+        "C3197"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 81,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3200",
+        "message": "Dear Liam Baker: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000122). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000122 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000122",
+        "C3200"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 82,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3277",
+        "message": "Dear Jon Khan: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000208). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000208 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000208",
+        "C3277"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 83,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3512",
+        "message": "Dear Dev Diaz: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000218). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000218 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000218",
+        "C3512"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 84,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3527",
+        "message": "Dear Eli Diaz: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000038). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000038 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000038",
+        "C3527"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 85,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3634",
+        "message": "Dear Omar Smith: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000175). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000175 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000175",
+        "C3634"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 86,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3788",
+        "message": "Dear Ria Young: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000221). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000221 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000221",
+        "C3788"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 87,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3821",
+        "message": "Dear Liam Moore: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000026). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000026 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000026",
+        "C3821"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 88,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3896",
+        "message": "Dear Ria Baker: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000040). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000040 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000040",
+        "C3896"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 89,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3913",
+        "message": "Dear Ava Reyes: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000094). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000094 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000094",
+        "C3913"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 90,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C3949",
+        "message": "Dear Eli Chen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000016). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000016 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000016",
+        "C3949"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 91,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4029",
+        "message": "Dear Maya Silva: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000050). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000050 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000050",
+        "C4029"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 92,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4064",
+        "message": "Dear Zoe Ortiz: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000039). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000039 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000039",
+        "C4064"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 93,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4203",
+        "message": "Dear Raul Ford: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000106). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000106 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000106",
+        "C4203"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 94,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4248",
+        "message": "Dear Ria Chen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000125). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000125 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000125",
+        "C4248"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 95,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4261",
+        "message": "Dear Noah Hall: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000182). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000182 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000182",
+        "C4261"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 96,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4439",
+        "message": "Dear Ria Reyes: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000084). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000084 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000084",
+        "C4439"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 97,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4449",
+        "message": "Dear Tess Lopez: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000199). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000199 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000199",
+        "C4449"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 98,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4598",
+        "message": "Dear Sam Brown: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000139). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000139 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000139",
+        "C4598"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 99,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4614",
+        "message": "Dear Sam Hall: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000043). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000043 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000043",
+        "C4614"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 100,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4711",
+        "message": "Dear Zoe Davis: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000056). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000056 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000056",
+        "C4711"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 101,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C4961",
+        "message": "Dear Ivy Nguyen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000101). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000101 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000101",
+        "C4961"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 102,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5019",
+        "message": "Dear Ben Lopez: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000004). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000004 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000004",
+        "C5019"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 103,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5077",
+        "message": "Dear Raul Khan: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000224). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000224 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000224",
+        "C5077"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 104,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5125",
+        "message": "Dear Kai Cole: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000192). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000192 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000192",
+        "C5125"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 105,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5353",
+        "message": "Dear Ben Chen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000033). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000033 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000033",
+        "C5353"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 106,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5356",
+        "message": "Dear Eli Ortiz: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000129). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000129 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000129",
+        "C5356"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 107,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5360",
+        "message": "Dear Kai Moore: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000185). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000185 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000185",
+        "C5360"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 108,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5388",
+        "message": "Dear Lena Chen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000014). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000014 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000014",
+        "C5388"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 109,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5443",
+        "message": "Dear Noah Garcia: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000104). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000104 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000104",
+        "C5443"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 110,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5533",
+        "message": "Dear Ava Patel: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000202). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000202 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000202",
+        "C5533"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 111,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5603",
+        "message": "Dear Zoe Chen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000045). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000045 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000045",
+        "C5603"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 112,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5654",
+        "message": "Dear Omar Smith: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000087). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000087 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000087",
+        "C5654"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 113,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5677",
+        "message": "Dear Tess Hall: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000091). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000091 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000091",
+        "C5677"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 114,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5701",
+        "message": "Dear Lena Reyes: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000118). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000118 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000118",
+        "C5701"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 115,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5751",
+        "message": "Dear Maya Cole: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000181). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000181 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000181",
+        "C5751"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 116,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C5898",
+        "message": "Dear Ria Patel: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000184). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000184 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000184",
+        "C5898"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 117,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6091",
+        "message": "Dear Eli Brown: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000196). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000196 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000196",
+        "C6091"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 118,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6168",
+        "message": "Dear Lena Patel: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000054). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000054 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000054",
+        "C6168"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 119,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6212",
+        "message": "Dear Ava Cole: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000205). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000205 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000205",
+        "C6212"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 120,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6288",
+        "message": "Dear Leo Cole: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000092). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000092 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000092",
+        "C6288"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 121,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6446",
+        "message": "Dear Jon Diaz: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000124). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000124 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000124",
+        "C6446"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 122,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6447",
+        "message": "Dear Ivy Patel: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000009). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000009 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000009",
+        "C6447"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 123,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6448",
+        "message": "Dear Liam Smith: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000176). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000176 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000176",
+        "C6448"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 124,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6490",
+        "message": "Dear Ivy Diaz: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000213). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000213 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000213",
+        "C6490"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 125,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6561",
+        "message": "Dear Zoe Lopez: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000170). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000170 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000170",
+        "C6561"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 126,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6563",
+        "message": "Dear Ria Nguyen: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000029). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000029 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000029",
+        "C6563"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 127,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6624",
+        "message": "Dear Raul Silva: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000049). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000049 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000049",
+        "C6624"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 128,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6676",
+        "message": "Dear Dev Reyes: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000041). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000041 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000041",
+        "C6676"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 129,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6796",
+        "message": "Dear Eli Davis: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000180). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000180 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000180",
+        "C6796"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 130,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6829",
+        "message": "Dear Ivy Lopez: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000193). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000193 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000193",
+        "C6829"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    },
+    {
+      "seq": 131,
+      "incident_id": "E-14#1",
+      "agent": "customer_care_quality",
+      "tool": "crm.notify_customer",
+      "args": {
+        "customer_id": "C6847",
+        "message": "Dear Ivy Patel: a quality issue (SUP-07 reported a defect in HARN-B) affects part lot LOT-0017 installed in your vehicle (AUR0000211). Please contact your dealer to schedule an inspection."
+      },
+      "justification": "Rule 6: owner of sold vehicle(s) AUR0000211 from LOT-0017",
+      "path_ids": [
+        "LOT-0017",
+        "AUR0000211",
+        "C6847"
+      ],
+      "rehearsal": {
+        "ok": true,
+        "error": null
+      },
+      "result": {
+        "ok": true,
+        "error": null,
+        "response": {
+          "ok": true
+        },
+        "outcome": "ok",
+        "http_status": 200
+      },
+      "transport": "mcp/stdio",
+      "skipped": false,
+      "incident_ids": [
+        "E-14#1"
+      ]
+    }
+  ],
+  "world_diff": {
+    "moved_pos": [],
+    "notified_dealers": [],
+    "loaners": [],
+    "held_lots": [
+      "LOT-0017"
+    ],
+    "stopped_vins": [
+      "AUR0000083",
+      "AUR0000220",
+      "AUR0000008",
+      "AUR0000028",
+      "AUR0000090",
+      "AUR0000226",
+      "AUR0000085",
+      "AUR0000191",
+      "AUR0000024",
+      "AUR0000027",
+      "AUR0000052",
+      "AUR0000082",
+      "AUR0000188",
+      "AUR0000020",
+      "AUR0000097",
+      "AUR0000013",
+      "AUR0000117",
+      "AUR0000131",
+      "AUR0000171",
+      "AUR0000215",
+      "AUR0000210",
+      "AUR0000229",
+      "AUR0000046",
+      "AUR0000047",
+      "AUR0000198",
+      "AUR0000120",
+      "AUR0000195",
+      "AUR0000136",
+      "AUR0000107",
+      "AUR0000105",
+      "AUR0000042",
+      "AUR0000051",
+      "AUR0000088",
+      "AUR0000089",
+      "AUR0000222",
+      "AUR0000200",
+      "AUR0000225",
+      "AUR0000010",
+      "AUR0000173",
+      "AUR0000230",
+      "AUR0000011",
+      "AUR0000134",
+      "AUR0000178",
+      "AUR0000187",
+      "AUR0000204",
+      "AUR0000207",
+      "AUR0000017",
+      "AUR0000096",
+      "AUR0000003",
+      "AUR0000186",
+      "AUR0000022",
+      "AUR0000034",
+      "AUR0000031",
+      "AUR0000132",
+      "AUR0000100",
+      "AUR0000103",
+      "AUR0000169",
+      "AUR0000201",
+      "AUR0000111",
+      "AUR0000006",
+      "AUR0000019",
+      "AUR0000030",
+      "AUR0000053",
+      "AUR0000172",
+      "AUR0000015",
+      "AUR0000174",
+      "AUR0000209",
+      "AUR0000025",
+      "AUR0000123",
+      "AUR0000126",
+      "AUR0000137",
+      "AUR0000217",
+      "AUR0000109",
+      "AUR0000110",
+      "AUR0000002",
+      "AUR0000023",
+      "AUR0000035",
+      "AUR0000121",
+      "AUR0000190",
+      "AUR0000194",
+      "AUR0000231",
+      "AUR0000007",
+      "AUR0000093",
+      "AUR0000197",
+      "AUR0000044",
+      "AUR0000219"
+    ],
+    "contacted_customers": [
+      "C0130",
+      "C0226",
+      "C0419",
+      "C0459",
+      "C0630",
+      "C0641",
+      "C0643",
+      "C0664",
+      "C0665",
+      "C0789",
+      "C0804",
+      "C0832",
+      "C0871",
+      "C1006",
+      "C1218",
+      "C1233",
+      "C1244",
+      "C1367",
+      "C1373",
+      "C1380",
+      "C1508",
+      "C1516",
+      "C1610",
+      "C1629",
+      "C1660",
+      "C1665",
+      "C1735",
+      "C1751",
+      "C1799",
+      "C1800",
+      "C1808",
+      "C1848",
+      "C1876",
+      "C2123",
+      "C2480",
+      "C2499",
+      "C2655",
+      "C2789",
+      "C2919",
+      "C2945",
+      "C3102",
+      "C3196",
+      "C3197",
+      "C3200",
+      "C3277",
+      "C3512",
+      "C3527",
+      "C3634",
+      "C3788",
+      "C3821",
+      "C3896",
+      "C3913",
+      "C3949",
+      "C4029",
+      "C4064",
+      "C4203",
+      "C4248",
+      "C4261",
+      "C4439",
+      "C4449",
+      "C4598",
+      "C4614",
+      "C4711",
+      "C4961",
+      "C5019",
+      "C5077",
+      "C5125",
+      "C5353",
+      "C5356",
+      "C5360",
+      "C5388",
+      "C5443",
+      "C5533",
+      "C5603",
+      "C5654",
+      "C5677",
+      "C5701",
+      "C5751",
+      "C5898",
+      "C6091",
+      "C6168",
+      "C6212",
+      "C6288",
+      "C6446",
+      "C6447",
+      "C6448",
+      "C6490",
+      "C6561",
+      "C6563",
+      "C6624",
+      "C6676",
+      "C6796",
+      "C6829",
+      "C6847"
+    ]
+  },
+  "counterfactual": {
+    "customers_affected": 0,
+    "avg_slip_days": null,
+    "loaners_entitled": 0,
+    "loaners_assigned": 0,
+    "vehicles_pulled": 86,
+    "owners_contacted": 94
+  },
+  "llm": {
+    "calls": [
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4425,
+        "output_tokens": 471,
+        "cost_usd": 0.005085,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4769,
+        "output_tokens": 240,
+        "cost_usd": 0.004477,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 2524,
+        "output_tokens": 123,
+        "cost_usd": 0.002354,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 2639,
+        "output_tokens": 234,
+        "cost_usd": 0.002857,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 2994,
+        "output_tokens": 230,
+        "cost_usd": 0.003108,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 3052,
+        "output_tokens": 274,
+        "cost_usd": 0.003317,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 3100,
+        "output_tokens": 297,
+        "cost_usd": 0.003439,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 3351,
+        "output_tokens": 298,
+        "cost_usd": 0.003631,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4975,
+        "output_tokens": 208,
+        "cost_usd": 0.004511,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 1641,
+        "output_tokens": 467,
+        "cost_usd": 0.002982,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 1771,
+        "output_tokens": 294,
+        "cost_usd": 0.002431,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 1964,
+        "output_tokens": 278,
+        "cost_usd": 0.002515,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 5140,
+        "output_tokens": 337,
+        "cost_usd": 0.005119,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 5173,
+        "output_tokens": 137,
+        "cost_usd": 0.004393,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "audit",
+        "input_tokens": 1161,
+        "output_tokens": 617,
+        "cost_usd": 0.003185,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 5245,
+        "output_tokens": 153,
+        "cost_usd": 0.004507,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "summarize",
+        "input_tokens": 452,
+        "output_tokens": 1528,
+        "cost_usd": 0.006069,
+        "cached": false,
+        "attempts": 1
+      }
+    ],
+    "total_cost_usd": 0.06398
+  },
+  "summary": "Following an alert regarding moisture contamination in Atlas Wire and Cable heavy-duty wiring harnesses, lot LOT-0017 built between 2027-02-22 and 2027-02-24 at Wacky Wheels San Antonio was placed on hold. Across 36 dealers, 86 unsold vehicles were stopped from sale, and 94 owners of sold vehicles were contacted.",
+  "decision_reason": "The system acted because the confirmed incident resolved all identifiers and dates against the data, handbook validators passed, and the sandbox pre-flight check succeeded. The auditor also confirmed the quality hold was planned in full compliance with policy rules, satisfying the operational gates.",
+  "brief": {
+    "headline": "Acted on 1 incident: lot LOT-0017 held, 86 VINs stopped, 94 owners contacted",
+    "outcome": "acted",
+    "incidents": [
+      {
+        "incident_id": "E-14#1",
+        "category": "quality_hold",
+        "title": "Quality hold · LOT-0017 · HARN-B (Atlas Wire and Cable) at Wacky Wheels San Antonio (P_TX)",
+        "window": "built 2027-02-22 → 2027-02-24",
+        "facts": [
+          {
+            "label": "Lot held",
+            "value": "LOT-0017",
+            "detail": null
+          },
+          {
+            "label": "Stop-sales",
+            "value": "86 VINs",
+            "detail": "at 36 dealers"
+          },
+          {
+            "label": "Owners contacted",
+            "value": "94",
+            "detail": null
+          }
+        ],
+        "note": null
+      }
+    ],
+    "gates": [
+      "validators passed",
+      "pre-flight 131/131 accepted",
+      "auditor agreed",
+      "no live read applies to a quality hold"
+    ],
+    "entities": [
+      "Wacky Wheels San Antonio",
+      "P_TX",
+      "HARN-B",
+      "Atlas Wire and Cable",
+      "LOT-0017",
+      "built 2027-02-22 → 2027-02-24"
+    ]
+  }
+}

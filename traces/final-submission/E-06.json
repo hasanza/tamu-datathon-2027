@@ -1,0 +1,336 @@
+{
+  "pipeline_version": "0.2.4",
+  "event_id": "E-06",
+  "received_at": "2027-03-08T08:42:00",
+  "source": "news wire",
+  "text": "Dealer Little Rock, AR asks where to find the new brochure PDF.",
+  "status": "noise",
+  "classification": {
+    "category": "noise",
+    "confidence": 1.0,
+    "reason": "Request for a brochure PDF is unrelated to supply chain or manufacturing operations."
+  },
+  "incidents": [
+    {
+      "incident_id": "E-06#1",
+      "event_id": "E-06",
+      "category": "noise",
+      "confidence": 1.0,
+      "plant_id": null,
+      "part_id": null,
+      "supplier_id": null,
+      "shipment_id": null,
+      "lot_id": null,
+      "orig_eta": null,
+      "new_eta": null,
+      "outage_start": null,
+      "outage_end": null,
+      "build_window_start": null,
+      "build_window_end": null,
+      "raw_mentions": {},
+      "resolution_steps": [],
+      "ambiguities": [],
+      "reason": "Request for a brochure PDF is unrelated to supply chain or manufacturing operations."
+    }
+  ],
+  "paths": {
+    "E-06#1": [
+      {
+        "nodes": [
+          {
+            "id": "E-06",
+            "type": "Event",
+            "label": "Event E-06",
+            "group": null,
+            "count": null
+          }
+        ],
+        "edges": []
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent": "coordinator",
+      "started": "2027-03-08T08:42:04.359000",
+      "ended": "2027-03-08T08:42:17.211000",
+      "model": "gemini-3.8-flash",
+      "llm_calls": 4,
+      "cost_usd": 0.016085,
+      "steps": [
+        {
+          "t": "2027-03-08T08:42:04.359000",
+          "kind": "thought",
+          "text": "The incoming message is an inquiry from a dealer asking where to find a new brochure PDF. Under the operations control tower rules, brochure or PDF requests are classified as noise.",
+          "data": null,
+          "turn": 1,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.004385,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T08:42:04.360000",
+          "kind": "tool",
+          "text": "register_incidents · 1 incident (noise)",
+          "data": null,
+          "turn": 1,
+          "tool": "register_incidents",
+          "args": {
+            "incidents": [
+              {
+                "category": "noise",
+                "evidence": "Dealer Little Rock, AR asks where to find the new brochure PDF.",
+                "plant": null,
+                "part": null,
+                "supplier": null,
+                "shipment_id": null,
+                "lot_id": null,
+                "original_eta": null,
+                "new_eta": null,
+                "outage_start": null,
+                "outage_end": null,
+                "build_window_start": null,
+                "build_window_end": null,
+                "reason": "Request for a brochure PDF is unrelated to supply chain or manufacturing operations.",
+                "confidence": 1.0
+              }
+            ]
+          },
+          "result": {
+            "count": 1,
+            "incidents": [
+              {
+                "category": "noise",
+                "confidence": 1.0,
+                "incident_id": "E-06#1",
+                "needs_human": false,
+                "actionable": false,
+                "ambiguities": []
+              }
+            ],
+            "next": "Gate each incident: drop_noise (noise only), escalate (unconfirmed / needs_human / unresolved), or delegate the actionable ones."
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T08:42:07.220000",
+          "kind": "thought",
+          "text": "Incident E-06#1 is classified as noise with needs_human=false. According to the required order, I will drop the noise item using drop_noise.",
+          "data": null,
+          "turn": 2,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.004201,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T08:42:07.221000",
+          "kind": "decision",
+          "text": "E-06#1: noise, no action. Dealer inquiry regarding brochure PDF download location is non-operational noise.",
+          "data": null,
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T08:42:07.221000",
+          "kind": "tool",
+          "text": "drop_noise · incident_id E-06#1 · reason Dealer inquiry regardin…",
+          "data": null,
+          "turn": 2,
+          "tool": "drop_noise",
+          "args": {
+            "incident_id": "E-06#1",
+            "reason": "Dealer inquiry regarding brochure PDF download location is non-operational noise."
+          },
+          "result": {
+            "dropped": "E-06#1",
+            "writes": 0
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "understand"
+        },
+        {
+          "t": "2027-03-08T08:42:09.638000",
+          "kind": "thought",
+          "text": "Incident E-06#1 has been marked and dropped as noise. There are no remaining confirmed or actionable incidents to process. Proceeding directly to finish.",
+          "data": null,
+          "turn": 3,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": "gemini-3.8-flash",
+          "cost_usd": 0.003946,
+          "task": "finish"
+        },
+        {
+          "t": "2027-03-08T08:42:17.209000",
+          "kind": "decision",
+          "text": "Event settled (noise): A dealer in Little Rock, AR submitted an inquiry asking where to find the new brochure PDF. The message was classified as non-operational noise under event E-06#1. It was dropped and no operational actions were taken.",
+          "data": null,
+          "turn": null,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "finish"
+        },
+        {
+          "t": "2027-03-08T08:42:17.211000",
+          "kind": "tool",
+          "text": "finish · summary_hint Inquiry from dealer in …",
+          "data": null,
+          "turn": 3,
+          "tool": "finish",
+          "args": {
+            "summary_hint": "Inquiry from dealer in Little Rock, AR regarding brochure PDF was classified as non-operational noise and dropped."
+          },
+          "result": {
+            "finished": true,
+            "status": "noise",
+            "summary": "A dealer in Little Rock, AR submitted an inquiry asking where to find the new brochure PDF. The message was classified as non-operational noise under event E-06#1. It was dropped and no operational actions were taken."
+          },
+          "to_agent": null,
+          "from_agent": null,
+          "transport": "in-process",
+          "model": null,
+          "cost_usd": null,
+          "task": "finish"
+        },
+        {
+          "t": "2027-03-08T08:42:17.211000",
+          "kind": "decision",
+          "text": "Coordinator finished",
+          "data": {
+            "outcome": "noise"
+          },
+          "turn": 3,
+          "tool": null,
+          "args": null,
+          "result": null,
+          "to_agent": null,
+          "from_agent": null,
+          "transport": null,
+          "model": null,
+          "cost_usd": null,
+          "task": "finish"
+        }
+      ]
+    }
+  ],
+  "orchestration": {
+    "mode": "parallel",
+    "correction_rounds": 0,
+    "escalations": [],
+    "mcp_transport": "mcp/stdio",
+    "target": "scored",
+    "provider_failure": false
+  },
+  "actions": [],
+  "world_diff": {
+    "moved_pos": [],
+    "notified_dealers": [],
+    "loaners": [],
+    "held_lots": [],
+    "stopped_vins": [],
+    "contacted_customers": []
+  },
+  "counterfactual": null,
+  "llm": {
+    "calls": [
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4402,
+        "output_tokens": 289,
+        "cost_usd": 0.004385,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4611,
+        "output_tokens": 198,
+        "cost_usd": 0.004201,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "agent_turn",
+        "input_tokens": 4661,
+        "output_tokens": 120,
+        "cost_usd": 0.003946,
+        "cached": false,
+        "attempts": 1
+      },
+      {
+        "provider": "gemini",
+        "model": "gemini-3.8-flash",
+        "purpose": "summarize",
+        "input_tokens": 302,
+        "output_tokens": 887,
+        "cost_usd": 0.003553,
+        "cached": false,
+        "attempts": 1
+      }
+    ],
+    "total_cost_usd": 0.016085
+  },
+  "summary": "A dealer in Little Rock, AR submitted an inquiry asking where to find the new brochure PDF. The message was classified as non-operational noise under event E-06#1. It was dropped and no operational actions were taken.",
+  "decision_reason": "No action was taken because the communication names no shipment, plant, part, lot, or date and describes no disruption to production, dealers, loaners, or owners. Under rule 7, noise receives no write tools.",
+  "brief": {
+    "headline": "Noise: dealer inquiry regarding brochure PDF download location, no action",
+    "outcome": "noise",
+    "incidents": [
+      {
+        "incident_id": "E-06#1",
+        "category": "noise",
+        "title": "Noise",
+        "window": null,
+        "facts": [],
+        "note": "Dealer inquiry regarding brochure PDF download location is non-operational noise."
+      }
+    ],
+    "gates": [],
+    "entities": []
+  }
+}

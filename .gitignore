@@ -32,3 +32,5 @@ traces/*
 ~$*
 build/
 .claude/worktrees/
+!runs/final-submission/
+!traces/final-submission/
