@@ -1059,3 +1059,30 @@ def test_e11_steps_carry_phases_and_delegate_tasks(rig):
     assert msgs and all(s.task in ("reschedule", "dealer_comms", "loaners", "quality_hold") for s in msgs)
     out = [s for s in co.steps if s.kind == "message" and s.to_agent == "supply_chain_planner"]
     assert out[0].task == "reschedule"
+
+
+def test_step_texts_are_prose_not_json(rig):
+    dn, ccq = lazy_scripts(rig)
+    rig.script([register(E11_RAW), *acting_flow(["E-11#1"])], sc=sc_script("E-11#1"), dn=dn, ccq=ccq)
+    t = rig.run(ev("E-11"))
+    steps = [s for r in t.agents for s in r.steps]
+    tools_ = [s for s in steps if s.kind == "tool"]
+    assert tools_
+    for s in tools_:
+        assert "{" not in s.text and '"' not in s.text, s.text
+        assert s.args is not None  # structured args stay on the step
+    brief = [s for s in steps if s.kind == "message" and s.to_agent == "supply_chain_planner"][0]
+    assert "Resolved incident E-11#1: plant_outage" in brief.text and "{'" not in brief.text and "{" not in brief.text
+    assert "outage 2027-03-26 → 2027-03-30" in brief.text
+    for s in steps:
+        if s.kind == "gate":
+            assert "'" not in s.text, s.text
+
+
+def test_gate_step_text_has_no_repr_quotes(rig):
+    dn, ccq = lazy_scripts(rig)
+    raw = raw_outage("Jacksn", "Friday Mar 26", "Tuesday Mar 30")
+    rig.script([register(raw), *acting_flow(["E-11#1"])], sc=sc_script("E-11#1"), dn=dn, ccq=ccq)
+    t = rig.run(ev("E-11"))
+    gates = [s for r in t.agents for s in r.steps if s.kind == "gate"]
+    assert gates and all("'" not in s.text and '"Jacksn"' in s.text for s in gates), [s.text for s in gates]

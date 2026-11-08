@@ -24,7 +24,7 @@ from control_tower.orchestration.report import MOVES, incident_sentence, ok, too
 from control_tower.orchestration.runtime import run_agent
 from control_tower.orchestration.specialist_tools import CCQ, _lot_impact, _quality_reason, _replay_moves, _stamp, stash
 from control_tower.orchestration.specialists import SPECIALISTS
-from control_tower.orchestration.tools import tool
+from control_tower.orchestration.tools import summarize_args, tool
 from control_tower.planning.dealer_care import plan_care
 from control_tower.planning.quality import plan_quality
 from control_tower.planning.supply_chain import SlotBoard
@@ -141,6 +141,27 @@ def _brief(spec) -> dict[str, Any]:
     return out
 
 
+def _brief_line(spec) -> str:
+    """The resolved incident as readable pairs (no braces or quotes); the structured form travels in the payload."""
+    b = _brief(spec)
+
+    def span(a: str, c: str) -> str | None:
+        x, y = b.get(a), b.get(c)
+        return f"{x} → {y}" if x and y else (str(x or y) if (x or y) else None)
+
+    cat = b.get("category", "incident")
+    fields = [
+        ("plant", b.get("plant_id")), ("part", b.get("part_id")), ("supplier", b.get("supplier_id")),
+        ("shipment", b.get("shipment_id")), ("lot", b.get("lot_id")),
+        ("outage", span("outage_start", "outage_end")), ("ETA", span("orig_eta", "new_eta")),
+        ("built", span("build_window_start", "build_window_end")),
+    ]  # fmt: skip
+    parts = [cat] + [f"{k} {v}" for k, v in fields if v]
+    if b.get("confidence") is not None:
+        parts.append(f"confidence {b['confidence']:.2f}")
+    return f"{b['incident_id']}: " + " · ".join(parts)
+
+
 def _clip(v: Any, n: int = 500) -> Any:
     s = str(v)
     return v if len(s) <= n else s[:n] + "...(clipped)"
@@ -230,7 +251,7 @@ def register_incidents(ctx: EventContext, args: RegisterArgs) -> dict[str, Any]:
                 tl(ctx).step(
                     CO,
                     "gate",
-                    f"{step.entity_type} {step.mention!r} -> {step.chosen} via {step.method}: {step.note or ''}".strip(),
+                    f'{step.entity_type} "{step.mention}" -> {step.chosen} via {step.method}: {step.note or ""}'.strip(),
                 )
         item = _brief(spec)
         item["needs_human"] = res.needs_human
@@ -321,7 +342,7 @@ def resolve_date(ctx: EventContext, args: ResolveDateArgs) -> dict[str, Any]:
 def _incident(ctx: EventContext, incident_id: str):
     spec = ctx.incidents.get(incident_id)
     if spec is None:
-        raise ValueError(f"unknown incident_id {incident_id!r}; registered: {list(ctx.incidents)}")
+        raise ValueError(f"unknown incident_id '{incident_id}'; registered: {list(ctx.incidents)}")
     return spec
 
 
@@ -540,7 +561,7 @@ def _brief_text(ctx: EventContext, task: str, incident_id: str | None, payload: 
         spec = ctx.incidents[incident_id]  # type: ignore[index]
         others = [i for i in ctx.incidents if i != incident_id and ctx.incidents[i].category in ACTIONABLE]
         return (
-            f"Reschedule task for incident {incident_id}. Resolved incident: {_brief(spec)}. Find the production "
+            f"Reschedule task for incident {incident_id}. Resolved incident {_brief_line(spec)}. Find the production "
             "orders this incident affects (affected_builds), propose the earliest feasible slots (propose_slots) and "
             "submit the plan. Slots are shared with the other incidents of this event"
             + (f" ({', '.join(others)})" if others else "")
@@ -549,7 +570,7 @@ def _brief_text(ctx: EventContext, task: str, incident_id: str | None, payload: 
     if task == "quality_hold":
         spec = ctx.incidents[incident_id]  # type: ignore[index]
         return (
-            f"quality_hold task for incident {incident_id}. Resolved incident: {_brief(spec)}. Match the lot "
+            f"quality_hold task for incident {incident_id}. Resolved incident {_brief_line(spec)}. Match the lot "
             "(match_lot), find the affected vehicles, compose the hold and the owner contacts, and submit "
             f"(task=quality_hold, incident_id={incident_id}). The Dealer Network agent composes the stop-sales."
         )
@@ -822,10 +843,10 @@ def _fresh(ctx: EventContext, reads: list[Action]) -> str | None:
     for a in reads:
         r = a.result
         if r is None or not r.ok:
-            return f"live read {a.tool} {a.args} failed: {r.error if r else 'no result'}"
+            return f"live read {a.tool} ({summarize_args(a.args)}) failed: {r.error if r else 'no result'}"
         idx = ctx.world.calendar.idx(date.fromisoformat(a.args["date"]))
         if (r.response or {}).get("free_slots") != board.free(a.args["plant_id"], idx):
-            return f"live world differs from the planning baseline at {a.tool} {a.args}: {r.response}"
+            return f"live world differs from the planning baseline at {a.tool} ({summarize_args(a.args)})"
     for d, n in (ctx.state.get("pools") or {}).items():
         if ctx.world.loaner_pool.get(d) != n:
             return f"live loaner pool of {d} is {n}, the baseline says {ctx.world.loaner_pool.get(d)}"
@@ -1066,9 +1087,13 @@ def flush_escalations(ctx: EventContext) -> None:
         tl(ctx).step(CO, "execute", f"escalate: {a.args['reason'][:300]}", tool="escalate", transport=a.transport)
 
 
+def _counts_text(c: Any) -> str:
+    return ", ".join(f"{n} {t}" for t, n in sorted(c.items())) or "nothing"
+
+
 def _desc(a: Action) -> str:
-    args = ", ".join(f"{k}={_clip(v, 60)}" for k, v in a.args.items() if k != "message")
-    return f"{a.tool}({args})" + (f" -> {a.result.error}" if a.result and a.result.error else "")
+    args = summarize_args({k: v for k, v in a.args.items() if k != "message"}, max_parts=4)
+    return f"{a.tool} · {args}" if args else a.tool + (f" -> {a.result.error}" if a.result and a.result.error else "")
 
 
 @tool(
@@ -1103,7 +1128,7 @@ def execute(ctx: EventContext, args: NoArgs) -> dict[str, Any]:
     ) in ctx.plan.reads:  # a failed or unknown planning read means the plan rests on nothing: abort before any write
         res = r.result
         if res is None or not res.ok or res.outcome in {"failed", "unknown"}:
-            why = f"A live read failed during planning ({r.tool} {r.args}: {res.error if res else 'no result'}); nothing executed"
+            why = f"A live read failed during planning ({r.tool}, {summarize_args(r.args)}: {res.error if res else 'no result'}); nothing executed"
             tl(ctx).step(CO, "execute", f"ABORT before any write: {why}")
             _escalate_open(ctx, why)
             flush_escalations(ctx)
@@ -1186,9 +1211,9 @@ def execute(ctx: EventContext, args: NoArgs) -> dict[str, Any]:
         st.failed = True
         st.failure_text = (
             f"Execution stopped partway{' (unknown outcome, event halted)' if unknown else ''}; nothing was retried. "
-            f"Done ({len(done)}): {tool_counts(writes)}. "
-            f"Failed ({len(failed) + len(unknown)}): {[_desc(a) for a in [*failed, *unknown][:5]]}. "
-            f"Skipped ({len(skipped)}): {dict(sorted(Counter(a.tool for a in skipped).items()))}. "
+            f"Done ({len(done)}): {_counts_text(tool_counts(writes))}. "
+            f"Failed ({len(failed) + len(unknown)}): {'; '.join(_desc(a) for a in [*failed, *unknown][:5])}. "
+            f"Skipped ({len(skipped)}): {_counts_text(Counter(a.tool for a in skipped))}. "
             "Please complete or reverse the remainder by hand."
         )
         hit = {i for a in [*failed, *unknown, *skipped] for i in _incs(a)}
@@ -1224,8 +1249,8 @@ def _partial_sentence(ctx: EventContext, i: str) -> str:
     bad = Counter(a.tool for a in mine if not ok(a) and not a.skipped)
     skp = Counter(a.tool for a in mine if a.skipped)
     return (
-        f"{i}: executed partially — done {done or 'nothing'}; failed {dict(sorted(bad.items())) or 'nothing'}; "
-        f"skipped {dict(sorted(skp.items())) or 'nothing'}; the remainder was escalated to a human."
+        f"{i}: executed partially — done {_counts_text(done)}; failed {_counts_text(bad)}; "
+        f"skipped {_counts_text(skp)}; the remainder was escalated to a human."
     )
 
 
