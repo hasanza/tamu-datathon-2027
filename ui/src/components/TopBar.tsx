@@ -1,10 +1,9 @@
-import { Moon, Play, Sun, TriangleAlert, Undo2 } from "lucide-react";
-import { useKpis, useRunStatus } from "../api/hooks";
+import { Moon, Play, Sun, TriangleAlert } from "lucide-react";
+import { useRunStatus } from "../api/hooks";
 import type { Page } from "../lib/route";
-import { usd } from "../lib/format";
 import { useTheme } from "../state";
 import { RunMenu } from "./ui/RunMenu";
-import { useReset, useRun } from "./useRun";
+import { useRun } from "./useRun";
 
 const NAV: { page: Page; label: string }[] = [
   { page: "tower", label: "Control tower" },
@@ -12,41 +11,17 @@ const NAV: { page: Page; label: string }[] = [
   { page: "about", label: "About" },
 ];
 
-/** After a run in this session: one line with the five numbers that matter (the live counters are in the run menu). */
-function RunSummary() {
-  const { data } = useKpis();
-  if (!data) return null;
-  const model = data.models.map((m) => m.replace(/^[^/]+\//, "")).join(" · ");
-  const parts = [
-    `${data.events_with_trace}/${data.events_total} handled`,
-    `${data.writes} writes`,
-    `${data.failed} failed`,
-    `${data.escalations} escalated`,
-    usd(data.cost_usd),
-    ...(model ? [model] : []),
-  ];
-  return (
-    <p aria-label="Last run" data-run-summary className="mono text-[11px] leading-4 text-tx3">
-      {parts.join(" · ")}
-    </p>
-  );
-}
-
 export function TopBar({ page, go, version }: { page: Page; go: (p: Page) => void; version?: string }) {
   const { theme, toggle } = useTheme();
   const run = useRun();
-  const reset = useReset();
   const status = useRunStatus().data;
   const running = !!status?.running;
   return (
     <header className="shrink-0 border-b-2 border-brand bg-surface">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2">
-        <div className="min-w-0">
-          <h1 className="text-lg font-semibold tracking-tight" title={version ? `Pipeline v${version}` : undefined}>
-            Wacky Wheels <span className="text-tx2">Control Tower</span>
-          </h1>
-          {page === "tower" && !running && status?.mode && <RunSummary />}
-        </div>
+        <h1 className="text-lg font-semibold tracking-tight" title={version ? `Pipeline v${version}` : undefined}>
+          Wacky Wheels <span className="text-tx2">Control Tower</span>
+        </h1>
         <nav aria-label="Primary" className="flex items-center gap-1">
           {NAV.map((n) => (
             <button
@@ -76,16 +51,6 @@ export function TopBar({ page, go, version }: { page: Page; go: (p: Page) => voi
               </span>
             </span>
           )}
-          {status?.mode && !running && (
-            <button
-              onClick={() => reset.mutate(undefined, { onSuccess: () => window.dispatchEvent(new Event("ct-feed-reset")) })}
-              disabled={reset.isPending}
-              title="Discard this run and show the committed snapshot of all 15 events"
-              className="inline-flex items-center gap-1.5 rounded-md border border-line px-2.5 py-1.5 text-[13px] text-tx2 hover:border-brand-bright hover:text-tx disabled:opacity-60"
-            >
-              <Undo2 size={14} aria-hidden /> Back to snapshot
-            </button>
-          )}
           <button
             onClick={() => run.mutate({ all: true })}
             disabled={run.isPending || running}
@@ -101,11 +66,8 @@ export function TopBar({ page, go, version }: { page: Page; go: (p: Page) => voi
           >
             {theme === "dark" ? <Sun size={16} aria-hidden /> : <Moon size={16} aria-hidden />}
           </button>
-          <div className="hidden text-right leading-tight sm:block" aria-label="Powered by Hitachi Digital Services">
-            <div className="text-[9px] uppercase tracking-[0.12em] text-tx3">Powered by</div>
-            <div className="text-[12px] font-bold tracking-tight text-tx">
-              HITACHI <span className="font-medium text-tx2">Digital Services</span>
-            </div>
+          <div className="hidden whitespace-nowrap text-[12px] font-bold leading-none tracking-tight text-tx sm:block" aria-label="Hitachi Digital Services">
+            HITACHI <span className="font-medium text-tx2">Digital Services</span>
           </div>
         </div>
       </div>

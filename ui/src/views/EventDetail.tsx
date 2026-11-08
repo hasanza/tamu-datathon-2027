@@ -78,9 +78,9 @@ export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent
           </div>
         </div>
         {sandbox && (
-          <p className="flex items-center gap-1.5 rounded-md border border-line bg-surface-2 px-2.5 py-1.5 text-xs text-tx2">
+          <p className="flex items-center gap-1.5 text-xs text-tx3">
             <FlaskConical size={13} className="shrink-0" style={{ color: "var(--cat-compound)" }} aria-hidden />
-            Sandbox run: executed through the same MCP client as the feed against a private sandbox copy of the enterprise server. The scored action log is untouched.
+            Sandbox server · same agents and MCP client · scored log untouched
           </p>
         )}
         <div role="tablist" aria-label="Event views" className="-mb-px flex gap-1 overflow-x-auto">
