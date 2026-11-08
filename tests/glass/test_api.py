@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -247,8 +248,8 @@ def _seed_live_run(monkeypatch):
     import api.app as appmod
 
     root = appmod.ROOT
-    (root / "traces" / "live").mkdir(parents=True)
-    (root / "runs" / "live").mkdir(parents=True)
+    (root / "traces" / "live").mkdir(parents=True, exist_ok=True)
+    (root / "runs" / "live").mkdir(parents=True, exist_ok=True)
     for eid in ("E-01", "E-08"):
         (root / "traces" / "live" / f"{eid}.json").write_text("{}")
     log = root / "runs" / "live" / "action_log.jsonl"
@@ -480,3 +481,131 @@ def test_run_status_names_how_a_run_ended(client, monkeypatch, code, stderr, sta
     run_stderr.write_text(stderr)
     s = client.get("/api/run/status").json()
     assert (s["exit_code"], s["state"], s["message"], s["running"]) == (code, state, message, False)
+
+
+class LiveProc:
+    """A subprocess that is running until the API signals its process group."""
+
+    pid = 4242
+
+    def __init__(self):
+        self.returncode = None
+
+    def poll(self):
+        return self.returncode
+
+    def wait(self, timeout=None):
+        return self.returncode
+
+
+def _start_run(client, monkeypatch, proc):
+    import api.app as appmod
+
+    monkeypatch.setattr(appmod.subprocess, "Popen", lambda cmd, **kw: proc)
+    assert client.post("/api/run", params={"all": True}).status_code == 202
+
+
+def test_cancel_stops_the_process_group_and_reports_cancelled(client, monkeypatch):
+    import api.app as appmod
+
+    proc = LiveProc()
+    signalled = []
+
+    def killpg(pgid, sig):
+        signalled.append((pgid, sig))
+        proc.returncode = -15  # SIGTERM: the child is gone
+
+    monkeypatch.setattr(appmod.os, "getpgid", lambda pid: 9000 + pid)
+    monkeypatch.setattr(appmod.os, "killpg", killpg)
+    _start_run(client, monkeypatch, proc)
+    assert client.get("/api/run/status").json()["running"] is True
+    r = client.post("/api/run/cancel")
+    assert r.status_code == 200
+    assert signalled == [(9000 + proc.pid, appmod.signal.SIGTERM)]  # the group, so the enterprise server dies with it
+    st = client.get("/api/run/status").json()
+    assert st["running"] is False and st["state"] == "cancelled" and st["message"] is None
+
+
+def test_cancel_without_a_run_is_refused(client):
+    assert client.post("/api/run/cancel").status_code == 409
+
+
+def _seed_everything(cfg):
+    import api.app as appmod
+
+    root = appmod.ROOT
+    cfg.custom_dir.mkdir(parents=True, exist_ok=True)
+    (cfg.custom_dir / "C-01.json").write_text("{}")
+    (cfg.custom_dir / "C-02.json").write_text("{}")
+    (cfg.custom_dir / "C-03.input.json").write_text("[]")  # in flight: not a finished judge event
+    (cfg.custom_run_dir / "sandbox" / "C-01").mkdir(parents=True, exist_ok=True)
+    (cfg.custom_run_dir / "events.ndjson").write_text("x\n")
+    (root / "traces" / "live").mkdir(parents=True, exist_ok=True)
+    (root / "traces" / "live" / "E-01.json").write_text("{}")
+    (root / "runs" / "live").mkdir(parents=True, exist_ok=True)
+    (root / "runs" / "live" / "action_log.jsonl").write_text('{"a": 1}\n{"a": 2}\n')
+    return root
+
+
+def test_reset_preview_counts_what_would_go(client, cfg):
+    _seed_everything(cfg)
+    assert client.get("/api/reset/preview").json() == {
+        "judge_events": 2,
+        "live_traces": 1,
+        "live_log_rows": 2,
+        "running": False,
+    }
+
+
+def test_reset_all_deletes_judge_events_and_the_live_run(client, cfg):
+    root = _seed_everything(cfg)
+    assert client.post("/api/reset", params={"scope": "all"}).status_code == 200
+    assert list(cfg.custom_dir.glob("*.json")) == []  # including the *.input.json
+    assert list(cfg.custom_run_dir.iterdir()) == []
+    assert list((root / "traces" / "live").iterdir()) == []
+    assert list((root / "runs" / "live").iterdir()) == []
+    assert client.get("/api/reset/preview").json()["judge_events"] == 0
+
+
+def test_plain_reset_keeps_the_files(client, cfg):
+    root = _seed_everything(cfg)
+    assert client.post("/api/reset").status_code == 200
+    assert (cfg.custom_dir / "C-01.json").exists() and (root / "traces" / "live" / "E-01.json").exists()
+
+
+def test_reset_all_is_refused_while_a_run_is_in_progress(client, cfg, monkeypatch):
+    _start_run(client, monkeypatch, LiveProc())  # (a full run clears the live traces itself: seed after it started)
+    root = _seed_everything(cfg)
+    assert client.post("/api/reset", params={"scope": "all"}).status_code == 409
+    assert (root / "traces" / "live" / "E-01.json").exists()  # nothing was deleted
+
+
+def test_cancel_really_kills_the_child_the_runner_started(client, monkeypatch, tmp_path):
+    """live.py starts the enterprise server as its child: Cancel must stop both (process group), within 5 s."""
+    import subprocess as sp
+    import time
+
+    import api.app as appmod
+
+    real_popen = sp.Popen
+    pidfile = tmp_path / "child.pid"
+    script = f"sleep 60 & echo $! > {pidfile}; wait"
+    monkeypatch.setattr(appmod.subprocess, "Popen", lambda cmd, **kw: real_popen(["sh", "-c", script], **kw))
+    assert client.post("/api/run", params={"all": True}).status_code == 202
+    for _ in range(100):  # the shell writes the pid of its child
+        if pidfile.exists() and pidfile.read_text().strip():
+            break
+        time.sleep(0.05)
+    child = int(pidfile.read_text())
+    t0 = time.time()
+    assert client.post("/api/run/cancel").status_code == 200
+    assert time.time() - t0 < 5
+    for _ in range(100):
+        try:
+            os.kill(child, 0)
+        except ProcessLookupError:
+            break
+        time.sleep(0.05)
+    else:
+        raise AssertionError("the child of the runner is still alive after Cancel")
+    assert client.get("/api/run/status").json()["state"] == "cancelled"

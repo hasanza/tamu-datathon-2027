@@ -1,4 +1,4 @@
-import type { FeedEvent, GraphPath, Kpis, LogRow, RunMode, RunStatus, Trace } from "./types";
+import type { FeedEvent, GraphPath, Kpis, LogRow, ResetPreview, RunMode, RunStatus, Trace } from "./types";
 
 export interface CustomResult {
   event_id: string;
@@ -64,4 +64,7 @@ export const api = {
     }),
   runStatus: () => request<RunStatus>("/api/run/status"),
   reset: () => request<RunStatus>("/api/reset", { method: "POST" }),
+  resetAll: () => request<RunStatus>("/api/reset?scope=all", { method: "POST" }),
+  resetPreview: () => request<ResetPreview>("/api/reset/preview"),
+  cancelRun: () => request<RunStatus>("/api/run/cancel", { method: "POST" }),
 };

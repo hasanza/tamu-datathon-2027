@@ -1,9 +1,14 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { api } from "../../api/client";
+import { safeStorage } from "../../lib/format";
 import { Check, ChevronDown, Undo2 } from "lucide-react";
 import { useKpis, useRunStatus } from "../../api/hooks";
 import { usd } from "../../lib/format";
 import { useRunMode, type RunOrder } from "../../state";
-import { useReset } from "../useRun";
+import { useResetAll } from "../useRun";
+import { btnPrimary, btnSecondary, Dialog } from "./Dialog";
 
 const ORDERS: { id: RunOrder; label: string; hint: string }[] = [
   { id: "sequential", label: "Sequential", hint: "one event at a time (default)" },
@@ -11,14 +16,29 @@ const ORDERS: { id: RunOrder; label: string; hint: string }[] = [
 ];
 
 /** Run options beside the Run feed button: Sequential/Parallel, and while a run is live its counters. */
-export function RunMenu({ running }: { running: boolean }) {
+export function RunMenu({ running, activityCount = 0 }: { running: boolean; activityCount?: number }) {
   const { order, setOrder } = useRunMode();
   const kpis = useKpis().data;
   const status = useRunStatus().data;
-  const reset = useReset();
+  const reset = useResetAll();
+  const [resetOpen, setResetOpen] = useState(false);
+  const preview = useQuery({ queryKey: ["reset-preview"], queryFn: api.resetPreview, enabled: resetOpen, staleTime: 0 });
+  const count = (key: string, pick: (v: unknown) => number) => {
+    try {
+      return pick(JSON.parse(safeStorage(key) ?? "null"));
+    } catch {
+      return 0;
+    }
+  };
+  const acks = count("ct-acked", (v) => (Array.isArray(v) ? v.length : 0));
+  const filters = count("ct-feed-filters", (v) => {
+    const o = (v ?? {}) as { cats?: unknown[]; stats?: unknown[] };
+    return (o.cats?.length ?? 0) + (o.stats?.length ?? 0);
+  });
   const lastRun = !running && !!status?.mode && !!kpis; // a run happened in this session and nothing is running now
   const model = kpis?.models.map((m) => m.replace(/^[^/]+\//, "")).join(" · ") || "-";
   return (
+    <>
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <button
@@ -78,21 +98,47 @@ export function RunMenu({ running }: { running: boolean }) {
               </div>
             </>
           )}
-          {status?.mode && !running && (
-            <>
-              <DropdownMenu.Separator className="my-1.5 h-px bg-line" />
-              <DropdownMenu.Item
-                disabled={reset.isPending}
-                onSelect={() => reset.mutate(undefined, { onSuccess: () => window.dispatchEvent(new Event("ct-feed-reset")) })}
-                title="Discard this run and show the committed snapshot of all 15 events"
-                className="flex cursor-pointer items-center gap-2 rounded px-1.5 py-1 text-[12.5px] text-tx2 outline-none data-[disabled]:opacity-50 data-[highlighted]:bg-surface-2 data-[highlighted]:text-tx"
-              >
-                <Undo2 size={13} aria-hidden /> Reset to snapshot
-              </DropdownMenu.Item>
-            </>
-          )}
+          <DropdownMenu.Separator className="my-1.5 h-px bg-line" />
+          <DropdownMenu.Item
+            onSelect={() => setResetOpen(true)}
+            title="Remove the judge events, the live run and this session's state"
+            className="flex cursor-pointer items-center gap-2 rounded px-1.5 py-1 text-[12.5px] text-tx2 outline-none data-[highlighted]:bg-surface-2 data-[highlighted]:text-tx"
+          >
+            <Undo2 size={13} aria-hidden /> Reset...
+          </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
+    <Dialog
+      open={resetOpen}
+      onOpenChange={setResetOpen}
+      title="Reset everything?"
+      description="This removes the following and returns the app to its starting state."
+      footer={
+        <>
+          <button onClick={() => setResetOpen(false)} className={btnSecondary}>
+            Keep it
+          </button>
+          <button
+            onClick={() => reset.mutate(undefined, { onSuccess: () => setResetOpen(false) })}
+            disabled={reset.isPending || running || preview.data?.running}
+            className={btnPrimary}
+          >
+            {reset.isPending ? "Resetting..." : "Reset"}
+          </button>
+        </>
+      }
+    >
+      <ul data-reset-list className="space-y-1 text-[13px] text-tx2">
+        <li>Judge events: <b className="mono text-tx">{preview.data?.judge_events ?? "..."}</b></li>
+        <li>Live-run traces: <b className="mono text-tx">{preview.data?.live_traces ?? "..."}</b> and action-log rows: <b className="mono text-tx">{preview.data?.live_log_rows ?? "..."}</b></li>
+        <li>Acknowledgements: <b className="mono text-tx">{acks}</b></li>
+        <li>Active filters: <b className="mono text-tx">{filters}</b></li>
+        <li>Activity items: <b className="mono text-tx">{activityCount}</b></li>
+      </ul>
+      {(running || preview.data?.running) && <p className="mt-2 text-[12px] text-warn">A run is in progress: cancel it first.</p>}
+      <p className="mt-2 text-[11.5px] text-tx3">The tutorial state is not touched.</p>
+    </Dialog>
+    </>
   );
 }

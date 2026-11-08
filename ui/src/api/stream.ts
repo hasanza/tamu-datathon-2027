@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRunStatus } from "./hooks";
 import { prettifyRepr, summarize } from "../lib/format";
+import { useToast } from "../state";
 import { firstSentence } from "../lib/flow";
 import { isCustomId, type AgentId, type AgentStep, type FeedEvent, type StepKind, type StreamType, type Transport } from "./types";
 
@@ -107,15 +108,27 @@ export function useLiveStream() {
 
   // SSE can miss lines (reconnect starts at the end of the file). When the API says a run has finished,
   // re-read everything so no event is left "processing" or "queued".
-  const running = useRunStatus().data?.running;
+  const runStatus = useRunStatus().data;
+  const running = runStatus?.running;
   const wasRunning = useRef(false);
+  const toast = useToast();
+  // feed events finished in the current run (the header's "event 7 of 15"): reset when a new run starts
+  const [finished, setFinished] = useState<Set<string>>(new Set());
+  const finishedRef = useRef(0);
+  finishedRef.current = finished.size;
+  const startedAt = runStatus?.started ?? null;
+  useEffect(() => setFinished(new Set()), [startedAt]);
   useEffect(() => {
     if (wasRunning.current && running === false) {
       setProcessing(new Set());
       void qc.invalidateQueries();
+      if (runStatus?.state === "done") {
+        const total = (qc.getQueryData<FeedEvent[]>(["events"]) ?? []).filter((e) => !e.custom).length || 15;
+        toast(`Run finished: ${Math.max(finishedRef.current, 0)}/${total}`, "ok");
+      }
     }
     if (running !== undefined) wasRunning.current = running;
-  }, [running, qc]);
+  }, [running, runStatus?.state, qc, toast]);
 
   useEffect(() => {
     let es: EventSource | null = null;
@@ -179,6 +192,7 @@ export function useLiveStream() {
               MAX_ITEMS,
             ),
           );
+          if (eventId && type === "event_done" && !isCustomId(eventId)) setFinished((s) => new Set(s).add(eventId));
           if (eventId && type === "event_received") setLiveSteps((m) => ({ ...m, [eventId]: [] })); // a new run of this event
           if (eventId && type === "agent_step") {
             const step = toLiveStep(payload, id);
@@ -257,5 +271,14 @@ export function useLiveStream() {
   }, []);
 
   const clear = useCallback(() => setItems([]), []);
-  return { live, items, processing, recent, replay, setReplay, clear, liveSteps, pendingCustom: Object.values(pendingCustom) };
+  /** "Reset everything": the Activity log, the steps of events in flight and the judge placeholders all go. */
+  const clearAll = useCallback(() => {
+    setItems([]);
+    setLiveSteps({});
+    setPendingCustom({});
+    setRecent({});
+    setProcessing(new Set());
+    setFinished(new Set());
+  }, []);
+  return { live, items, processing, recent, replay, setReplay, clear, clearAll, liveSteps, finished: finished.size, pendingCustom: Object.values(pendingCustom) };
 }

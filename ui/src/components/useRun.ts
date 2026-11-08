@@ -31,6 +31,51 @@ export function useRun() {
   });
 }
 
+/** localStorage keys that "Reset everything" clears. `ct-tour` (the tutorial) is deliberately not one of them. */
+export const RESET_KEYS = ["ct-acked", "ct-feed-filters", "ct-summary-impact"];
+
+/** POST /api/reset?scope=all: delete the judge events and the live run from disk, and clear this browser's session state. */
+export function useResetAll() {
+  const toast = useToast();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.resetAll(),
+    onSuccess: () => {
+      for (const k of RESET_KEYS) {
+        try {
+          localStorage.removeItem(k);
+        } catch {
+          /* storage blocked: nothing to clear */
+        }
+      }
+      window.dispatchEvent(new Event("ct-feed-reset")); // feed filters
+      window.dispatchEvent(new Event("ct-reset-all")); // acknowledgements, Activity, selection
+      window.location.hash = "/";
+      toast("Reset: judge events, the live run and this session's state are gone", "ok");
+      dropRunData(qc);
+      void qc.invalidateQueries();
+    },
+    onError: (e) => {
+      if (e instanceof ApiError && e.status === 409) toast("Wait for the running pipeline to finish, or cancel it first", "info");
+      else toast(e instanceof Error ? `Reset failed: ${e.message}` : "Reset failed", "error");
+    },
+  });
+}
+
+/** POST /api/run/cancel: stop the live run (and the enterprise server it started). */
+export function useCancelRun() {
+  const toast = useToast();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.cancelRun(),
+    onSuccess: () => {
+      toast("Run cancelled", "info");
+      dropRunData(qc);
+    },
+    onError: (e) => toast(e instanceof Error ? `Could not cancel: ${e.message}` : "Could not cancel", "error"),
+  });
+}
+
 /** POST /api/reset: back to the committed 15-event snapshot. */
 export function useReset() {
   const toast = useToast();

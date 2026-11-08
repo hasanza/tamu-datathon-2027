@@ -1,7 +1,8 @@
-import { useId, useState } from "react";
+import { useEffect, useState } from "react";
 import { FlaskConical, Loader2, Send, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { api, ApiError } from "../api/client";
+import { WRITE_TOOLS } from "../api/types";
 import { useToast } from "../state";
 
 export const MIN_CHARS = 8;
@@ -45,7 +46,15 @@ export function CustomEventCard({ onCreated }: { onCreated: (id: string) => void
   const [busy, setBusy] = useState(false);
   const toast = useToast();
   const qc = useQueryClient();
-  const fieldId = useId();
+  // the event pane's empty state asks for the same card
+  useEffect(() => {
+    const on = () => {
+      setOpen(true);
+      window.setTimeout(() => document.getElementById("custom-event-field")?.focus(), 50);
+    };
+    window.addEventListener("ct-open-custom", on);
+    return () => window.removeEventListener("ct-open-custom", on);
+  }, []);
   const trimmed = text.trim();
   const tooShort = trimmed.length < MIN_CHARS;
 
@@ -55,7 +64,13 @@ export function CustomEventCard({ onCreated }: { onCreated: (id: string) => void
     try {
       const r = await api.custom(trimmed);
       await Promise.all([qc.invalidateQueries({ queryKey: ["events"] }), qc.invalidateQueries({ queryKey: ["kpis"] })]);
-      toast(`${r.event_id}: ${r.category.replace("_", " ")} (${r.status}). Ran in the sandbox; the scored action log is untouched.`, "ok");
+      // "C-22 handled: acted, 48 writes - View": the writes come from the trace the run just produced
+      const writes = await api
+        .trace(r.event_id)
+        .then((t) => t.actions.filter((a) => WRITE_TOOLS.has(a.tool) && a.result?.ok && !a.skipped).length)
+        .catch(() => null);
+      const outcome = r.status === "done" ? "acted" : r.status;
+      toast(`${r.event_id} handled: ${outcome}${writes ? `, ${writes} writes` : ""}`, "ok", { label: "View", onClick: () => onCreated(r.event_id) });
       setText("");
       setOpen(false);
       onCreated(r.event_id);
@@ -103,11 +118,11 @@ export function CustomEventCard({ onCreated }: { onCreated: (id: string) => void
           </button>
         ))}
       </div>
-      <label htmlFor={fieldId} className="sr-only">
+      <label htmlFor="custom-event-field" className="sr-only">
         Event text
       </label>
       <textarea
-        id={fieldId}
+        id="custom-event-field"
         value={text}
         onChange={(e) => setText(e.target.value.slice(0, MAX_CHARS))}
         onKeyDown={(e) => {

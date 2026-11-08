@@ -16,6 +16,8 @@ import asyncio
 import json
 import os
 import re
+import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -33,6 +35,7 @@ from control_tower.schemas import GraphPath, Trace
 
 ROOT = Path(__file__).resolve().parents[1]
 EVENT_ID = re.compile(r"^[EC]-\d{2}$")
+EVENT_FILE = re.compile(r"^C-\d{2}\.json$")  # a finished judge trace (C-nn.input.json is one in flight)
 # Tools that are not writes (hack_the_highway/enterprise.py TOOLS[...]["writes"] is False). Hard-coded because
 # GET /tools omits the flag (docs/server-notes.md).
 NON_WRITE_TOOLS = {"mes.get_schedule", "crm.loaner_availability", "escalate"}
@@ -345,7 +348,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "target": getattr(t.orchestration, "target", None) or "sandbox",
         }
 
-    runner: dict[str, Any] = {"proc": None, "mode": None, "started": None, "stderr": None}
+    runner: dict[str, Any] = {"proc": None, "mode": None, "started": None, "stderr": None, "cancelled": False}
     initial_dirs = (cfg.traces_dir, cfg.run_dir)  # what the server was started with: the committed snapshot
 
     def stderr_line(code: int) -> str | None:
@@ -365,13 +368,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         code = None if proc is None or running else proc.returncode
         # exit 2 is the pipeline giving up on purpose (provider unavailable, or the sandbox server did not start)
         state = None if code is None else "done" if code == 0 else "aborted" if code == 2 else "failed"
+        if runner["cancelled"] and not running and proc is not None:
+            state = "cancelled"  # the reader stopped it: not a failure
         return {
             "running": running,
             "mode": runner["mode"],
             "exit_code": code,
             "started": runner["started"],
             "state": state,
-            "message": stderr_line(code) if code is not None else None,
+            "message": None if state == "cancelled" else (stderr_line(code) if code is not None else None),
         }
 
     @app.get("/api/run/status")
@@ -419,17 +424,66 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )  # connected SSE tailers see the truncation now, before the pipeline starts writing
         runner["stderr"] = str(cfg.run_dir / "run.stderr")
         with open(runner["stderr"], "wb") as err:  # the child keeps its own copy of the descriptor
-            runner["proc"] = subprocess.Popen(cmd, cwd=ROOT, stderr=err)  # noqa: S603
-        runner["mode"], runner["started"] = mode, time.time()
+            # own process group, so Cancel can stop live.py together with the enterprise server it started
+            runner["proc"] = subprocess.Popen(cmd, cwd=ROOT, stderr=err, start_new_session=True)  # noqa: S603
+        runner["mode"], runner["started"], runner["cancelled"] = mode, time.time(), False
         return runner_state()
 
+    def reset_dirs() -> dict[str, Path]:
+        """What "Reset everything" removes: the judge events and the live run (traces, action log, streams)."""
+        return {
+            "judge": cfg.custom_dir,
+            "judge_run": cfg.custom_run_dir,
+            "live": ROOT / "traces" / "live",
+            "live_run": ROOT / "runs" / "live",
+        }
+
+    def contents(d: Path) -> list[Path]:
+        return [p for p in d.iterdir() if not p.name.startswith(".")] if d.exists() else []
+
+    @app.get("/api/reset/preview")
+    def reset_preview() -> dict[str, Any]:
+        """Counts for the "Reset everything" dialog."""
+        d = reset_dirs()
+        log = d["live_run"] / "action_log.jsonl"
+        return {
+            "judge_events": len([p for p in contents(d["judge"]) if EVENT_FILE.fullmatch(p.name)]),
+            "live_traces": len([p for p in contents(d["live"]) if p.suffix == ".json"]),
+            "live_log_rows": len(_read_jsonl(log)),
+            "running": runner_state()["running"],
+        }
+
     @app.post("/api/reset")
-    def reset() -> dict[str, Any]:
-        """Back to the snapshot: point the API at the directories it started with and forget the last live run."""
+    def reset(scope: str = Query(default="run", pattern="^(run|all)$")) -> dict[str, Any]:
+        """scope=run (default): back to the snapshot: point the API at the directories it started with and forget the
+        last live run. scope=all: also delete the judge events and the live run's files from disk."""
         if runner_state()["running"]:
             raise HTTPException(409, "a run is in progress; wait for it to finish")
+        if scope == "all":
+            for d in reset_dirs().values():
+                for p in contents(d):
+                    shutil.rmtree(p) if p.is_dir() else p.unlink(missing_ok=True)
         cfg.traces_dir, cfg.run_dir = initial_dirs
-        runner.update(proc=None, mode=None, started=None, stderr=None)
+        runner.update(proc=None, mode=None, started=None, stderr=None, cancelled=False)
+        return runner_state()
+
+    @app.post("/api/run/cancel")
+    def cancel_run() -> dict[str, Any]:
+        """Stop the live run: SIGTERM to its process group (live.py and the enterprise server), SIGKILL after 5 s."""
+        proc = runner["proc"]
+        if proc is None or proc.poll() is not None:
+            raise HTTPException(409, "no run is in progress")
+        runner["cancelled"] = True
+        try:
+            pgid = os.getpgid(proc.pid)
+            os.killpg(pgid, signal.SIGTERM)
+            try:
+                proc.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                os.killpg(pgid, signal.SIGKILL)
+                proc.wait(timeout=5)
+        except ProcessLookupError:
+            pass
         return runner_state()
 
     @app.get("/api/stream")
