@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { CheckCircle2, ChevronDown, ChevronRight, MinusCircle, XCircle } from "lucide-react";
+import { CheckCircle2, MinusCircle, XCircle } from "lucide-react";
 import { WRITE_TOOLS, type Trace } from "../api/types";
+import { Disclosure } from "../components/ui/Disclosure";
 import { Chip, Mono, Panel, Stat } from "../components/ui/primitives";
 import { usd } from "../lib/format";
 import { TARGET_META, targetOf, type Target } from "../lib/target";
@@ -96,15 +97,11 @@ function DiffSection({ title, count, children }: { title: string; count: number;
 }
 
 function DealerRow({ id, orders }: { id: string; orders: string[] }) {
-  const [open, setOpen] = useState(false);
   return (
     <li className="rounded-md border border-line bg-surface-2 px-2 py-1">
-      <button onClick={() => setOpen(!open)} aria-expanded={open} className="flex w-full items-center gap-1.5 text-left text-xs">
-        {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-        <Mono className="font-medium text-tx">{id}</Mono>
-        <span className="text-tx3">{orders.length} order{orders.length === 1 ? "" : "s"}</span>
-      </button>
-      {open && <div className="mt-1.5"><ChipList items={orders} /></div>}
+      <Disclosure summary={<Mono className="font-medium text-tx">{id}</Mono>} count={orders.length}>
+        <ChipList items={orders} />
+      </Disclosure>
     </li>
   );
 }
