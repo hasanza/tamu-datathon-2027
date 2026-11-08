@@ -41,3 +41,9 @@ def test_identity_multiset_ignores_reads_and_skipped():
         {"tool": "dealer.notify", "args": {"a": 1, "b": 2}, "skipped": True},
     ]}  # fmt: skip
     assert dict(ri.multiset(tr)) == {("dealer.notify", '{"a": 1, "b": 2}'): 1}
+
+
+def test_identity_escalations_compare_by_incident_not_prose():
+    mk = lambda r: {"actions": [{"tool": "escalate", "args": {"reason": r}}]}  # noqa: E731
+    assert ri.multiset(mk("E-02#1 (unconfirmed): a")) == ri.multiset(mk("E-02#1 (unconfirmed): other words"))
+    assert ri.multiset(mk("E-02#1 x")) != ri.multiset(mk("E-13#1 x"))

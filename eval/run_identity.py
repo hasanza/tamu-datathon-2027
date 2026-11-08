@@ -34,13 +34,16 @@ def free_port() -> int:
         return s.getsockname()[1]
 
 
+def _key(a: dict) -> tuple[str, str]:
+    """An escalation is identified by the incident it names (its reason text is LLM prose and varies by wording)."""
+    if a["tool"] == "escalate":
+        return "escalate", str(a["args"].get("reason", "")).split(" ", 1)[0]
+    return a["tool"], json.dumps(a["args"], sort_keys=True)
+
+
 def multiset(trace: dict) -> Counter:
-    """(tool, canonical args) of every non-read, non-skipped action of a trace dict."""
-    return Counter(
-        (a["tool"], json.dumps(a["args"], sort_keys=True))
-        for a in trace["actions"]
-        if a["tool"] not in READS and not a.get("skipped")
-    )
+    """(tool, canonical args) of every non-read, non-skipped action of a trace dict (escalate: tool + incident id)."""
+    return Counter(_key(a) for a in trace["actions"] if a["tool"] not in READS and not a.get("skipped"))
 
 
 def load_traces(d: Path, ids: list[str]) -> dict[str, dict]:
