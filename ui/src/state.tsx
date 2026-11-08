@@ -4,7 +4,7 @@ import { safeStorage } from "./lib/format";
 
 /* ---------- theme ---------- */
 type Theme = "dark" | "light";
-const ThemeCtx = createContext<{ theme: Theme; toggle: () => void }>({ theme: "dark", toggle: () => {} });
+const ThemeCtx = createContext<{ theme: Theme; toggle: () => void }>({ theme: "light", toggle: () => {} });
 export const useTheme = () => useContext(ThemeCtx);
 
 /* ---------- run order (Sequential | Parallel). Feed events always go to the scored server: there is no mode to pick. ---------- */
@@ -30,7 +30,7 @@ const ToastCtx = createContext<(text: string, kind?: ToastKind, action?: ToastAc
 export const useToast = () => useContext(ToastCtx);
 
 export function AppProviders({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => (document.documentElement.dataset.theme === "light" ? "light" : "dark"));
+  const [theme, setTheme] = useState<Theme>(() => (document.documentElement.dataset.theme === "dark" ? "dark" : "light"));
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     safeStorage("ct-theme", theme);
