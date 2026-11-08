@@ -1036,3 +1036,22 @@ def test_escalate_refused_for_a_confirmed_resolved_incident(rig):
     err = tool_results(t, "escalate")[0]["error"]
     assert "confirmed and fully resolved" in err and "guard forbids" in err and "plant_id P_MS" in err
     assert t.status == "done" and esc(t) == []
+
+
+def test_e11_steps_carry_phases_and_delegate_tasks(rig):
+    dn, ccq = lazy_scripts(rig)
+    rig.script([register(E11_RAW), *acting_flow(["E-11#1"])], sc=sc_script("E-11#1"), dn=dn, ccq=ccq)
+    t = rig.run(ev("E-11"))
+    co = next(r for r in t.agents if r.agent == "coordinator")
+    phases = [s.task for s in co.steps if s.kind in ("thought", "tool") and s.task]
+    order = [p for k, p in enumerate(phases) if k == 0 or p != phases[k - 1]]
+    assert order == ["understand", "delegate", "validate", "execute", "finish"]
+    for r in t.agents:
+        if r.agent != "coordinator":
+            assert all(s.task in ("reschedule", "dealer_comms", "loaners", "quality_hold") for s in r.steps), [
+                (s.kind, s.task) for s in r.steps
+            ]
+    msgs = [s for r in t.agents for s in r.steps if s.kind == "message"]
+    assert msgs and all(s.task in ("reschedule", "dealer_comms", "loaners", "quality_hold") for s in msgs)
+    out = [s for s in co.steps if s.kind == "message" and s.to_agent == "supply_chain_planner"]
+    assert out[0].task == "reschedule"

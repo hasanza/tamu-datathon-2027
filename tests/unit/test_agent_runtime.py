@@ -126,3 +126,14 @@ def test_lookup_record_finds_tables(world):
     po = next(iter(world.production_orders))
     assert fn(ctx, args(record_id=po))["type"] == "production_order"
     assert fn(ctx, args(record_id="ZZZ"))["found"] is False
+
+
+def test_specialist_run_stamps_its_task(setup):
+    _fake, spec, tl, ctx = setup(
+        [tool_turn("lookup_record", {"record_id": "P_TX"}), final_turn({"plant_name": "Texas"})]
+    )
+    spec = AgentSpec("supply_chain_planner", "Planner", "You are a test agent.", tools_for("coordinator"), Answer)
+    run_agent(spec, "reschedule", {}, ctx, tl)
+    steps = tl.runs["supply_chain_planner"].steps
+    assert [s.kind for s in steps] == ["thought", "tool", "thought", "decision"]
+    assert all(s.task == "reschedule" for s in steps)
