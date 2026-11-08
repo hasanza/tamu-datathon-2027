@@ -242,6 +242,36 @@ def test_run_single_event_passes_event_flag(client, monkeypatch):
     }
 
 
+def _seed_live_run(monkeypatch):
+    """A finished full run under the (isolated) ROOT: traces for E-01 and E-08, and their action-log rows."""
+    import api.app as appmod
+
+    root = appmod.ROOT
+    (root / "traces" / "live").mkdir(parents=True)
+    (root / "runs" / "live").mkdir(parents=True)
+    for eid in ("E-01", "E-08"):
+        (root / "traces" / "live" / f"{eid}.json").write_text("{}")
+    log = root / "runs" / "live" / "action_log.jsonl"
+    log.write_text('{"event_id": "E-01"}\n{"event_id": "E-08"}\n')
+    monkeypatch.setattr(appmod.subprocess, "Popen", lambda cmd, **kw: FakeProc(0))
+    return root, log
+
+
+def test_single_event_run_keeps_the_other_events(client, monkeypatch):
+    root, log = _seed_live_run(monkeypatch)
+    assert client.post("/api/run", params={"event_id": "E-01"}).status_code == 202
+    assert not (root / "traces" / "live" / "E-01.json").exists()  # only the re-run event is cleared
+    assert (root / "traces" / "live" / "E-08.json").exists()
+    assert '"E-08"' in log.read_text()  # live.py replaces the re-run event's rows itself
+
+
+def test_full_run_still_clears_traces_and_log(client, monkeypatch):
+    root, log = _seed_live_run(monkeypatch)
+    assert client.post("/api/run", params={"all": True}).status_code == 202
+    assert list((root / "traces" / "live").glob("E-*.json")) == []
+    assert log.read_text() == ""
+
+
 def test_stream_follows_run_dir_switch(tmp_path):
     # A client connected before POST /api/run must receive the new run's events (cfg.run_dir changes mid-stream).
     old, new = tmp_path / "old.ndjson", tmp_path / "new.ndjson"

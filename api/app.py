@@ -406,10 +406,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if event_id:
             cmd += ["--event", event_id]
         cfg.traces_dir, cfg.run_dir = ROOT / "traces" / "live", ROOT / "runs" / "live"
-        for stale in cfg.traces_dir.glob("E-*.json") if cfg.traces_dir.exists() else []:
-            stale.unlink()  # the live run rewrites traces; do not show the previous run's results as current
         cfg.run_dir.mkdir(parents=True, exist_ok=True)
-        cfg.action_log.write_text("")  # KPIs and the actions table must not show the previous run while this one starts
+        if event_id:
+            # a single-event run replaces only that event (live.py merges its trace and log rows into the full run)
+            (cfg.traces_dir / f"{event_id}.json").unlink(missing_ok=True)
+        else:
+            for stale in cfg.traces_dir.glob("E-*.json") if cfg.traces_dir.exists() else []:
+                stale.unlink()  # a full run rewrites every trace; do not show the previous run's results as current
+            cfg.action_log.write_text("")  # KPIs and the actions table must not show the previous run while it starts
         cfg.stream_file.write_text(
             ""
         )  # connected SSE tailers see the truncation now, before the pipeline starts writing
