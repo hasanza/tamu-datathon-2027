@@ -2,6 +2,7 @@ import { Fragment, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import type { Incident, Trace } from "../api/types";
 import { CategoryBadge, Chip, ConfidenceRing, Mono, Panel, Stat } from "../components/ui/primitives";
+import { Disclosure } from "../components/ui/Disclosure";
 import { FollowUpControl, FollowUpList } from "../components/FollowUp";
 import { ImpactPanel } from "./ImpactPanel";
 
@@ -18,10 +19,35 @@ function Range({ a, b }: { a: string | null; b: string | null }) {
   );
 }
 
+/** The columns the table no longer shows: supplier, shipment, lot and the dates. */
+function IncidentFacts({ inc }: { inc: Incident }) {
+  const rows: [string, React.ReactNode][] = [
+    ["Supplier", inc.supplier_id ? <Mono key="s">{inc.supplier_id}</Mono> : null],
+    ["Shipment", inc.shipment_id ? <Mono key="h">{inc.shipment_id}</Mono> : null],
+    ["Lot", inc.lot_id ? <Mono key="l">{inc.lot_id}</Mono> : null],
+    ["ETA", inc.orig_eta || inc.new_eta ? <Range key="e" a={inc.orig_eta} b={inc.new_eta} /> : null],
+    ["Down", inc.outage_start || inc.outage_end ? <Range key="d" a={inc.outage_start} b={inc.outage_end} /> : null],
+    ["Build window", inc.build_window_start || inc.build_window_end ? <Range key="b" a={inc.build_window_start} b={inc.build_window_end} /> : null],
+  ];
+  const shown = rows.filter(([, v]) => v);
+  if (shown.length === 0) return null;
+  return (
+    <dl className="grid grid-cols-[7rem_1fr] gap-x-2 gap-y-0.5 pb-1">
+      {shown.map(([k, v]) => (
+        <div key={k} className="contents">
+          <dt className="text-tx3">{k}</dt>
+          <dd className="text-tx2">{v}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 function IncidentDetail({ inc }: { inc: Incident }) {
   return (
     <div className="grid gap-4 bg-surface-2 p-3 text-xs md:grid-cols-2">
       <div className="space-y-2">
+        <IncidentFacts inc={inc} />
         <div className="text-[11px] font-semibold uppercase tracking-wide text-tx3">Why this category</div>
         <p className="text-tx2">{inc.reason}</p>
         {Object.keys(inc.raw_mentions).length > 0 && (
@@ -92,16 +118,11 @@ function IncidentsTable({ incidents }: { incidents: Incident[] }) {
       <table className="w-full text-left text-[13px]">
         <thead className="bg-surface-2 text-[11px] uppercase tracking-wide text-tx3">
           <tr>
-            <th className="w-6 px-2 py-1.5" />
             <th className="px-2 py-1.5">Incident</th>
             <th className="px-2 py-1.5">Category</th>
             <th className="px-2 py-1.5">Conf.</th>
             <th className="px-2 py-1.5">Plant</th>
             <th className="px-2 py-1.5">Part</th>
-            <th className="px-2 py-1.5">Supplier</th>
-            <th className="px-2 py-1.5">Shipment</th>
-            <th className="px-2 py-1.5">Lot</th>
-            <th className="px-2 py-1.5">Dates</th>
             <th className="px-2 py-1.5">Flags</th>
           </tr>
         </thead>
@@ -116,33 +137,16 @@ function IncidentsTable({ incidents }: { incidents: Incident[] }) {
                       onClick={() => toggle(inc.incident_id)}
                       aria-expanded={isOpen}
                       aria-label={`${isOpen ? "Collapse" : "Expand"} ${inc.incident_id}`}
-                      className="text-tx3 hover:text-tx"
+                      className="inline-flex items-center gap-1 text-tx3 hover:text-tx"
                     >
                       {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                      <Mono className="text-tx">{inc.incident_id}</Mono>
                     </button>
                   </td>
-                  <td className="px-2 py-2"><Mono>{inc.incident_id}</Mono></td>
                   <td className="px-2 py-2"><CategoryBadge category={inc.category} /></td>
                   <td className="px-2 py-2"><ConfidenceRing value={inc.confidence} size={24} /></td>
                   <td className="px-2 py-2"><Id v={inc.plant_id} /></td>
                   <td className="px-2 py-2"><Id v={inc.part_id} /></td>
-                  <td className="px-2 py-2"><Id v={inc.supplier_id} /></td>
-                  <td className="px-2 py-2"><Id v={inc.shipment_id} /></td>
-                  <td className="px-2 py-2"><Id v={inc.lot_id} /></td>
-                  <td className="space-y-0.5 px-2 py-2 leading-tight">
-                    {(inc.orig_eta || inc.new_eta) && (
-                      <div className="whitespace-nowrap"><span className="text-tx3">ETA </span><Range a={inc.orig_eta} b={inc.new_eta} /></div>
-                    )}
-                    {(inc.outage_start || inc.outage_end) && (
-                      <div className="whitespace-nowrap"><span className="text-tx3">Down </span><Range a={inc.outage_start} b={inc.outage_end} /></div>
-                    )}
-                    {(inc.build_window_start || inc.build_window_end) && (
-                      <div className="whitespace-nowrap"><span className="text-tx3">Build </span><Range a={inc.build_window_start} b={inc.build_window_end} /></div>
-                    )}
-                    {!inc.orig_eta && !inc.new_eta && !inc.outage_start && !inc.outage_end && !inc.build_window_start && !inc.build_window_end && (
-                      <span className="text-tx3">-</span>
-                    )}
-                  </td>
                   <td className="px-2 py-2">
                     {inc.ambiguities.length > 0 ? (
                       <Chip color={inc.ambiguities.some((a) => a.blocking) ? "var(--fail)" : "var(--warn)"}>
@@ -155,7 +159,7 @@ function IncidentsTable({ incidents }: { incidents: Incident[] }) {
                 </tr>
                 {isOpen && (
                   <tr>
-                    <td colSpan={11} className="p-0">
+                    <td colSpan={6} className="p-0">
                       <IncidentDetail inc={inc} />
                     </td>
                   </tr>
@@ -169,6 +173,17 @@ function IncidentsTable({ incidents }: { incidents: Incident[] }) {
   );
 }
 
+function ImpactSlips({ trace }: { trace: Trace }) {
+  // the panel renders nothing for events without moved orders; do not offer an empty trigger then
+  const cf = trace.counterfactual;
+  if (!cf || (trace.world_diff.moved_pos.length === 0 && cf.vehicles_pulled === 0 && cf.owners_contacted === 0)) return null;
+  return (
+    <Disclosure summary="Show slip distribution" storageKey="ct-summary-impact">
+      <ImpactPanel trace={trace} />
+    </Disclosure>
+  );
+}
+
 export function SummaryTab({ trace }: { trace: Trace }) {
   const cf = trace.counterfactual;
   return (
@@ -179,11 +194,10 @@ export function SummaryTab({ trace }: { trace: Trace }) {
           <div className="text-[11px] font-semibold uppercase tracking-wide text-tx3">Decision reason</div>
           <p className="text-[13px] text-tx2">{trace.decision_reason}</p>
         </div>
-        <div className="mt-3">
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-tx3">Original event text</div>
-          <blockquote className="mt-1 whitespace-pre-wrap rounded-md border border-line bg-bg px-3 py-2 text-[13px] text-tx2">{trace.text}</blockquote>
-        </div>
-        <p className="mt-2 text-xs text-tx3">Classifier: {trace.classification.reason}</p>
+        <Disclosure summary="Show the original message" className="mt-3">
+          <blockquote className="whitespace-pre-wrap rounded-md border border-line bg-bg px-3 py-2 text-[13px] text-tx2">{trace.text}</blockquote>
+          <p className="mt-2 text-xs text-tx3">Classifier: {trace.classification.reason}</p>
+        </Disclosure>
       </Panel>
 
       {(trace.status === "escalated" || trace.status === "failed") && (
@@ -198,11 +212,10 @@ export function SummaryTab({ trace }: { trace: Trace }) {
 
       <Panel title={`Business impact${cf ? "" : " (none)"}`}>
         {cf ? (
-          <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-6">
+          <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-5">
             <Stat label="Customers affected" value={cf.customers_affected} />
             <Stat label="Avg slip (days)" value={cf.avg_slip_days != null ? cf.avg_slip_days.toFixed(1) : "-"} />
             <Stat label="Loaners assigned" value={cf.loaners_assigned} sub={`of ${cf.loaners_entitled} entitled`} />
-            <Stat label="Loaners entitled" value={cf.loaners_entitled} />
             <Stat label="Vehicles pulled" value={cf.vehicles_pulled} />
             <Stat label="Owners contacted" value={cf.owners_contacted} />
           </div>
@@ -211,7 +224,7 @@ export function SummaryTab({ trace }: { trace: Trace }) {
         )}
       </Panel>
 
-      <ImpactPanel trace={trace} />
+      <ImpactSlips trace={trace} />
 
       <Panel title={`Incidents (${trace.incidents.length})`} className="[&>div]:p-0">
         <IncidentsTable incidents={trace.incidents} />

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CheckCircle2, MinusCircle, XCircle } from "lucide-react";
 import { WRITE_TOOLS, type Trace } from "../api/types";
 import { Disclosure } from "../components/ui/Disclosure";
-import { Chip, Mono, Panel, Stat } from "../components/ui/primitives";
+import { Chip, Mono, Panel } from "../components/ui/primitives";
 import { usd } from "../lib/format";
 import { TARGET_META, targetOf, type Target } from "../lib/target";
 import { STEP_META } from "../lib/meta";
@@ -85,13 +85,12 @@ function ChipList({ items, limit = 40 }: { items: string[]; limit?: number }) {
   );
 }
 
-function DiffSection({ title, count, children }: { title: string; count: number; children: React.ReactNode }) {
+/** One piece of the world diff behind a trigger that carries its count ("Show 9 moved production orders"). Zero is one line. */
+function DiffSection({ noun, count, children }: { noun: string; count: number; children: React.ReactNode }) {
+  if (count === 0) return <p data-diff-section={noun} data-count={0} className="text-xs text-tx3">No {noun}.</p>;
   return (
-    <div>
-      <div className="mb-1.5 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-tx3">
-        {title} <span className="mono text-tx2">{count}</span>
-      </div>
-      {count === 0 ? <p className="text-xs text-tx3">None.</p> : children}
+    <div data-diff-section={noun} data-count={count}>
+      <Disclosure summary={`Show ${count} ${noun}`}>{children}</Disclosure>
     </div>
   );
 }
@@ -130,7 +129,8 @@ export function AuditTab({ trace }: { trace: Trace }) {
           })}
         </ul>
         {gateSteps.length > 0 && (
-          <ul className="mt-3 space-y-1 border-t border-line pt-3">
+          <Disclosure summary={`Show ${gateSteps.length} check step${gateSteps.length === 1 ? "" : "s"}`} className="mt-3 border-t border-line pt-3">
+          <ul className="space-y-1">
             {gateSteps.map(({ agent, s }, i) => (
               <li key={i} className="flex flex-wrap items-baseline gap-2 text-xs">
                 <Chip color={STEP_META[s.kind].color}>{STEP_META[s.kind].label}</Chip>
@@ -139,20 +139,13 @@ export function AuditTab({ trace }: { trace: Trace }) {
               </li>
             ))}
           </ul>
+          </Disclosure>
         )}
       </Panel>
 
       <Panel title="World diff: what changed">
-        <div className="mb-4 grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-6">
-          <Stat label="POs moved" value={d.moved_pos.length} />
-          <Stat label="Dealers notified" value={d.notified_dealers.length} />
-          <Stat label="Loaners" value={d.loaners.length} />
-          <Stat label="Lots held" value={d.held_lots.length} />
-          <Stat label="VINs stopped" value={d.stopped_vins.length} />
-          <Stat label="Owners contacted" value={d.contacted_customers.length} />
-        </div>
         <div className="space-y-4">
-          <DiffSection title="Moved production orders" count={d.moved_pos.length}>
+          <DiffSection noun="moved production orders" count={d.moved_pos.length}>
             <div className="max-h-72 overflow-auto rounded-md border border-line">
               <table className="w-full text-left text-[13px]">
                 <thead className="sticky top-0 bg-surface-2 text-[11px] uppercase tracking-wide text-tx3">
@@ -176,17 +169,17 @@ export function AuditTab({ trace }: { trace: Trace }) {
               </table>
             </div>
           </DiffSection>
-          <DiffSection title="Dealers notified" count={d.notified_dealers.length}>
+          <DiffSection noun="notified dealers" count={d.notified_dealers.length}>
             <ul className="grid gap-1.5 sm:grid-cols-2 xl:grid-cols-3">
               {d.notified_dealers.map((n) => (
                 <DealerRow key={n.dealer_id} id={n.dealer_id} orders={n.customer_order_ids} />
               ))}
             </ul>
           </DiffSection>
-          <DiffSection title="Loaners assigned (customer orders)" count={d.loaners.length}><ChipList items={d.loaners} /></DiffSection>
-          <DiffSection title="Held lots" count={d.held_lots.length}><ChipList items={d.held_lots} /></DiffSection>
-          <DiffSection title="Stopped VINs" count={d.stopped_vins.length}><ChipList items={d.stopped_vins} /></DiffSection>
-          <DiffSection title="Contacted customers" count={d.contacted_customers.length}><ChipList items={d.contacted_customers} /></DiffSection>
+          <DiffSection noun="loaner assignments" count={d.loaners.length}><ChipList items={d.loaners} /></DiffSection>
+          <DiffSection noun="held lots" count={d.held_lots.length}><ChipList items={d.held_lots} /></DiffSection>
+          <DiffSection noun="stopped VINs" count={d.stopped_vins.length}><ChipList items={d.stopped_vins} /></DiffSection>
+          <DiffSection noun="contacted customers" count={d.contacted_customers.length}><ChipList items={d.contacted_customers} /></DiffSection>
         </div>
       </Panel>
 
@@ -197,6 +190,7 @@ export function AuditTab({ trace }: { trace: Trace }) {
         {calls.length === 0 ? (
           <p className="text-xs text-tx3">No model calls were made for this event (everything was decided by code).</p>
         ) : (
+          <Disclosure summary="Show the model calls" count={calls.length}>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-[13px]">
               <thead className="bg-surface-2 text-[11px] uppercase tracking-wide text-tx3">
@@ -230,6 +224,7 @@ export function AuditTab({ trace }: { trace: Trace }) {
               </tbody>
             </table>
           </div>
+          </Disclosure>
         )}
       </Panel>
     </div>
