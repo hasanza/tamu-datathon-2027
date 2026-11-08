@@ -2,6 +2,7 @@ import { Fragment, useMemo, useState } from "react";
 import { ChevronDown, ChevronRight, Network, Pencil, Eye } from "lucide-react";
 import { useLog } from "../api/hooks";
 import { isCustomId, WRITE_TOOLS, type Action, type AgentId, type Trace } from "../api/types";
+import { FilterMenu } from "../components/ui/FilterMenu";
 import { Chip, Empty, Mono, OkChip, Panel } from "../components/ui/primitives";
 import { clip, compactArgs } from "../lib/format";
 import { AGENT_META, transportMeta } from "../lib/meta";
@@ -9,15 +10,8 @@ import { TARGET_META, targetOf } from "../lib/target";
 
 const PAGE = 100;
 
-function WriteChip({ tool }: { tool: string }) {
-  return WRITE_TOOLS.has(tool) ? (
-    <Chip color="var(--brand-bright)"><Pencil size={10} aria-hidden /> write</Chip>
-  ) : (
-    <Chip color="var(--text-3)"><Eye size={10} aria-hidden /> read</Chip>
-  );
-}
-
-function ActionDetail({ a }: { a: Action }) {
+function ActionDetail({ a, target }: { a: Action; target: ReturnType<typeof targetOf> }) {
+  const tr = transportMeta(a.transport, target);
   return (
     <div className="grid gap-3 bg-surface-2 p-3 text-xs md:grid-cols-2">
       <div className="space-y-2">
@@ -25,6 +19,12 @@ function ActionDetail({ a }: { a: Action }) {
           <div className="text-[11px] font-semibold uppercase tracking-wide text-tx3">Justification</div>
           <p className="text-tx2">{a.justification}</p>
         </div>
+        {tr && (
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-tx3">Transport</span>
+            <Chip color={tr.color}>{tr.label}</Chip>
+          </div>
+        )}
         {a.rehearsal?.error && <p className="text-fail">Rehearsal error: {a.rehearsal.error}</p>}
         {a.result?.error && <p className="text-fail">Result error: {a.result.error}</p>}
         {a.path_ids.length > 0 && (
@@ -54,7 +54,7 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
   const sandbox = isCustomId(trace.event_id); // no server log exists for sandbox events: trace.actions is the record
   const log = useLog(sandbox ? null : trace.event_id);
   const target = targetOf(trace); // scored | sandbox | dry: where this event's calls went
-  const [tool, setTool] = useState<string | null>(null);
+  const [tools, setTools] = useState<string[]>([]);
   const [agent, setAgent] = useState<string>("all");
   const [kind, setKind] = useState<"all" | "write" | "read">("all");
   const [q, setQ] = useState("");
@@ -73,12 +73,12 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
     const needle = q.trim().toLowerCase();
     return trace.actions.filter(
       (a) =>
-        (!tool || a.tool === tool) &&
+        (tools.length === 0 || tools.includes(a.tool)) &&
         (agent === "all" || a.agent === agent) &&
         (kind === "all" || (kind === "write") === WRITE_TOOLS.has(a.tool)) &&
         (!needle || `${a.tool} ${compactArgs(a.args)} ${a.justification}`.toLowerCase().includes(needle)),
     );
-  }, [trace.actions, tool, agent, kind, q]);
+  }, [trace.actions, tools, agent, kind, q]);
 
   if (trace.actions.length === 0) return <Empty title="No actions" hint="This event led to no tool calls." />;
 
@@ -108,28 +108,18 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
           </span>
         }
       >
-        <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter by tool">
-          <button
-            onClick={() => setTool(null)}
-            aria-pressed={tool === null}
-            className={`rounded-md border px-2 py-1 text-xs ${tool === null ? "border-brand-bright text-tx" : "border-line text-tx3 hover:text-tx"}`}
-          >
-            All <span className="mono">{trace.actions.length}</span>
-          </button>
-          {byTool.map(([t, n]) => (
-            <button
-              key={t}
-              onClick={() => setTool(tool === t ? null : t)}
-              aria-pressed={tool === t}
-              className={`flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs ${tool === t ? "border-brand-bright bg-surface-2 text-tx" : "border-line text-tx2 hover:text-tx"}`}
-            >
-              {WRITE_TOOLS.has(t) ? <Pencil size={11} className="text-brand-bright" aria-label="write" /> : <Eye size={11} className="text-tx3" aria-label="read" />}
-              <span className="mono">{t}</span>
-              <span className="mono text-tx3">{n}</span>
-            </button>
-          ))}
-        </div>
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <FilterMenu
+            label="Tool"
+            selected={tools}
+            onChange={setTools}
+            options={byTool.map(([t, n]) => ({
+              value: t,
+              label: t,
+              count: n,
+              icon: WRITE_TOOLS.has(t) ? <Pencil size={11} className="shrink-0 text-brand-bright" aria-label="write" /> : <Eye size={11} className="shrink-0 text-tx3" aria-label="read" />,
+            }))}
+          />
           <label className="flex items-center gap-1 text-tx3">
             Agent
             <select value={agent} onChange={(e) => setAgent(e.target.value)} className="rounded-md border border-line bg-surface-2 px-1.5 py-1 text-tx">
@@ -141,14 +131,18 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
               ))}
             </select>
           </label>
-          <label className="flex items-center gap-1 text-tx3">
-            Type
-            <select value={kind} onChange={(e) => setKind(e.target.value as typeof kind)} className="rounded-md border border-line bg-surface-2 px-1.5 py-1 text-tx">
-              <option value="all">all</option>
-              <option value="write">writes</option>
-              <option value="read">reads</option>
-            </select>
-          </label>
+          <div role="group" aria-label="Call type" className="flex rounded-md border border-line p-0.5">
+            {([["all", "All"], ["write", "Writes"], ["read", "Reads"]] as const).map(([k, label]) => (
+              <button
+                key={k}
+                aria-pressed={kind === k}
+                onClick={() => setKind(k)}
+                className={`rounded px-2 py-0.5 font-medium ${kind === k ? "bg-surface-2 text-tx" : "text-tx3 hover:text-tx"}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -164,13 +158,10 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
         <table className="w-full text-left text-[13px]">
           <thead className="bg-surface-2 text-[11px] uppercase tracking-wide text-tx3">
             <tr>
-              <th className="w-6 px-2 py-1.5" />
               <th className="px-2 py-1.5">#</th>
               <th className="px-2 py-1.5">Agent</th>
               <th className="px-2 py-1.5">Tool</th>
-              <th className="px-2 py-1.5">Transport</th>
               <th className="px-2 py-1.5">Args</th>
-              <th className="px-2 py-1.5">Justification</th>
               <th className="px-2 py-1.5">Path</th>
               <th className="px-2 py-1.5">Rehearsal</th>
               <th className="px-2 py-1.5">Result</th>
@@ -183,23 +174,20 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
                 <Fragment key={a.seq}>
                   <tr className="border-t border-line align-top hover:bg-surface-2/50">
                     <td className="px-2 py-1.5">
-                      <button onClick={() => toggle(a.seq)} aria-expanded={isOpen} aria-label={`${isOpen ? "Collapse" : "Expand"} action ${a.seq}`} className="text-tx3 hover:text-tx">
+                      <button onClick={() => toggle(a.seq)} aria-expanded={isOpen} aria-label={`${isOpen ? "Collapse" : "Expand"} action ${a.seq}`} className="inline-flex items-center gap-1 text-tx3 hover:text-tx">
                         {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                        <Mono className="text-tx3">{a.seq}</Mono>
                       </button>
                     </td>
-                    <td className="px-2 py-1.5"><Mono className="text-tx3">{a.seq}</Mono></td>
                     <td className="whitespace-nowrap px-2 py-1.5 text-tx2">{AGENT_META[a.agent].label}</td>
-                    <td className="px-2 py-1.5">
-                      <div className="flex flex-col items-start gap-1">
+                    <td className="max-w-72 px-2 py-1.5">
+                      <div className="flex items-center gap-1.5">
+                        {WRITE_TOOLS.has(a.tool) ? <Pencil size={11} className="shrink-0 text-brand-bright" aria-label="write" /> : <Eye size={11} className="shrink-0 text-tx3" aria-label="read" />}
                         <Mono className="font-medium text-tx">{a.tool}</Mono>
-                        <WriteChip tool={a.tool} />
                       </div>
-                    </td>
-                    <td className="px-2 py-1.5">
-                      {transportMeta(a.transport, target) ? <Chip color={transportMeta(a.transport, target)!.color}>{transportMeta(a.transport, target)!.label}</Chip> : <span className="text-tx3">-</span>}
+                      <div className="mt-0.5 text-[11.5px] leading-snug text-tx3">{clip(a.justification, 60)}</div>
                     </td>
                     <td className="max-w-64 px-2 py-1.5"><Mono className="break-all text-tx2" >{clip(compactArgs(a.args), 110)}</Mono></td>
-                    <td className="max-w-72 px-2 py-1.5 text-xs text-tx2">{clip(a.justification, 130)}</td>
                     <td className="px-2 py-1.5">
                       {a.path_ids.length > 0 ? (
                         <button
@@ -226,7 +214,7 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
                   </tr>
                   {isOpen && (
                     <tr>
-                      <td colSpan={10} className="p-0"><ActionDetail a={a} /></td>
+                      <td colSpan={7} className="p-0"><ActionDetail a={a} target={target} /></td>
                     </tr>
                   )}
                 </Fragment>
@@ -234,7 +222,7 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
             })}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={10}><Empty title="No actions match the filters" /></td>
+                <td colSpan={7}><Empty title="No actions match the filters" /></td>
               </tr>
             )}
           </tbody>
