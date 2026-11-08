@@ -45,3 +45,34 @@ export function safeStorage(key: string, value?: string): string | null {
     return null;
   }
 }
+
+const HINT_KEYS = ["category", "kind", "type", "tool", "name"];
+/** `incidents` -> `incident`, `po_ids` -> `po_id` (only for a count of exactly one). */
+const singular = (k: string) => (k.endsWith("s") && k.length > 2 ? k.slice(0, -1) : k);
+
+function part(k: string, v: unknown): string {
+  if (Array.isArray(v)) {
+    // a list of objects: name what kind of things they are (e.g. the categories of the incidents)
+    const hintKey = HINT_KEYS.find((h) => v.some((x) => x && typeof x === "object" && typeof (x as Record<string, unknown>)[h] === "string"));
+    const kinds = hintKey ? [...new Set(v.map((x) => (x as Record<string, unknown>)?.[hintKey]).filter((x): x is string => typeof x === "string"))].slice(0, 2) : [];
+    return `${v.length} ${v.length === 1 ? singular(k) : k}${kinds.length ? ` (${kinds.join(", ")})` : ""}`;
+  }
+  if (typeof v === "string") return /^h:\S+$/.test(v) ? `${k}: list` : `${k}=${clip(v, 24)}`; // "h:..." is an opaque handle for a long list
+  if (v && typeof v === "object") return `${k}: ${Object.keys(v).length} fields`;
+  return `${k}=${String(v)}`;
+}
+
+/**
+ * One short line for a tool call's arguments or result: counts for lists, a few scalars, never nested JSON.
+ * `{incidents: [{category: "plant_outage", ...}]}` -> `1 incident (plant_outage)`. The full value stays under "details".
+ */
+export function summarize(value: Record<string, unknown>, max = 3): string {
+  // counts and lists say more than identifiers do (`affected_count=9` over `plant_id=P_MS`): show those first
+  const weight = (v: unknown) => (typeof v === "number" || Array.isArray(v) ? 0 : 1);
+  const parts = Object.entries(value)
+    .filter(([, v]) => v !== null && v !== undefined && v !== "" && v !== false)
+    .map(([k, v], i) => ({ i, w: weight(v), text: part(k, v) }))
+    .sort((a, b) => a.w - b.w || a.i - b.i)
+    .map((x) => x.text);
+  return parts.slice(0, max).join(" · ") + (parts.length > max ? ` · +${parts.length - max} more` : "");
+}
