@@ -26,3 +26,11 @@ export const followUpsOf = (events: FeedEvent[] | undefined, parentId: string): 
 export const openEvent = (id: string) => {
   window.location.hash = `/${id}`;
 };
+
+/** Inbox order: judge input first (highest C-nn first), then the preset events, the most recently received first. */
+export function inboxOrder(a: FeedEvent, b: FeedEvent): number {
+  const ca = customNumber(a.event_id);
+  const cb = customNumber(b.event_id);
+  if (ca || cb) return ca && cb ? cb - ca : ca ? -1 : 1;
+  return Date.parse(b.received_at) - Date.parse(a.received_at) || b.event_id.localeCompare(a.event_id);
+}

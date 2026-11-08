@@ -75,7 +75,7 @@ export default function App() {
             </section>
             <aside
               aria-label="Escalations and activity"
-              className="min-h-0 space-y-4 border-t border-line p-3 md:col-span-2 xl:col-span-1 xl:overflow-y-auto xl:border-l xl:border-t-0"
+              className="min-h-0 space-y-4 border-t border-line p-3 md:col-span-2 xl:col-span-1 xl:flex xl:flex-col xl:gap-3 xl:space-y-0 xl:overflow-hidden xl:border-l xl:border-t-0"
             >
               <EscalationInbox events={events.data} onSelect={select} />
               <ActivityLog
