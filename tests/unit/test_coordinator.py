@@ -711,6 +711,8 @@ def test_e03_quality_hold(rig, world, graph):
     assert {a.tool for a in writes(t)} == {"quality.hold_lot", "dealer.stop_sale", "crm.notify_customer"}
     assert [r.agent for r in t.agents] == ["coordinator", "dealer_network", "customer_care_quality"]
     assert t.paths["E-03#1"] and t.world_diff.held_lots == ["LOT-0130"]
+    (fresh,) = [x for x in _exec_steps(t) if x.startswith("Freshness:")]
+    assert "0 slot reads, 0 pool reads" in fresh and "lot state is not verifiable" in fresh
     assert not any(a.tool == "crm.assign_loaner" for a in t.actions)  # no loaners task for a quality-only event
 
 
@@ -750,3 +752,287 @@ def test_resolve_tools_report_candidates(rig):
     assert ent[0]["pick"] is None and ent[1]["pick"] == "P_TX"
     assert dt[0]["date"] == "2027-03-19" and dt[0]["working_day"] is True
     assert dt[1]["working_day"] is False and dt[1]["next_working_day"]
+
+
+# --- fix round: failure / escalation paths (Codex review of #62) ------------------------------------------------
+
+
+def test_unconfirmed_incident_cannot_be_finished_without_escalate(rig):
+    rig.script([register(UNCONFIRMED), T("finish", {})])
+    t = rig.run(ev("E-02"))
+    err = tool_results(t, "finish")[0]["error"]
+    assert "E-02#1" in err and "escalate" in err
+    assert t.status == "escalated" and len(esc(t)) == 1  # loop-end recovery settled it
+
+
+def test_noise_naming_a_shipment_cannot_be_finished_as_noise(rig):
+    named = NOISE.model_copy(update={"shipment_id": "SH-0190", "evidence": "SH-0190 is stuck"})
+    rig.script([register(named), T("drop_noise", {"incident_id": "E-05#1", "reason": "x"}), T("finish", {})])
+    t = rig.run(ev("E-05", "SH-0190 is stuck somewhere"))
+    assert tool_results(t, "drop_noise")[0]["refused"] is True
+    err = tool_results(t, "finish")[0]["error"]
+    assert "drop_noise or escalate" in err and t.status == "escalated" and len(esc(t)) == 1
+
+
+def test_loop_error_with_unconfirmed_incident_ends_with_exactly_one_escalate(rig):
+    rig.script([register(UNCONFIRMED)] + [T("nonexistent_tool")] * 5)
+    t = rig.run(ev("E-02"))
+    assert t.status == "escalated" and len(esc(t)) == 1 and esc(t)[0].incident_ids == ["E-02#1"] and not writes(t)
+
+
+def test_loop_error_drops_plain_noise_and_escalates_the_rest(rig):
+    rig.script([register(NOISE, UNCONFIRMED)] + [T("nonexistent_tool")] * 5)
+    t = rig.run(ev("E-02"))
+    assert [a.incident_ids for a in esc(t)] == [["E-02#2"]]
+    assert rig.ctx.incidents and "E-02#1" in ct.cs(rig.ctx).dropped
+    assert "loop ended; nothing names a record" in ct.cs(rig.ctx).dropped["E-02#1"]
+
+
+class FailRead(TwinExecutor):
+    """TwinExecutor whose planning reads of `tool` fail."""
+
+    def __init__(self, path, tool="mes.get_schedule", outcome="failed"):
+        super().__init__(path)
+        self.tool, self.outcome = tool, outcome
+
+    def call(self, event_id, tool, args):
+        if tool == self.tool:
+            return ToolResult(ok=False, error="read exploded", outcome=self.outcome)
+        return super().call(event_id, tool, args)
+
+
+@pytest.mark.parametrize("outcome", ["failed", "unknown"])
+def test_failed_planning_read_aborts_before_any_write(rig, outcome):
+    ex = FailRead(rig.log, outcome=outcome)
+    dn, ccq = lazy_scripts(rig)
+    sc = [T("get_schedule", {"plant_id": "P_MS", "date": "2027-03-26"}), *sc_script("E-11#1")]
+    rig.script([register(E11_RAW), *acting_flow(["E-11#1"])], sc=sc, dn=dn, ccq=ccq)
+    t = rig.run(ev("E-11"), rig.coordinator(ex))
+    assert t.status == "escalated" and not writes(t) and len(esc(t)) == 1
+    assert (
+        "live read failed during planning" in esc(t)[0].args["reason"]
+        and "mes.get_schedule" in esc(t)[0].args["reason"]
+    )
+    assert tool_results(t, "execute")[0]["writes_sent"] == 0
+    assert rig.log.read_text().count('"tool": "escalate"') == 1
+
+
+def _exec_steps(trace):
+    return [s.text for s in trace.agents[0].steps if s.kind == "execute"]
+
+
+def test_freshness_step_states_the_limitation(rig):
+    dn, ccq = lazy_scripts(rig)
+    rig.script([register(E11_RAW), *acting_flow(["E-11#1"])], sc=sc_script("E-11#1"), dn=dn, ccq=ccq)
+    t = rig.run(ev("E-11"))
+    (fresh,) = [x for x in _exec_steps(t) if x.startswith("Freshness:")]
+    assert "slot reads" in fresh and "pool reads matched the baseline" in fresh and "lot state" not in fresh
+
+
+def bare_ctx(rig, world, graph, twin, executor):
+    """An EventContext without the agent loop, for tests that drive `_run_writes` directly."""
+    from control_tower.trace import Timeline
+
+    ctx = EventContext(
+        world=world, graph=graph, executor=executor, event_id="T-1", twin=twin,
+        event={"source": "x", "text": "y"}, timeline=Timeline("T-1", "2027-03-08T08:00:00", Sink(None)),
+    )  # fmt: skip
+    ctx.state["sink"] = Sink(None)
+    return ctx
+
+
+def run_e01(rig, executor=None):
+    dn, ccq = lazy_scripts(rig)
+    rig.script([register(*E01_RAW), *acting_flow(["E-01#1", "E-01#2"])], sc=sc_for("E-01#1", "E-01#2"), dn=dn, ccq=ccq)
+    return rig.run(ev("E-01"), rig.coordinator(executor) if executor else None)
+
+
+def fail_po(rig, po_id):
+    return Wrap(rig.log, match=lambda tool, args: tool.startswith("mes.") and args["production_order_id"] == po_id)
+
+
+def test_notice_after_a_failed_move_is_regenerated_not_filtered(rig, world):
+    probe = run_e01(rig)
+    notices = [a.args["customer_order_ids"] for a in probe.actions if a.tool == "dealer.notify"]
+    moves = [a for a in probe.actions if a.tool.startswith("mes.") and a.writes]
+    bad_po = next(  # the first move whose dealer's notice also lists other orders
+        a.args["production_order_id"]
+        for a in moves
+        if any(
+            len(v) > 1 and any(world.customer_orders[c].production_order_id == a.args["production_order_id"] for c in v)
+            for v in notices
+        )
+    )
+    co_bad = {c.id for c in world.cos_by_po[bad_po]}
+    t = run_e01(rig, fail_po(rig, bad_po))
+    sent = [a for a in t.actions if a.tool == "dealer.notify" and a.result.ok]
+    assert any(a.justification.endswith("(recomputed after a failed move)") for a in sent)
+    for a in sent:
+        assert not (set(a.args["customer_order_ids"]) & co_bad)
+        assert not any(c in a.args["message"] for c in co_bad)  # the message no longer describes the removed orders
+        assert all(c in a.args["message"] for c in a.args["customer_order_ids"]) and a.incident_ids
+    ms = [m for m in rig.ctx.moves.values()]
+    good = [m for x in ms for m in x.moves if m.po.id != bad_po]
+    expected = plan_care(world, good, {}, incident_id=None, cause={m.po.id: x.cause for x in ms for m in x.moves},
+                         include_loaners=False)  # fmt: skip
+    assert sig(sent) == sig(expected)
+
+
+def test_loaners_are_recomputed_over_successful_moves(rig, world, graph):
+    moves, mv, _ = v1_moves(world, graph, [E11_SPEC])
+
+    def loaners(ms):
+        acts = plan_care(world, ms, dict(world.loaner_pool), incident_id=None, cause="", loaner_given_to=set(),
+                         include_notices=False)  # fmt: skip
+        return {a.args["customer_order_id"] for a in acts}
+
+    staged = loaners(moves)  # fail a move whose loss frees pool capacity for a customer who had none
+    bad_po = next(m.po.id for m in moves if loaners([x for x in moves if x is not m]) - staged)
+    dn, ccq = lazy_scripts(rig)
+    rig.script([register(E11_RAW), *acting_flow(["E-11#1"])], sc=sc_script("E-11#1"), dn=dn, ccq=ccq)
+    t = rig.run(ev("E-11"), rig.coordinator(fail_po(rig, bad_po)))
+    ctx = rig.ctx
+    good = [m for ms in ctx.moves.values() for m in ms.moves if m.po.id != bad_po]
+    expected = plan_care(world, good, dict(ctx.state["pools"]), incident_id=None, cause="", loaner_given_to=set(),
+                         co_ids=set(ctx.state["loaner_eligible"]), include_notices=False)  # fmt: skip
+    sent = [a for a in t.actions if a.tool == "crm.assign_loaner" and a.result.ok]
+    assert {a.args["customer_order_id"] for a in sent} == {a.args["customer_order_id"] for a in expected}
+    assert len(sent) == len(expected) and all(a.rehearsal and a.rehearsal.ok for a in sent)
+    gone = [a for a in t.actions if a.tool == "crm.assign_loaner" and a.skipped]
+    assert gone and all(a.result.error.startswith("skipped:") for a in gone)
+    staged_total = len(plan_care(world, [m for ms in ctx.moves.values() for m in ms.moves], dict(ctx.state["pools"]),
+                                 incident_id=None, cause="", loaner_given_to=set(), include_notices=False))  # fmt: skip
+    print(
+        "loaners: staged",
+        staged_total,
+        "sent",
+        len(sent),
+        "recomputed-new",
+        sum("recomputed" in a.justification for a in sent),
+    )
+    assert t.status == "failed" and len(esc(t)) == 1
+
+
+def _slot_case(world):
+    """(plant, X, d1, Y, d3, d2): X sits in d1, which still has a free slot; Y may move into d1; d2 is free."""
+    b = SlotBoard(world)
+    for pid in world.plants:
+        days = range(2, 12)
+        for d1 in days:
+            if b.occ[(pid, d1)] and b.free(pid, d1) > 0:
+                for d3 in days:
+                    d2 = next((d for d in days if d not in (d1, d3) and b.free(pid, d) > 0), None)
+                    if d3 != d1 and b.occ[(pid, d3)] and d2 is not None:
+                        return pid, sorted(b.occ[(pid, d1)])[0], d1, sorted(b.occ[(pid, d3)])[0], d3, d2
+    raise AssertionError("no slot case in the data")
+
+
+def _move(world, po, idx):
+    from control_tower.schemas.action import Action
+
+    d = world.calendar.date_of(idx).isoformat()
+    return Action(seq=0, agent="supply_chain_planner", tool="mes.reschedule", justification="t", path_ids=[po],
+                  args={"production_order_id": po, "new_date": d})  # fmt: skip
+
+
+def test_slot_with_free_capacity_does_not_block_the_dependent_move(rig, world, graph, twin):
+    _, x, d1, y, _, d2 = _slot_case(world)
+    ex = Wrap(rig.log, match=lambda tool, args: args.get("production_order_id") == x)
+    wr = [_move(world, x, d2), _move(world, y, d1)]
+    failed, skipped, unknown = ct._run_writes(bare_ctx(rig, world, graph, twin, ex), wr)
+    assert [a.args["production_order_id"] for a in failed] == [x] and skipped == [] and unknown == []
+    assert wr[1].result.ok  # d1 still had a free slot although X never left it
+
+
+def test_full_slot_still_blocks_the_dependent_move(rig, world, graph, twin):
+    """d1 has two free slots and X (who was meant to leave) stays: A and B fill them, C must then be skipped."""
+    b = SlotBoard(world)
+    pid, d1 = next((p, i) for (p, i), occ in sorted(b.occ.items()) if occ and b.free(p, i) == 2 and i >= 2)
+    x = sorted(b.occ[(pid, d1)])[0]
+    others = [po for (p, j), occ in sorted(b.occ.items()) if p == pid and j != d1 and j >= 2 for po in sorted(occ)]
+    a_po, b_po, c_po = others[:3]
+    d2 = next(d for d in range(2, 12) if d != d1 and b.free(pid, d) > 0)
+    ex = Wrap(rig.log, match=lambda tool, args: args.get("production_order_id") == x)
+    wr = [_move(world, x, d2), _move(world, a_po, d1), _move(world, b_po, d1), _move(world, c_po, d1)]
+    failed, skipped, _ = ct._run_writes(bare_ctx(rig, world, graph, twin, ex), wr)
+    assert wr[1].result.ok and wr[2].result.ok
+    assert skipped == [wr[3]] and "target slot full" in skipped[0].result.error
+    assert [a.args["production_order_id"] for a in failed] == [x]
+
+
+def _quality_rig(rig, world, graph, twin, executor):
+    from control_tower.graph.traverse import impact_lot
+    from control_tower.orchestration.specialist_tools import _restage_stop_sales
+    from control_tower.planning.quality import plan_quality
+
+    ctx = bare_ctx(rig, world, graph, twin, executor)
+    holds = []
+    for n, lot in enumerate(["LOT-0001", "LOT-0002"], 1):  # both have unsold vehicles at D02
+        inc = f"T-1#{n}"
+        ctx.incidents[inc] = IncidentSpec(
+            incident_id=inc, event_id="T-1", category="quality_hold", confidence=1.0, reason="t", lot_id=lot,
+            supplier_id="S01", part_id="AIRBAG-MOD",
+        )  # fmt: skip
+        q = ctx.impacts[inc] = impact_lot(graph, world, lot)
+        ctx.state.setdefault("stop_req", {})[inc] = {"D02": sorted(q.in_stock_by_dealer["D02"])}
+        h = next(a for a in plan_quality(world, q, incident_id=inc, reason="r") if a.tool == "quality.hold_lot")
+        holds.append(h.model_copy(update={"incident_ids": [inc]}))
+    _restage_stop_sales(ctx)
+    (stop,) = [a for a in ctx.plan.staged_actions("dealer_network", "dealer_comms") if a.args["dealer_id"] == "D02"]
+    return ctx, holds, stop
+
+
+def test_stop_sale_is_rebuilt_from_successful_holds_only(rig, world, graph, twin):
+    ex = Wrap(rig.log, match=lambda tool, args: tool == "quality.hold_lot" and args["lot_id"] == "LOT-0001")
+    ctx, holds, stop = _quality_rig(rig, world, graph, twin, ex)
+    v1, v2 = (set(ctx.impacts[f"T-1#{n}"].in_stock_by_dealer["D02"]) for n in (1, 2))
+    assert v1 and v2 and not (v1 & v2) and set(stop.args["vins"]) == v1 | v2
+    failed, skipped, _ = ct._run_writes(ctx, [*holds, stop])
+    assert len(failed) == 1 and skipped == []
+    assert stop.result.ok and set(stop.args["vins"]) == v2 and stop.incident_ids == ["T-1#2"]
+    assert "recomputed after a failed hold" in stop.justification
+
+
+def test_stop_sale_is_skipped_when_every_contributing_hold_failed(rig, world, graph, twin):
+    class AllHoldsFail(TwinExecutor):
+        def call(self, event_id, tool, args):
+            if tool == "quality.hold_lot":
+                return ToolResult(ok=False, error="no", outcome="failed")
+            return super().call(event_id, tool, args)
+
+    ctx, holds, stop = _quality_rig(rig, world, graph, twin, AllHoldsFail(rig.log))
+    failed, skipped, _ = ct._run_writes(ctx, [*holds, stop])
+    assert len(failed) == 2 and skipped == [stop]
+
+
+def test_partial_execution_is_attributed_to_the_failing_incident(rig, world):
+    probe = run_e01(rig)
+    mv2 = next(a for a in probe.actions if a.tool.startswith("mes.") and a.incident_ids == ["E-01#2"])
+    t = run_e01(rig, fail_po(rig, mv2.args["production_order_id"]))
+    assert t.status == "failed" and len(esc(t)) == 1
+    assert esc(t)[0].incident_ids == ["E-01#2"] and esc(t)[0].incident_id == "E-01#2"
+    st = ct.cs(rig.ctx)
+    assert set(st.partial) == {"E-01#2"} and "E-01#2" not in st.escalated
+    text, _ = ct.draft(rig.ctx)
+    assert "E-01#2: executed partially" in text and "remainder was escalated to a human" in text
+    assert "without operational change" not in text
+    from control_tower.orchestration.report import incident_sentence
+
+    s1 = rig.ctx.incidents["E-01#1"]
+    assert incident_sentence(world, s1, st.log) in text  # the fully executed incident keeps its normal sentence
+
+
+def test_escalate_refused_for_a_confirmed_resolved_incident(rig):
+    dn, ccq = lazy_scripts(rig)
+    rig.script(
+        [
+            register(E11_RAW),
+            T("escalate", {"incident_id": "E-11#1", "reason": "nickname unclear", "what_would_make_it_actionable": "x"}),
+            *acting_flow(["E-11#1"]),
+        ],
+        sc=sc_script("E-11#1"), dn=dn, ccq=ccq,
+    )  # fmt: skip
+    t = rig.run(ev("E-11"))
+    err = tool_results(t, "escalate")[0]["error"]
+    assert "confirmed and fully resolved" in err and "guard forbids" in err and "plant_id P_MS" in err
+    assert t.status == "done" and esc(t) == []

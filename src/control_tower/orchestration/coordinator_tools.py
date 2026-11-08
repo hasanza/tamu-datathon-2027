@@ -9,7 +9,7 @@ State lives in `ctx.state["coord"]` (a `CoordState`); options (explain / audit /
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date
 from types import SimpleNamespace
 from typing import Any, Literal
@@ -22,9 +22,11 @@ from control_tower.orchestration.context import EventContext
 from control_tower.orchestration.explain import explain
 from control_tower.orchestration.report import MOVES, incident_sentence, ok, tool_counts
 from control_tower.orchestration.runtime import run_agent
-from control_tower.orchestration.specialist_tools import _lot_impact, _replay_moves, stash
+from control_tower.orchestration.specialist_tools import CCQ, _lot_impact, _quality_reason, _replay_moves, _stamp, stash
 from control_tower.orchestration.specialists import SPECIALISTS
 from control_tower.orchestration.tools import tool
+from control_tower.planning.dealer_care import plan_care
+from control_tower.planning.quality import plan_quality
 from control_tower.planning.supply_chain import SlotBoard
 from control_tower.planning.validators import Finding, blocking, validate
 from control_tower.schemas.action import Action, Rehearsal, ToolResult
@@ -57,6 +59,8 @@ class CoordState:
     needs_human: dict[str, bool] = field(default_factory=dict)
     dropped: dict[str, str] = field(default_factory=dict)
     escalated: dict[str, str] = field(default_factory=dict)  # incident_id -> full reason text
+    partial: dict[str, str] = field(default_factory=dict)  # executed incidents with a failed/skipped/unknown action
+    noise_refused: set[str] = field(default_factory=set)  # noise items whose drop_noise was refused (name a record)
     esc_queue: list[Action] = field(default_factory=list)  # escalate Actions not yet sent
     escalations: list[dict[str, str]] = field(default_factory=list)  # for Trace.orchestration
     done: dict[tuple[str, str, str | None], int] = field(default_factory=dict)  # successful runs
@@ -99,6 +103,29 @@ def open_incidents(ctx: EventContext) -> list[str]:
         i
         for i, s in ctx.incidents.items()
         if s.category in ACTIONABLE and i not in st.dropped and i not in st.escalated and i not in st.closed
+    ]
+
+
+def _hint(ctx: EventContext, i: str) -> str:
+    """What settles incident `i` next (used by `unsettled` and `finish`)."""
+    st, cat = cs(ctx), ctx.incidents[i].category
+    if cat == "noise":
+        return "drop_noise or escalate (it names a record)"
+    if cat not in ACTIONABLE:
+        return "escalate"
+    todo = [f"delegate {t}" for t, j in _per_incident_missing(ctx) if j == i]
+    if st.needs_human.get(i):
+        return "escalate (needs_human)"
+    return "; ".join(todo) if todo else "validate_plan, then execute (or escalate it)"
+
+
+def unsettled(ctx: EventContext) -> list[tuple[str, str]]:
+    """Every registered incident must be in exactly one of dropped / escalated / closed. Returns (id, what settles it)."""
+    st = cs(ctx)
+    return [
+        (i, _hint(ctx, i))
+        for i in ctx.incidents
+        if i not in st.dropped and i not in st.escalated and i not in st.closed
     ]
 
 
@@ -187,6 +214,7 @@ def register_incidents(ctx: EventContext, args: RegisterArgs) -> dict[str, Any]:
     st.raws.clear()
     st.needs_human.clear()
     st.dropped.clear()
+    st.noise_refused.clear()
     out = []
     for n, raw in enumerate(args.incidents, 1):
         res = build_incident(
@@ -329,6 +357,7 @@ def drop_noise(ctx: EventContext, args: DropNoiseArgs) -> dict[str, Any]:
         )
     raw = st.raws[args.incident_id]
     if _names_a_record(raw) or st.needs_human.get(args.incident_id):
+        st.noise_refused.add(args.incident_id)
         return {
             "refused": True,
             "why": "this item names a real record (a shipment/lot id, or a plant together with dates). It must not be "
@@ -337,6 +366,30 @@ def drop_noise(ctx: EventContext, args: DropNoiseArgs) -> dict[str, Any]:
     st.dropped[args.incident_id] = args.reason
     tl(ctx).step(CO, "decision", f"{args.incident_id}: noise, no action. {args.reason}")
     return {"dropped": args.incident_id, "writes": 0}
+
+
+def _resolved_text(spec) -> str:
+    b = _brief(spec)
+    return ", ".join(f"{k} {v}" for k, v in b.items() if k not in ("incident_id", "confidence")) or spec.category
+
+
+def _escalation_ground(ctx: EventContext, i: str) -> str | None:
+    """The machine-verifiable circumstance (PLAN_V2 4.1) that allows `escalate`, or None when none holds."""
+    st, spec = cs(ctx), ctx.incidents[i]
+    raw = st.raws.get(i)
+    if spec.category not in ACTIONABLE:
+        return f"category {spec.category}"
+    if st.needs_human.get(i):
+        return "needs_human"
+    if any(a.blocking for a in spec.ambiguities) or (raw is not None and raw.confidence < 0.7):
+        return "unresolved id/date or low confidence"
+    if i in st.noise_refused:
+        return "drop_noise refused"
+    if any(f.incident_id in (i, None) for f in blocking(st.last_findings)):
+        return "blocking validator findings"
+    if any(n >= MAX_ROUNDS and k[2] in (i, None) for k, n in st.rounds.items()):
+        return "correction rounds exhausted"
+    return None
 
 
 class EscalateArgs(BaseModel):
@@ -350,9 +403,10 @@ class EscalateArgs(BaseModel):
     {CO},
     "control",
     "Hand ONE incident to a human (the enterprise `escalate` tool; not a write). Queues exactly one escalate action "
-    "for that incident and forbids any write for it. Use for: unconfirmed or unclear reports, ids or dates that cannot "
-    "be resolved, confidence < 0.7, a noise item that names a real record, or a plan that keeps failing validation. "
-    "Idempotent per incident.",
+    "for that incident and forbids any write for it. Code REFUSES it unless a circumstance holds: unconfirmed/other "
+    "category, needs_human, a required id/date unresolved or confidence < 0.7, a noise item that names a real record "
+    "(drop_noise refused), or blocking validator findings / exhausted correction rounds. A confirmed, fully resolved "
+    "incident is never escalated for a nickname or an odd date phrase. Idempotent per incident.",
 )
 def escalate(ctx: EventContext, args: EscalateArgs) -> dict[str, Any]:
     st = cs(ctx)
@@ -361,6 +415,14 @@ def escalate(ctx: EventContext, args: EscalateArgs) -> dict[str, Any]:
         return {"noop": True, "note": f"{args.incident_id} is already escalated (one escalate per incident)."}
     if args.incident_id in st.closed:
         raise ValueError(f"{args.incident_id} was already executed; it cannot be escalated any more")
+    ground = _escalation_ground(ctx, args.incident_id)
+    if ground is None:
+        raise ValueError(
+            f"{args.incident_id} is confirmed and fully resolved ({_resolved_text(spec)}); the guard forbids "
+            "escalating a confirmed incident for a nickname or an odd date phrase. Continue with "
+            "delegate/validate_plan/execute. If the report is in fact unconfirmed, re-register it with category "
+            "unconfirmed."
+        )
     raw = st.raws.get(args.incident_id)
     evidence = f' "{raw.evidence}".' if raw else ""
     text = (
@@ -376,7 +438,13 @@ def escalate(ctx: EventContext, args: EscalateArgs) -> dict[str, Any]:
 
 
 def _queue_escalation(
-    ctx: EventContext, incident_id: str | None, incident_ids: list[str], text: str, justification: str
+    ctx: EventContext,
+    incident_id: str | None,
+    incident_ids: list[str],
+    text: str,
+    justification: str,
+    *,
+    settle: bool = True,
 ) -> None:
     st = cs(ctx)
     st.esc_queue.append(
@@ -392,7 +460,7 @@ def _queue_escalation(
         )
     )
     st.escalations.append({"incident_id": incident_id or ctx.event_id, "reason": text})
-    if incident_id:
+    if incident_id and settle:
         st.escalated[incident_id] = text
 
 
@@ -691,14 +759,25 @@ def validate_plan(ctx: EventContext, args: NoArgs) -> dict[str, Any]:
 # ---------------------------------------------------------------------------------------------------------------
 
 
-def _escalate_open(ctx: EventContext, reason: str) -> list[str]:
+def _escalate_open(ctx: EventContext, reason: str, justification: str = "Guardrail: could not act safely") -> list[str]:
+    """Settle every unsettled incident: plain noise that names no record is dropped, everything else is escalated."""
     st = cs(ctx)
-    ids = open_incidents(ctx)
-    for i in ids:
+    ids: list[str] = []
+    for i, _ in unsettled(ctx):
         raw = st.raws.get(i)
+        if (
+            ctx.incidents[i].category == "noise"
+            and raw is not None
+            and not _names_a_record(raw)
+            and not st.needs_human.get(i)
+        ):
+            st.dropped[i] = "loop ended; nothing names a record"
+            tl(ctx).step(CO, "decision", f"{i}: noise, no action. {st.dropped[i]}")
+            continue
+        ids.append(i)
         _queue_escalation(
             ctx, i, [i], f'{i} ({ctx.incidents[i].category}): "{raw.evidence if raw else ""}". {reason} '
-            "No operational action taken.", "Guardrail: could not act safely",
+            "No operational action taken.", justification,
         )  # fmt: skip
     return ids
 
@@ -779,18 +858,116 @@ def _incs(a: Action) -> list[str]:
     return list(a.incident_ids) or ([a.incident_id] if a.incident_id else [])
 
 
+def _po_incident(ctx: EventContext) -> dict[str, str]:
+    return {m.po.id: inc for inc, ms in ctx.moves.items() for m in ms.moves}
+
+
+def _trim_notice(ctx: EventContext, a: Action, keep: list[str], bad_pos: set[str]) -> None:
+    """A dealer.notify that loses orders of failed moves is REGENERATED (ids and message) from the moves that went
+    through, never just filtered: the old message would still describe the removed orders."""
+    w = ctx.world
+    moves = [m for ms in ctx.moves.values() for m in ms.moves if m.po.id not in bad_pos]
+    cause = {m.po.id: ms.cause for ms in ctx.moves.values() for m in ms.moves}
+    acts = plan_care(
+        w, moves, {}, incident_id=None, cause=cause, policy=ctx.policy, co_ids=set(keep), include_loaners=False
+    )
+    new = next(x for x in acts if x.args["dealer_id"] == a.args["dealer_id"])
+    po_inc = _po_incident(ctx)
+    incs = list(dict.fromkeys(po_inc[w.customer_orders[c].production_order_id] for c in new.args["customer_order_ids"]))
+    a.args = new.args
+    a.incident_ids, a.incident_id = incs, (incs[0] if len(incs) == 1 else None)
+    a.justification += " (recomputed after a failed move)"
+
+
+def _recompute_loaners(
+    ctx: EventContext, group: list[Action], bad_pos: set[str]
+) -> tuple[list[Action], list[Action], list[tuple[Action, str]]]:
+    """Loaners over the moves that went through and the recorded pools (the pool capacity a failed move leaves unused
+    goes to the next entitled customer). Returns (to send in order, newly created, (not sent, why))."""
+    eligible = ctx.state.get("loaner_eligible")
+    if eligible is None:
+        return group, [], []
+    w, po_inc = ctx.world, _po_incident(ctx)
+    moves = [m for ms in ctx.moves.values() for m in ms.moves if m.po.id not in bad_pos]
+    acts = plan_care(
+        w, moves, dict(ctx.state.get("pools") or {}), incident_id=None, cause="", policy=ctx.policy,
+        loaner_given_to=set(), co_ids=set(eligible), include_notices=False,
+    )  # fmt: skip
+    staged = {x.args["customer_order_id"]: x for x in group}
+    send: list[Action] = []
+    extra: list[Action] = []
+    for x in acts:
+        co = x.args["customer_order_id"]
+        if co in staged:
+            send.append(staged.pop(co))
+            continue
+        (n,) = _stamp([x], CCQ, [po_inc[w.customer_orders[co].production_order_id]])
+        n.justification += " (recomputed after a failed move)"
+        send.append(n)
+        extra.append(n)
+    dropped = [
+        (x, "skipped: dependency failed" if w.customer_orders[co].production_order_id in bad_pos
+         else "skipped: recomputed after a failed move")
+        for co, x in staged.items()
+    ]  # fmt: skip
+    if extra and ctx.twin is not None:  # law 5: nothing is sent that the twin did not rehearse
+        for x, r in zip(extra, ctx.twin.rehearse(extra), strict=True):
+            x.rehearsal = r
+            if not r.ok:
+                send.remove(x)
+                dropped.append((x, f"skipped: rehearsal failed: {r.error}"))
+    return send, extra, dropped
+
+
+def _trim_quality(ctx: EventContext, a: Action, good: list[str]) -> bool:
+    """Rebuild a merged stop-sale / owner contact from the incidents whose hold succeeded. False = nothing remains."""
+    w = ctx.world
+    if a.tool == "dealer.stop_sale":
+        dealer, want = a.args["dealer_id"], set(a.args["vins"])
+        surv = {i: want & set(getattr(ctx.impacts.get(i), "in_stock_by_dealer", {}).get(dealer, [])) for i in good}
+        surv = {i: v for i, v in surv.items() if v}
+        if not surv:
+            return False
+        first = next(iter(surv))
+        impact = replace(
+            ctx.impacts[first], in_stock_by_dealer={dealer: sorted(set().union(*surv.values()))}, owners={}
+        )
+        new = next(x for x in plan_quality(w, impact, incident_id=first, reason=_quality_reason(ctx, first))
+                   if x.tool == "dealer.stop_sale")  # fmt: skip
+    else:
+        cust = a.args["customer_id"]
+        req = ctx.state.get("owner_req", {})
+        surv = {}
+        for i in good:
+            vins = req.get(i, {}).get(cust) or getattr(ctx.impacts.get(i), "owners", {}).get(cust)
+            if vins:
+                surv[i] = set(vins)
+        if not surv:
+            return False
+        first = next(iter(surv))
+        impact = replace(ctx.impacts[first], in_stock_by_dealer={}, owners={cust: sorted(set().union(*surv.values()))})
+        new = next(x for x in plan_quality(w, impact, incident_id=first, reason=_quality_reason(ctx, first))
+                   if x.tool == "crm.notify_customer")  # fmt: skip
+    a.args = new.args
+    a.incident_ids, a.incident_id = list(surv), (first if len(surv) == 1 else None)
+    a.justification += " (recomputed after a failed hold)"
+    return True
+
+
 def _run_writes(ctx: EventContext, writes: list[Action]) -> tuple[list[Action], list[Action], list[Action]]:
-    """Send the writes in phase order. Returns (failed, skipped, unknown). A failed move blocks the writes that depend
-    on it: notices lose its customer orders, loaners for them are skipped, moves into a slot only that order's departure
-    would free are skipped, stop-sales/owner contacts depend on their lot's hold."""
+    """Send the writes in phase order. Returns (failed, skipped, unknown). A failed move blocks what depends on it:
+    notices are regenerated without its customer orders, loaners are recomputed over the moves that went through,
+    a move into a slot that is still full (its occupant never left) is skipped, and merged stop-sales / owner
+    contacts are rebuilt from the holds that succeeded. Recomputed loaners are appended to `writes` (in place)."""
     w = ctx.world
     failed: list[Action] = []
     skipped: list[Action] = []
     unknown: list[Action] = []
     bad_pos: set[str] = set()
-    blocked_slots: set[tuple[str, str]] = set()
     bad_holds: set[str] = set()
+    board = SlotBoard(w)  # live occupancy as the writes land; failed/skipped moves leave their PO where it is
     halted = False
+    loaners_checked = False
 
     def skip(a: Action, why: str) -> None:
         a.skipped = True
@@ -798,39 +975,61 @@ def _run_writes(ctx: EventContext, writes: list[Action]) -> tuple[list[Action], 
         a.result = ToolResult(ok=False, error=why, outcome="failed")
         skipped.append(a)
         if a.tool in MOVES:
-            po = w.production_orders[a.args["production_order_id"]]
-            bad_pos.add(po.id)
+            bad_pos.add(w.production_orders[a.args["production_order_id"]].id)
         if a.tool == "quality.hold_lot":
             bad_holds.update(_incs(a))
         _log(ctx, a)
 
-    for a in writes:
+    pending = list(writes)
+    while pending:
+        a = pending.pop(0)
         if halted:
             skip(a, "skipped: event stopped after an unknown outcome")
             continue
-        dep = False
+        if a.tool == "crm.assign_loaner" and not loaners_checked:
+            loaners_checked = True
+            if bad_pos:  # recompute before the first loaner write (phase 3)
+                group = [a, *[x for x in pending if x.tool == "crm.assign_loaner"]]
+                rest = [x for x in pending if x.tool != "crm.assign_loaner"]
+                send, extra, dropped = _recompute_loaners(ctx, group, bad_pos)
+                writes.extend(extra)
+                for x, why in dropped:
+                    skip(x, why)
+                pending = [*send, *rest]
+                continue
+        dep, why = False, "skipped: dependency failed"
+        to_plant, to_idx = "", -1
         if a.tool in MOVES:
             po = w.production_orders[a.args["production_order_id"]]
-            dep = (a.args.get("to_plant_id") or po.plant_id, a.args["new_date"]) in blocked_slots
+            to_plant = a.args.get("to_plant_id") or po.plant_id
+            to_idx = w.calendar.idx(date.fromisoformat(a.args["new_date"]))
+            if board.free(to_plant, to_idx) <= 0:
+                dep, why = True, "skipped: target slot full after an earlier failed move"
         elif a.tool == "dealer.notify":
-            keep = [c for c in a.args["customer_order_ids"] if w.customer_orders[c].production_order_id not in bad_pos]
+            orig = a.args["customer_order_ids"]
+            keep = [c for c in orig if w.customer_orders[c].production_order_id not in bad_pos]
             if not keep:
                 dep = True
-            elif len(keep) < len(a.args["customer_order_ids"]):
-                a.args = {**a.args, "customer_order_ids": keep}
-                a.justification += " (customer orders of moves that failed were removed)"
+            elif len(keep) < len(orig):
+                _trim_notice(ctx, a, keep, bad_pos)
         elif a.tool == "crm.assign_loaner":
             dep = w.customer_orders[a.args["customer_order_id"]].production_order_id in bad_pos
         elif a.tool in {"dealer.stop_sale", "crm.notify_customer"}:
             incs = _incs(a)
-            dep = bool(incs) and set(incs) <= bad_holds
+            good = [i for i in incs if i not in bad_holds]
+            if incs and not good:
+                dep = True
+            elif incs and len(good) < len(incs) and not _trim_quality(ctx, a, good):
+                dep = True
         if dep:
-            skip(a, "skipped: dependency failed")
+            skip(a, why)
             continue
         res = ctx.executor.call(ctx.event_id, a.tool, a.args)
         _seen(ctx, a, res)
         _log(ctx, a)
         if res.ok:
+            if a.tool in MOVES and a.args["production_order_id"] in board.loc:
+                board.move(a.args["production_order_id"], to_plant, to_idx)
             continue
         if res.outcome == "unknown":
             unknown.append(a)
@@ -840,9 +1039,7 @@ def _run_writes(ctx: EventContext, writes: list[Action]) -> tuple[list[Action], 
             failed.append(a)
             tl(ctx).step(CO, "execute", f"{a.tool} failed ({res.error}); not retried, dependents are skipped")
         if a.tool in MOVES:
-            po = w.production_orders[a.args["production_order_id"]]
-            bad_pos.add(po.id)
-            blocked_slots.add((po.plant_id, po.build_date.isoformat()))
+            bad_pos.add(w.production_orders[a.args["production_order_id"]].id)
         if a.tool == "quality.hold_lot":
             bad_holds.update(_incs(a))
     return failed, skipped, unknown
@@ -892,6 +1089,16 @@ def execute(ctx: EventContext, args: NoArgs) -> dict[str, Any]:
         raise ValueError("blocking validator findings, fix or escalate: " + "; ".join(f.short()[:300] for f in bad[:5]))
 
     _log_planning_reads(ctx)
+    for (
+        r
+    ) in ctx.plan.reads:  # a failed or unknown planning read means the plan rests on nothing: abort before any write
+        res = r.result
+        if res is None or not res.ok or res.outcome in {"failed", "unknown"}:
+            why = f"A live read failed during planning ({r.tool} {r.args}: {res.error if res else 'no result'}); nothing executed"
+            tl(ctx).step(CO, "execute", f"ABORT before any write: {why}")
+            _escalate_open(ctx, why)
+            flush_escalations(ctx)
+            return {"status": "escalated", "writes_sent": 0, "why": why}
     writes = ctx.plan.actions()
     vreads = _verification_reads(ctx, writes)
     # 1. twin rehearsal of the full plan -------------------------------------------------------------------------
@@ -945,6 +1152,12 @@ def execute(ctx: EventContext, args: NoArgs) -> dict[str, Any]:
         _escalate_open(ctx, f"The live world is not fresh, nothing executed: {stale}")
         flush_escalations(ctx)
         return {"status": "escalated", "writes_sent": 0, "why": stale}
+    lot = any(ctx.incidents[i].category == "quality_hold" for i in ids)
+    tl(ctx).step(
+        CO, "execute",
+        f"Freshness: {len(vreads)} slot reads, {len(ctx.state.get('pools') or {})} pool reads matched the baseline"
+        + ("; quality holds have no read tool in this enterprise, lot state is not verifiable" if lot else ""),
+    )  # fmt: skip
     # 4. writes ----------------------------------------------------------------------------------------------------
     failed, skipped, unknown = _run_writes(ctx, writes)
     st.executed = True
@@ -968,7 +1181,11 @@ def execute(ctx: EventContext, args: NoArgs) -> dict[str, Any]:
             f"Skipped ({len(skipped)}): {dict(sorted(Counter(a.tool for a in skipped).items()))}. "
             "Please complete or reverse the remainder by hand."
         )
-        _queue_escalation(ctx, ids_all[0], ids_all, st.failure_text, "A write failed during execution")
+        hit = {i for a in [*failed, *unknown, *skipped] for i in _incs(a)}
+        affected = [i for i in ids_all if i in hit] or ids_all
+        for i in affected:
+            st.partial[i] = st.failure_text
+        _queue_escalation(ctx, affected[0], affected, st.failure_text, "A write failed during execution", settle=False)
         report["status"] = "failed"
         report["escalated"] = st.failure_text
     flush_escalations(ctx)
@@ -991,6 +1208,17 @@ def status_of(ctx: EventContext) -> str:
     return "escalated"
 
 
+def _partial_sentence(ctx: EventContext, i: str) -> str:
+    mine = [a for a in cs(ctx).log if a.writes and i in _incs(a)]
+    done = tool_counts(mine)
+    bad = Counter(a.tool for a in mine if not ok(a) and not a.skipped)
+    skp = Counter(a.tool for a in mine if a.skipped)
+    return (
+        f"{i}: executed partially — done {done or 'nothing'}; failed {dict(sorted(bad.items())) or 'nothing'}; "
+        f"skipped {dict(sorted(skp.items())) or 'nothing'}; the remainder was escalated to a human."
+    )
+
+
 def draft(ctx: EventContext, error: str | None = None) -> tuple[str, str]:
     """Factual (summary, decision_reason) from the successful actions only."""
     st = cs(ctx)
@@ -1001,6 +1229,8 @@ def draft(ctx: EventContext, error: str | None = None) -> tuple[str, str]:
             parts.append(f"Escalated {i} to a human without operational change: {st.escalated[i][:300]}")
         elif i in st.dropped:
             parts.append(f"{i} is not an operational event: {st.dropped[i]}")
+        elif i in st.partial:
+            parts.append(_partial_sentence(ctx, i))
         elif s.category in ACTIONABLE and i in st.closed:
             parts.append(incident_sentence(ctx.world, s, acts))
     if st.failed:
@@ -1049,15 +1279,13 @@ def finish(ctx: EventContext, args: FinishArgs) -> dict[str, Any]:
     st = cs(ctx)
     if not ctx.incidents:
         raise ValueError("register_incidents first")
-    left = open_incidents(ctx)
+    left = unsettled(ctx)
     if left:
-        nxt = []
-        for t, i in _per_incident_missing(ctx):
-            nxt.append(f"{i}: delegate {t}")
+        nxt = [f"{i}: {what}" for i, what in left]
         nxt += [f"delegate {t}" for t in _wide_missing(ctx)]
         raise ValueError(
-            f"incidents {left} have neither an executed plan nor an escalation. Remaining: "
-            + ("; ".join(nxt) if nxt else "validate_plan, then execute (or escalate them)")
+            f"incidents {[i for i, _ in left]} have neither an executed plan nor an escalation (noise: nor a drop). Remaining: "
+            + "; ".join(nxt)
         )
     summary, reason = draft(ctx)
     if opts(ctx).get("use_explain", True):

@@ -28,8 +28,12 @@ then resolves names and dates; you never decide an id or a date yourself.
 --- guide ---
 {UNDERSTANDING_GUIDE}
 --- end of guide ---
+At the FIRST register_incidents fill every date and id field you can read from the text (original/new ETA, outage \
+start/end, build window); bare strings are accepted for dates.
 Aliases and nicknames ("the Texas plant", "Alamo City", "Volt", "multimedia processor") are resolved by the tables \
-and a closed-set tie-break. Never escalate a confirmed incident because of a nickname or an odd date phrase.
+and a closed-set tie-break. Never escalate a confirmed incident because of a nickname or an odd date phrase: the \
+escalate tool refuses it (it only accepts unconfirmed/other reports, needs_human, unresolved ids/dates or confidence \
+below 0.7, a noise item that names a record, or blocking validator findings).
 
 REQUIRED ORDER
 1. register_incidents(incidents) with every distinct incident, in the order of the text.
@@ -52,7 +56,8 @@ findings are attached for you; at most 2 rounds per task); then validate_plan ag
 escalate the incident the findings name.
 6. execute (it validates, rehearses on the twin, asks the independent auditor, checks the live world, then writes). If it \
 reports an escalation or failure, that is final: do not retry.
-7. finish. It refuses while a confirmed incident has neither an executed plan nor an escalation.
+7. finish. It refuses while ANY registered incident is not settled: dropped (noise), escalated, or executed. \
+Unconfirmed/other reports must be escalated; they are never simply left.
 If nothing is actionable (everything noise or escalated) go straight from the gate to finish.
 
 WHEN TO ESCALATE (one escalate per incident; the reason states what would make it actionable; no further writes for \

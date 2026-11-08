@@ -18,11 +18,11 @@ from control_tower.orchestration.context import EventContext
 from control_tower.orchestration.coordinator_agent import COORDINATOR
 from control_tower.orchestration.coordinator_tools import (
     ACTIONABLE,
+    _escalate_open,
     _queue_escalation,
     cs,
     draft,
     flush_escalations,
-    open_incidents,
     status_of,
 )
 from control_tower.orchestration.report import classify, counterfactual, minimal_path, world_diff
@@ -101,15 +101,7 @@ class Coordinator:
             st.failure_text = f"The coordinator stopped ({error}) after some writes were sent; check the action log."
             _queue_escalation(ctx, None, list(ctx.incidents), st.failure_text, "Coordinator stopped mid-execution")
             return
-        ids = open_incidents(ctx)
-        for i in ids:
-            raw = st.raws.get(i)
-            _queue_escalation(
-                ctx, i, [i],
-                f'{i} ({ctx.incidents[i].category}): "{raw.evidence if raw else ""}". Not completed: {error} '
-                "No operational action taken.",
-                "Coordinator loop failed",
-            )  # fmt: skip
+        _escalate_open(ctx, f"Not completed: {error}", "Coordinator loop failed")
         if not ctx.incidents:
             _queue_escalation(
                 ctx, None, [], f"Nothing could be understood or acted on: {error} No operational action taken.",
