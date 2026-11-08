@@ -16,12 +16,6 @@ from typing import Any
 
 import networkx as nx
 
-from control_tower.agents.auditor import audit, plan_digest
-from control_tower.agents.dealer_care import plan_care
-from control_tower.agents.explain import explain
-from control_tower.agents.policy import DEFAULT_POLICY, Policy
-from control_tower.agents.quality import plan_quality
-from control_tower.agents.supply_chain import Move, SlotBoard, moves_to_actions, plan_moves
 from control_tower.data.loader import LOANER_TIERS, World
 from control_tower.graph.traverse import (
     customer_orders_of,
@@ -30,6 +24,12 @@ from control_tower.graph.traverse import (
     impact_supplier_delay,
 )
 from control_tower.llm.adapter import AUDIT_MODELS, LLMError, default_provider
+from control_tower.orchestration.auditor import audit, plan_digest
+from control_tower.orchestration.explain import explain
+from control_tower.planning.dealer_care import plan_care
+from control_tower.planning.policy import DEFAULT_POLICY, Policy
+from control_tower.planning.quality import plan_quality
+from control_tower.planning.supply_chain import Move, SlotBoard, moves_to_actions, plan_moves
 from control_tower.schemas.action import WRITE_TOOLS, Action, Rehearsal, ToolResult
 from control_tower.schemas.incident import IncidentSpec
 from control_tower.schemas.trace import (
@@ -266,6 +266,7 @@ class Coordinator:
         for a in all_actions:
             res = self.executor.call(eid, a.tool, a.args)
             a.result = res
+            a.transport = getattr(self.executor, "transport", None)
             executed.append(a)
             self.sink.emit("action", eid, a.model_dump(mode="json"))
             if id(a) in read_ids:
@@ -494,6 +495,7 @@ class Coordinator:
             rehearsal=Rehearsal(ok=True),
         )
         esc.result = self.executor.call(event["event_id"], "escalate", esc.args)
+        esc.transport = getattr(self.executor, "transport", None)
         self.sink.emit("action", event["event_id"], esc.model_dump(mode="json"))
         tl.step("coordinator", "execute", f"escalate: {why[:300]}")
         actions = [*(executed or []), esc]

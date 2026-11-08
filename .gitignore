@@ -26,9 +26,6 @@ traces/*
 !traces/examples/
 !traces/final/
 !traces/snapshot/
-cache/*
-!cache/final/
-!cache/snapshot/
 
 # OS / editor
 .DS_Store

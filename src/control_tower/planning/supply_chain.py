@@ -12,9 +12,9 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Literal
 
-from control_tower.agents.policy import DEFAULT_POLICY, Policy
 from control_tower.data.loader import LAST_IDX, ProductionOrder, World
 from control_tower.graph.traverse import DisruptionImpact
+from control_tower.planning.policy import DEFAULT_POLICY, Policy
 from control_tower.schemas.action import Action
 
 

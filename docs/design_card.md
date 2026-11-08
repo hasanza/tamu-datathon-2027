@@ -58,7 +58,7 @@ Affected orders claim slots in (original build date, PO id) order; a transferred
   | `gemini-3.5-flash-lite` (Google) | extraction, entity tie-break, summaries | 30 | 16,752 / 5,233 | $0.0181 |
   | `gemini-3.8-flash` (Google) | independent auditor | 10 | 13,426 / 5,759 | $0.0317 |
 
-- **Reproducible without a key:** `LLM_CACHE_DIR=cache/final LLM_REPLAY_ONLY=1 uv run python -m control_tower.run --all --dry-run` regenerates the identical action log from the committed cache.
+- **Live, not cached:** every LLM response is live; the log is stable because tools compute the arguments.
 
 ## 7. Explainability and the UI
 Control-tower UI over the trace files: live event feed with category and confidence, graph path per event (grouped nodes for large sets), agent timeline, actions table with rehearsal and result per call, audit trail of what changed, escalation inbox and KPIs. A FastAPI layer serves traces, the action log and a live server-sent-events stream of a running pipeline.

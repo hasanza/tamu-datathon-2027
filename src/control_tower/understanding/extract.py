@@ -1,6 +1,6 @@
 """Task 2.2: LLM extraction. The model reads one message and lists its incidents as phrases; resolve.py does the rest.
 
-The system prompt is the stable prefix (byte-identical across calls so provider caching and our own cache work).
+The system prompt is the stable prefix (byte-identical across calls so provider-side prompt caching can work).
 It contains no event from events.json; the guidance is generic.
 """
 
