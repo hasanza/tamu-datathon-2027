@@ -35,6 +35,14 @@ function checks(t: Trace, target: "twin" | "server"): Check[] {
       verdict: t.actions.length === 0 ? "na" : failed.length > 0 ? "fail" : noResult > 0 ? "na" : "pass",
     },
   ];
+  const byTransport = t.actions.reduce<Record<string, number>>((acc, a) => (a.transport ? { ...acc, [a.transport]: (acc[a.transport] ?? 0) + 1 } : acc), {});
+  if (Object.keys(byTransport).length > 0) {
+    out.push({
+      rule: "Execution transport",
+      detail: Object.entries(byTransport).map(([k, n]) => `${n} via ${k}`).join(", ") + ` (${t.orchestration?.mcp_transport ?? "mcp/stdio"} is the real MCP client; twin = in-process sandbox)`,
+      verdict: "na",
+    });
+  }
   if (t.status === "escalated" || t.status === "noise") {
     out.push({
       rule: `${t.status === "noise" ? "Noise" : "Escalated"} events change nothing`,

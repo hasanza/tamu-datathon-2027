@@ -9,7 +9,15 @@ const ThemeCtx = createContext<{ theme: Theme; toggle: () => void }>({ theme: "d
 export const useTheme = () => useContext(ThemeCtx);
 
 /* ---------- run mode (Dry = in-process twin, Server = a fresh organizers' server) ---------- */
-const RunModeCtx = createContext<{ mode: RunMode; setMode: (m: RunMode) => void }>({ mode: "dry", setMode: () => {} });
+export type RunOrder = "sequential" | "parallel";
+/** Events are independent worlds, so a run can handle them one by one (default, used for the final run) or side by side. */
+export const PARALLEL_WORKERS = 4;
+const RunModeCtx = createContext<{ mode: RunMode; setMode: (m: RunMode) => void; order: RunOrder; setOrder: (o: RunOrder) => void }>({
+  mode: "dry",
+  setMode: () => {},
+  order: "sequential",
+  setOrder: () => {},
+});
 export const useRunMode = () => useContext(RunModeCtx);
 
 /* ---------- toasts ---------- */
@@ -35,7 +43,12 @@ export function AppProviders({ children }: { children: ReactNode }) {
     setModeState(m);
     safeStorage("ct-run-mode", m);
   }, []);
-  const modeValue = useMemo(() => ({ mode, setMode }), [mode, setMode]);
+  const [order, setOrderState] = useState<RunOrder>(() => (safeStorage("ct-run-order") === "parallel" ? "parallel" : "sequential"));
+  const setOrder = useCallback((o: RunOrder) => {
+    setOrderState(o);
+    safeStorage("ct-run-order", o);
+  }, []);
+  const modeValue = useMemo(() => ({ mode, setMode, order, setOrder }), [mode, setMode, order, setOrder]);
 
   const [toasts, setToasts] = useState<Toast[]>([]);
   const push = useCallback((text: string, kind: ToastKind = "info") => {
