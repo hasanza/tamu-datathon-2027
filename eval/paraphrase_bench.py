@@ -3,7 +3,7 @@ must still resolve the same facts. Ground truth = the resolved signature of the 
 
   PYTHONPATH=. uv run python eval/paraphrase_bench.py --models gemini-3.8-flash gemini-3.5-flash-lite [--per-event 6]
 
-Paraphrases are generated once and cached (cache/llm), so reruns are free. The bench reports accuracy by model and style
+Paraphrases are regenerated live on every run (no cache). The bench reports accuracy by model and style
 and lists every disagreement, because a paraphrase that altered a fact is a bench bug, not a model bug: read the failures.
 """
 

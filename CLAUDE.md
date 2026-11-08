@@ -13,8 +13,8 @@ local enterprise server, writing a trace per event. Score is 50% replay of `acti
 1. `hack_the_highway/data/policy_handbook.md` is the law. Rules 1–10 are implemented in code, not prompted into an LLM.
 2. Never hard-code answers to the 15 events. Everything derives from the event text and the tables.
 3. Never edit anything under `hack_the_highway/`. A test checks the file hashes.
-4. The planner (`src/control_tower/agents`, `graph`, `world`) is deterministic and has **no LLM imports**.
-   The LLM lives only in `src/control_tower/understanding` (extraction), the auditor and the summaries.
+4. `planning/`, `graph/`, `world/` are deterministic with **no LLM imports**; the LLM lives only in `understanding/`,
+   `orchestration/` (the four agents, the auditor, the summaries) and `llm/`.
 5. No write tool call is sent to the server unless the twin rehearsal passed.
 6. Contracts in `src/control_tower/schemas/` and `docs/contracts.md` change only by CORE, at a sync.
 
@@ -30,7 +30,7 @@ uv run pytest                             # all tests (unit tests need no LLM, n
 uv run ruff check . && uv run ruff format .
 uv run python hack_the_highway/enterprise_server.py --data hack_the_highway/data --events hack_the_highway/data/events.json --out runs/dev --port 8000 --overwrite
 uv run python -m control_tower.run --all --out runs/dev            # needs a fresh server on :8000 and the Gemini key
-LLM_CACHE_DIR=cache/snapshot LLM_REPLAY_ONLY=1 uv run python -m control_tower.run --all --dry-run --out runs/dev   # offline
+uv run python -m control_tower.run --all --dry-run --out runs/dev   # twin as the enterprise, no server; LLM still live (no cache)
 uv run python eval/replay_grader.py runs/dev/action_log.jsonl --traces traces/dev
 cd ui && npm run dev                      # UI on :5173 ; API: uv run uvicorn api.app:app --port 8001
 ```

@@ -1,6 +1,6 @@
 ---
 paths:
-  - "src/control_tower/agents/**"
+  - "src/control_tower/planning/**"
   - "src/control_tower/graph/**"
   - "src/control_tower/world/**"
   - "eval/oracle.py"

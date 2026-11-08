@@ -298,11 +298,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         tmp = cfg.custom_dir / f"{eid}.input.json"
         tmp.write_text(json.dumps([ev]), encoding="utf-8")
         cmd = [sys.executable, "-m", "control_tower.live", "--custom", str(tmp)]
-        env = {
-            k: v for k, v in os.environ.items() if k != "LLM_CACHE_DIR"
-        }  # new text: cache in cache/llm, not the committed snapshot
         try:
-            r = subprocess.run(cmd, cwd=ROOT, env=env, capture_output=True, text=True, timeout=180)  # noqa: S603
+            r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, timeout=180)  # noqa: S603
         except subprocess.TimeoutExpired as e:
             raise HTTPException(504, "the pipeline took too long on this event") from e
         finally:
@@ -357,8 +354,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         cfg.stream_file.write_text(
             ""
         )  # connected SSE tailers see the truncation now, before the pipeline starts writing
-        env = {**os.environ, "LLM_CACHE_DIR": os.environ.get("LLM_CACHE_DIR", str(ROOT / "cache" / "snapshot"))}
-        runner["proc"] = subprocess.Popen(cmd, cwd=ROOT, env=env)  # noqa: S603
+        runner["proc"] = subprocess.Popen(cmd, cwd=ROOT)  # noqa: S603
         runner["mode"], runner["started"] = mode, time.time()
         return runner_state()
 

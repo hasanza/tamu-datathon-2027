@@ -2,7 +2,6 @@
 
   uv run python -m control_tower.run --all --out runs/dev --server http://127.0.0.1:8000
   uv run python -m control_tower.run --event E-12 --dry-run --out runs/dry       # no server: the twin plays the enterprise
-  LLM_REPLAY_ONLY=1 uv run python -m control_tower.run --all --dry-run ...        # reproduce a run from the LLM cache
 
 Artifacts: <out>/action_log.jsonl (written by the server, or by the dry-run executor), <out>/models.json,
 <out>/events.ndjson (live stream for the UI), and traces/<run name>/<event_id>.json.
@@ -19,14 +18,14 @@ from pathlib import Path
 
 import httpx
 
-from control_tower.agents.coordinator import Coordinator
-from control_tower.agents.policy import Policy
 from control_tower.data.loader import KIT_DIR, REPO_ROOT, load_world
 from control_tower.graph.ontology import build_graph
 from control_tower.llm.adapter import LEDGER
+from control_tower.orchestration.coordinator import Coordinator
+from control_tower.planning.policy import Policy
 from control_tower.trace import Sink
 from control_tower.understanding.resolve import EntityIndex
-from control_tower.world.executor import ServerExecutor, TwinExecutor
+from control_tower.world.executor import HttpExecutor, McpExecutor, TwinExecutor
 from control_tower.world.twin import Twin
 
 
@@ -43,6 +42,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", default="runs/dev")
     ap.add_argument("--server", default="http://127.0.0.1:8000")
     ap.add_argument("--dry-run", action="store_true", help="use the in-process twin instead of the server")
+    ap.add_argument(
+        "--executor", choices=["mcp", "http"], default="mcp", help="server mode: MCP client (default) or direct HTTP"
+    )
     ap.add_argument("--provider")
     ap.add_argument("--model")
     ap.add_argument("--audit-model", help="model for the auditor (default: same as --model / provider default)")
@@ -65,7 +67,12 @@ def main(argv: list[str] | None = None) -> int:
     graph = build_graph(world)
     index = EntityIndex(world)
     twin = Twin()
-    executor = TwinExecutor(out / "action_log.jsonl") if a.dry_run else ServerExecutor(a.server)
+    if a.dry_run:
+        executor = TwinExecutor(out / "action_log.jsonl")
+    elif a.executor == "http":
+        executor = HttpExecutor(a.server)
+    else:
+        executor = McpExecutor(a.server)
     events = (
         json.loads(Path(a.events_file).read_text()) if a.events_file else load_events(None if a.dry_run else a.server)
     )
@@ -107,6 +114,8 @@ def main(argv: list[str] | None = None) -> int:
     total_calls = sum(r[4] for r in rows)
     print(f"\n{len(rows)} handled, {failed_events} crashed, {total_calls} tool calls, {sum(r[6] for r in rows)} failed calls, "
           f"{len(LEDGER.calls)} LLM calls (${LEDGER.total_cost_usd}), {time.perf_counter() - t0:.1f}s")  # fmt: skip
+    if hasattr(executor, "close"):
+        executor.close()
     return 1 if failed_events else 0
 
 

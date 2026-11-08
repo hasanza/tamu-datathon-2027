@@ -9,11 +9,11 @@ import pathlib
 import sys
 import tempfile
 
-from control_tower.agents import coordinator as cm
-from control_tower.agents.auditor import audit as real_audit
-from control_tower.agents.coordinator import Coordinator
 from control_tower.data.loader import KIT_DIR, load_world
 from control_tower.graph.ontology import build_graph
+from control_tower.orchestration import coordinator as cm
+from control_tower.orchestration.auditor import audit as real_audit
+from control_tower.orchestration.coordinator import Coordinator
 from control_tower.trace import Sink
 from control_tower.understanding.resolve import EntityIndex
 from control_tower.world.executor import TwinExecutor

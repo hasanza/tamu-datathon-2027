@@ -20,16 +20,16 @@ rehearse every corrective action on a digital twin, and execute it through MCP t
 # 1. a fresh enterprise server (the world restarts empty each time it starts)
 uv run python hack_the_highway/enterprise_server.py --data hack_the_highway/data \
   --events hack_the_highway/data/events.json --out runs/dev --port 8000 --overwrite
-# 2. all 15 events (needs GEMINI_API_KEY in .env, or replay from the cache as below)
+# 2. all 15 events (needs GEMINI_API_KEY in .env; every LLM response is live)
 uv run python -m control_tower.run --all --out runs/dev
 # 3. grade the server's log on a fresh copy of the world against an independent oracle
 uv run python eval/replay_grader.py runs/dev/action_log.jsonl --traces traces/dev
 ```
 
-No server and no API key: replay the whole run from the committed LLM cache, with the in-process twin as the enterprise:
+Dry run with no server (the in-process twin plays the enterprise; the LLM is still called live):
 
 ```bash
-LLM_CACHE_DIR=cache/snapshot LLM_REPLAY_ONLY=1 uv run python -m control_tower.run --all --dry-run --out runs/dev
+uv run python -m control_tower.run --all --dry-run --out runs/dev
 ```
 
 Real traces of the final run are in `traces/final/` (also the UI default via `traces/snapshot/`).
@@ -51,7 +51,7 @@ Final clean run (`runs/final/`, `traces/final/`, tag `final-run-2`): 15 events, 
 | `gemini-3.5-flash-lite` (Google) | extraction, entity tie-break, summaries | 30 | 16,752 / 5,233 | $0.0181 |
 | `gemini-3.8-flash` (Google) | independent auditor | 10 | 13,426 / 5,759 | $0.0317 |
 
-Source of truth: `runs/final/models.json` (written by the pipeline). No LLM call is made per action. Reproduce the identical log with no API key and no server: `LLM_CACHE_DIR=cache/final LLM_REPLAY_ONLY=1 uv run python -m control_tower.run --all --dry-run --out runs/dev`. Design card: `docs/design_card.md`.
+Source of truth: `runs/final/models.json` (written by the pipeline). No LLM call is made per action. There is no cache: every LLM response is live; the log is stable because tools compute the arguments. Design card: `docs/design_card.md`.
 
 ## API and UI
 

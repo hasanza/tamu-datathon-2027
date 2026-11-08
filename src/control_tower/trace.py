@@ -11,7 +11,15 @@ from typing import Any
 
 from control_tower.schemas.trace import AgentRun, AgentStep, LLMCall, StepKind
 
-AGENTS = ("coordinator", "supply_chain", "dealer_care", "quality")
+AGENTS = (
+    "coordinator",
+    "supply_chain_planner",
+    "dealer_network",
+    "customer_care_quality",
+    "supply_chain",
+    "dealer_care",
+    "quality",
+)
 
 
 class Sink:
@@ -41,15 +49,29 @@ class Timeline:
     def now(self) -> datetime:
         return self._base + timedelta(seconds=round(time.perf_counter() - self._t0, 3))
 
-    def step(self, agent: str, kind: StepKind, text: str, data: dict[str, Any] | None = None) -> None:
+    def step(
+        self, agent: str, kind: StepKind, text: str, data: dict[str, Any] | None = None, **extra: Any
+    ) -> AgentStep:
+        """Append a step. `extra` carries the v0.2.0 fields (turn, tool, args, result, to_agent, from_agent,
+        transport, model, cost_usd)."""
         t = self.now()
         run = self.runs.get(agent)
         if run is None:
             run = self.runs[agent] = AgentRun(agent=agent, started=t)  # type: ignore[arg-type]
         run.ended = t
-        step = AgentStep(t=t, kind=kind, text=text, data=data)
+        step = AgentStep(t=t, kind=kind, text=text, data=data, **extra)
         run.steps.append(step)
         self.sink.emit("agent_step", self.event_id, {"agent": agent, **step.model_dump(mode="json")})
+        return step
+
+    def usage(self, agent: str, model: str | None, cost_usd: float, calls: int = 1) -> None:
+        """Account one LLM call against an agent's run (llm_calls, cost_usd, model)."""
+        run = self.runs.get(agent)
+        if run is None:
+            run = self.runs[agent] = AgentRun(agent=agent, started=self.now())  # type: ignore[arg-type]
+        run.llm_calls += calls
+        run.cost_usd = round(run.cost_usd + cost_usd, 6)
+        run.model = model or run.model
 
     def llm(self, call: LLMCall) -> None:
         self.llm_calls.append(call)
