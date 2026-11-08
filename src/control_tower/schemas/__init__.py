@@ -20,6 +20,7 @@ from control_tower.schemas.trace import (
     LLMUsage,
     MovedPO,
     NotifiedDealer,
+    Orchestration,
     Trace,
     WorldDiff,
 )
@@ -41,6 +42,7 @@ __all__ = [
     "LLMUsage",
     "MovedPO",
     "NotifiedDealer",
+    "Orchestration",
     "Rehearsal",
     "ResolutionStep",
     "ToolResult",

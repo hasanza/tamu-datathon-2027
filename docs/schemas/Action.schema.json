@@ -55,6 +55,35 @@
           ],
           "default": null,
           "title": "Response"
+        },
+        "outcome": {
+          "anyOf": [
+            {
+              "enum": [
+                "ok",
+                "failed",
+                "unknown"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outcome"
+        },
+        "http_status": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Http Status"
         }
       },
       "required": [
@@ -87,7 +116,10 @@
         "coordinator",
         "supply_chain",
         "dealer_care",
-        "quality"
+        "quality",
+        "supply_chain_planner",
+        "dealer_network",
+        "customer_care_quality"
       ],
       "title": "Agent",
       "type": "string"
@@ -147,6 +179,24 @@
         }
       ],
       "default": null
+    },
+    "transport": {
+      "anyOf": [
+        {
+          "enum": [
+            "mcp/stdio",
+            "twin",
+            "in-process"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "How the call reached the enterprise (v0.2.0)",
+      "title": "Transport"
     }
   },
   "required": [

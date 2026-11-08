@@ -1,0 +1,28 @@
+# Per-agent model configuration (docs/PLAN_V2.md §3).
+# Override one agent without editing this file: CT_MODEL_<AGENT_ID_UPPER>=provider/model, e.g.
+#   CT_MODEL_COORDINATOR=anthropic/claude-sonnet-5-5
+
+[coordinator]
+provider = "gemini"
+model = "gemini-3.8-flash"
+max_turns = 24
+
+[supply_chain_planner]
+provider = "gemini"
+model = "gemini-3.8-flash"
+max_turns = 12
+
+[dealer_network]
+provider = "gemini"
+model = "gemini-3.8-flash"
+max_turns = 12
+
+[customer_care_quality]
+provider = "gemini"
+model = "gemini-3.8-flash"
+max_turns = 12
+
+[auditor]
+provider = "gemini"
+model = "gemini-3.8-flash"
+max_turns = 1

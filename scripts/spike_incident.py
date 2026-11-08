@@ -10,10 +10,6 @@ import argparse
 from collections import Counter
 from datetime import date
 
-from control_tower.agents.dealer_care import plan_care
-from control_tower.agents.policy import Policy
-from control_tower.agents.quality import plan_quality
-from control_tower.agents.supply_chain import SlotBoard, moves_to_actions, plan_moves
 from control_tower.data.loader import load_world
 from control_tower.graph.ontology import build_graph, stats
 from control_tower.graph.traverse import (
@@ -23,6 +19,10 @@ from control_tower.graph.traverse import (
     impact_outage,
     impact_supplier_delay,
 )
+from control_tower.planning.dealer_care import plan_care
+from control_tower.planning.policy import Policy
+from control_tower.planning.quality import plan_quality
+from control_tower.planning.supply_chain import SlotBoard, moves_to_actions, plan_moves
 from control_tower.world.twin import Twin, check_invariants
 
 
