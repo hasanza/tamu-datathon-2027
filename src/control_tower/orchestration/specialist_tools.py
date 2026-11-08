@@ -767,6 +767,7 @@ def rank_and_assign(ctx: EventContext, args: RankAssignArgs) -> dict[str, Any]:
     if unread:
         raise ValueError(f"no live loaner read recorded for {unread}: call loaner_availability(dealer_ids=…) first")
     pool = {d: recorded[d] for d in need}
+    ctx.state["loaner_eligible"] = set(ids)  # the coordinator recomputes loaners from this if a move fails
     acts = plan_care(
         ctx.world,
         all_moves,

@@ -121,7 +121,8 @@ In a compound event only the unclear part is escalated. Tests: one per circumsta
   (`stdio_client` + `StdioServerParameters`); `list_tools` at start; every enterprise call (reads included) is `session.call_tool("enterprise_act", ...)`
   or the typed read tools. Runs the asyncio loop in a dedicated thread; thread-safe (one lock around calls). Records `transport="mcp/stdio"` on each action.
   The twin sandbox (custom events, dry runs) keeps `TwinExecutor` (`transport="twin"`).
-- Reads (`mes.get_schedule`, `crm.loaner_availability`) are free and never penalized (handbook, Tools section).
+- Reads (`mes.get_schedule`, `crm.loaner_availability`) are free and never penalized (handbook, Tools section). They are the only reads the enterprise exposes (slot and loaner-pool
+  state); lot state has no read tool, so a quality-only event has nothing to verify live and the freshness step says so in the trace.
 - Execution is **phased over the whole event**, which is what makes partial failure safe: (1) all moves for all incidents; (2) notices recomputed
   from the moves that succeeded; (3) loaner reads, then loaners for the orders whose moves succeeded; (4) holds; (5) stop-sales; (6) owner contacts.
 - Failure semantics: a server-side rejection (error in the response) is `failed`; a transport failure (MCP timeout/exception) is `unknown` and
