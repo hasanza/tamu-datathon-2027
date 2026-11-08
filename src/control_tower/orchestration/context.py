@@ -20,9 +20,10 @@ from control_tower.schemas.action import Action
 from control_tower.schemas.incident import IncidentSpec
 
 # Canonical write order (PLAN_V2 §5: moves, notices, loaners, holds, stop-sales, owner contacts).
+# Moves are ONE phase: reschedules and transfers stay interleaved exactly as the slot planner ordered them, because a
+# move may depend on a slot freed by an earlier move.
 PHASE_ORDER = (
-    "mes.reschedule",
-    "mes.transfer",
+    "mes.move",
     "dealer.notify",
     "crm.assign_loaner",
     "quality.hold_lot",
@@ -64,9 +65,12 @@ class PlanAccumulator:
     results: dict[tuple[str, str, str | None], SpecialistResult] = field(default_factory=dict)
     finals: dict[tuple[str, str, str | None], list[Action]] = field(default_factory=dict)
     reads: list[Action] = field(default_factory=list)  # live reads (mes.get_schedule, crm.loaner_availability)
+    incidents_ref: dict[str, Any] | None = None  # the event's incidents in text order (same dict as ctx.incidents)
 
     def stage(self, agent: str, task: str, incident_id: str | None, bin_: str, actions: list[Action]) -> None:
         self.staged[(agent, task, incident_id, bin_)] = list(actions)
+        if (agent, task, incident_id) in self.finals:  # a recompute keeps an already submitted result consistent
+            self.finals[(agent, task, incident_id)] = self.staged_actions(agent, task, incident_id)
 
     def staged_actions(self, agent: str, task: str, incident_id: str | None = None) -> list[Action]:
         """Staged actions of a task; a per-incident query returns only that incident's bins."""
@@ -87,7 +91,15 @@ class PlanAccumulator:
         """All finalized write actions in canonical phase order (stable within a phase)."""
         flat = [a for acts in self.finals.values() for a in acts]
         rank = {t: i for i, t in enumerate(PHASE_ORDER)}
-        return sorted(flat, key=lambda a: rank.get(a.tool, len(rank)))
+        rank["mes.reschedule"] = rank["mes.transfer"] = rank["mes.move"]
+        order = {inc: n for n, inc in enumerate(self.incidents_ref or {})}
+        moves = {"mes.reschedule", "mes.transfer"}
+
+        def key(a: Action) -> tuple[int, int]:
+            first = (a.incident_ids or [a.incident_id or ""])[0]
+            return (rank.get(a.tool, len(rank)), order.get(first, 0) if a.tool in moves else 0)
+
+        return sorted(flat, key=key)  # stable: the planner's order inside an incident is kept
 
     def by_incident(self) -> dict[str, list[Action]]:
         out: dict[str, list[Action]] = {}
@@ -118,6 +130,7 @@ class EventContext(ToolContext):
     impacts: dict[str, Any] = field(default_factory=dict)  # incident_id -> DisruptionImpact | QualityImpact
 
     def __post_init__(self) -> None:
+        self.plan.incidents_ref = self.incidents
         if self.slot_board is None:
             self.slot_board = SlotBoard(self.world)
         if not self.event_id and self.event:

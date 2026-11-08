@@ -13,7 +13,7 @@ A specialist that handed a tool an incomplete or padded list is therefore caught
 from __future__ import annotations
 
 import json
-from collections import defaultdict
+from collections import Counter, defaultdict
 from collections.abc import Collection, Iterable
 from typing import Any, Literal
 
@@ -129,6 +129,15 @@ def validate(
         missing = sorted(want - set(got_by_po))
         if missing:
             add(inc, "V1", 1, f"move {len(want)} affected POs", f"missing {missing}")
+        unplaced = sorted(set(exp_unplaced.get(inc, [])) - set(got_by_po))
+        if unplaced:
+            add(
+                inc,
+                "V1",
+                3,
+                "every affected PO moved; these have no feasible slot (unplaceable): escalate the incident",
+                {"unplaceable": unplaced},
+            )
         bad = []
         for m in ms:
             acts = got_by_po.get(m.po.id)
@@ -144,7 +153,7 @@ def validate(
             add(
                 inc, "V2", 3, "earliest feasible slot per PO (same plant at/after restart, else earliest transfer)", bad
             )
-    extra = sorted(set(got_by_po) - set(po_inc))
+    extra = sorted(set(got_by_po) - set(po_inc) - {p for v in exp_unplaced.values() for p in v})
     if extra:
         owners_of = {po: (_incs(got_by_po[po][0]) or [first_inc])[0] for po in extra}
         for inc in dict.fromkeys(owners_of.values()):
@@ -230,10 +239,15 @@ def validate(
         if a.args["customer_order_id"] not in exp_co or got_co.count(a.args["customer_order_id"]) > 1
     )
 
-    # ---- V5: quality ----
+    # ---- V5: quality, event-wide with multiplicity (one hold per lot, one stop-sale per dealer, one contact per owner)
+    exp_holds: Counter[str] = Counter()
+    exp_stop: dict[str, set[str]] = defaultdict(set)
+    exp_owners: set[str] = set()
+    q_first: str | None = None
     for inc, s in real.items():
         if s.category != "quality_hold":
             continue
+        q_first = q_first or inc
         lot_id = s.lot_id
         if lot_id is None and s.part_id and s.plant_id:
             lots = find_lots(
@@ -244,39 +258,45 @@ def validate(
             add(inc, "V5", 6, "a resolvable lot", "lot not resolved", "warning")
             continue
         q: QualityImpact = impact_lot(graph, world, lot_id)
-        mine = [a for a in writes if inc in _incs(a)]
-        holds = [a for a in mine if a.tool == "quality.hold_lot"]
-        exp_keys.add(("quality.hold_lot", json.dumps({"lot_id": lot_id})))
-        if [a.args["lot_id"] for a in holds] != [lot_id]:
-            add(inc, "V5", 6, f"hold {lot_id}", [a.args["lot_id"] for a in holds] or "no hold")
-        flagged.update(id(a) for a in holds if a.args["lot_id"] != lot_id)
-        stops = {}
-        for a in mine:
+        exp_holds[lot_id] = 1
+        for d, vins in q.in_stock_by_dealer.items():
+            exp_stop[d].update(vins)
+        exp_owners |= set(q.owners)
+    if q_first is not None:
+        holds = [a for a in writes if a.tool == "quality.hold_lot"]
+        got_holds = Counter(a.args["lot_id"] for a in holds)
+        exp_keys |= {("quality.hold_lot", json.dumps({"lot_id": lot})) for lot in exp_holds}
+        if got_holds != exp_holds:
+            add(q_first, "V5", 6, f"hold {sorted(exp_holds)} once each", dict(got_holds) or "no hold")
+            flagged.update(id(a) for a in holds)
+        stops: dict[str, list[Action]] = defaultdict(list)
+        for a in writes:
             if a.tool == "dealer.stop_sale":
-                stops.setdefault(a.args["dealer_id"], []).append(a)
-        exp_stop = {d: sorted(v) for d, v in q.in_stock_by_dealer.items()}
-        exp_keys |= {("dealer.stop_sale", d, tuple(v)) for d, v in exp_stop.items()}
+                stops[a.args["dealer_id"]].append(a)
+        want_stop = {d: sorted(v) for d, v in exp_stop.items()}
+        exp_keys |= {("dealer.stop_sale", d, tuple(v)) for d, v in want_stop.items()}
         got_stop = {d: sorted(v for a in acts for v in a.args["vins"]) for d, acts in stops.items()}
-        if got_stop != exp_stop or any(len(v) > 1 for v in stops.values()):
-            missing_d = sorted(set(exp_stop) - set(got_stop))
+        dup_d = sorted(d for d, acts in stops.items() if len(acts) > 1)
+        if got_stop != want_stop or dup_d:
             wrong = {
-                d: {"expected": exp_stop[d], "got": got_stop[d]}
-                for d in exp_stop
-                if d in got_stop and got_stop[d] != exp_stop[d]
+                d: {"expected": want_stop[d], "got": got_stop[d]}
+                for d in want_stop
+                if d in got_stop and got_stop[d] != want_stop[d]
             }
-            extra_d = sorted(set(got_stop) - set(exp_stop))
-            add(inc, "V5", 6, "stop-sale of exactly the in-stock affected VINs, one per dealer",
-                {"missing_dealers": missing_d, "wrong_vins": wrong, "extra_dealers": extra_d})  # fmt: skip
-            flagged.update(id(a) for d in wrong.keys() | set(extra_d) for a in stops.get(d, []))
-        notes = [a for a in mine if a.tool == "crm.notify_customer"]
-        exp_keys |= {("crm.notify_customer", c) for c in q.owners}
-        got_c = [a.args["customer_id"] for a in notes]
-        if sorted(got_c) != sorted(q.owners):
-            add(inc, "V5", 6, f"one contact per owner ({len(q.owners)} owners)",
-                {"missing": sorted(set(q.owners) - set(got_c)), "extra": sorted(set(got_c) - set(q.owners)),
-                 "duplicates": sorted({c for c in got_c if got_c.count(c) > 1})})  # fmt: skip
+            extra_d = sorted(set(got_stop) - set(want_stop))
+            add(q_first, "V5", 6, "one stop-sale per dealer for exactly the in-stock affected VINs",
+                {"missing_dealers": sorted(set(want_stop) - set(got_stop)), "wrong_vins": wrong,
+                 "extra_dealers": extra_d, "duplicate_dealers": dup_d})  # fmt: skip
+            flagged.update(id(a) for d in wrong.keys() | set(extra_d) | set(dup_d) for a in stops.get(d, []))
+        notes = [a for a in writes if a.tool == "crm.notify_customer"]
+        exp_keys |= {("crm.notify_customer", c) for c in exp_owners}
+        got_c = Counter(a.args["customer_id"] for a in notes)
+        if got_c != Counter(dict.fromkeys(exp_owners, 1)):
+            add(q_first, "V5", 6, f"one contact per owner ({len(exp_owners)} owners) for the whole event",
+                {"missing": sorted(exp_owners - set(got_c)), "extra": sorted(set(got_c) - exp_owners),
+                 "duplicates": sorted(c for c, n in got_c.items() if n > 1)})  # fmt: skip
             flagged.update(
-                id(a) for a in notes if a.args["customer_id"] not in q.owners or got_c.count(a.args["customer_id"]) > 1
+                id(a) for a in notes if a.args["customer_id"] not in exp_owners or got_c[a.args["customer_id"]] > 1
             )
 
     # ---- V8: no writes for noise / unconfirmed / escalated incidents ----

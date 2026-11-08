@@ -440,16 +440,52 @@ def compose_stop_sales(ctx: EventContext, args: ComposeStopSalesArgs) -> dict[st
             raise ValueError(f"{bad[:3]} are not unsold affected vehicles of {q.lot.lot_id} at {dealer_id} (rule 10)")
         if vins:
             subset[dealer_id] = sorted(vins)
-    s = _spec(ctx, args.incident_id)
-    acts = plan_quality(
-        ctx.world,
-        replace(q, in_stock_by_dealer=subset, owners={}),
-        incident_id=args.incident_id,
-        reason=f"{s.supplier_id} reported a defect in {s.part_id}",
-    )
-    out = _stamp([a for a in acts if a.tool == "dealer.stop_sale"], DN, [args.incident_id])
-    ctx.plan.stage(DN, "dealer_comms", None, f"stop_sales:{args.incident_id}", out)
-    return {"stop_sales": len(out), "dealers": sorted(subset), "vins": sum(len(v) for v in subset.values())}
+    ctx.state.setdefault("stop_req", {})[args.incident_id] = subset
+    _restage_stop_sales(ctx)
+    return {"stop_sales": len(subset), "dealers": sorted(subset), "vins": sum(len(v) for v in subset.values())}
+
+
+def _restage_stop_sales(ctx: EventContext) -> None:
+    """One dealer.stop_sale per dealer per EVENT: requests of several quality incidents are merged (VINs unioned)."""
+    merged: dict[str, tuple[set[str], list[str]]] = {}
+    for inc in ctx.incidents:
+        for dealer, vins in ctx.state.get("stop_req", {}).get(inc, {}).items():
+            got = merged.setdefault(dealer, (set(), []))
+            got[0].update(vins)
+            got[1].append(inc)
+    out: list[Action] = []
+    for dealer in sorted(merged):
+        vins, incs = merged[dealer]
+        acts = plan_quality(
+            ctx.world,
+            replace(ctx.impacts[incs[0]], in_stock_by_dealer={dealer: sorted(vins)}, owners={}),
+            incident_id=incs[0],
+            reason=_quality_reason(ctx, incs[0]),
+        )
+        out.extend(_stamp([a for a in acts if a.tool == "dealer.stop_sale"], DN, incs))
+    ctx.plan.stage(DN, "dealer_comms", None, "stop_sales", out)
+
+
+def _restage_owner_contacts(ctx: EventContext) -> None:
+    """One crm.notify_customer per owner per EVENT: the earliest quality incident that covers the owner carries it."""
+    merged: dict[str, tuple[set[str], list[str]]] = {}
+    for inc in ctx.incidents:
+        for cust, vins in ctx.state.get("owner_req", {}).get(inc, {}).items():
+            got = merged.setdefault(cust, (set(), []))
+            got[0].update(vins)
+            got[1].append(inc)
+    per_inc: dict[str, list[Action]] = {inc: [] for inc in ctx.state.get("owner_req", {})}
+    for cust in sorted(merged):
+        vins, incs = merged[cust]
+        acts = plan_quality(
+            ctx.world,
+            replace(ctx.impacts[incs[0]], in_stock_by_dealer={}, owners={cust: sorted(vins)}),
+            incident_id=incs[0],
+            reason=_quality_reason(ctx, incs[0]),
+        )
+        per_inc[incs[0]].extend(_stamp([a for a in acts if a.tool == "crm.notify_customer"], CCQ, incs))
+    for inc, acts in per_inc.items():
+        ctx.plan.stage(CCQ, "quality_hold", inc, "owner_contacts", acts)
 
 
 class SubmitDealerArgs(BaseModel):
@@ -486,13 +522,38 @@ def dn_submit_plan(ctx: EventContext, args: SubmitDealerArgs) -> dict[str, Any]:
 # --- customer care & quality ------------------------------------------------------------------------------------
 
 
+def _lot_candidates(ctx: EventContext, s) -> list[str]:
+    """The lot(s) an incident can be about, from its resolved lot id or else part + plant + build window."""
+    if s.lot_id and s.lot_id in ctx.world.lots:
+        return [s.lot_id]
+    if not (s.part_id and s.plant_id):
+        return []
+    lots = find_lots(
+        ctx.world, part_id=s.part_id, plant_id=s.plant_id, first=s.build_window_start, last=s.build_window_end
+    )
+    return [lt.lot_id for lt in lots]
+
+
+def _check_lot(ctx: EventContext, incident_id: str, lot_id: str) -> None:
+    cands = _lot_candidates(ctx, _spec(ctx, incident_id))
+    if lot_id not in cands:
+        want = cands[0] if len(cands) == 1 else f"one of {cands}"
+        raise ValueError(f"lot {lot_id} does not match incident {incident_id}; its lot is {want}")
+
+
 def _quality_incident(ctx: EventContext, incident_id: str | None, lot_id: str | None = None) -> str:
     if incident_id:
         s = _spec(ctx, incident_id)
         if s.category != "quality_hold":
             raise ValueError(f"{incident_id} is a {s.category}, not a quality_hold")
+        if lot_id is not None:
+            _check_lot(ctx, incident_id, lot_id)
         return incident_id
-    cands = [i for i, s in ctx.incidents.items() if s.category == "quality_hold" and s.lot_id in (None, lot_id)]
+    cands = [
+        i
+        for i, s in ctx.incidents.items()
+        if s.category == "quality_hold" and (lot_id is None or lot_id in _lot_candidates(ctx, s))
+    ]
     if len(cands) != 1:
         raise ValueError(f"cannot tell which quality incident this is (candidates {cands}); pass incident_id")
     return cands[0]
@@ -658,8 +719,9 @@ def loaner_availability(ctx: EventContext, args: LoanerAvailabilityArgs) -> dict
     errors: dict[str, str | None] = {}
     for d in ids:
         res = _record_read(ctx, CCQ, "crm.loaner_availability", {"dealer_id": d}, None, [d])
-        if res.ok:
-            pools[d] = (res.response or {}).get("available")
+        avail = (res.response or {}).get("available") if res.ok else None
+        if isinstance(avail, int):
+            pools[d] = avail
         else:
             errors[d] = res.error
     ctx.state.setdefault("pools", {}).update(pools)
@@ -671,11 +733,6 @@ def loaner_availability(ctx: EventContext, args: LoanerAvailabilityArgs) -> dict
 
 class RankAssignArgs(BaseModel):
     eligible: Ref = Field(description="Rows/ids of eligible customer orders, or the `eligible` handle")
-    pools: dict[str, Any] | str | None = Field(
-        default=None,
-        description="{dealer_id: free loaners} or the pools handle from loaner_availability; omitted = the latest "
-        "pools read, else the table pools",
-    )
 
 
 @tool(
@@ -697,10 +754,19 @@ def rank_and_assign(ctx: EventContext, args: RankAssignArgs) -> dict[str, Any]:
         raise ValueError("no moves proposed yet (the supply chain planner must run first)")
     po_inc = {m.po.id: inc for inc, ms in ctx.moves.items() for m in ms.moves}
     ignored = sorted(c for c in ids if ctx.world.customer_orders[c].production_order_id not in po_inc)
-    given_pools = resolve(ctx, args.pools) if args.pools is not None else ctx.state.get("pools", {})
-    if isinstance(given_pools, dict) and "pools" in given_pools:
-        given_pools = given_pools["pools"]
-    pool = {**ctx.world.loaner_pool, **{k: int(v) for k, v in given_pools.items()}}
+    # Pools come ONLY from recorded successful live reads (loaner_availability); never from model-typed numbers.
+    recorded: dict[str, int] = ctx.state.get("pools", {})
+    need = sorted(
+        {
+            ctx.world.customer_orders[c].dealer_id
+            for c in ids
+            if c not in ignored and ctx.world.customers[ctx.world.customer_orders[c].customer_id].tier in LOANER_TIERS
+        }
+    )
+    unread = [d for d in need if d not in recorded]
+    if unread:
+        raise ValueError(f"no live loaner read recorded for {unread}: call loaner_availability(dealer_ids=…) first")
+    pool = {d: recorded[d] for d in need}
     acts = plan_care(
         ctx.world,
         all_moves,
@@ -783,12 +849,9 @@ def compose_owner_contacts(ctx: EventContext, args: OwnerContactsArgs) -> dict[s
             raise ValueError(f"{cust} does not own sold affected vehicle(s) {bad[:3]} of {q.lot.lot_id} (rule 10)")
         if vins:
             subset[cust] = sorted(vins)
-    acts = plan_quality(
-        ctx.world, replace(q, in_stock_by_dealer={}, owners=subset), incident_id=inc, reason=_quality_reason(ctx, inc)
-    )
-    out = _stamp([a for a in acts if a.tool == "crm.notify_customer"], CCQ, [inc])
-    ctx.plan.stage(CCQ, "quality_hold", inc, "owner_contacts", out)
-    return {"owner_contacts": len(out), "owners": len(subset)}
+    ctx.state.setdefault("owner_req", {})[inc] = subset
+    _restage_owner_contacts(ctx)
+    return {"owner_contacts": len(subset), "owners": len(subset)}
 
 
 class SubmitCareArgs(BaseModel):

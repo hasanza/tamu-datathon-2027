@@ -26,6 +26,7 @@ from control_tower.schemas.action import Action
 from control_tower.schemas.incident import IncidentSpec
 from control_tower.trace import Sink, Timeline
 from control_tower.world.executor import TwinExecutor
+from control_tower.world.twin import Twin
 
 
 def spec(event_id, n, category, **kw) -> IncidentSpec:
@@ -176,7 +177,7 @@ def run_event_wide(run, ctx, tl, with_loaners=True):
                     )
                 },
             ),
-            lambda: T("rank_and_assign", {"eligible": last(ctx, "eligible"), "pools": last(ctx, "pools")}),
+            lambda: T("rank_and_assign", {"eligible": last(ctx, "eligible")}),
             T("submit_care_plan", {"task": "loaners"}),
             FINAL({"task": "loaners"}),
         ],
@@ -502,5 +503,146 @@ def test_loaner_availability_batch_records_reads_and_defaults_pools(make, world,
     ctx.state["pools"][el["dealer_ids"][0]] = 0  # most recent read is the default when `pools` is omitted
     res = rank_and_assign(ctx, RankAssignArgs(eligible=el["eligible"]))
     assert el["dealer_ids"][0] not in res["by_dealer"]
-    res2 = rank_and_assign(ctx, RankAssignArgs(eligible=el["eligible"], pools=out["handle"]))
-    assert res2["assignments"] >= res["assignments"]
+    assert not hasattr(RankAssignArgs(eligible=el["eligible"]), "pools")  # no free-form pool numbers
+
+
+def test_rank_and_assign_requires_recorded_reads(make):
+    build, run = make
+    ctx, tl = build("E-11", E11)
+    run(SUPPLY_CHAIN_PLANNER, ctx, tl, sc_script("E-11#1"))
+    from control_tower.orchestration.specialist_tools import (
+        EligibleArgs,
+        LoanerAvailabilityArgs,
+        RankAssignArgs,
+        eligible_customers,
+        loaner_availability,
+        rank_and_assign,
+    )
+
+    el = eligible_customers(ctx, EligibleArgs(co_ids=ctx.affected_co_ids()))
+    with pytest.raises(ValueError, match="no live loaner read recorded"):
+        rank_and_assign(ctx, RankAssignArgs(eligible=el["eligible"]))
+    loaner_availability(ctx, LoanerAvailabilityArgs(dealer_ids=el["dealer_ids"][:-1]))
+    with pytest.raises(ValueError, match=el["dealer_ids"][-1]):
+        rank_and_assign(ctx, RankAssignArgs(eligible=el["eligible"]))
+    loaner_availability(ctx, LoanerAvailabilityArgs(dealer_ids=el["dealer_ids"]))
+    assert rank_and_assign(ctx, RankAssignArgs(eligible=el["eligible"]))["assignments"] > 0
+
+
+# --- review fixes -----------------------------------------------------------------------------------------------
+
+
+def test_moves_keep_planner_order_and_rehearse(make, world, graph):
+    """P_TX outage Mar 26-30 then Mar 8-25: sorting reschedules before transfers broke the twin rehearsal."""
+    build, run = make
+    a = spec("E-90", 1, "plant_outage", plant_id="P_TX", outage_start=date(2027, 3, 26), outage_end=date(2027, 3, 30))
+    b = spec("E-90", 2, "plant_outage", plant_id="P_TX", outage_start=date(2027, 3, 8), outage_end=date(2027, 3, 25))
+    ctx, tl = build("E-90", a, b)
+    run(SUPPLY_CHAIN_PLANNER, ctx, tl, sc_script("E-90#1"))
+    run(SUPPLY_CHAIN_PLANNER, ctx, tl, sc_script("E-90#2"))
+    _, v1, _ = v1_moves(world, graph, [a, b])
+    got = ctx.plan.actions()
+    assert [(x.tool, x.args) for x in got] == [(x.tool, x.args) for x in v1]  # same order, not just same set
+    assert all(r.ok for r in Twin().rehearse(got))
+
+
+def test_v1_unplaceable_is_blocking(monkeypatch, world, graph):
+    from control_tower.planning import validators
+
+    monkeypatch.setattr(validators, "plan_moves", lambda w, board, impact, policy: ([], list(impact.pos)))
+    f = validate(world, graph, {"E-11#1": E11}, [])
+    assert any(x.rule == "V1" and x.severity == "blocking" and "unplaceable" in str(x.expected) for x in f)
+    assert not [x for x in validate(world, graph, {"E-11#1": E11}, [], escalated={"E-11#1"}) if x.rule == "V1"]
+
+
+E03B = spec(
+    "E-03",
+    2,
+    "quality_hold",
+    plant_id="P_MS",
+    part_id="CHIP-IVI",
+    supplier_id="SUP-06",
+    lot_id="LOT-0114",
+)
+
+
+def two_quality(make, run):
+    build, _ = make
+    ctx, tl = build("E-03", E03, E03B)
+    from control_tower.orchestration.specialist_tools import (
+        AffectedVehiclesArgs,
+        ComposeStopSalesArgs,
+        OwnerContactsArgs,
+        affected_vehicles,
+        compose_owner_contacts,
+        compose_stop_sales,
+    )
+
+    for inc, lot in (("E-03#1", "LOT-0130"), ("E-03#2", "LOT-0114")):
+        out = affected_vehicles(ctx, AffectedVehiclesArgs(lot_id=lot, incident_id=inc))
+        compose_owner_contacts(ctx, OwnerContactsArgs(incident_id=inc, owners=out["owners"]))
+        compose_stop_sales(ctx, ComposeStopSalesArgs(incident_id=inc, vins_by_dealer=out["in_stock_by_dealer"]))
+    return ctx
+
+
+def test_quality_writes_deduped_across_incidents(make, world, graph):
+    ctx = two_quality(make, make[1])
+    stops = ctx.plan.staged_actions("dealer_network", "dealer_comms")
+    notes = [
+        a for a in ctx.plan.staged_actions("customer_care_quality", "quality_hold") if a.tool == "crm.notify_customer"
+    ]
+    assert len({a.args["dealer_id"] for a in stops}) == len(stops) > 0
+    assert len({a.args["customer_id"] for a in notes}) == len(notes) > 0
+    assert all(set(a.incident_ids) == {"E-03#1", "E-03#2"} for a in notes[:1])
+
+
+def test_validators_catch_duplicate_quality_writes(make, world, graph):
+    ctx = two_quality(make, make[1])
+    holds = []
+    for inc, lot in (("E-03#1", "LOT-0130"), ("E-03#2", "LOT-0114")):
+        holds.append(
+            Action(
+                seq=0,
+                incident_id=inc,
+                incident_ids=[inc],
+                agent="customer_care_quality",
+                tool="quality.hold_lot",
+                args={"lot_id": lot},
+                justification="x",
+            )
+        )
+    good = [
+        *holds,
+        *ctx.plan.staged_actions("dealer_network", "dealer_comms"),
+        *ctx.plan.staged_actions("customer_care_quality", "quality_hold"),
+    ]
+    good = [a for a in good if a.tool != "quality.hold_lot" or a in holds]
+    assert not blocking(validate(world, graph, ctx.incidents, good))
+    note = next(a for a in good if a.tool == "crm.notify_customer")
+    tagged = note.model_copy(update={"incident_ids": ["E-03#2"], "incident_id": "E-03#2"})
+    untagged = note.model_copy(update={"incident_ids": [], "incident_id": None})
+    for dup in (tagged, untagged):
+        f = validate(world, graph, ctx.incidents, [*good, dup])
+        assert [x.rule for x in blocking(f)] == ["V5"] and note.args["customer_id"] in str(f[0].got)
+    stop = next(a for a in good if a.tool == "dealer.stop_sale")
+    f = validate(
+        world, graph, ctx.incidents, [*good, stop.model_copy(update={"incident_ids": [], "incident_id": None})]
+    )
+    assert [x.rule for x in blocking(f)] == ["V5"]
+
+
+def test_lot_must_match_incident(make):
+    build, _ = make
+    ctx, _ = build("E-03", E03)
+    from control_tower.orchestration.specialist_tools import (
+        AffectedVehiclesArgs,
+        ComposeHoldArgs,
+        affected_vehicles,
+        compose_hold,
+    )
+
+    with pytest.raises(ValueError, match="does not match incident"):
+        compose_hold(ctx, ComposeHoldArgs(lot_id="LOT-0001", incident_id="E-03#1"))
+    with pytest.raises(ValueError, match="does not match incident"):
+        affected_vehicles(ctx, AffectedVehiclesArgs(lot_id="LOT-0114", incident_id="E-03#1"))
+    assert compose_hold(ctx, ComposeHoldArgs(lot_id="LOT-0130"))["holds"] == 1

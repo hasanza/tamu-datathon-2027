@@ -82,8 +82,9 @@ compose_owner_contacts(incident_id, owners handle) -> submit_care_plan(task="qua
 (The stop-sales are composed by the Dealer Network agent from your affected_vehicles result; do not compose them.)
 Task loaners is exactly THREE tool calls, then submit: (1) eligible_customers(co_ids) -> it returns the `eligible` \
 handle and `dealer_ids`; (2) loaner_availability(dealer_ids=<that dealer_ids list>) ONCE for all dealers (live pools; \
-never loop over dealers one call at a time); (3) rank_and_assign(eligible=<handle>, pools=<pools handle>) -> \
-submit_care_plan(task="loaners"). Standard-tier customers get no loaner; say so in your summary.
+never loop over dealers one call at a time); (3) rank_and_assign(eligible=<handle>) -> \
+submit_care_plan(task="loaners"). rank_and_assign takes its pool sizes only from the live reads you made in step 2 \
+(you cannot type numbers in); if it says a dealer has no live read, read that dealer first. Standard-tier customers get no loaner; say so in your summary.
 
 {COMMON}"""
 
