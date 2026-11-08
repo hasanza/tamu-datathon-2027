@@ -24,6 +24,7 @@ export function useRun() {
       const where = v.all ? ` (${order})` : "";
       toast(v.all ? `Run started for the whole feed${where}` : `Run started for ${v.eventId}`, "ok");
       if (!v.all && v.eventId) emitTour("run-started", { id: v.eventId });
+      if (v.all) emitTour("run-started"); // the tutorial then follows the first event that arrives
       dropRunData(qc);
     },
     onError: (e) => {

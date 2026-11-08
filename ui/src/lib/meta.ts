@@ -31,10 +31,10 @@ export const laneOf = (agent: AgentId): LaneId =>
   : agent;
 
 export const LANE_META: Record<LaneId, { label: string; blurb: string; color: string }> = {
-  coordinator: { label: "Coordinator", blurb: "Understands, gates, delegates, validates, executes", color: "var(--brand-bright)" },
-  supply_chain_planner: { label: "Supply Chain Planner", blurb: "Affected builds and the earliest feasible slots", color: "var(--cat-delay)" },
-  dealer_network: { label: "Dealer Network", blurb: "One notice per dealer, stop-sale of unsold vehicles", color: "var(--cat-unconfirmed)" },
-  customer_care_quality: { label: "Customer Care & Quality", blurb: "Loaners by priority, lot holds, owner contact", color: "var(--cat-quality)" },
+  coordinator: { label: "Coordinator Agent", blurb: "Understands, gates, delegates, validates, executes", color: "var(--brand-bright)" },
+  supply_chain_planner: { label: "Supply Chain Agent", blurb: "Affected builds and the earliest feasible slots", color: "var(--cat-delay)" },
+  dealer_network: { label: "Dealer Agent", blurb: "One notice per dealer, stop-sale of unsold vehicles", color: "var(--cat-unconfirmed)" },
+  customer_care_quality: { label: "Customer & Quality Agent", blurb: "Loaners by priority, lot holds, owner contact", color: "var(--cat-quality)" },
 };
 
 /** Kept for code that still looks agents up by id (both v1 and v2 ids work). */
@@ -58,7 +58,7 @@ export const STEP_META: Record<StepKind, { label: string; color: string }> = {
   gate: { label: "Gate", color: "var(--text-2)" },
   note: { label: "Note", color: "var(--text-3)" },
   thought: { label: "Thought", color: "var(--text-3)" },
-  tool: { label: "Tool call", color: "var(--cat-unconfirmed)" },
+  tool: { label: "Call", color: "var(--cat-unconfirmed)" },
   message: { label: "Message", color: "var(--cat-delay)" },
   decision: { label: "Decision", color: "var(--cat-compound)" },
 };

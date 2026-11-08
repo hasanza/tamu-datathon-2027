@@ -77,18 +77,19 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
         open.length > 1 ? (
           <button
             onClick={() => setAcked((s) => new Set([...s, ...open.map((t) => ackKey(t.event_id))]))}
-            className="inline-flex items-center gap-1 rounded-md border border-line px-2 py-1 text-[11px] text-tx2 hover:border-ok hover:text-tx"
+            title="Acknowledge all"
+            aria-label="Acknowledge all"
+            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-md border border-line px-2 py-1 text-[11px] text-tx2 hover:border-ok hover:text-tx"
           >
-            <CheckCheck size={12} aria-hidden /> Acknowledge all
+            <CheckCheck size={12} aria-hidden />
+            <span className="hidden @[340px]:inline">Acknowledge all</span>
           </button>
         ) : undefined
       }
       title={
-        <span className="flex items-center gap-2">
-          <TriangleAlert size={14} style={{ color: "var(--warn)" }} aria-hidden /> Escalation inbox
-          <Chip color={open.length > 0 ? "var(--warn)" : "var(--text-3)"}>
-            {open.length} open{done.length > 0 ? ` · ${done.length} acknowledged` : ""}
-          </Chip>
+        <span className="flex min-w-0 items-center gap-2 whitespace-nowrap">
+          <TriangleAlert size={14} className="shrink-0" style={{ color: "var(--warn)" }} aria-hidden /> Escalation inbox
+          <Chip color={open.length > 0 ? "var(--warn)" : "var(--text-3)"}>{open.length} open</Chip>
         </span>
       }
     >
@@ -150,15 +151,17 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
           {done.length > 0 && (
             <div className="mt-3 border-t border-line pt-2" data-inbox="acknowledged">
               {foldAcked ? (
-                <button onClick={() => setShowAcked(true)} className="text-[12px] text-tx3 hover:text-tx">
-                  Show acknowledged ({done.length})
+                <button onClick={() => setShowAcked(true)} aria-expanded={false} className="text-[12px] text-tx3 hover:text-tx">
+                  {done.length} acknowledged
                 </button>
               ) : (
                 <>
-                  {done.length > ACKED_INLINE_MAX && (
-                    <button onClick={() => setShowAcked(false)} className="mb-1.5 text-[12px] text-tx3 hover:text-tx">
-                      Hide acknowledged ({done.length})
+                  {done.length > ACKED_INLINE_MAX ? (
+                    <button onClick={() => setShowAcked(false)} aria-expanded className="mb-1.5 text-[12px] text-tx3 hover:text-tx">
+                      {done.length} acknowledged
                     </button>
+                  ) : (
+                    <div className="mb-1.5 text-[12px] text-tx3">{done.length} acknowledged</div>
                   )}
                   <ul className="space-y-1">
                     {done.map((t) => (
@@ -186,6 +189,7 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
 /* ---------------- Activity log ---------------- */
 
 const TYPE_COLOR: Record<ActivityItem["type"], string> = {
+  event_incoming: "var(--text-3)",
   event_received: "var(--cat-unconfirmed)",
   agent_step: "var(--cat-quality)",
   action: "var(--ok)",

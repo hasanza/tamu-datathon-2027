@@ -49,7 +49,9 @@ export function toLiveStep(p: Record<string, unknown>, id: number): LiveStep | n
   };
 }
 
-const TYPES: StreamType[] = ["event_received", "agent_step", "action", "event_done"];
+const TYPES: StreamType[] = ["event_incoming", "event_received", "agent_step", "action", "event_done"];
+/** How long an "Incoming event..." row waits for its event before it is dropped. */
+const INCOMING_TTL_MS = 15000;
 const MAX_ITEMS = 150;
 
 const hasObj = (o: Record<string, unknown> | null | undefined): o is Record<string, unknown> => !!o && Object.keys(o).length > 0;
@@ -72,6 +74,8 @@ export function stepSentence(step: AgentStep): string {
 function describe(type: StreamType, p: Record<string, unknown>): string {
   const s = (k: string) => (typeof p[k] === "string" ? (p[k] as string) : null);
   switch (type) {
+    case "event_incoming":
+      return "Incoming event";
     case "event_received":
       return `Received${s("source") ? ` via ${s("source")}` : ""}${s("text") ? `: ${s("text")}` : ""}`;
     case "agent_step": {
@@ -114,6 +118,7 @@ export function useLiveStream() {
   const wasRunning = useRef(false);
   const toast = useToast();
   // feed events finished in the current run (the header's "event 7 of 15"): reset when a new run starts
+  const [incoming, setIncoming] = useState<Record<string, number>>({}); // event id -> when its "incoming" notice arrived
   const [finished, setFinished] = useState<Set<string>>(new Set());
   const finishedRef = useRef(0);
   finishedRef.current = finished.size;
@@ -186,6 +191,15 @@ export function useLiveStream() {
             /* keep empty payload */
           }
           const eventId = typeof payload.event_id === "string" ? payload.event_id : null;
+          if (type === "event_incoming") {
+            // the event is about to arrive (about a second ahead): the feed shows an "Incoming event..." row, nothing else changes
+            if (eventId) {
+              setIncoming((m) => ({ ...m, [eventId]: Date.now() }));
+              window.setTimeout(() => setIncoming((m) => (eventId in m ? Object.fromEntries(Object.entries(m).filter(([k]) => k !== eventId)) : m)), INCOMING_TTL_MS);
+            }
+            return;
+          }
+          if (eventId && type === "event_received") setIncoming((m) => (eventId in m ? Object.fromEntries(Object.entries(m).filter(([k]) => k !== eventId)) : m));
           const id = (seq.current += 1);
           setItems((prev) =>
             [{ id, at: Date.now(), type, eventId, text: describe(type, payload), payload }, ...prev].slice(
@@ -279,9 +293,10 @@ export function useLiveStream() {
     setItems([]);
     setLiveSteps({});
     setPendingCustom({});
+    setIncoming({});
     setRecent({});
     setProcessing(new Set());
     setFinished(new Set());
   }, []);
-  return { live, items, processing, recent, replay, setReplay, clear, clearAll, liveSteps, finished: finished.size, pendingCustom: Object.values(pendingCustom) };
+  return { live, items, processing, recent, replay, setReplay, clear, clearAll, liveSteps, incoming: Object.keys(incoming), finished: finished.size, pendingCustom: Object.values(pendingCustom) };
 }

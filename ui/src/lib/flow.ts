@@ -1,7 +1,7 @@
 import type { AgentId, AgentStep } from "../api/types";
 import type { OrchRow } from "../views/OrchestrationTab";
 import { prettifyRepr } from "./format";
-import { LANE_META, laneOf, type LaneId } from "./meta";
+import { laneOf, type LaneId } from "./meta";
 
 /* The Flow view's model (docs: CORE #68). A trace is a long list of steps; this groups consecutive steps into STAGE NODES:
      understand -> [hub -> delegate (one per delegated task)]* -> validate -> execute -> finish
@@ -237,8 +237,9 @@ export function buildFlow(rows: OrchRow[], context: FlowContext = {}): Flow {
       id: `delegate:${delegations}`,
       kind: "delegate",
       lane: open.lane,
-      title: LANE_META[open.lane].label,
-      subtitle: `${taskLabel(open.task)}${open.incident ? ` · ${open.incident}` : ""}`,
+      // the card names its agent on the top line (from the lane), so the stage title here is the job it was given
+      title: taskLabel(open.task).replace(/^./, (c) => c.toUpperCase()),
+      subtitle: open.incident ?? "",
       summary: summaryFor("delegate", open.steps, resultMsg),
       chips: delegateChips(resultMsg, open.task),
       steps: open.steps,

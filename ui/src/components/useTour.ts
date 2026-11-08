@@ -8,7 +8,7 @@ import { getTour, setTour, useTourState } from "../lib/tourStore";
  *  2. a quiet hint on "Run this event" once per selected event (not after three dismissals);
  *  3. the run tour, when a single-event run or a judge event is started (the `ct-tour` run-started signal).
  */
-export function useTour({ tower, selectedId, feedReady, runState }: { tower: boolean; selectedId: string | null; feedReady: boolean; runState: string | null | undefined }) {
+export function useTour({ tower, selectedId, feedReady, runState, arrivedCount }: { tower: boolean; selectedId: string | null; feedReady: boolean; runState: string | null | undefined; arrivedCount: number }) {
   const t = useTourState();
   const shown = useRef(new Set<string>());
 
@@ -28,20 +28,22 @@ export function useTour({ tower, selectedId, feedReady, runState }: { tower: boo
 
   // phase 2
   useEffect(() => {
-    if (tourActive() === "hint" && hintFor() !== selectedId) stopTour();
-    const quiet = !tower || !selectedId || !t.enabled || t.run !== "pending" || t.orientation !== "done" || t.dismissals >= 3;
+    // nothing to select yet (the feed is quiet): the hint points at Run feed; otherwise at Run this event
+    const key = selectedId ?? (arrivedCount === 0 ? "feed" : null);
+    if (tourActive() === "hint" && hintFor() !== key) stopTour();
+    const quiet = !tower || !key || !t.enabled || t.run !== "pending" || t.orientation !== "done" || t.dismissals >= 3;
     if (quiet) {
       if (tourActive() === "hint") stopTour();
       return;
     }
-    if (shown.current.has(selectedId) || tourActive()) return;
+    if (shown.current.has(key) || tourActive()) return;
     const h = window.setTimeout(() => {
       if (tourActive()) return;
-      shown.current.add(selectedId);
-      showRunHint(selectedId, () => setTour({ dismissals: getTour().dismissals + 1 }));
+      shown.current.add(key);
+      showRunHint(key, () => setTour({ dismissals: getTour().dismissals + 1 }), key === "feed" ? "feed" : "event");
     }, 700);
     return () => window.clearTimeout(h);
-  }, [tower, selectedId, t.enabled, t.run, t.orientation, t.dismissals]);
+  }, [tower, selectedId, arrivedCount, t.enabled, t.run, t.orientation, t.dismissals]);
 
   // phase 3
   useEffect(() => {

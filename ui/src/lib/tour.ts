@@ -283,26 +283,27 @@ export function startOrientation() {
       title: "Welcome to the Control Tower",
       body: "Fifteen real-world messages come in as free text. Four agents read them, plan what the handbook prescribes, check it on a copy, then act. About a minute: skip any time.",
     },
-    { element: "[data-feed]", title: "Event feed", body: "The 15 feed events in the words people actually wrote them, with your own judge events on top. Filter and search here.", side: "right" },
+    { element: "[data-feed]", title: "Event feed", body: "Events arrive here as the feed runs, newest on top, judge events included. Filter and search.", side: "right" },
     { element: '[data-tour="custom"]', title: "Try your own event", body: "Paste any message. It runs on a private sandbox server through the same agents and MCP client.", side: "right" },
     { element: '[data-tour="run-feed"]', title: "Run the feed", body: "All 15 against the scored server, Sequential or Parallel. The menu also holds the last run's numbers and the model used.", side: "bottom" },
     { element: "[data-inbox]", title: "Escalation inbox", body: "When the agents cannot act safely they hand over to a person. Each card says what a human must supply, and you can re-run it with details.", side: "left" },
     { element: '[data-tour="activity"]', title: "Activity", body: "A live stream of agent steps and tool calls while a run is on.", side: "left" },
-    { title: "Pick an event", body: "Select an event to continue. The tutorial picks up from there." },
+    { title: "Start something", body: "Press Run feed, or try your own event, to continue. The tutorial picks up from there." },
   ];
   void runSequence("orientation", steps, { onFinish, onSkip });
 }
 
 /* ---------- phase 2: one quiet hint, non-blocking ---------- */
 
-export function showRunHint(eventId: string, onDismiss: () => void) {
+export function showRunHint(eventId: string, onDismiss: () => void, target: "event" | "feed" = "event") {
   stopTour();
   active = "hint";
   hintId = eventId;
   abort = new AbortController();
   const signal = abort.signal;
   const my = (token += 1);
-  void waitElement('[data-tour="run-event"]', 3000, signal).then((el) => {
+  const sel = target === "feed" ? '[data-tour="run-feed"]' : '[data-tour="run-event"]';
+  void waitElement(sel, 3000, signal).then((el) => {
     if (!el || my !== token) {
       if (my === token) stopTour();
       return;
@@ -314,8 +315,11 @@ export function showRunHint(eventId: string, onDismiss: () => void) {
     drv.highlight({
       element: el,
       popover: {
-        title: "Watch it work",
-        description: "Press this to watch the four agents handle it live (about a minute, through the MCP client). The tutorial continues when you do.",
+        title: target === "feed" ? "Start the feed" : "Watch it work",
+        description:
+          target === "feed"
+            ? "Press Run feed (or try your own event) and events arrive one by one. The tutorial follows the first one."
+            : "Press this to watch the four agents handle it live (about a minute, through the MCP client). The tutorial continues when you do.",
         side: "bottom",
         align: "end",
         showButtons: ["close"],
@@ -349,9 +353,9 @@ export function startRunPhase(initialId: string | null) {
       autoAdvance: true,
       waitFor: async (signal) => {
         if (id && seen.received.has(id)) return;
-        const d = await waitSignal("event-received", (x) => (id ? x.id === id : !!x.id?.startsWith("C-")), signal);
+        const d = await waitSignal("event-received", (x) => (id ? x.id === id : !!x.id), signal);
         if (d?.id && !id) {
-          id = d.id; // the judge event: show it live
+          id = d.id; // a judge event, or the first event of the feed: show it live
           window.location.hash = `/${id}`;
         }
       },

@@ -22,11 +22,14 @@ type Tab = (typeof TABS)[number];
 function PickEvent({ events, onSelect }: { events?: FeedEvent[]; onSelect?: (id: string) => void }) {
   const picks = new Map<string, FeedEvent>();
   for (const e of events ?? []) if (e.category && !picks.has(e.category)) picks.set(e.category, e);
+  const quiet = picks.size === 0; // nothing has arrived yet: the feed is quiet
   return (
     <div data-pick-event className="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
       <div>
-        <h2 className="text-[16px] font-semibold text-tx">Pick an event from the feed</h2>
-        <p className="mt-1 max-w-md text-[13px] text-tx3">See what the four agents did with it and why. Or start something yourself:</p>
+        <h2 className="text-[16px] font-semibold text-tx">{quiet ? "The feed is quiet" : "Pick an event from the feed"}</h2>
+        <p className="mt-1 max-w-md text-[13px] text-tx3">
+          {quiet ? "Nothing has arrived yet. Events appear in the feed as they come in. Start something:" : "See what the four agents did with it and why. Or start something yourself:"}
+        </p>
       </div>
       <div className="flex flex-wrap justify-center gap-2">
         <button onClick={() => window.dispatchEvent(new Event("ct-run-feed"))} className="inline-flex items-center gap-1.5 rounded-md bg-brand px-3 py-1.5 text-[13px] font-medium text-white hover:bg-brand-bright">

@@ -29,7 +29,10 @@ export default function App() {
     window.addEventListener("ct-reset-all", clearAll);
     return () => window.removeEventListener("ct-reset-all", clearAll);
   }, [clearAll]);
-  useTour({ tower: route.page === "tower", selectedId, feedReady: !!events.data?.length, runState: useRunStatus().data?.state });
+  const runStatus = useRunStatus().data;
+  // events that have arrived (what the feed lists): judge events and preset events that are not queued
+  const arrivedEvents = useMemo(() => (feedEvents ?? []).filter((e) => e.custom || e.status !== "queued" || stream.processing.has(e.event_id)), [feedEvents, stream.processing]);
+  useTour({ tower: route.page === "tower", selectedId, feedReady: !!events.data?.length, runState: runStatus?.state, arrivedCount: arrivedEvents.length });
   const keys = useShortcuts(selectedId);
   const presetTotal = (events.data ?? []).filter((e) => !e.custom).length || 15;
   const selected = feedEvents?.find((e) => e.event_id === selectedId);
@@ -65,10 +68,13 @@ export default function App() {
                 onSelect={select}
                 processing={stream.processing}
                 recent={stream.recent}
+                incoming={stream.incoming}
+                running={!!runStatus?.running}
+                total={presetTotal}
               />
             </aside>
             <section id="event-detail" aria-label="Event detail" className="min-h-0 min-w-0 md:overflow-hidden">
-              <EventDetail events={feedEvents} onSelect={select} event={selected} processing={!!selectedId && stream.processing.has(selectedId)} liveSteps={selectedId ? stream.liveSteps[selectedId] : undefined} />
+              <EventDetail events={arrivedEvents} onSelect={select} event={selected} processing={!!selectedId && stream.processing.has(selectedId)} liveSteps={selectedId ? stream.liveSteps[selectedId] : undefined} />
             </section>
             <aside
               aria-label="Escalations and activity"

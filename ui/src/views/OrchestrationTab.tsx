@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, CircleAlert, Loader2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { AgentStep, StepKind, Trace } from "../api/types";
 import type { LiveStep } from "../api/stream";
 import { Chip, Empty, Mono, Panel } from "../components/ui/primitives";
@@ -7,7 +7,7 @@ import { Clamped, DECISION_COLOR, Details, Meta, echoesCall, hasKeys } from "./o
 import { FlowView } from "./FlowView";
 import { FollowChip } from "../components/ui/FollowChip";
 import { useFollow } from "../lib/useFollow";
-import { compactArgs, prettifyRepr, safeStorage, summarize, usd } from "../lib/format";
+import { compactArgs, prettifyRepr, safeStorage, summarize } from "../lib/format";
 import { BADGE_COLOR, LANE_META, LANES, laneOf, STEP_META, toolBadge, type LaneId } from "../lib/meta";
 
 /* The Orchestration view (PLAN_V2 §8): four swimlanes, time flowing down. Cards are Thought (the agent's reasoning),
@@ -33,77 +33,6 @@ function orderRows(rows: OrchRow[]): OrchRow[] {
     .map((r, i) => ({ r, i, t: Date.parse(r.step.t) }))
     .sort((a, b) => (Number.isNaN(a.t) || Number.isNaN(b.t) || a.t === b.t ? a.i - b.i : a.t - b.t))
     .map((x) => x.r);
-}
-
-/* ---------- header strip ---------- */
-
-interface LaneStats {
-  turns: number;
-  tools: number;
-  llm: number;
-  cost: number;
-}
-function statsOf(rows: OrchRow[], trace?: Trace): Record<LaneId, LaneStats> {
-  const out = Object.fromEntries(LANES.map((l) => [l, { turns: 0, tools: 0, llm: 0, cost: 0 }])) as Record<LaneId, LaneStats>;
-  for (const r of rows) {
-    const s = out[r.lane];
-    if (r.step.turn != null) s.turns = Math.max(s.turns, r.step.turn);
-    if (r.step.kind === "thought") s.llm += 1;
-    if (r.step.kind === "tool") s.tools += 1;
-    s.cost += r.step.cost_usd ?? 0;
-  }
-  // a v2 trace states the authoritative per-agent totals on the run itself
-  for (const run of trace?.agents ?? []) {
-    const s = out[laneOf(run.agent)];
-    if (run.llm_calls != null) s.llm = Math.max(s.llm, run.llm_calls);
-    if (run.cost_usd != null) s.cost = Math.max(s.cost, run.cost_usd);
-  }
-  for (const l of LANES) if (out[l].turns === 0) out[l].turns = out[l].llm;
-  return out;
-}
-
-export function HeaderStrip({ rows, trace, live }: { rows: OrchRow[]; trace?: Trace; live: boolean }) {
-  const stats = useMemo(() => statsOf(rows, trace), [rows, trace]);
-  const total = LANES.reduce((a, l) => ({ turns: a.turns + stats[l].turns, tools: a.tools + stats[l].tools, llm: a.llm + stats[l].llm, cost: a.cost + stats[l].cost }), { turns: 0, tools: 0, llm: 0, cost: 0 });
-  const orch = trace?.orchestration;
-  const corrections = orch?.correction_rounds ?? rows.filter((r) => r.step.kind === "decision" && /correction/i.test(r.step.text)).length;
-  const escalated = trace?.status === "escalated" || (orch?.escalations.length ?? 0) > 0 || rows.some((r) => r.step.kind === "decision" && /escalat/i.test(r.step.text));
-  return (
-    <div className="space-y-2" aria-label="Orchestration summary">
-      <div className="flex flex-wrap items-center gap-1.5">
-        {live && (
-          <Chip color="var(--brand-bright)">
-            <Loader2 size={11} className="animate-spin" aria-hidden /> Live
-          </Chip>
-        )}
-        {orch && <Chip color="var(--text-2)">{orch.mode}</Chip>}
-        <Chip color={corrections > 0 ? "var(--warn)" : "var(--text-3)"}>
-          {corrections} correction round{corrections === 1 ? "" : "s"}
-        </Chip>
-        {escalated && (
-          <Chip color="var(--cat-unconfirmed)">
-            <CircleAlert size={11} aria-hidden /> escalated
-          </Chip>
-        )}
-        {orch?.mcp_transport && <Chip color="var(--ok)">{orch.mcp_transport}</Chip>}
-        <span className="mono ml-auto text-[11px] text-tx3">
-          {total.turns} turns · {total.tools} tool calls · {total.llm} LLM calls · {usd(total.cost)}
-        </span>
-      </div>
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-        {LANES.map((l) => (
-          <div key={l} className="rounded-lg border border-line bg-surface-2 px-2.5 py-1.5" style={{ borderTopColor: LANE_META[l].color, borderTopWidth: 2 }}>
-            <div className="truncate text-[12px] font-semibold">{LANE_META[l].label}</div>
-            <div className="mono mt-0.5 text-[11px] leading-4 text-tx2">
-              {stats[l].turns} turns · {stats[l].tools} tools
-              <br />
-              {stats[l].llm} LLM · {usd(stats[l].cost)}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
 }
 
 /* ---------- cards ---------- */
@@ -132,7 +61,7 @@ function Card({ row, start }: { row: OrchRow; start: string }) {
     return (
       <div className={`${base} border-line`} style={{ borderLeftColor: color, borderLeftWidth: 3 }}>
         <div className="mb-1 flex flex-wrap items-center gap-1.5">
-          <Chip color={STEP_META.tool.color}>Tool call</Chip>
+          <Chip color={STEP_META.tool.color}>Call</Chip>
           <Chip color={BADGE_COLOR[badge]}>{badge}</Chip>
           <Meta step={step} start={start} />
         </div>
@@ -208,7 +137,7 @@ function MessageCard({ row, start }: { row: OrchRow; start: string }) {
 
 /* ---------- the view ---------- */
 
-export function OrchestrationView({ rows, trace, live = false, empty }: { rows: OrchRow[]; trace?: Trace; live?: boolean; empty?: { title: string; hint: string } }) {
+export function OrchestrationView({ rows, live = false, empty }: { rows: OrchRow[]; live?: boolean; empty?: { title: string; hint: string } }) {
   const start = rows[0]?.step.t ?? "";
   const listRef = useRef<HTMLOListElement>(null);
   const count = rows.length;
@@ -233,7 +162,6 @@ export function OrchestrationView({ rows, trace, live = false, empty }: { rows: 
   if (count === 0) return empty ? <Empty title={empty.title} hint={empty.hint} /> : null;
   return (
     <div className="space-y-3">
-      <HeaderStrip rows={rows} trace={trace} live={live} />
       {follow.paused && (
         <div className="sticky top-0 z-20 flex justify-end">
           <FollowChip onResume={follow.resume} />
@@ -309,7 +237,7 @@ function OrchestrationShell({ rows, trace, live, eventId, empty }: { rows: OrchR
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <h2 className="text-[15px] font-semibold tracking-tight">How the four agents handled this event</h2>
+        <h2 className="text-[15px] font-semibold tracking-tight">Reasoning Trace</h2>
         <div role="group" aria-label="Orchestration view" className="ml-auto flex rounded-md border border-line p-0.5 text-[12px]">
           {(["flow", "timeline"] as const).map((v) => (
             <button
@@ -325,7 +253,6 @@ function OrchestrationShell({ rows, trace, live, eventId, empty }: { rows: OrchR
       </div>
       {view === "flow" ? (
         <>
-          <HeaderStrip rows={rows} trace={trace} live={live} />
           <FlowView
             rows={rows}
             status={trace?.status}
@@ -336,7 +263,7 @@ function OrchestrationShell({ rows, trace, live, eventId, empty }: { rows: OrchR
           />
         </>
       ) : (
-        <OrchestrationView rows={rows} trace={trace} live={live} empty={empty} />
+        <OrchestrationView rows={rows} live={live} empty={empty} />
       )}
     </div>
   );

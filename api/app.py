@@ -41,7 +41,7 @@ EVENT_FILE = re.compile(r"^C-\d{2}\.json$")  # a finished judge trace (C-nn.inpu
 NON_WRITE_TOOLS = {"mes.get_schedule", "crm.loaner_availability", "escalate"}
 # A real LLM run of a big event is about two minutes plus the sandbox server start.
 CUSTOM_TIMEOUT_S = 300
-SSE_TYPES = {"event_received", "agent_step", "action", "event_done"}
+SSE_TYPES = {"event_incoming", "event_received", "agent_step", "action", "event_done"}
 
 
 @dataclass
