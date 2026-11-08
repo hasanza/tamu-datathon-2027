@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from collections import Counter, defaultdict
 from datetime import date
 
@@ -1132,8 +1133,9 @@ def test_e02_brief_is_escalated_with_a_note(rig):
         T("finish", {}),
     ])  # fmt: skip
     b = rig.run(ev("E-02", "Rumor from a supplier rep: something may be off with a seat material.")).brief
-    assert b.outcome == "escalated" and b.headline.startswith("Escalated:") and b.gates == []
+    assert b.outcome == "escalated" and b.headline == "Escalated: unconfirmed report, no action" and b.gates == []
     assert b.incidents[0].facts == [] and b.incidents[0].note
+    assert b.incidents[0].title.startswith("Unconfirmed")
 
 
 def test_e05_brief_is_noise(rig):
@@ -1142,4 +1144,47 @@ def test_e05_brief_is_noise(rig):
     )
     b = rig.run(ev("E-05", "Dealer Amarillo, TX asks where to find the new brochure PDF.")).brief
     assert b.outcome == "noise" and b.headline == "Noise: brochure request, no action"
-    assert b.incidents[0].facts == [] and b.incidents[0].note == "brochure request"
+    assert b.incidents[0].facts == [] and b.incidents[0].note == "brochure request" and b.incidents[0].title == "Noise"
+
+
+def test_noise_headline_cuts_at_a_clause_and_never_dangles(rig):
+    why = (
+        "Inquiry regarding brochure PDF is marketing-related noise and, no action is needed because it asks for a file"
+    )
+    rig.script([register(NOISE), T("drop_noise", {"incident_id": "E-05#1", "reason": why}), T("finish", {})])
+    h = rig.run(ev("E-05", "Dealer Amarillo, TX asks where to find the new brochure PDF.")).brief.headline
+    print(h)
+    assert re.match(r"^Noise: .+, no action$", h) and not re.search(r"(,| and), no action$", h)
+    assert h == "Noise: inquiry regarding brochure PDF is marketing-related noise, no action"
+    assert (
+        ct._short_reason("The very long reason " * 6 + "and more")
+        == "the very long reason The very long reason The very long"
+    )
+    assert ct._short_reason("SH-0190 is mentioned; nothing else") == "SH-0190 is mentioned"
+
+
+E_AMBIG = RawIncident(
+    category="quality_hold", evidence="crimp defect", reason="r", confidence=0.95, plant="Lexington",
+    part="heavy-duty wiring harness", build_window_start=D("Tuesday Feb 23"), build_window_end=D("Friday Feb 26"),
+)  # fmt: skip
+
+
+def test_escalated_quality_window_keeps_title_window_and_names_the_ambiguity(rig):
+    rig.script([
+        register(E_AMBIG),
+        T("escalate", {"incident_id": "E-19#1", "reason": "window overlaps two lots",
+                       "what_would_make_it_actionable": "the lot id"}),
+        T("finish", {}),
+    ])  # fmt: skip
+    b = rig.run(
+        ev("E-19", "Quality bulletin reporting a crimp defect in heavy-duty harness, Lexington, Feb 23-26")
+    ).brief
+    print(b.headline, "|", b.incidents[0].title, "|", b.incidents[0].window, "|", b.incidents[0].note)
+    assert b.outcome == "escalated" and "lot ambiguous (LOT-0077 or LOT-0078)" in b.headline
+    assert b.headline == "Escalated: quality hold, lot ambiguous (LOT-0077 or LOT-0078), no action"
+    i = b.incidents[0]
+    assert "HARN-B" in i.title and "(P_KY)" in i.title and i.window == "built 2027-02-23 → 2027-02-26"
+    assert i.note == (
+        "Lot ambiguous: the stated window overlaps LOT-0077 (Feb 22–24) and LOT-0078 (Feb 25–Mar 1); "
+        "a human must pick one"
+    )
