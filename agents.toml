@@ -10,17 +10,17 @@ max_turns = 24
 [supply_chain_planner]
 provider = "gemini"
 model = "gemini-3.8-flash"
-max_turns = 12
+max_turns = 16
 
 [dealer_network]
 provider = "gemini"
 model = "gemini-3.8-flash"
-max_turns = 12
+max_turns = 16
 
 [customer_care_quality]
 provider = "gemini"
 model = "gemini-3.8-flash"
-max_turns = 12
+max_turns = 16
 
 [auditor]
 provider = "gemini"
