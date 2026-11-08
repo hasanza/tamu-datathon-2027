@@ -89,7 +89,7 @@ def test_stored_keys_unique_across_runs(make):
 
 
 def test_provider_exception_is_terminal_not_raised(make):
-    fake, spec, tl, ctx = make([TimeoutError("read timed out")])
+    fake, spec, tl, ctx = make([ValueError("400 bad request")])
     res = run_agent(spec, "t", {}, ctx, tl)
     assert res.final is None and "provider" in res.error and res.llm_calls == 1 and fake.replies == []
 
