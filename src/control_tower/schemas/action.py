@@ -72,6 +72,10 @@ class Action(BaseModel):
     rehearsal: Rehearsal | None = None
     result: ToolResult | None = None
     transport: Transport | None = Field(default=None, description="How the call reached the enterprise (v0.2.0)")
+    skipped: bool = Field(default=False, description="Not executed because a dependency failed (v0.2.0)")
+    incident_ids: list[str] = Field(
+        default_factory=list, description="Every incident this action serves; event-wide notices list all (v0.2.0)"
+    )
 
     @property
     def writes(self) -> bool:

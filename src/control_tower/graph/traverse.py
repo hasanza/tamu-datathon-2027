@@ -70,18 +70,19 @@ def customer_orders_of(g: nx.MultiDiGraph, world: World, po_ids: list[str]) -> l
 
 
 def _summary_paths(g: nx.MultiDiGraph, world: World, impact: DisruptionImpact, anchor: list[str]) -> list[GraphPath]:
-    """One compact path per affected PO: anchor chain -> PO -> (grouped) customer orders -> (grouped) dealers."""
+    """One compact path per affected PO: anchor chain -> PO -> (grouped) customer orders -> (grouped) dealers / customers."""
     paths: list[GraphPath] = []
     for po in impact.pos:
         cos = customer_orders_of(g, world, [po.id])
         dealers = sorted({c.dealer_id for c in cos})
+        customers = sorted({c.customer_id for c in cos})
         chain = [*anchor, po.id]
         base = trace_path(g, chain) if len(chain) > 1 else GraphPath(nodes=[], edges=[])
         nodes = list(base.nodes)
         edges = list(base.edges)
         if not nodes:
             nodes.append(GraphNode(id=po.id, type="ProductionOrder", label=g.nodes[po.id]["label"]))
-        gco, gdl = f"grp:cos:{po.id}", f"grp:dealers:{po.id}"
+        gco, gdl, gcu = f"grp:cos:{po.id}", f"grp:dealers:{po.id}", f"grp:customers:{po.id}"
         nodes += [
             GraphNode(
                 id=gco,
@@ -91,10 +92,18 @@ def _summary_paths(g: nx.MultiDiGraph, world: World, impact: DisruptionImpact, a
                 count=len(cos),
             ),
             GraphNode(id=gdl, type="Dealer", label=f"{len(dealers)} dealers", group="dealers", count=len(dealers)),
+            GraphNode(
+                id=gcu,
+                type="Customer",
+                label=f"{len(customers)} customers",
+                group="customers",
+                count=len(customers),
+            ),
         ]
         edges += [
             GraphEdge(**{"from": gco, "to": po.id, "type": "FULFILLED_BY"}),
             GraphEdge(**{"from": gco, "to": gdl, "type": "SOLD_BY"}),
+            GraphEdge(**{"from": gco, "to": gcu, "type": "FOR"}),  # CustomerOrder -FOR-> Customer (ontology direction)
         ]
         paths.append(GraphPath(nodes=nodes, edges=edges))
     return paths

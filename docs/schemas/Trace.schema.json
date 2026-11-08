@@ -105,6 +105,20 @@
           "default": null,
           "description": "How the call reached the enterprise (v0.2.0)",
           "title": "Transport"
+        },
+        "skipped": {
+          "default": false,
+          "description": "Not executed because a dependency failed (v0.2.0)",
+          "title": "Skipped",
+          "type": "boolean"
+        },
+        "incident_ids": {
+          "description": "Every incident this action serves; event-wide notices list all (v0.2.0)",
+          "items": {
+            "type": "string"
+          },
+          "title": "Incident Ids",
+          "type": "array"
         }
       },
       "required": [

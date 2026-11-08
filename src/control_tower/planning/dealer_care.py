@@ -25,13 +25,19 @@ def plan_care(
     cause: str | dict[str, str],
     policy: Policy = DEFAULT_POLICY,
     loaner_given_to: set[str] | None = None,
+    co_ids: set[str] | None = None,
+    include_notices: bool = True,
+    include_loaners: bool = True,
 ) -> list[Action]:
+    """`co_ids` restricts the customer orders considered (default: all of the moved POs); `include_*` let the two
+    specialists that share this logic (dealer notices, loaners) each take their part. Defaults reproduce v1 exactly."""
     given = loaner_given_to if loaner_given_to is not None else set()
     move_of = {m.po.id: m for m in moves}
     by_dealer: dict[str, list[CustomerOrder]] = defaultdict(list)
     for po_id in move_of:
         for co in world.cos_by_po.get(po_id, []):
-            by_dealer[co.dealer_id].append(co)
+            if co_ids is None or co.id in co_ids:
+                by_dealer[co.dealer_id].append(co)
 
     actions: list[Action] = []
     for dealer_id in sorted(by_dealer):
@@ -46,17 +52,20 @@ def plan_care(
                 f"{m.po.build_date.isoformat()} to {m.to_date.isoformat()}{where} ({why})"
             )
         message = "Delay notice. Affected customer orders: " + "; ".join(lines) + "."
-        actions.append(
-            Action(
-                seq=0,
-                incident_id=incident_id,
-                agent="dealer_care",
-                tool="dealer.notify",
-                args={"dealer_id": dealer_id, "customer_order_ids": [c.id for c in cos], "message": message},
-                justification=f"Rule 4: one notification for {dealer_id}, only its {len(cos)} affected order(s)",
-                path_ids=[cos[0].production_order_id, cos[0].id, dealer_id],
+        if include_notices:
+            actions.append(
+                Action(
+                    seq=0,
+                    incident_id=incident_id,
+                    agent="dealer_care",
+                    tool="dealer.notify",
+                    args={"dealer_id": dealer_id, "customer_order_ids": [c.id for c in cos], "message": message},
+                    justification=f"Rule 4: one notification for {dealer_id}, only its {len(cos)} affected order(s)",
+                    path_ids=[cos[0].production_order_id, cos[0].id, dealer_id],
+                )
             )
-        )
+        if not include_loaners:
+            continue
         entitled = sorted(
             (c for c in cos if world.customers[c.customer_id].tier in LOANER_TIERS),
             key=lambda c: (TIER_RANK[world.customers[c.customer_id].tier], c.promised_date, c.id),
