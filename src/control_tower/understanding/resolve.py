@@ -74,7 +74,7 @@ def parse_date_phrase(text: str, *, today: date = TODAY, direction: str = "futur
             y = int(m["y"]) if m["y"] else today.year
             d = date(y + 2000 if y < 100 else y, int(m["m"]), int(m["d"]))
         except ValueError:
-            return ParsedDate(None, f"invalid calendar date in {t!r}")
+            return ParsedDate(None, f'invalid calendar date in "{t}"')
         if m["wd"] and d.weekday() != WEEKDAYS[m["wd"].lower()]:
             return ParsedDate(d, f"numeric date; weekday word disagrees ({d:%A})", weekday_mismatch=True)
         return ParsedDate(d, "numeric month/day" + (" with matching weekday" if m["wd"] else ""))
@@ -84,7 +84,7 @@ def parse_date_phrase(text: str, *, today: date = TODAY, direction: str = "futur
                 year = int(m["y"]) if m["y"] else today.year
                 d = date(year, MONTHS[m["mo"].lower()], int(m["d"]))
             except ValueError:
-                return ParsedDate(None, f"invalid calendar date in {t!r}")
+                return ParsedDate(None, f'invalid calendar date in "{t}"')
             if m["wd"]:
                 wd = WEEKDAYS[m["wd"].lower()]
                 if d.weekday() != wd:
@@ -108,7 +108,7 @@ def parse_date_phrase(text: str, *, today: date = TODAY, direction: str = "futur
     leftover = _BARE_WD.sub(" ", t.lower())
     leftover = re.sub(r"\b(on|the|this|coming|upcoming|by|at|end|of|day)\b|[^a-z0-9]", " ", leftover).split()
     if (m := _BARE_WD.search(t)) and leftover:
-        return ParsedDate(None, f"weekday with extra words/digits not understood: {t!r}")
+        return ParsedDate(None, f'weekday with extra words/digits not understood: "{t}"')
     if m:
         off = WEEKDAYS[m["wd"].lower()]
         cand = _monday(today) + timedelta(days=off)
@@ -117,7 +117,7 @@ def parse_date_phrase(text: str, *, today: date = TODAY, direction: str = "futur
         if direction == "past" and cand > today:
             cand -= timedelta(days=7)
         return ParsedDate(cand, f"bare weekday resolved to the nearest {direction} occurrence")
-    return ParsedDate(None, f"could not parse date phrase {t!r}")
+    return ParsedDate(None, f'could not parse date phrase "{t}"')
 
 
 def _norm(s: str) -> str:
@@ -201,7 +201,7 @@ class EntityIndex:
                     candidates=ids,
                     chosen=best,
                     method="alias",
-                    note=f"contains {contained[0]!r}",
+                    note=f'contains "{contained[0]}"',
                 )
         scored = process.extract(key, list(table), scorer=fuzz.WRatio, score_cutoff=82, limit=4)
         ids = list(dict.fromkeys(table[k] for k, _, _ in scored))
@@ -277,7 +277,7 @@ def _date(
         ambs.append(
             Ambiguity(
                 field=field,
-                issue=f"code could not parse the date {mention.text!r} (model read it as {llm_iso}); the model does not decide dates",
+                issue=f'code could not parse the date "{mention.text}" (model read it as {llm_iso}); the model does not decide dates',
                 blocking=True,
             )
         )
@@ -291,7 +291,7 @@ def _date(
         )
         return None
     elif value is None:
-        ambs.append(Ambiguity(field=field, issue=f"cannot interpret date {mention.text!r}", blocking=True))
+        ambs.append(Ambiguity(field=field, issue=f'cannot interpret date "{mention.text}"', blocking=True))
         steps.append(ResolutionStep(mention=mention.text, entity_type="date", method="unresolved", note=note))
         return None
     elif llm_iso is not None and llm_iso != value:
@@ -382,20 +382,24 @@ def build_incident(
                 ambs.append(
                     Ambiguity(
                         field=field,
-                        issue=f"{mention!r} resolved to {pick} by the language model, not by the alias table",
+                        issue=f'"{mention}" resolved to {pick} by the language model, not by the alias table',
                         options=[pick],
                     )
                 )
         steps.append(step)
         if step.chosen is None:
             ambs.append(
-                Ambiguity(field=field, issue=f"cannot resolve {mention!r}", options=step.candidates, blocking=True)
+                Ambiguity(field=field, issue=f'cannot resolve "{mention}"', options=step.candidates, blocking=True)
             )
         elif step.method == "fuzzy":
             pen.append(0.9)
         if step.chosen and len(step.candidates) > 1 and step.method not in {"exact"}:
             ambs.append(
-                Ambiguity(field=field, issue=f"{mention!r} could also mean {step.candidates}", options=step.candidates)
+                Ambiguity(
+                    field=field,
+                    issue=f'"{mention}" could also mean {", ".join(step.candidates)}',
+                    options=step.candidates,
+                )
             )
             pen.append(0.9)
         return step.chosen

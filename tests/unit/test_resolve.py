@@ -247,3 +247,16 @@ def test_blank_plant_filled_from_text_only_when_exactly_one_is_named(world, inde
     assert two.needs_human and two.spec.plant_id is None  # two candidates -> never guess
     none = build_incident(world, index, raw, event_id="T-7", n=1, event_text="the line is dark")
     assert none.needs_human
+
+
+def test_unresolvable_plant_ambiguity_text_is_judge_readable(world, index):
+    raw = RawIncident(
+        category="plant_outage", evidence="x", reason="r", confidence=0.98, plant="the big factory",
+        outage_start=DateMention(text="next Friday"), outage_end=DateMention(text="Monday Mar 22"),
+    )  # fmt: skip
+    r = build_incident(
+        world, index, raw, event_id="T-5", n=1, event_text="x", tiebreak=lambda e, m, t: (None, 0.0, "no")
+    )
+    issues = [a.issue for a in r.spec.ambiguities]
+    assert issues and all("'" not in i and "[" not in i for i in issues)
+    assert any('"the big factory"' in i for i in issues)
