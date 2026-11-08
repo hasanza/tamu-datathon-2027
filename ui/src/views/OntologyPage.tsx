@@ -6,7 +6,8 @@ import { Chip, Mono, Panel } from "../components/ui/primitives";
 import { NODE_COLOR } from "../lib/meta";
 
 // Mirrors ONTOLOGY in src/control_tower/graph/ontology.py (from type, edge type, to type).
-const ONTOLOGY: [NodeType, string, NodeType][] = [
+type OntologyNode = Exclude<NodeType, "Event">; // Event nodes exist only inside a trace's paths, not in the company graph
+const ONTOLOGY: [OntologyNode, string, OntologyNode][] = [
   ["Supplier", "SUPPLIES", "Part"],
   ["Shipment", "OF_PART", "Part"],
   ["Shipment", "TO_PLANT", "Plant"],
@@ -27,7 +28,7 @@ const ONTOLOGY: [NodeType, string, NodeType][] = [
   ["Vehicle", "OWNED_BY", "Customer"],
 ];
 
-const POS: Record<NodeType, { x: number; y: number }> = {
+const POS: Record<OntologyNode, { x: number; y: number }> = {
   Supplier: { x: 0, y: 160 },
   Shipment: { x: 210, y: 130 },
   Lot: { x: 200, y: 280 },
@@ -42,7 +43,7 @@ const POS: Record<NodeType, { x: number; y: number }> = {
   Customer: { x: 1300, y: 340 },
 };
 
-const NOTE: Record<NodeType, string> = {
+const NOTE: Record<OntologyNode, string> = {
   Supplier: "Company that ships parts",
   Part: "Component built into vehicle models",
   Model: "Vehicle model (bill of materials)",
@@ -57,7 +58,7 @@ const NOTE: Record<NodeType, string> = {
   Day: "Working day on the calendar",
 };
 
-const NODES: GraphNode[] = (Object.keys(POS) as NodeType[]).map((t) => ({ id: t, type: t, label: t, group: null, count: null }));
+const NODES: GraphNode[] = (Object.keys(POS) as OntologyNode[]).map((t) => ({ id: t, type: t, label: t, group: null, count: null }));
 const EDGES: GraphEdge[] = ONTOLOGY.map(([from, type, to]) => ({ from, to, type }));
 const EDGE_TYPES = new Set(ONTOLOGY.map((o) => o[1]));
 
@@ -65,7 +66,7 @@ export function OntologyPage() {
   const handle = useRef<CytoHandle>(null);
   const [labels, setLabels] = useState(true);
   const [sel, setSel] = useState<string | null>(null);
-  const selType = sel as NodeType | null;
+  const selType = sel as OntologyNode | null;
   const touching = selType ? ONTOLOGY.filter(([a, , b]) => a === selType || b === selType) : [];
   const hlNodes = selType ? new Set([selType, ...touching.flatMap(([a, , b]) => [a, b])]) : null;
   const hlEdges = selType ? new Set(touching.map(([a, t, b]) => `${a}|${b}|${t}`)) : null;
@@ -136,7 +137,7 @@ export function OntologyPage() {
                 <li key={n.id}>
                   <button onClick={() => setSel(n.id)} className="flex w-full items-start gap-2 rounded-md px-1 py-0.5 text-left hover:bg-surface-2">
                     <Chip color={NODE_COLOR[n.type]}>{n.type}</Chip>
-                    <span className="text-xs text-tx2">{NOTE[n.type]}</span>
+                    <span className="text-xs text-tx2">{NOTE[n.type as OntologyNode]}</span>
                   </button>
                 </li>
               ))}

@@ -2,6 +2,7 @@ import type { GraphEdge, GraphNode, NodeType } from "../api/types";
 
 /** Left-to-right "cause -> impact" rank of each node type. */
 const RANK: Record<NodeType, number> = {
+  Event: -1, // the message sits left of everything it mentions
   Supplier: 0,
   Shipment: 0,
   Lot: 0,

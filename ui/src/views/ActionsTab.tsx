@@ -213,7 +213,13 @@ export function ActionsTab({ trace, onShowOnGraph }: { trace: Trace; onShowOnGra
                       )}
                     </td>
                     <td className="px-2 py-1.5"><OkChip ok={a.rehearsal?.ok} label="twin" /></td>
-                    <td className="px-2 py-1.5"><OkChip ok={a.result?.ok} label={target} /></td>
+                    <td className="px-2 py-1.5">
+                      {a.skipped ? (
+                        <Chip color="var(--warn)" title="Not run: an earlier write of this incident failed (no retry, the rest is skipped)">skipped</Chip>
+                      ) : (
+                        <OkChip ok={a.result?.ok} label={target} />
+                      )}
+                    </td>
                   </tr>
                   {isOpen && (
                     <tr>
