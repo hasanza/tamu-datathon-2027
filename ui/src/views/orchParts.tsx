@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Disclosure } from "../components/ui/Disclosure";
+import { KVGrid, RawJson } from "../components/ui/KeyValue";
 import type { AgentStep } from "../api/types";
-import { clock, offsetMs, usd } from "../lib/format";
+import { clock, offsetMs, prettifyRepr, usd } from "../lib/format";
 
 /* Small pieces shared by the Timeline cards and the Flow view. */
 
@@ -22,7 +23,8 @@ export function Details({ step }: { step: AgentStep }) {
   if (Object.keys(payload).length === 0) return null;
   return (
     <Disclosure summary="details" className="mt-1">
-      <pre className="mono max-h-60 overflow-auto rounded-md border border-line bg-bg p-2 text-[11px] text-tx2">{JSON.stringify(payload, null, 2)}</pre>
+      <KVGrid value={payload} />
+      <RawJson value={payload} />
     </Disclosure>
   );
 }
@@ -40,6 +42,7 @@ export function Meta({ step, start }: { step: AgentStep; start: string }) {
 /** Thoughts and hand-off briefs can be long (a task brief is ~450 characters): show a few lines, let the reader expand. */
 export function Clamped({ text, italic = false }: { text: string; italic?: boolean }) {
   const [open, setOpen] = useState(false);
+  text = prettifyRepr(text); // traces from before the pipeline text fix embed dict reprs
   const long = text.length > 170;
   return (
     <>

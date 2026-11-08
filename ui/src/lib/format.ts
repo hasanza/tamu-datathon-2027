@@ -76,3 +76,31 @@ export function summarize(value: Record<string, unknown>, max = 3): string {
     .map((x) => x.text);
   return parts.slice(0, max).join(" · ") + (parts.length > max ? ` · +${parts.length - max} more` : "");
 }
+
+const unquote = (v: string) => v.trim().replace(/^(['"])(.*)\1$/s, "$2");
+
+/**
+ * Traces written before the pipeline text fix embed Python dicts and JSON in sentences
+ * ("Resolved incident: {'category': 'noise', 'confidence': 0.99}"). Rewrite those into plain words:
+ * `{'k': 'v', 'n': 3}` -> `k v - n 3`, `['a', 'b']` -> `a, b`. Text without braces passes through untouched.
+ */
+export function prettifyRepr(text: string): string {
+  let out = text;
+  for (let i = 0; i < 6 && /\{[^{}]*\}/.test(out); i++) {
+    out = out.replace(/\{([^{}]*)\}/g, (_m, body: string) => {
+      const pairs = [...body.matchAll(/['"]?([A-Za-z_][\w ]*)['"]?\s*:\s*('[^']*'|"[^"]*"|\[[^\]]*\]|[^,]+)/g)];
+      if (pairs.length === 0) return "";
+      return pairs
+        .map(([, k, v]) => {
+          const val = unquote(v ?? "").replace(/^\[|\]$/g, "").replace(/['"]/g, "");
+          return val === "None" || val === "null" || val === "" ? null : `${(k ?? "").trim()} ${val}`;
+        })
+        .filter(Boolean)
+        .join(" - ");
+    });
+  }
+  // a dict cut off by truncation never closes ("{'error': {'code': 429, 'message': 'You exceeded"): drop its braces and key quotes
+  while (/\{\s*['"]?\w+['"]?\s*:/.test(out)) out = out.replace(/\{\s*['"]?(\w+)['"]?\s*:\s*/, "$1 ");
+  out = out.replace(/['"](\w+)['"]\s*:\s*/g, "$1 ").replace(/\s*[}]+/g, "");
+  return out.replace(/\[((?:'[^']*'|"[^"]*")(?:\s*,\s*(?:'[^']*'|"[^"]*"))*)\]/g, (_m, items: string) => items.replace(/['"]/g, ""));
+}

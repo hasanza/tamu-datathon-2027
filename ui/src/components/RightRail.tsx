@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckCheck, Radio, RotateCcw, Trash2, TriangleAlert } from "lucide-react";
-import type { ActivityItem } from "../api/stream";
+import { stepSentence, toLiveStep, type ActivityItem } from "../api/stream";
 import { useRunStatus, useTraces } from "../api/hooks";
 import type { FeedEvent } from "../api/types";
 import { confirmClause, inboxOrder } from "../lib/escalation";
 import { TARGET_META, targetOf } from "../lib/target";
 import { FollowUpControl, FollowUpList } from "./FollowUp";
-import { safeStorage } from "../lib/format";
+import { prettifyRepr, safeStorage, summarize } from "../lib/format";
+import { firstSentence } from "../lib/flow";
+import { LANE_META, laneOf, STEP_META } from "../lib/meta";
 import { Chip, Empty, Mono, Panel } from "./ui/primitives";
 
 /* ---------------- Escalation inbox ---------------- */
@@ -142,6 +144,54 @@ const TYPE_COLOR: Record<ActivityItem["type"], string> = {
   event_done: "var(--brand-bright)",
 };
 
+function KindChip({ it }: { it: ActivityItem }) {
+  const kind = toLiveStep(it.payload, it.id)?.kind;
+  const m = kind ? STEP_META[kind] : null;
+  return m ? <Chip color={m.color}>{m.label}</Chip> : <span className="text-[10px] uppercase tracking-wide text-tx3">agent step</span>;
+}
+
+/** What one activity item says, from its structured payload fields (never the raw step text of a tool call). */
+function ActivityBody({ it }: { it: ActivityItem }) {
+  if (it.type === "agent_step") {
+    const step = toLiveStep(it.payload, it.id);
+    if (!step) return <p className="line-clamp-2 break-words text-tx2">{it.text}</p>;
+    const lane = LANE_META[laneOf(step.agent)];
+    const meta = STEP_META[step.kind];
+    const dot = <span className="mr-1 inline-block h-1.5 w-1.5 rounded-full align-middle" style={{ background: lane.color }} title={lane.label} aria-label={lane.label} />;
+    if (step.kind === "tool" && step.tool) {
+      return (
+        <p className="truncate text-tx2" title={stepSentence(step)}>
+          {dot}
+          <Mono className="font-medium text-tx">{step.tool}</Mono>
+          {step.args && Object.keys(step.args).length > 0 && ` - ${summarize(step.args)}`}
+          {step.result && Object.keys(step.result).length > 0 && ` -> ${summarize(step.result)}`}
+        </p>
+      );
+    }
+    if (step.kind === "message") {
+      const route = [step.from_agent, step.to_agent].filter(Boolean).map((a) => LANE_META[laneOf(a as never)]?.label ?? a).join(" -> ");
+      return (
+        <>
+          <p className="truncate text-tx2" title={`${route}${step.task ? ` - ${step.task}` : ""}`}>
+            {dot}
+            {route}
+            {step.task && <span className="text-tx3"> - {step.task}</span>}
+          </p>
+          <p className="truncate text-tx3" title={prettifyRepr(step.text)}>{firstSentence(step.text)}</p>
+        </>
+      );
+    }
+    const clamp = step.kind === "thought" ? "truncate" : "line-clamp-2";
+    return (
+      <p className={`${clamp} break-words text-tx2`} title={prettifyRepr(step.text)} data-kind-chip={meta.label}>
+        {dot}
+        {step.kind === "thought" ? firstSentence(step.text) : prettifyRepr(step.text)}
+      </p>
+    );
+  }
+  return <p className="line-clamp-2 break-words text-tx2">{prettifyRepr(it.text)}</p>;
+}
+
 export function ActivityLog({
   live,
   items,
@@ -197,14 +247,25 @@ export function ActivityLog({
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
                   {it.eventId && (
-                    <button onClick={() => onSelect(it.eventId as string)} className="mono font-medium text-tx hover:underline">
+                    <button
+                      onClick={() => {
+                        onSelect(it.eventId as string);
+                        if (it.type === "agent_step") window.dispatchEvent(new CustomEvent("ct-open-tab", { detail: "Orchestration" }));
+                      }}
+                      title={it.type === "agent_step" ? "Open this event's Orchestration tab" : undefined}
+                      className="mono font-medium text-tx hover:underline"
+                    >
                       {it.eventId}
                     </button>
                   )}
-                  <span className="text-[10px] uppercase tracking-wide text-tx3">{it.type.replace("_", " ")}</span>
+                  {it.type === "agent_step" ? (
+                    <KindChip it={it} />
+                  ) : (
+                    <span className="text-[10px] uppercase tracking-wide text-tx3">{it.type.replace("_", " ")}</span>
+                  )}
                   <Mono className="ml-auto text-tx3">{new Date(it.at).toLocaleTimeString([], { hour12: false })}</Mono>
                 </div>
-                <p className="break-words text-tx2">{it.text}</p>
+                <ActivityBody it={it} />
               </div>
             </li>
           ))}

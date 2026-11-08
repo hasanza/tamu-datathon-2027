@@ -3,7 +3,7 @@ import { ChevronDown, ChevronRight, FastForward, RotateCcw, X } from "lucide-rea
 import type { AgentStep } from "../api/types";
 import { Chip, Mono, Panel } from "../components/ui/primitives";
 import { buildFlow, firstLine, type Flow, type FlowChip, type FlowNode, type Tone } from "../lib/flow";
-import { compactArgs, summarize, usd } from "../lib/format";
+import { compactArgs, prettifyRepr, summarize, usd } from "../lib/format";
 import { BADGE_COLOR, LANE_META, STEP_META, toolBadge } from "../lib/meta";
 import type { OrchRow } from "./OrchestrationTab";
 import { Clamped, DECISION_COLOR, Details, echoesCall, hasKeys } from "./orchParts";
@@ -148,7 +148,7 @@ function ThoughtRow({ step }: { step: AgentStep }) {
         {open ? <ChevronDown size={13} className="mt-0.5 shrink-0 text-tx3" aria-hidden /> : <ChevronRight size={13} className="mt-0.5 shrink-0 text-tx3" aria-hidden />}
         <Chip color={STEP_META.thought.color}>Thought{step.turn != null ? ` ${step.turn}` : ""}</Chip>
         {open ? (
-          <span className="min-w-0 flex-1 whitespace-pre-wrap break-words italic text-tx2">{step.text}</span>
+          <span className="min-w-0 flex-1 whitespace-pre-wrap break-words italic text-tx2">{prettifyRepr(step.text)}</span>
         ) : (
           <span className="min-w-0 flex-1 truncate italic text-tx2" title="click for the full thought">
             {firstLine(step.text)}
@@ -171,13 +171,14 @@ function StepRow({ row }: { row: OrchRow }) {
           <Chip color={STEP_META.tool.color}>Tool call</Chip>
           <Chip color={BADGE_COLOR[badge]}>{badge}</Chip>
           <Mono className="font-medium text-tx">{step.tool ?? "tool"}</Mono>
-          {hasKeys(step.args) && (
+          {echoesCall(step) && hasKeys(step.args) && (
             <span className="mono min-w-0 truncate text-[11px] text-tx3" title={compactArgs(step.args)}>
               {summarize(step.args)}
             </span>
           )}
         </div>
-        {!echoesCall(step) && <p className="mt-1 break-words text-tx2">{step.text}</p>}
+        {/* the pipeline's own sentence ("register_incidents - 1 incident (noise)") replaces the separate arguments line */}
+        {!echoesCall(step) && <p className="mt-1 break-words text-tx2">{prettifyRepr(step.text)}</p>}
         {hasKeys(step.result) && (
           <p className="mono mt-0.5 truncate text-[11px] text-tx2" title={compactArgs(step.result)}>
             → {summarize(step.result)}
@@ -191,7 +192,7 @@ function StepRow({ row }: { row: OrchRow }) {
     const c = DECISION_COLOR(step.text);
     return (
       <li className="rounded-md border px-2.5 py-1.5 text-[12.5px]" style={{ borderColor: `color-mix(in srgb, ${c} 55%, transparent)`, background: `color-mix(in srgb, ${c} 10%, var(--surface))` }}>
-        <Chip color={c}>Decision</Chip> <span className="font-medium text-tx">{step.text}</span>
+        <Chip color={c}>Decision</Chip> <span className="font-medium text-tx">{prettifyRepr(step.text)}</span>
       </li>
     );
   }
@@ -213,7 +214,7 @@ function StepRow({ row }: { row: OrchRow }) {
   const m = STEP_META[step.kind] ?? { label: String(step.kind), color: "var(--text-3)" };
   return (
     <li className="rounded-md border border-line bg-surface px-2.5 py-1.5 text-[12.5px]">
-      <Chip color={m.color}>{m.label}</Chip> <span className="break-words text-tx2">{step.text}</span>
+      <Chip color={m.color}>{m.label}</Chip> <span className="break-words text-tx2">{prettifyRepr(step.text)}</span>
       <Details step={step} />
     </li>
   );

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRunStatus } from "./hooks";
+import { prettifyRepr, summarize } from "../lib/format";
+import { firstSentence } from "../lib/flow";
 import { isCustomId, type AgentId, type AgentStep, type FeedEvent, type StepKind, type StreamType, type Transport } from "./types";
 
 export interface ActivityItem {
@@ -48,23 +50,38 @@ export function toLiveStep(p: Record<string, unknown>, id: number): LiveStep | n
 const TYPES: StreamType[] = ["event_received", "agent_step", "action", "event_done"];
 const MAX_ITEMS = 150;
 
+const hasObj = (o: Record<string, unknown> | null | undefined): o is Record<string, unknown> => !!o && Object.keys(o).length > 0;
+
+/** One plain sentence for a step, built from its structured fields (never the raw `name({json})` text of a tool call). */
+export function stepSentence(step: AgentStep): string {
+  if (step.kind === "tool" && step.tool) {
+    const args = hasObj(step.args) ? ` - ${summarize(step.args)}` : "";
+    const result = hasObj(step.result) ? ` -> ${summarize(step.result)}` : "";
+    return `${step.tool}${args}${result}`;
+  }
+  if (step.kind === "message") {
+    const route = [step.from_agent, step.to_agent].filter(Boolean).join(" -> ");
+    return `${route}${step.task ? ` - ${step.task}` : ""}: ${firstSentence(step.text)}`;
+  }
+  if (step.kind === "thought") return firstSentence(step.text);
+  return prettifyRepr(step.text);
+}
+
 function describe(type: StreamType, p: Record<string, unknown>): string {
   const s = (k: string) => (typeof p[k] === "string" ? (p[k] as string) : null);
   switch (type) {
     case "event_received":
       return `Received${s("source") ? ` via ${s("source")}` : ""}${s("text") ? `: ${s("text")}` : ""}`;
     case "agent_step": {
-      const who = s("agent");
-      const step = (p.step ?? p) as Record<string, unknown>;
-      const kind = typeof step.kind === "string" ? step.kind : null;
-      const text = typeof step.text === "string" ? step.text : null;
-      return [who, kind && `[${kind}]`, text].filter(Boolean).join(" ") || "Agent step";
+      const live = toLiveStep(p, 0);
+      return live ? `${live.agent} ${stepSentence(live)}` : "Agent step";
     }
     case "action": {
       const a = (p.action ?? p) as Record<string, unknown>;
       const tool = typeof a.tool === "string" ? a.tool : null;
+      const args = typeof a.args === "object" && a.args && !Array.isArray(a.args) ? summarize(a.args as Record<string, unknown>) : "";
       const ok = (a.result as { ok?: boolean } | null | undefined)?.ok;
-      return `${tool ?? "action"}${ok === false ? " FAILED" : ok === true ? " ok" : ""}`;
+      return `${tool ?? "action"}${args ? ` - ${args}` : ""}${ok === false ? " FAILED" : ok === true ? " ok" : ""}`;
     }
     case "event_done":
       return `Done${s("status") ? `: ${s("status")}` : ""}${s("summary") ? ` - ${s("summary")}` : ""}`;
