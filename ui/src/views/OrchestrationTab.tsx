@@ -3,7 +3,7 @@ import { ArrowRight, ChevronDown, ChevronRight, CircleAlert, Loader2 } from "luc
 import type { AgentStep, StepKind, Trace } from "../api/types";
 import type { LiveStep } from "../api/stream";
 import { Chip, Empty, Mono, Panel } from "../components/ui/primitives";
-import { clip, clock, compactArgs, offsetMs, usd } from "../lib/format";
+import { clock, compactArgs, offsetMs, summarize, usd } from "../lib/format";
 import { BADGE_COLOR, LANE_META, LANES, laneOf, STEP_META, toolBadge, type LaneId } from "../lib/meta";
 
 /* The Orchestration view (PLAN_V2 §8): four swimlanes, time flowing down. Cards are Thought (the agent's reasoning),
@@ -104,9 +104,6 @@ function HeaderStrip({ rows, trace, live }: { rows: OrchRow[]; trace?: Trace; li
 
 /* ---------- cards ---------- */
 
-/** Inline preview of a tool call's arguments and result. Real v2 values are long JSON (a whole incident, lists of orders); the full value is under "details". */
-const PREVIEW = 80;
-
 /** The v2 runtime sets a tool step's text to `name({...args})`: it only repeats the name and arguments the card already shows. */
 const echoesCall = (step: AgentStep) => !!step.tool && step.text.startsWith(`${step.tool}(`);
 
@@ -193,9 +190,17 @@ function Card({ row, start }: { row: OrchRow; start: string }) {
           <Meta step={step} start={start} />
         </div>
         <Mono className="break-all font-medium text-tx">{step.tool ?? "tool"}</Mono>
-        {hasKeys(step.args) && <p className="mono mt-0.5 break-all text-[11px] text-tx3">{clip(compactArgs(step.args), PREVIEW)}</p>}
+        {hasKeys(step.args) && (
+          <p className="mono mt-0.5 truncate text-[11px] text-tx3" title={compactArgs(step.args)}>
+            {summarize(step.args)}
+          </p>
+        )}
         {!echoesCall(step) && <p className="mt-1 break-words text-tx2">{step.text}</p>}
-        {hasKeys(step.result) && <p className="mono mt-0.5 break-all text-[11px] text-tx2">→ {clip(compactArgs(step.result), PREVIEW)}</p>}
+        {hasKeys(step.result) && (
+          <p className="mono mt-0.5 truncate text-[11px] text-tx2" title={compactArgs(step.result)}>
+            → {summarize(step.result)}
+          </p>
+        )}
         <Details step={step} />
       </div>
     );
@@ -296,7 +301,7 @@ export function OrchestrationView({ rows, trace, live = false, empty }: { rows: 
               const b = isMsg && toLane >= 0 ? Math.max(from, toLane) : LANES.indexOf(row.lane);
               return (
                 <li key={row.key} className="md:grid md:grid-cols-4 md:gap-x-3">
-                  <div className="md:[grid-column:var(--c)]" style={{ ["--c" as string]: `${a + 1} / ${b + 2}` }}>
+                  <div className="min-w-0 md:[grid-column:var(--c)]" style={{ ["--c" as string]: `${a + 1} / ${b + 2}` }}>
                     {/* phone: no lanes, so say whose card this is */}
                     <div className="mb-0.5 flex items-center gap-1.5 text-[10.5px] text-tx3 md:hidden">
                       <span className="h-1.5 w-1.5 rounded-full" style={{ background: LANE_META[row.lane].color }} aria-hidden />
