@@ -1,4 +1,4 @@
-import { Moon, Play, Sun, Undo2 } from "lucide-react";
+import { Moon, Play, Sun, TriangleAlert, Undo2 } from "lucide-react";
 import { useKpis, useRunStatus } from "../api/hooks";
 import type { Page } from "../lib/route";
 import { usd } from "../lib/format";
@@ -68,6 +68,20 @@ export function TopBar({ page, go }: { page: Page; go: (p: Page) => void }) {
           ))}
         </nav>
         <div className="ml-auto flex flex-wrap items-center justify-end gap-x-3 gap-y-2">
+          {!running && (status?.state === "aborted" || status?.state === "failed") && (
+            <span
+              role="alert"
+              title={status.message ?? `The run ended with exit code ${status.exit_code}`}
+              className="inline-flex max-w-[22rem] items-center gap-1.5 rounded-md border px-2 py-1 text-[12px] font-medium"
+              style={{ color: "var(--fail)", borderColor: "color-mix(in srgb, var(--fail) 45%, transparent)", background: "color-mix(in srgb, var(--fail) 12%, transparent)" }}
+            >
+              <TriangleAlert size={13} className="shrink-0" aria-hidden />
+              <span className="truncate">
+                {status.state === "aborted" ? "Run aborted" : "Run failed"}
+                {status.message ? `: ${status.message.replace(/^ABORTED:\s*/, "")}` : ""}
+              </span>
+            </span>
+          )}
           {status?.mode && !running && (
             <button
               onClick={() => reset.mutate()}

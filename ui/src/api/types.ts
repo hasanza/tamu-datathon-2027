@@ -291,4 +291,8 @@ export interface RunStatus {
   mode: RunMode | null;
   exit_code: number | null;
   started: number | null;
+  /** how the last run ended: done | aborted (the pipeline gave up on purpose: exit 2) | failed; null while running or before a run */
+  state?: "done" | "aborted" | "failed" | null;
+  /** the stderr line that says why (the `ABORTED:` line for an abort) */
+  message?: string | null;
 }

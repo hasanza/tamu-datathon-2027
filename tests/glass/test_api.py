@@ -264,7 +264,14 @@ def test_reset_returns_to_the_startup_directories(client, cfg, monkeypatch):
     assert client.post("/api/run", params={"all": True}).status_code == 202
     assert (cfg.traces_dir, cfg.run_dir) != start  # run switched to traces/live + runs/live (under the temp ROOT)
     r = client.post("/api/reset")
-    assert r.status_code == 200 and r.json() == {"running": False, "mode": None, "exit_code": None, "started": None}
+    assert r.status_code == 200 and r.json() == {
+        "running": False,
+        "mode": None,
+        "exit_code": None,
+        "started": None,
+        "state": None,
+        "message": None,
+    }
     assert (cfg.traces_dir, cfg.run_dir) == start
     assert client.get("/api/run/status").json()["mode"] is None
 
@@ -284,8 +291,8 @@ def test_custom_event_sandbox(client, cfg, monkeypatch):
 
     def fake_run(cmd, **kw):
         seen["timeout"] = kw["timeout"]
-        assert cmd[-2] == "--custom"
-        ev = json.loads(Path(cmd[-1]).read_text())[0]
+        assert cmd[cmd.index("--custom") - 1] == "control_tower.live"
+        ev = json.loads(Path(cmd[cmd.index("--custom") + 1]).read_text())[0]
         assert ev["event_id"] == "C-01" and ev["text"] == "The Huntsville line is down Wednesday."
         src = json.loads((ROOT / "traces/examples/E-05.json").read_text())
         src.update(event_id="C-01", text=ev["text"])
@@ -322,7 +329,7 @@ def test_custom_run_in_flight_does_not_break_events_or_numbering(client, cfg, mo
     assert [e["event_id"] for e in r.json() if e.get("custom")] == ["C-01"]  # the input file is not an event
 
     def fake_run(cmd, **kw):  # a second submission while C-02 is still in flight must NOT reuse C-02: it takes C-03
-        ev = json.loads(Path(cmd[-1]).read_text())[0]
+        ev = json.loads(Path(cmd[cmd.index("--custom") + 1]).read_text())[0]
         assert ev["event_id"] == "C-03"
         done.update(event_id=ev["event_id"], text=ev["text"])
         (cfg.custom_dir / f"{ev['event_id']}.json").write_text(json.dumps(done))
@@ -353,7 +360,7 @@ def test_custom_follow_up_appends_operator_details(client, cfg, monkeypatch):
     seen = {}
 
     def fake_run(cmd, **kw):
-        ev = json.loads(Path(cmd[-1]).read_text())[0]
+        ev = json.loads(Path(cmd[cmd.index("--custom") + 1]).read_text())[0]
         seen.update(ev)
         src = json.loads((ROOT / "traces/examples/E-02.json").read_text())
         src.update(event_id=ev["event_id"], text=ev["text"], source=ev["source"])
@@ -381,3 +388,65 @@ def test_run_defaults_to_the_scored_server_mode(client, monkeypatch):
     r = client.post("/api/run", params={"all": True})  # no mode: feed events always go to the scored server
     assert r.status_code == 202 and r.json()["mode"] == "server"
     assert started[0][started[0].index("--mode") + 1] == "server"
+
+
+def test_custom_subprocess_gets_the_dirs_the_api_reads(client, cfg, monkeypatch):
+    """The pipeline must write where the API reads, not rely on matching defaults (they disagreed once with temp dirs)."""
+    import subprocess as sp
+
+    seen = {}
+
+    def fake_run(cmd, **kw):
+        seen["cmd"] = cmd
+        ev = json.loads(Path(cmd[cmd.index("--custom") + 1]).read_text())[0]
+        src = json.loads((ROOT / "traces/examples/E-05.json").read_text())
+        src.update(event_id=ev["event_id"], text=ev["text"])
+        cfg.custom_dir.mkdir(parents=True, exist_ok=True)
+        (cfg.custom_dir / f"{ev['event_id']}.json").write_text(json.dumps(src))
+        return sp.CompletedProcess(cmd, 0, "", "")
+
+    monkeypatch.setattr("api.app.subprocess.run", fake_run)
+    assert client.post("/api/custom", json={"text": "The Greensboro line is down on Wednesday."}).status_code == 200
+    cmd = seen["cmd"]
+    assert cmd[cmd.index("--run-dir") + 1] == str(cfg.custom_run_dir)
+    assert cmd[cmd.index("--traces-dir") + 1] == str(cfg.custom_dir)
+
+
+class ExitedProc:
+    def __init__(self, code):
+        self.returncode = code
+
+    def poll(self):
+        return self.returncode
+
+
+@pytest.mark.parametrize(
+    ("code", "stderr", "state", "message"),
+    [
+        (0, "", "done", None),
+        (
+            2,
+            "warning noise\nABORTED: LLM provider unavailable on 2 consecutive events (429); 13 of 15 events not run\n",
+            "aborted",
+            "ABORTED: LLM provider unavailable on 2 consecutive events (429); 13 of 15 events not run",
+        ),
+        (
+            2,
+            "enterprise server failed to start on port 8123\n",
+            "aborted",
+            "enterprise server failed to start on port 8123",
+        ),
+        (1, "Traceback ...\nValueError: boom\n", "failed", "ValueError: boom"),
+    ],
+)
+def test_run_status_names_how_a_run_ended(client, monkeypatch, code, stderr, state, message):
+    """Exit 2 is the pipeline giving up on purpose: show it as 'aborted' with the line that says why (CORE #79)."""
+    import api.app as appmod
+
+    monkeypatch.setattr(appmod.subprocess, "Popen", lambda cmd, **kw: ExitedProc(code))
+    assert client.post("/api/run", params={"all": True}).status_code == 202
+    # the API wrote its stderr capture file under the (temp) run dir it switched to; the fake child "writes" to it
+    run_stderr = next(Path(appmod.ROOT).rglob("run.stderr"))
+    run_stderr.write_text(stderr)
+    s = client.get("/api/run/status").json()
+    assert (s["exit_code"], s["state"], s["message"], s["running"]) == (code, state, message, False)
