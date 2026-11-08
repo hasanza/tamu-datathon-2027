@@ -5,6 +5,7 @@ import { CategoryBadge, Chip, ConfidenceRing, Mono, Panel, Stat } from "../compo
 import { Disclosure } from "../components/ui/Disclosure";
 import { FollowUpControl, FollowUpList } from "../components/FollowUp";
 import { briefOf, whyOf } from "../lib/brief";
+import { prettifyRepr } from "../lib/format";
 import { ImpactPanel } from "./ImpactPanel";
 
 function Id({ v }: { v: string | null }) {
@@ -223,7 +224,7 @@ function IncidentBlock({ inc }: { inc: IncidentBrief }) {
           ))}
         </dl>
       )}
-      {inc.note && <p className="mt-1 text-[12.5px] text-tx2">{inc.note}</p>}
+      {inc.note && <p className="mt-1 line-clamp-2 break-words text-[12.5px] text-tx2" title={prettifyRepr(inc.note)}>{prettifyRepr(inc.note)}</p>}
     </section>
   );
 }
