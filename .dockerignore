@@ -1,0 +1,16 @@
+.git
+.github
+.venv
+node_modules
+ui/node_modules
+ui/dist
+runs
+traces/*
+!traces/examples
+*.zip
+media
+__pycache__
+.pytest_cache
+.ruff_cache
+.env
+CLAUDE.local.md

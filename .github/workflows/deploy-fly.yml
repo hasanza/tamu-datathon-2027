@@ -1,0 +1,31 @@
+name: deploy-fly
+on:
+  push:
+    branches: [deploy]
+  workflow_dispatch:
+
+concurrency: deploy-fly
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Set app secrets (skipped when unset)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CT_ACCESS_PASSWORD: ${{ secrets.CT_ACCESS_PASSWORD }}
+        run: |
+          args=""
+          [ -n "$GEMINI_API_KEY" ] && args="$args GEMINI_API_KEY=$GEMINI_API_KEY"
+          [ -n "$CT_ACCESS_PASSWORD" ] && args="$args CT_ACCESS_PASSWORD=$CT_ACCESS_PASSWORD"
+          if [ -n "$args" ]; then
+            # shellcheck disable=SC2086
+            flyctl secrets set --stage $args
+          else
+            echo "no secrets in the repository; skipping"
+          fi
+      - run: flyctl deploy --remote-only

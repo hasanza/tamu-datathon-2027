@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: wacky-wheels-control-tower
+    runtime: docker
+    plan: free
+    branch: deploy
+    healthCheckPath: /healthz
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: CT_ACCESS_PASSWORD
+        sync: false

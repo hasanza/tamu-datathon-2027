@@ -8,11 +8,16 @@ Environment (all optional):
   RUN_DIR      directory with ``action_log.jsonl`` and ``events.ndjson``  (default ``runs/dev``)
   EVENTS_PATH  the event feed                                  (default ``hack_the_highway/data/events.json``)
   CORS_ORIGINS comma-separated allowed origins                 (default the Vite dev server)
+  UI_DIST      built UI served at / with SPA fallback          (default ``ui/dist``; skipped when absent)
+  CT_ACCESS_PASSWORD  when set, every path but /healthz needs cookie ``ct_access`` or HTTP Basic auth with it
 """
 
 from __future__ import annotations
 
 import asyncio
+import base64
+import hashlib
+import hmac
 import json
 import os
 import re
@@ -28,6 +33,7 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field, ValidationError
 from sse_starlette.sse import EventSourceResponse
 
@@ -77,6 +83,66 @@ class CustomEvent(BaseModel):
     source: str = Field(default="judge input", max_length=60)
     parent_id: str | None = Field(default=None, pattern=r"^[EC]-\d{2}$")
     details: str | None = Field(default=None, min_length=4, max_length=1000)
+
+
+class AccessGate:
+    """Pure ASGI gate: cookie ``ct_access`` (SHA-256 of the password) or HTTP Basic (any user). /healthz is exempt."""
+
+    def __init__(self, app: Any, password: str) -> None:
+        self.app = app
+        self.password = password
+        self.token = hashlib.sha256(password.encode()).hexdigest()
+
+    def _allowed(self, headers: dict[bytes, bytes]) -> tuple[bool, bool]:
+        """Returns (allowed, via_basic)."""
+        for part in headers.get(b"cookie", b"").decode("latin-1").split(";"):
+            name, _, value = part.strip().partition("=")
+            if name == "ct_access" and hmac.compare_digest(value.encode(), self.token.encode()):
+                return True, False
+        auth = headers.get(b"authorization", b"").decode("latin-1")
+        if auth[:6].lower() == "basic ":
+            try:
+                _, _, pw = base64.b64decode(auth[6:]).decode("utf-8").partition(":")
+            except ValueError:
+                return False, False
+            if hmac.compare_digest(pw.encode(), self.password.encode()):
+                return True, True
+        return False, False
+
+    async def __call__(self, scope: Any, receive: Any, send: Any) -> None:
+        if scope["type"] not in ("http", "websocket") or scope["path"] == "/healthz":
+            await self.app(scope, receive, send)
+            return
+        ok, via_basic = self._allowed(dict(scope["headers"]))
+        if not ok:
+            if scope["type"] == "http":
+                body = b"Authentication required"
+                await send(
+                    {
+                        "type": "http.response.start",
+                        "status": 401,
+                        "headers": [
+                            (b"www-authenticate", b'Basic realm="Control Tower"'),
+                            (b"content-type", b"text/plain; charset=utf-8"),
+                            (b"content-length", str(len(body)).encode()),
+                        ],
+                    }
+                )
+                await send({"type": "http.response.body", "body": body})
+            else:
+                await send({"type": "websocket.close", "code": 1008})
+            return
+        if not via_basic or scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        async def send_with_cookie(message: Any) -> None:
+            if message["type"] == "http.response.start":
+                cookie = f"ct_access={self.token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000"
+                message = {**message, "headers": [*message.get("headers", []), (b"set-cookie", cookie.encode())]}
+            await send(message)
+
+        await self.app(scope, receive, send_with_cookie)
 
 
 def _path(var: str, default: str) -> Path:
@@ -164,6 +230,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.add_middleware(
         CORSMiddleware, allow_origins=cfg.cors_origins, allow_methods=["GET", "POST"], allow_headers=["*"]
     )
+
+    @app.get("/healthz")
+    def healthz() -> dict[str, bool]:
+        return {"ok": True}
 
     def event_id_or_404(event_id: str) -> str:
         if not EVENT_ID.match(event_id):
@@ -464,7 +534,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 for p in contents(d):
                     shutil.rmtree(p) if p.is_dir() else p.unlink(missing_ok=True)
         # scope=all: the feed stays quiet (the emptied live dirs) until the next Run feed; scope=run: back to the startup dirs
-        cfg.traces_dir, cfg.run_dir = (ROOT / "traces" / "live", ROOT / "runs" / "live") if scope == "all" else initial_dirs
+        cfg.traces_dir, cfg.run_dir = (
+            (ROOT / "traces" / "live", ROOT / "runs" / "live") if scope == "all" else initial_dirs
+        )
         runner.update(proc=None, mode=None, started=None, stderr=None, cancelled=False)
         return runner_state()
 
@@ -498,6 +570,22 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             )
         )
 
+    dist = _path("UI_DIST", "ui/dist")
+    if (dist / "index.html").is_file():
+        dist_root = dist.resolve()
+
+        @app.get("/{path:path}", include_in_schema=False)
+        def spa(path: str) -> FileResponse:
+            if path == "api" or path.startswith("api/"):
+                raise HTTPException(404, "not found")
+            f = (dist_root / path).resolve()
+            if path and f.is_file() and f.is_relative_to(dist_root):
+                return FileResponse(f)
+            return FileResponse(dist_root / "index.html")
+
+    password = os.environ.get("CT_ACCESS_PASSWORD")
+    if password:
+        app.add_middleware(AccessGate, password=password)  # added last = outermost, so CORS preflights are gated too
     return app
 
 
