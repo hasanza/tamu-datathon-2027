@@ -100,7 +100,7 @@ export function Stat({ label, value, sub, color }: { label: string; value: React
   return (
     <div className="rounded-lg border border-line bg-surface-2 px-3 py-2">
       <div className="text-[11px] uppercase tracking-wide text-tx3">{label}</div>
-      <div className="mono text-[28px] font-medium leading-9" style={color ? { color } : undefined}>
+      <div className={`mono text-[28px] font-medium leading-9 ${color ? "" : value === 0 || value === "0" ? "text-tx3" : "text-tx"}`} style={color ? { color } : undefined}>
         {value}
       </div>
       {sub && <div className="text-[11px] text-tx3">{sub}</div>}

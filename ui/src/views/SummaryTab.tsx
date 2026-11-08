@@ -1,9 +1,10 @@
 import { Fragment, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import type { Incident, Trace } from "../api/types";
+import type { Brief, BriefOutcome, Incident, IncidentBrief, Trace } from "../api/types";
 import { CategoryBadge, Chip, ConfidenceRing, Mono, Panel, Stat } from "../components/ui/primitives";
 import { Disclosure } from "../components/ui/Disclosure";
 import { FollowUpControl, FollowUpList } from "../components/FollowUp";
+import { briefOf, whyOf } from "../lib/brief";
 import { ImpactPanel } from "./ImpactPanel";
 
 function Id({ v }: { v: string | null }) {
@@ -184,27 +185,94 @@ function ImpactSlips({ trace }: { trace: Trace }) {
   );
 }
 
+const OUTCOME_COLOR: Record<BriefOutcome, string> = {
+  acted: "var(--ok)",
+  partial: "var(--warn)",
+  escalated: "var(--cat-unconfirmed)",
+  noise: "var(--text-3)",
+  failed: "var(--fail)",
+};
+
+/** The conclusion first: one line, its first word tinted by the outcome. */
+function Headline({ brief }: { brief: Brief }) {
+  const [first, ...rest] = brief.headline.split(" ");
+  return (
+    <h3 data-headline className="text-[15px] font-semibold leading-snug text-tx">
+      <span style={{ color: OUTCOME_COLOR[brief.outcome] }}>{first}</span> {rest.join(" ")}
+    </h3>
+  );
+}
+
+function IncidentBlock({ inc }: { inc: IncidentBrief }) {
+  return (
+    <section data-incident-block aria-label={inc.title} className="rounded-md border border-line bg-surface-2 px-3 py-2">
+      <div className="flex flex-wrap items-baseline gap-x-2">
+        <span className="text-[13px] font-medium text-tx">{inc.title}</span>
+        {inc.window && <Mono className="text-[11.5px] text-tx3">{inc.window}</Mono>}
+      </div>
+      {inc.facts.length > 0 && (
+        <dl className="mt-1.5 grid grid-cols-[9.5rem_1fr] items-baseline gap-x-3 gap-y-1" data-facts>
+          {inc.facts.map((f) => (
+            <div key={f.label} className="contents">
+              <dt className="text-[11px] uppercase tracking-wide text-tx3">{f.label}</dt>
+              <dd>
+                <Mono className="text-[15px] font-semibold text-tx">{f.value}</Mono>
+                {f.detail && <span className="ml-2 text-[12px] text-tx3">{f.detail}</span>}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {inc.note && <p className="mt-1 text-[12.5px] text-tx2">{inc.note}</p>}
+    </section>
+  );
+}
+
 export function SummaryTab({ trace }: { trace: Trace }) {
   const cf = trace.counterfactual;
+  const brief = briefOf(trace);
+  const why = whyOf(trace.decision_reason);
   return (
     <div className="space-y-4">
       <Panel title="Summary">
-        <p className="text-[15px] leading-relaxed text-tx">{trace.summary}</p>
-        <div className="mt-3 rounded-md border-l-[3px] border-brand-bright bg-surface-2 px-3 py-2">
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-tx3">Decision reason</div>
-          <p className="text-[13px] text-tx2">{trace.decision_reason}</p>
+        <Headline brief={brief} />
+        {brief.gates.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1.5" aria-label="Checks passed">
+            {brief.gates.map((g) => (
+              <Chip key={g} color="var(--ok)">{g}</Chip>
+            ))}
+          </div>
+        )}
+        <div className="mt-3 space-y-3">
+          {brief.incidents.map((inc) => (
+            <IncidentBlock key={inc.incident_id} inc={inc} />
+          ))}
         </div>
-        <Disclosure summary="Show the original message" className="mt-3">
-          <blockquote className="whitespace-pre-wrap rounded-md border border-line bg-bg px-3 py-2 text-[13px] text-tx2">{trace.text}</blockquote>
-          <p className="mt-2 text-xs text-tx3">Classifier: {trace.classification.reason}</p>
-        </Disclosure>
+        <div className="mt-3 border-l-[3px] border-brand-bright bg-surface-2 px-3 py-2">
+          <p className="text-[13px] text-tx2">
+            <span className="mr-1.5 text-[11px] font-semibold uppercase tracking-wide text-tx3">Why</span>
+            {why.why}
+          </p>
+          {why.rest && (
+            <Disclosure summary="Full reason" className="mt-1">
+              <p className="text-[13px] text-tx2">{why.rest}</p>
+            </Disclosure>
+          )}
+        </div>
+        <div className="mt-2 flex flex-col items-start gap-1">
+          <Disclosure summary="Read the full account">
+            <p className="max-w-3xl text-[14px] leading-relaxed text-tx">{trace.summary}</p>
+          </Disclosure>
+          <Disclosure summary="Show the original message">
+            <blockquote className="whitespace-pre-wrap rounded-md border border-line bg-bg px-3 py-2 text-[13px] text-tx2">{trace.text}</blockquote>
+            <p className="mt-2 text-xs text-tx3">Classifier: {trace.classification.reason}</p>
+          </Disclosure>
+        </div>
       </Panel>
 
       {(trace.status === "escalated" || trace.status === "failed") && (
         <Panel title="Needs a human">
-          <p className="text-[13px] text-tx2">
-            This event was handed to a person and nothing operational changed. Add the missing details to run it again in the sandbox.
-          </p>
+          <p className="text-[13px] text-tx2">Handed to a person, nothing changed: add the missing details to re-run it in the sandbox.</p>
           <FollowUpControl trace={trace} />
           <FollowUpList parentId={trace.event_id} />
         </Panel>
@@ -215,7 +283,7 @@ export function SummaryTab({ trace }: { trace: Trace }) {
           <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-5">
             <Stat label="Customers affected" value={cf.customers_affected} />
             <Stat label="Avg slip (days)" value={cf.avg_slip_days != null ? cf.avg_slip_days.toFixed(1) : "-"} />
-            <Stat label="Loaners assigned" value={cf.loaners_assigned} sub={`of ${cf.loaners_entitled} entitled`} />
+            <Stat label="Loaners assigned" value={cf.loaners_assigned} />
             <Stat label="Vehicles pulled" value={cf.vehicles_pulled} />
             <Stat label="Owners contacted" value={cf.owners_contacted} />
           </div>
