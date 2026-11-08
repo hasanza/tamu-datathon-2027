@@ -84,7 +84,7 @@ export function TopBar({ page, go }: { page: Page; go: (p: Page) => void }) {
           )}
           {status?.mode && !running && (
             <button
-              onClick={() => reset.mutate()}
+              onClick={() => reset.mutate(undefined, { onSuccess: () => window.dispatchEvent(new Event("ct-feed-reset")) })}
               disabled={reset.isPending}
               title="Discard this run and show the committed snapshot of all 15 events"
               className="inline-flex items-center gap-1.5 rounded-md border border-line px-2.5 py-1.5 text-[13px] text-tx2 hover:border-brand-bright hover:text-tx disabled:opacity-60"

@@ -3,9 +3,11 @@ import { Bell, ClipboardCheck, ListChecks, Mail, MessageSquare, Newspaper, Radio
 import type { EventCategory, FeedEvent, Status } from "../api/types";
 import { CATEGORY_META, sourceIconName, STATUS_META } from "../lib/meta";
 import { newestFirst } from "../lib/escalation";
-import { clip } from "../lib/format";
+import { clip, safeStorage } from "../lib/format";
 import { CustomEventCard } from "./CustomEventCard";
-import { CategoryBadge, Chip, ConfidenceRing, Empty, ErrorBox, Loading, StatusChip } from "./ui/primitives";
+import { FilterMenu } from "./ui/FilterMenu";
+import { FilterSummary, type FilterSegment } from "./ui/FilterSummary";
+import { ConfidenceRing, Empty, ErrorBox, Loading, StatusChip } from "./ui/primitives";
 
 const SOURCE_ICON = {
   chat: MessageSquare,
@@ -22,24 +24,18 @@ export function SourceIcon({ source, size = 14 }: { source: string; size?: numbe
   return <I size={size} aria-label={source} className="shrink-0 text-tx3" />;
 }
 
-function toggle<T>(set: Set<T>, v: T): Set<T> {
-  const n = new Set(set);
-  if (n.has(v)) n.delete(v);
-  else n.add(v);
-  return n;
-}
+const FILTER_KEY = "ct-feed-filters";
 
-function FilterChip({ active, color, onClick, children }: { active: boolean; color: string; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      onClick={onClick}
-      aria-pressed={active}
-      style={active ? { borderColor: color, color } : undefined}
-      className={`rounded-md border px-1.5 py-0.5 text-[11px] font-medium ${active ? "bg-surface-2" : "border-line text-tx3 hover:text-tx"}`}
-    >
-      {children}
-    </button>
-  );
+/** Saved filters, validated against the known categories/statuses so a stale value cannot hide every row. */
+function loadFilters(): { cats: EventCategory[]; stats: Status[] } {
+  try {
+    const raw = JSON.parse(safeStorage(FILTER_KEY) ?? "{}") as { cats?: unknown; stats?: unknown };
+    const pick = <T extends string>(v: unknown, known: Record<string, unknown>): T[] =>
+      Array.isArray(v) ? (v.filter((x) => typeof x === "string" && x in known) as T[]) : [];
+    return { cats: pick<EventCategory>(raw.cats, CATEGORY_META), stats: pick<Status>(raw.stats, STATUS_META) };
+  } catch {
+    return { cats: [], stats: [] };
+  }
 }
 
 interface Props {
@@ -55,8 +51,24 @@ interface Props {
 
 export function EventFeed({ events, loading, error, onRetry, selected, onSelect, processing, recent }: Props) {
   const [q, setQ] = useState("");
-  const [cats, setCats] = useState<Set<EventCategory>>(new Set());
-  const [stats, setStats] = useState<Set<Status>>(new Set());
+  const [saved] = useState(loadFilters);
+  const [cats, setCats] = useState<EventCategory[]>(saved.cats);
+  const [stats, setStats] = useState<Status[]>(saved.stats);
+  const [menu, setMenu] = useState<"Type" | "Status" | null>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    safeStorage(FILTER_KEY, JSON.stringify({ cats, stats }));
+  }, [cats, stats]);
+  // "Back to snapshot" (top bar) throws the run away: the filters go with it
+  useEffect(() => {
+    const on = () => {
+      setQ("");
+      setCats([]);
+      setStats([]);
+    };
+    window.addEventListener("ct-feed-reset", on);
+    return () => window.removeEventListener("ct-feed-reset", on);
+  }, []);
   const listRef = useRef<HTMLUListElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   // A new judge event lands at the top of the list: bring the top into view so the user sees it appear.
@@ -77,8 +89,8 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
       .map((e) => ({ ...e, status: (processing.has(e.event_id) ? "processing" : e.status) as Status }))
       .filter(
         (e) =>
-          (cats.size === 0 || (e.category && cats.has(e.category))) &&
-          (stats.size === 0 || stats.has(e.status)) &&
+          (cats.length === 0 || (e.category && cats.includes(e.category))) &&
+          (stats.length === 0 || stats.includes(e.status)) &&
           (!needle || `${e.event_id} ${e.text} ${e.source}`.toLowerCase().includes(needle)),
       )
       .sort(newestFirst); // judge input first (highest C-nn on top), then the preset events in E-01..E-15 order
@@ -110,60 +122,59 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
     listRef.current?.querySelector('[aria-current="true"]')?.scrollIntoView({ block: "nearest" });
   }, [selected]);
 
-  const present = useMemo(() => {
-    const c = new Set<EventCategory>();
-    const s = new Set<Status>();
+  // options and their counts come from the whole feed (not the filtered rows), so a menu always shows what exists
+  const options = useMemo(() => {
+    const c = new Map<EventCategory, number>();
+    const st = new Map<Status, number>();
     for (const e of events ?? []) {
-      if (e.category) c.add(e.category);
-      s.add(processing.has(e.event_id) ? "processing" : e.status);
+      if (e.category) c.set(e.category, (c.get(e.category) ?? 0) + 1);
+      const k = processing.has(e.event_id) ? "processing" : e.status;
+      st.set(k, (st.get(k) ?? 0) + 1);
     }
-    for (const x of cats) c.add(x); // an active filter chip must stay visible even when nothing matches it any more
-    for (const x of stats) s.add(x);
-    return { c: [...c], s: [...s] };
+    for (const k of Object.keys(CATEGORY_META) as EventCategory[]) if (!c.has(k)) c.set(k, 0); // the menu always lists all six types
+    for (const x of stats) if (!st.has(x)) st.set(x, 0);
+    return {
+      cats: (Object.keys(CATEGORY_META) as EventCategory[]).filter((k) => c.has(k)).map((k) => ({ value: k, label: CATEGORY_META[k].label, dot: CATEGORY_META[k].color, count: c.get(k) })),
+      stats: (Object.keys(STATUS_META) as Status[]).filter((k) => st.has(k)).map((k) => ({ value: k, label: STATUS_META[k].label, dot: STATUS_META[k].color, count: st.get(k) })),
+    };
   }, [events, processing, cats, stats]);
-  const filtered = q !== "" || cats.size > 0 || stats.size > 0;
   const clearFilters = () => {
     setQ("");
-    setCats(new Set());
-    setStats(new Set());
+    setCats([]);
+    setStats([]);
   };
+  const segments: FilterSegment[] = [
+    ...(cats.length ? [{ label: "Type", value: String(cats.length), onOpen: () => setMenu("Type") }] : []),
+    ...(stats.length ? [{ label: "Status", value: String(stats.length), onOpen: () => setMenu("Status") }] : []),
+    ...(q.trim() ? [{ label: "Search", value: q.trim(), onOpen: () => searchRef.current?.focus() }] : []),
+  ];
 
   return (
     <div data-feed className="flex h-full min-h-0 flex-col">
       <div className="space-y-2 border-b border-line p-3">
         <div className="flex items-center justify-between">
           <h2 className="text-[13px] font-semibold tracking-tight">Event feed</h2>
-          <span className="text-[11px] text-tx3">
-            {rows.length}/{events?.length ?? 0} · <kbd className="mono">j</kbd>/<kbd className="mono">k</kbd> to move
+          <span className="text-[11px] text-tx3" title="j / k (or the arrow keys) move the selection">
+            {rows.length}/{events?.length ?? 0}
           </span>
         </div>
         <CustomEventCard onCreated={onSelect} />
-        <label className="relative block">
-          <span className="sr-only">Search events</span>
-          <Search size={14} className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-tx3" aria-hidden />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search id, text, source"
-            className="w-full rounded-md border border-line bg-surface-2 py-1.5 pl-7 pr-2 text-[13px] text-tx placeholder:text-tx3"
-          />
-        </label>
-        <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Filter by category">
-          <span className="w-12 text-[10px] uppercase tracking-wide text-tx3" aria-hidden>Type</span>
-          {present.c.map((c) => (
-            <FilterChip key={c} active={cats.has(c)} color={CATEGORY_META[c].color} onClick={() => setCats(toggle(cats, c))}>
-              {CATEGORY_META[c].label}
-            </FilterChip>
-          ))}
+        <div className="flex items-center gap-1.5">
+          <label className="relative block min-w-0 flex-1">
+            <span className="sr-only">Search events</span>
+            <Search size={14} className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-tx3" aria-hidden />
+            <input
+              ref={searchRef}
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search id, text, source"
+              className="w-full rounded-md border border-line bg-surface-2 py-1 pl-7 pr-2 text-[13px] text-tx placeholder:text-tx3"
+            />
+          </label>
+          <FilterMenu label="Type" options={options.cats} selected={cats} onChange={setCats} open={menu === "Type"} onOpenChange={(o) => setMenu(o ? "Type" : null)} />
+          <FilterMenu label="Status" options={options.stats} selected={stats} onChange={setStats} open={menu === "Status"} onOpenChange={(o) => setMenu(o ? "Status" : null)} />
         </div>
-        <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Filter by status">
-          <span className="w-12 text-[10px] uppercase tracking-wide text-tx3" aria-hidden>Status</span>
-          {present.s.map((s) => (
-            <FilterChip key={s} active={stats.has(s)} color={STATUS_META[s].color} onClick={() => setStats(toggle(stats, s))}>
-              {STATUS_META[s].label}
-            </FilterChip>
-          ))}
-        </div>
+        <FilterSummary segments={segments} onClear={clearFilters} />
       </div>
 
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
@@ -171,13 +182,6 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
         {error && <ErrorBox message={error.message} onRetry={onRetry} />}
         {!loading && !error && rows.length === 0 && (
           <Empty title="No events match" hint={events?.length ? "Clear the filters or search." : "The feed is empty."} />
-        )}
-        {!loading && !error && filtered && (
-          <div className="border-b border-line p-2">
-            <button onClick={clearFilters} className="rounded-md border border-line px-2 py-1 text-[11px] text-tx2 hover:border-brand-bright hover:text-tx">
-              Clear filters
-            </button>
-          </div>
         )}
         <ul ref={listRef} role="list" className="divide-y divide-line">
           {rows.map((e, i) => {
@@ -213,13 +217,12 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
                   </div>
                   <div className="min-w-0 flex-1 space-y-1.5">
                     <p className="line-clamp-2 text-[13px] leading-snug text-tx2">{clip(e.text, 140)}</p>
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <CategoryBadge category={e.category} />
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
                       <StatusChip status={e.status} />
-                      {e.custom && <Chip color="var(--cat-compound)">Sandbox</Chip>}
+                      <span className="text-tx3" title={e.confidence == null ? undefined : `confidence ${Math.round(e.confidence * 100)}%`}>{e.category ? CATEGORY_META[e.category].label : "Pending"}</span>
                     </div>
                   </div>
-                  <ConfidenceRing value={e.confidence} />
+                  {(e.confidence == null || e.confidence < 0.7) && <ConfidenceRing value={e.confidence} />}
                 </button>
               </li>
               </Fragment>
