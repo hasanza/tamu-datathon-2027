@@ -162,15 +162,21 @@ def run_event_wide(run, ctx, tl, with_loaners=True):
     )
     if not with_loaners:
         return
-    dealer = ctx.world.customer_orders[ctx.affected_co_ids()[0]].dealer_id
     run(
         CUSTOMER_CARE_QUALITY,
         ctx,
         tl,
         [
             T("eligible_customers", {"co_ids": ctx.affected_co_ids()}),
-            T("loaner_availability", {"dealer_id": dealer}),
-            lambda: T("rank_and_assign", {"eligible": last(ctx, "eligible")}),
+            lambda: T(
+                "loaner_availability",
+                {
+                    "dealer_ids": sorted(
+                        ctx.store[last(ctx, "eligible")] and {r["dealer_id"] for r in ctx.store[last(ctx, "eligible")]}
+                    )
+                },
+            ),
+            lambda: T("rank_and_assign", {"eligible": last(ctx, "eligible"), "pools": last(ctx, "pools")}),
             T("submit_care_plan", {"task": "loaners"}),
             FINAL({"task": "loaners"}),
         ],
@@ -471,3 +477,30 @@ def test_validators_has_no_llm_imports():
     for line in src.splitlines():
         if line.startswith(("import ", "from ")):
             assert not any(b in line for b in ("anthropic", "google", "control_tower.llm", "orchestration"))
+
+
+def test_loaner_availability_batch_records_reads_and_defaults_pools(make, world, graph):
+    build, run = make
+    ctx, tl = build("E-11", E11)
+    run(SUPPLY_CHAIN_PLANNER, ctx, tl, sc_script("E-11#1"))
+    from control_tower.orchestration.specialist_tools import (
+        EligibleArgs,
+        LoanerAvailabilityArgs,
+        RankAssignArgs,
+        eligible_customers,
+        loaner_availability,
+        rank_and_assign,
+    )
+
+    el = eligible_customers(ctx, EligibleArgs(co_ids=ctx.affected_co_ids()))
+    assert el["dealer_ids"] and el["dealer_ids"] == sorted(el["eligible_by_dealer"])
+    out = loaner_availability(ctx, LoanerAvailabilityArgs(dealer_ids=el["dealer_ids"]))
+    assert set(out["pools"]) == set(el["dealer_ids"]) and out["ok"]
+    assert len(ctx.plan.reads) == len(el["dealer_ids"]) and all(r.transport == "twin" for r in ctx.plan.reads)
+    single = loaner_availability(ctx, LoanerAvailabilityArgs(dealer_id=el["dealer_ids"][0]))
+    assert list(single["pools"]) == [el["dealer_ids"][0]]
+    ctx.state["pools"][el["dealer_ids"][0]] = 0  # most recent read is the default when `pools` is omitted
+    res = rank_and_assign(ctx, RankAssignArgs(eligible=el["eligible"]))
+    assert el["dealer_ids"][0] not in res["by_dealer"]
+    res2 = rank_and_assign(ctx, RankAssignArgs(eligible=el["eligible"], pools=out["handle"]))
+    assert res2["assignments"] >= res["assignments"]

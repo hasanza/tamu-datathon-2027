@@ -80,8 +80,9 @@ Task quality_hold. Order: match_lot(incident_id) -> if several candidates, choos
 (plant, part, dates) and say why -> affected_vehicles(lot_id) -> compose_hold(lot_id) -> \
 compose_owner_contacts(incident_id, owners handle) -> submit_care_plan(task="quality_hold", incident_id). \
 (The stop-sales are composed by the Dealer Network agent from your affected_vehicles result; do not compose them.)
-Task loaners. Order: eligible_customers(co_ids) -> loaner_availability(dealer_id) for every dealer that has eligible \
-customers (live pool numbers) -> rank_and_assign(eligible handle, pools={{dealer_id: available}}) -> \
+Task loaners is exactly THREE tool calls, then submit: (1) eligible_customers(co_ids) -> it returns the `eligible` \
+handle and `dealer_ids`; (2) loaner_availability(dealer_ids=<that dealer_ids list>) ONCE for all dealers (live pools; \
+never loop over dealers one call at a time); (3) rank_and_assign(eligible=<handle>, pools=<pools handle>) -> \
 submit_care_plan(task="loaners"). Standard-tier customers get no loaner; say so in your summary.
 
 {COMMON}"""

@@ -624,6 +624,7 @@ def eligible_customers(ctx: EventContext, args: EligibleArgs) -> dict[str, Any]:
     return {
         "eligible": stash(ctx, "eligible", rows),
         "eligible_count": len(rows),
+        "dealer_ids": sorted(per_dealer),
         "standard_count": standard,
         "eligible_by_dealer": dict(sorted(per_dealer.items())),
         "preview": rows[:5],
@@ -631,29 +632,49 @@ def eligible_customers(ctx: EventContext, args: EligibleArgs) -> dict[str, Any]:
 
 
 class LoanerAvailabilityArgs(BaseModel):
-    dealer_id: str
+    dealer_ids: Ref | None = Field(
+        default=None, description="Dealer ids (list or handle): ONE call reads all of them. Preferred."
+    )
+    dealer_id: str | None = Field(default=None, description="A single dealer (kept for compatibility)")
 
 
 @tool(
     "loaner_availability",
     {CCQ},
     "mcp-read",
-    "LIVE read of how many loaner cars a dealer still has free (free, never penalized). Pass these numbers as `pools` "
-    "to rank_and_assign.",
+    "LIVE read of how many loaner cars each dealer still has free (free, never penalized). Give ALL dealers at once in "
+    "dealer_ids (eligible_customers returns them); one live read is made per dealer. Returns {pools, handle}; "
+    "rank_and_assign uses the latest pools automatically.",
 )
 def loaner_availability(ctx: EventContext, args: LoanerAvailabilityArgs) -> dict[str, Any]:
     ctx = _ec(ctx)
-    res = _record_read(ctx, CCQ, "crm.loaner_availability", {"dealer_id": args.dealer_id}, None, [args.dealer_id])
-    if not res.ok:
-        return {"ok": False, "error": res.error}
-    return {"ok": True, "dealer_id": args.dealer_id, "available": (res.response or {}).get("available")}
+    ids = _id_list(ctx, args.dealer_ids, "dealer_ids") if args.dealer_ids is not None else []
+    if args.dealer_id:
+        ids.append(args.dealer_id)
+    ids = list(dict.fromkeys(ids))
+    if not ids:
+        raise ValueError("pass dealer_ids (or dealer_id)")
+    pools: dict[str, int] = {}
+    errors: dict[str, str | None] = {}
+    for d in ids:
+        res = _record_read(ctx, CCQ, "crm.loaner_availability", {"dealer_id": d}, None, [d])
+        if res.ok:
+            pools[d] = (res.response or {}).get("available")
+        else:
+            errors[d] = res.error
+    ctx.state.setdefault("pools", {}).update(pools)
+    out: dict[str, Any] = {"ok": not errors, "pools": pools, "handle": stash(ctx, "pools", dict(pools))}
+    if errors:
+        out["errors"] = errors
+    return out
 
 
 class RankAssignArgs(BaseModel):
     eligible: Ref = Field(description="Rows/ids of eligible customer orders, or the `eligible` handle")
-    pools: dict[str, int] | None = Field(
+    pools: dict[str, Any] | str | None = Field(
         default=None,
-        description="{dealer_id: free loaners} from loaner_availability; missing dealers use the table pool",
+        description="{dealer_id: free loaners} or the pools handle from loaner_availability; omitted = the latest "
+        "pools read, else the table pools",
     )
 
 
@@ -676,7 +697,10 @@ def rank_and_assign(ctx: EventContext, args: RankAssignArgs) -> dict[str, Any]:
         raise ValueError("no moves proposed yet (the supply chain planner must run first)")
     po_inc = {m.po.id: inc for inc, ms in ctx.moves.items() for m in ms.moves}
     ignored = sorted(c for c in ids if ctx.world.customer_orders[c].production_order_id not in po_inc)
-    pool = {**ctx.world.loaner_pool, **(args.pools or {})}
+    given_pools = resolve(ctx, args.pools) if args.pools is not None else ctx.state.get("pools", {})
+    if isinstance(given_pools, dict) and "pools" in given_pools:
+        given_pools = given_pools["pools"]
+    pool = {**ctx.world.loaner_pool, **{k: int(v) for k, v in given_pools.items()}}
     acts = plan_care(
         ctx.world,
         all_moves,
@@ -700,7 +724,7 @@ def rank_and_assign(ctx: EventContext, args: RankAssignArgs) -> dict[str, Any]:
     for c in sorted(ids):
         co = ctx.world.customer_orders[c]
         if c not in ignored and ctx.world.customers[co.customer_id].tier in LOANER_TIERS:
-            if c not in assigned[co.dealer_id]:
+            if c not in assigned.get(co.dealer_id, []):
                 waiting[co.dealer_id].append(c)
     return {
         "assignments": len(out),
