@@ -15,7 +15,7 @@ Hitachi Sans is proprietary; we use **Noto Sans** (which the site itself loads a
 | `--brand-bright` | `#e31b23` | `#e31b23` | hover/focus on brand elements, live "processing" pulse |
 | `--bg` | `#0a0a0b` | `#ffffff` | page background |
 | `--surface` | `#141416` | `#f7f7f7` | cards, panels |
-| `--surface-2` | `#1c1c1f` | `#f4f4f4` | nested panels, table header |
+| `--surface-2` | `#1c1c1f` | `#ececec` | nested panels, table header (light: two steps below `--surface`, contrast >= 1.1, so panels keep their edges) |
 | `--border` | `#2a2a2e` | `#c9cac8` | hairlines |
 | `--text` | `#ffffff` | `#000000` | primary text |
 | `--text-2` | `#c9cac8` | `#4d4d4d` | secondary text |

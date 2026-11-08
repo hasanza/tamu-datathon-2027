@@ -20,7 +20,7 @@
   --brand-bright: #e31b23;
   --bg: #ffffff;
   --surface: #f7f7f7;
-  --surface-2: #f4f4f4;
+  --surface-2: #ececec; /* two steps below --surface so panels keep their edges (contrast >= 1.1) */
   --border: #c9cac8;
   --text: #000000;
   --text-2: #4d4d4d;

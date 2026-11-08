@@ -154,7 +154,7 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
       <div className="space-y-2 border-b border-line p-3">
         <div className="flex items-center justify-between">
           <h2 className="text-[13px] font-semibold tracking-tight">Event feed</h2>
-          <span className="text-[11px] text-tx3" title="j / k (or the arrow keys) move the selection">
+          <span className="text-[11px] text-tx3" title="j / k (or the arrow keys) move the selection; ? lists all shortcuts">
             {rows.length}/{events?.length ?? 0}
           </span>
         </div>

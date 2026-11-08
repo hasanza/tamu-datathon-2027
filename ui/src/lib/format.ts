@@ -104,3 +104,22 @@ export function prettifyRepr(text: string): string {
   out = out.replace(/['"](\w+)['"]\s*:\s*/g, "$1 ").replace(/\s*[}]+/g, "");
   return out.replace(/\[((?:'[^']*'|"[^"]*")(?:\s*,\s*(?:'[^']*'|"[^"]*"))*)\]/g, (_m, items: string) => items.replace(/['"]/g, ""));
 }
+
+/**
+ * "just now", "12 s ago", "3 min ago", "2 h ago", "yesterday", "5 d ago". `at` is an ISO string or epoch ms.
+ * Returns null when the time is unusable or in the future (the 2027 feed timestamps): the caller then shows the absolute time.
+ */
+export function timeAgo(at: string | number, now = Date.now()): string | null {
+  const t = typeof at === "number" ? at : Date.parse(at);
+  if (!Number.isFinite(t)) return null;
+  const s = Math.round((now - t) / 1000);
+  if (s < -60) return null;
+  if (s < 10) return "just now";
+  if (s < 60) return `${s} s ago`;
+  const m = Math.round(s / 60);
+  if (m < 60) return `${m} min ago`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h} h ago`;
+  const d = Math.round(h / 24);
+  return d === 1 ? "yesterday" : `${d} d ago`;
+}
