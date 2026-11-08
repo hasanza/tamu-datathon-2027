@@ -34,7 +34,10 @@ export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent
   const target = targetOf(t, event.event_id);
   const sandbox = isCustomId(event.event_id) || !!event.custom;
   const status: Status = processing ? "processing" : (t?.status ?? event.status);
-  const queued = !t && !trace.isLoading && (!trace.isError || isNotFound(trace.error));
+  // While an event runs, every throttled refresh of its (not yet existing) trace flips the query back to "loading".
+  // That must not unmount the live view: it would remount the stages and replay their animation every few hundred ms.
+  const loadingFirst = trace.isLoading && !processing;
+  const queued = !t && !loadingFirst && (!trace.isError || isNotFound(trace.error));
 
   const showOnGraph = (ids: string[]) => {
     setFocus(ids);
@@ -107,7 +110,7 @@ export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent
       </div>
 
       <div id="tabpanel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="min-h-0 flex-1 overflow-y-auto p-4">
-        {trace.isLoading && <Loading label="Loading trace" />}
+        {loadingFirst && <Loading label="Loading trace" />}
         {trace.isError && !isNotFound(trace.error) && <ErrorBox message={(trace.error as Error).message} onRetry={() => void trace.refetch()} />}
         {queued && (
           <div className="space-y-4">
@@ -117,7 +120,7 @@ export function EventDetail({ event, processing, liveSteps }: { event: FeedEvent
             />
             <blockquote className="rounded-lg border border-line bg-surface p-3 text-[13px] text-tx2">{event.text}</blockquote>
             {/* the agents work for seconds to minutes before the trace exists: stream their cards meanwhile */}
-            {processing && liveSteps && liveSteps.length > 0 && <LiveOrchestration steps={liveSteps} />}
+            {processing && liveSteps && liveSteps.length > 0 && <LiveOrchestration steps={liveSteps} eventId={event.event_id} />}
           </div>
         )}
         {t && tab === "Summary" && <SummaryTab key={t.event_id} trace={t} />}
