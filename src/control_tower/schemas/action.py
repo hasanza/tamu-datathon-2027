@@ -18,7 +18,16 @@ Tool = Literal[
     "quality.hold_lot",
     "escalate",
 ]
-Agent = Literal["coordinator", "supply_chain", "dealer_care", "quality"]
+Agent = Literal[
+    "coordinator",
+    "supply_chain",
+    "dealer_care",
+    "quality",
+    "supply_chain_planner",
+    "dealer_network",
+    "customer_care_quality",
+]
+Transport = Literal["mcp/stdio", "twin", "in-process"]
 WRITE_TOOLS: frozenset[str] = frozenset(
     {
         "mes.reschedule",
@@ -53,6 +62,7 @@ class Action(BaseModel):
     path_ids: list[str] = Field(default_factory=list, description="Graph node ids on the justifying path")
     rehearsal: Rehearsal | None = None
     result: ToolResult | None = None
+    transport: Transport | None = Field(default=None, description="How the call reached the enterprise (v0.2.0)")
 
     @property
     def writes(self) -> bool:

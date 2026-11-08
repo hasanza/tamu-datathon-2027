@@ -24,7 +24,10 @@
             "coordinator",
             "supply_chain",
             "dealer_care",
-            "quality"
+            "quality",
+            "supply_chain_planner",
+            "dealer_network",
+            "customer_care_quality"
           ],
           "title": "Agent",
           "type": "string"
@@ -84,6 +87,24 @@
             }
           ],
           "default": null
+        },
+        "transport": {
+          "anyOf": [
+            {
+              "enum": [
+                "mcp/stdio",
+                "twin",
+                "in-process"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "How the call reached the enterprise (v0.2.0)",
+          "title": "Transport"
         }
       },
       "required": [
@@ -103,7 +124,10 @@
             "coordinator",
             "supply_chain",
             "dealer_care",
-            "quality"
+            "quality",
+            "supply_chain_planner",
+            "dealer_network",
+            "customer_care_quality"
           ],
           "title": "Agent",
           "type": "string"
@@ -125,6 +149,28 @@
           ],
           "default": null,
           "title": "Ended"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        },
+        "llm_calls": {
+          "default": 0,
+          "title": "Llm Calls",
+          "type": "integer"
+        },
+        "cost_usd": {
+          "default": 0.0,
+          "title": "Cost Usd",
+          "type": "number"
         },
         "steps": {
           "items": {
@@ -157,7 +203,11 @@
             "audit",
             "execute",
             "gate",
-            "note"
+            "note",
+            "thought",
+            "tool",
+            "message",
+            "decision"
           ],
           "title": "Kind",
           "type": "string"
@@ -178,6 +228,121 @@
           ],
           "default": null,
           "title": "Data"
+        },
+        "turn": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Turn"
+        },
+        "tool": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tool"
+        },
+        "args": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Args"
+        },
+        "result": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Result"
+        },
+        "to_agent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "To Agent"
+        },
+        "from_agent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "From Agent"
+        },
+        "transport": {
+          "anyOf": [
+            {
+              "enum": [
+                "mcp/stdio",
+                "twin",
+                "in-process"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Transport"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        },
+        "cost_usd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost Usd"
         }
       },
       "required": [
@@ -294,6 +459,24 @@
       "title": "Counterfactual",
       "type": "object"
     },
+    "Escalation": {
+      "properties": {
+        "incident_id": {
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "incident_id",
+        "reason"
+      ],
+      "title": "Escalation",
+      "type": "object"
+    },
     "GraphEdge": {
       "properties": {
         "from": {
@@ -320,7 +503,8 @@
             "FOR",
             "BUILT_BY",
             "AT_DEALER",
-            "OWNED_BY"
+            "OWNED_BY",
+            "MENTIONS"
           ],
           "title": "Type",
           "type": "string"
@@ -353,7 +537,8 @@
             "Dealer",
             "Lot",
             "Vehicle",
-            "Day"
+            "Day",
+            "Event"
           ],
           "title": "Type",
           "type": "string"
@@ -641,7 +826,8 @@
             "audit",
             "summarize",
             "resolve",
-            "paraphrase"
+            "paraphrase",
+            "agent_turn"
           ],
           "title": "Purpose",
           "type": "string"
@@ -756,6 +942,45 @@
         "customer_order_ids"
       ],
       "title": "NotifiedDealer",
+      "type": "object"
+    },
+    "Orchestration": {
+      "properties": {
+        "mode": {
+          "default": "sequential",
+          "enum": [
+            "sequential",
+            "parallel"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "correction_rounds": {
+          "default": 0,
+          "title": "Correction Rounds",
+          "type": "integer"
+        },
+        "escalations": {
+          "items": {
+            "$ref": "#/$defs/Escalation"
+          },
+          "title": "Escalations",
+          "type": "array"
+        },
+        "mcp_transport": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mcp Transport"
+        }
+      },
+      "title": "Orchestration",
       "type": "object"
     },
     "Rehearsal": {
@@ -947,7 +1172,7 @@
   },
   "properties": {
     "pipeline_version": {
-      "default": "0.1.0",
+      "default": "0.2.0",
       "title": "Pipeline Version",
       "type": "string"
     },
@@ -1007,6 +1232,17 @@
       },
       "title": "Agents",
       "type": "array"
+    },
+    "orchestration": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Orchestration"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "actions": {
       "items": {

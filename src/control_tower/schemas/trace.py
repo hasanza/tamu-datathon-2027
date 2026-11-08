@@ -23,6 +23,7 @@ NodeType = Literal[
     "Lot",
     "Vehicle",
     "Day",
+    "Event",
 ]
 EdgeType = Literal[
     "SUPPLIES",
@@ -40,8 +41,21 @@ EdgeType = Literal[
     "BUILT_BY",
     "AT_DEALER",
     "OWNED_BY",
+    "MENTIONS",
 ]
-StepKind = Literal["llm", "graph", "plan", "rehearse", "audit", "execute", "gate", "note"]
+StepKind = Literal[
+    "llm", "graph", "plan", "rehearse", "audit", "execute", "gate", "note", "thought", "tool", "message", "decision"
+]
+Transport = Literal["mcp/stdio", "twin", "in-process"]
+AgentId = Literal[
+    "coordinator",
+    "supply_chain",
+    "dealer_care",
+    "quality",
+    "supply_chain_planner",
+    "dealer_network",
+    "customer_care_quality",
+]
 Status = Literal["queued", "processing", "done", "escalated", "noise", "failed"]
 
 
@@ -72,12 +86,25 @@ class AgentStep(BaseModel):
     kind: StepKind
     text: str
     data: dict[str, Any] | None = None
+    # v0.2.0 (all optional): agent turns, tool calls and hand-offs
+    turn: int | None = None
+    tool: str | None = None
+    args: dict[str, Any] | None = None
+    result: dict[str, Any] | None = None
+    to_agent: str | None = None
+    from_agent: str | None = None
+    transport: Transport | None = None
+    model: str | None = None
+    cost_usd: float | None = None
 
 
 class AgentRun(BaseModel):
-    agent: Literal["coordinator", "supply_chain", "dealer_care", "quality"]
+    agent: AgentId
     started: datetime
     ended: datetime | None = None
+    model: str | None = None
+    llm_calls: int = 0
+    cost_usd: float = 0.0
     steps: list[AgentStep] = Field(default_factory=list)
 
 
@@ -122,7 +149,7 @@ class Counterfactual(BaseModel):
 class LLMCall(BaseModel):
     provider: str
     model: str
-    purpose: Literal["extract", "audit", "summarize", "resolve", "paraphrase"]
+    purpose: Literal["extract", "audit", "summarize", "resolve", "paraphrase", "agent_turn"]
     input_tokens: int
     output_tokens: int
     cost_usd: float
@@ -134,8 +161,20 @@ class LLMUsage(BaseModel):
     total_cost_usd: float = 0.0
 
 
+class Escalation(BaseModel):
+    incident_id: str
+    reason: str
+
+
+class Orchestration(BaseModel):
+    mode: Literal["sequential", "parallel"] = "sequential"
+    correction_rounds: int = 0
+    escalations: list[Escalation] = Field(default_factory=list)
+    mcp_transport: str | None = None
+
+
 class Trace(BaseModel):
-    pipeline_version: str = "0.1.0"
+    pipeline_version: str = "0.2.0"
     event_id: str
     received_at: datetime
     source: str
@@ -145,6 +184,7 @@ class Trace(BaseModel):
     incidents: list[IncidentSpec] = Field(default_factory=list)
     paths: dict[str, list[GraphPath]] = Field(default_factory=dict, description="incident_id -> paths")
     agents: list[AgentRun] = Field(default_factory=list)
+    orchestration: Orchestration | None = None
     actions: list[Action] = Field(default_factory=list)
     world_diff: WorldDiff = Field(default_factory=WorldDiff)
     counterfactual: Counterfactual | None = None

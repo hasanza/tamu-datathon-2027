@@ -11,7 +11,7 @@ Source of truth: `src/control_tower/schemas/` (Pydantic v2). JSON Schema exports
 | `IncidentSpec` | One incident inside one event: category, confidence, resolved ids, ISO dates, raw mentions, resolution steps, ambiguities, reason | LLM extraction + resolver (coordinator) | specialists, UI "Incidents" table, auditor |
 | `Action` | One tool call with agent, args, justification, path node ids, rehearsal result, execution result; `.writes` property | specialists (plan), twin (rehearsal), executor (result) | UI actions table, grader, action log |
 | `GraphPath` | Nodes (typed, optional `group`/`count` for collapsed sets) + edges (`from`/`to`/`type`) | graph traversals | UI graph view, design card |
-| `AgentRun` / `AgentStep` | Per-agent timeline; step kinds `llm, graph, plan, rehearse, audit, execute, gate, note` | all agents | UI timeline, SSE stream |
+| `AgentRun` / `AgentStep` | Per-agent timeline; step kinds `llm, graph, plan, rehearse, audit, execute, gate, note` (+ v0.2.0 `thought, tool, message, decision`) | all agents | UI timeline, SSE stream |
 | `WorldDiff` | What changed: moved POs, notified dealers, loaners, held lots, stopped VINs, contacted customers | coordinator after execution | UI audit tab, grader |
 | `Counterfactual` | Business impact numbers | coordinator | UI blast-radius panel |
 | `LLMUsage` | Every model call with tokens and cost | adapter | KPI header, README citation |
@@ -28,3 +28,4 @@ Source of truth: `src/control_tower/schemas/` (Pydantic v2). JSON Schema exports
 
 ## Changelog
 - 2026-11-07 v0.1.0 — initial contracts (task 0.3).
+- 2026-11-08 v0.2.0 — v2 agent fields; additive
