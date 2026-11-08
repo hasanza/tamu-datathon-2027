@@ -37,7 +37,13 @@ Ownership is enforced three ways: `.claude/rules/ownership.md` (path → owner, 
 
 See `ONBOARDING.md` for machine setup, assistant identity, git conventions and definition of done.
 
-## 0.0 Status (updated 2026-11-07 night)
+## 0.0 Status (updated 2026-11-08, branch `v2`)
+
+**v2 in progress** (`docs/PLAN_V2.md`): four real agents (coordinator + Supply Chain Planner + Dealer Network + Customer Care & Quality) on top of the
+v1 code (now tools and validators), execution through a real MCP client, no caching, failed-call handling, graph path for every event, Orchestration UI.
+All PRs target `v2`; `main` stays the v1 submission (tag `final-run-2`) until v2 is verified (PLAN_V2 §9).
+
+### v1 status (2026-11-07 night)
 
 CORE has the whole pipeline working end to end: 15/15 events on the live organizers' server, 797 calls, 0 failed, independent grader 15/15 clean
 (`eval/replay_grader.py`). Remaining CORE work: auditor + LLM summaries (4.1, 4.2), paraphrase bench (4.4), policy decisions (SPEC §7 A2), UI shell (0.4),
@@ -194,3 +200,14 @@ Buffer: H23–H24.
 3. Both do the trace audit (4.7) and both can present.
 4. LLM key: start with the Gemini key via the provider-agnostic adapter; add an Anthropic key only if we want a Haiku 5.5 comparison.
 5. Code names CORE / GLASS adopted everywhere.
+
+## Phase 6 — v2 agentic (branch `v2`, spec `docs/PLAN_V2.md`)
+
+| # | Owner | Task | Done when | Depends |
+|---|---|---|---|---|
+| 6.1 | CORE | Stream A: contracts v0.2.0, `agents.toml`, agent runtime, tool registry, `McpExecutor`, cache removal, tests | `uv run pytest` green; E-11 reaches the server through MCP | — |
+| 6.2 | CORE | Stream B: specialist tools, coordinator rewrite, validators, correction/escalation, graph paths (Customer node, Event→MENTIONS), fixtures `traces/examples/v2/` | E-01, E-02, E-03, E-11 run live with 0 correction rounds | 6.1 |
+| 6.3 | GLASS | Stream D: Orchestration view (lanes, thought/tool/message/decision cards, live), header strip, Sequential/Parallel toggle, About diagram, audit transport column | renders fixtures and a live run; typecheck+build | 6.1 (contracts) |
+| 6.4 | CORE | Stream C: failed-call handling, `--parallel`, escalation test suite, benches, 3-run identity check | PLAN_V2 §9 all green | 6.2 |
+| 6.5 | CORE | Final v2 run, tag `v2-final-1`; merge `v2` → `main` | grader 15/15, logs identical across 3 runs | 6.4 |
+| 6.6 | GLASS | Design card, README, Q&A notes for v2; video/screenshots | numbers from `runs/final` of v2 | 6.5 |
