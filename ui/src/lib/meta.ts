@@ -1,4 +1,4 @@
-import type { AgentId, EventCategory, NodeType, Status, StepKind } from "../api/types";
+import type { AgentId, EventCategory, NodeType, Status, StepKind, Transport } from "../api/types";
 
 export const CATEGORY_META: Record<EventCategory, { label: string; color: string }> = {
   supplier_delay: { label: "Supplier delay", color: "var(--cat-delay)" },
@@ -18,11 +18,33 @@ export const STATUS_META: Record<Status, { label: string; color: string }> = {
   failed: { label: "Failed", color: "var(--fail)" },
 };
 
+/** The four lanes of the Orchestration view, in display order (PLAN_V2 §2.1). */
+export type LaneId = "coordinator" | "supply_chain_planner" | "dealer_network" | "customer_care_quality";
+export const LANES: LaneId[] = ["coordinator", "supply_chain_planner", "dealer_network", "customer_care_quality"];
+
+/** v1 agent ids still appear in traces/snapshot; map them onto the v2 lanes. */
+export const laneOf = (agent: AgentId): LaneId =>
+  agent === "supply_chain" ? "supply_chain_planner"
+  : agent === "dealer_care" ? "dealer_network"
+  : agent === "quality" ? "customer_care_quality"
+  : agent;
+
+export const LANE_META: Record<LaneId, { label: string; blurb: string; color: string }> = {
+  coordinator: { label: "Coordinator", blurb: "Understands, gates, delegates, validates, executes", color: "var(--brand-bright)" },
+  supply_chain_planner: { label: "Supply Chain Planner", blurb: "Affected builds and the earliest feasible slots", color: "var(--cat-delay)" },
+  dealer_network: { label: "Dealer Network", blurb: "One notice per dealer, stop-sale of unsold vehicles", color: "var(--cat-unconfirmed)" },
+  customer_care_quality: { label: "Customer Care & Quality", blurb: "Loaners by priority, lot holds, owner contact", color: "var(--cat-quality)" },
+};
+
+/** Kept for code that still looks agents up by id (both v1 and v2 ids work). */
 export const AGENT_META: Record<AgentId, { label: string; blurb: string }> = {
-  coordinator: { label: "Coordinator", blurb: "Understands the event, gates on confidence, rehearses and executes" },
-  supply_chain: { label: "Supply Chain Planner", blurb: "Finds affected production orders and re-plans them" },
-  dealer_care: { label: "Dealer & Customer Care", blurb: "Notifies dealers, assigns loaners" },
-  quality: { label: "Quality", blurb: "Holds lots, stops sale, contacts owners" },
+  coordinator: LANE_META.coordinator,
+  supply_chain_planner: LANE_META.supply_chain_planner,
+  dealer_network: LANE_META.dealer_network,
+  customer_care_quality: LANE_META.customer_care_quality,
+  supply_chain: LANE_META.supply_chain_planner,
+  dealer_care: LANE_META.dealer_network,
+  quality: LANE_META.customer_care_quality,
 };
 
 export const STEP_META: Record<StepKind, { label: string; color: string }> = {
@@ -34,6 +56,33 @@ export const STEP_META: Record<StepKind, { label: string; color: string }> = {
   execute: { label: "Execute", color: "var(--ok)" },
   gate: { label: "Gate", color: "var(--text-2)" },
   note: { label: "Note", color: "var(--text-3)" },
+  thought: { label: "Thought", color: "var(--text-3)" },
+  tool: { label: "Tool call", color: "var(--cat-unconfirmed)" },
+  message: { label: "Message", color: "var(--cat-delay)" },
+  decision: { label: "Decision", color: "var(--cat-compound)" },
+};
+
+/** What kind of tool a v2 tool call is (PLAN_V2 §3.1): graph traversal, deterministic code, or coordinator control. */
+const GRAPH_TOOLS = new Set(["affected_builds", "customer_orders_of", "match_lot", "affected_vehicles", "eligible_customers"]);
+const CODE_TOOLS = new Set([
+  "register_incidents", "resolve_entity", "resolve_date", "validate_plan", "propose_slots", "compose_notices",
+  "compose_stop_sales", "rank_and_assign", "compose_hold", "compose_owner_contacts",
+]);
+export type ToolBadge = "MCP" | "twin" | "graph" | "code" | "control";
+export function toolBadge(step: { tool?: string | null; transport?: Transport | null }): ToolBadge {
+  if (step.transport === "mcp/stdio") return "MCP";
+  if (step.transport === "twin") return "twin";
+  const t = step.tool ?? "";
+  if (GRAPH_TOOLS.has(t)) return "graph";
+  if (CODE_TOOLS.has(t)) return "code";
+  return "control";
+}
+export const BADGE_COLOR: Record<ToolBadge, string> = {
+  MCP: "var(--ok)",
+  twin: "var(--cat-compound)",
+  graph: "var(--cat-unconfirmed)",
+  code: "var(--cat-delay)",
+  control: "var(--text-3)",
 };
 
 /** Node colors by type (docs/BRAND.md). Day is not in BRAND.md; it gets a muted neutral. */

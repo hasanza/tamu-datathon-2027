@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRunStatus } from "./hooks";
-import { isCustomId, type FeedEvent, type StreamType } from "./types";
+import { isCustomId, type AgentId, type AgentStep, type FeedEvent, type StepKind, type StreamType, type Transport } from "./types";
 
 export interface ActivityItem {
   id: number;
@@ -10,6 +10,38 @@ export interface ActivityItem {
   eventId: string | null;
   text: string;
   payload: Record<string, unknown>;
+}
+
+/** An agent step received over SSE while an event is still running (its trace does not exist yet). */
+export type LiveStep = AgentStep & { agent: AgentId; id: number };
+const MAX_LIVE_STEPS = 800;
+
+const str = (v: unknown) => (typeof v === "string" ? v : null);
+/** agent_step payloads carry the step either flat or under `step`, with v2 fields (turn, tool, args, result, transport, ...). */
+export function toLiveStep(p: Record<string, unknown>, id: number): LiveStep | null {
+  const s = (typeof p.step === "object" && p.step ? p.step : p) as Record<string, unknown>;
+  const agent = str(p.agent) ?? str(s.agent);
+  const kind = str(s.kind);
+  const text = str(s.text);
+  if (!agent || !kind || text === null) return null;
+  const obj = (v: unknown) => (typeof v === "object" && v && !Array.isArray(v) ? (v as Record<string, unknown>) : null);
+  return {
+    id,
+    agent: agent as AgentId,
+    t: str(s.t) ?? new Date().toISOString(),
+    kind: kind as StepKind,
+    text,
+    data: obj(s.data),
+    turn: typeof s.turn === "number" ? s.turn : null,
+    tool: str(s.tool),
+    args: obj(s.args),
+    result: obj(s.result),
+    to_agent: str(s.to_agent) as AgentId | null,
+    from_agent: str(s.from_agent) as AgentId | null,
+    transport: str(s.transport) as Transport | null,
+    model: str(s.model),
+    cost_usd: typeof s.cost_usd === "number" ? s.cost_usd : null,
+  };
 }
 
 const TYPES: StreamType[] = ["event_received", "agent_step", "action", "event_done"];
@@ -52,6 +84,7 @@ export function useLiveStream() {
   const seq = useRef(0);
   // A custom (sandbox) event only shows up in /api/events once its trace exists, i.e. when it is done. While it runs
   // (5-10 s) the stream is the only place that knows about it, so keep a placeholder row for the feed.
+  const [liveSteps, setLiveSteps] = useState<Record<string, LiveStep[]>>({}); // event id -> steps so far
   const [pendingCustom, setPendingCustom] = useState<Record<string, FeedEvent & { at: number }>>({});
 
   // SSE can miss lines (reconnect starts at the end of the file). When the API says a run has finished,
@@ -128,6 +161,11 @@ export function useLiveStream() {
               MAX_ITEMS,
             ),
           );
+          if (eventId && type === "event_received") setLiveSteps((m) => ({ ...m, [eventId]: [] })); // a new run of this event
+          if (eventId && type === "agent_step") {
+            const step = toLiveStep(payload, id);
+            if (step) setLiveSteps((m) => ({ ...m, [eventId]: [...(m[eventId] ?? []), step].slice(-MAX_LIVE_STEPS) }));
+          }
           if (eventId && isCustomId(eventId)) {
             if (type === "event_received") {
               const source = typeof payload.source === "string" ? payload.source : "judge input";
@@ -201,5 +239,5 @@ export function useLiveStream() {
   }, []);
 
   const clear = useCallback(() => setItems([]), []);
-  return { live, items, processing, recent, replay, setReplay, clear, pendingCustom: Object.values(pendingCustom) };
+  return { live, items, processing, recent, replay, setReplay, clear, liveSteps, pendingCustom: Object.values(pendingCustom) };
 }

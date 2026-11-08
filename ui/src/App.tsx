@@ -71,7 +71,7 @@ export default function App() {
               />
             </aside>
             <section id="event-detail" aria-label="Event detail" className="min-h-0 min-w-0 md:overflow-hidden">
-              <EventDetail event={selected} processing={!!selectedId && stream.processing.has(selectedId)} />
+              <EventDetail event={selected} processing={!!selectedId && stream.processing.has(selectedId)} liveSteps={selectedId ? stream.liveSteps[selectedId] : undefined} />
             </section>
             <aside
               aria-label="Escalations and activity"
