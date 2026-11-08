@@ -48,7 +48,10 @@ function ChipText({ text, animate, delayMs }: { text: string; animate: boolean; 
   const target = m ? Number(m[2]) : 0;
   const [n, setN] = useState(animate && m ? 0 : target);
   useEffect(() => {
-    if (!animate || !m || target === 0) return;
+    if (!animate || !m || target === 0) {
+      setN(target); // not animating (or the number changed): always show the real value, never a stale 0
+      return;
+    }
     let raf = 0;
     const start = performance.now() + delayMs;
     const tick = (now: number) => {
@@ -108,6 +111,7 @@ function NodeCard({
     <button
       onClick={onClick}
       aria-expanded={selected}
+      aria-label={`stage: ${LANE_META[node.lane].label} · ${node.task ?? node.kind}`}
       data-flow-node={node.id}
       data-kind={node.kind}
       style={{ ...style, ["--d" as string]: `${delay}s`, borderLeftColor: color, ...(selected ? { boxShadow: `0 0 0 2px ${color}` } : {}) }}
@@ -301,6 +305,11 @@ export function FlowView({ rows, status, correctionRounds, escalations, live = f
   const total = n * step + 0.9;
   const timer = useRef<number | undefined>(undefined);
   const scroller = useRef<HTMLDivElement>(null);
+  const [moreRight, setMoreRight] = useState(false);
+  const checkMore = () => {
+    const c = scroller.current;
+    setMoreRight(!!c && c.scrollWidth - c.clientWidth - c.scrollLeft > 8);
+  };
   const detail = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -316,6 +325,11 @@ export function FlowView({ rows, status, correctionRounds, escalations, live = f
     return () => window.clearTimeout(timer.current);
   }, [eventId, live, instant, playKey, total]);
 
+  useEffect(() => {
+    checkMore();
+    window.addEventListener("resize", checkMore);
+    return () => window.removeEventListener("resize", checkMore);
+  }, [n, desktop]); // eslint-disable-line react-hooks/exhaustive-deps
   // a live run grows to the right: keep the newest stage in view
   useEffect(() => {
     if (live && scroller.current) scroller.current.scrollTo({ left: scroller.current.scrollWidth, behavior: reduced ? "auto" : "smooth" });
@@ -368,7 +382,8 @@ export function FlowView({ rows, status, correctionRounds, escalations, live = f
       </div>
 
       {desktop ? (
-        <div ref={scroller} className="overflow-x-auto rounded-lg border border-line bg-surface p-2" role="group" aria-label="Stages of this event">
+        <div className="relative">
+        <div ref={scroller} onScroll={checkMore} className="overflow-x-auto rounded-lg border border-line bg-surface p-2" role="group" aria-label="Stages of this event">
           <div key={playKey} className="relative" style={{ width, height }}>
             <svg width={width} height={height} className="pointer-events-none absolute inset-0" aria-hidden>
               <defs>
@@ -428,6 +443,16 @@ export function FlowView({ rows, status, correctionRounds, escalations, live = f
               />
             ))}
           </div>
+        </div>
+        {moreRight && (
+          <div
+            className="pointer-events-none absolute inset-y-px right-px flex w-14 items-center justify-end rounded-r-lg pr-1.5"
+            style={{ background: "linear-gradient(to right, transparent, var(--surface))" }}
+            aria-hidden
+          >
+            <ChevronRight size={18} className="text-tx3" />
+          </div>
+        )}
         </div>
       ) : (
         <ol key={playKey} className="space-y-1" aria-label="Stages of this event">

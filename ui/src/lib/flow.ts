@@ -133,7 +133,8 @@ function delegateChips(result: AgentStep | undefined, task: string | null): Flow
 function understandChips(steps: OrchRow[]): FlowChip[] {
   const reg = lastOf(steps, (s) => s.kind === "tool" && s.tool === "register_incidents");
   const incidents = ((reg?.result as { incidents?: { category?: string }[] } | null | undefined)?.incidents ?? []).filter((i) => typeof i?.category === "string");
-  const cats = incidents.map((i) => i.category as string);
+  // a category field may itself list several ("plant_outage, supplier_delay"): count the categories, not the records
+  const cats = incidents.flatMap((i) => (i.category as string).split(/\s*[,;]\s*/).filter(Boolean));
   if (cats.length === 0) return [];
   if (cats.length === 1 && cats[0] === "noise") return [{ text: "noise", tone: "muted" }];
   if (cats.length === 1 && cats[0] === "unconfirmed") return [{ text: "unconfirmed", tone: "info" }];
