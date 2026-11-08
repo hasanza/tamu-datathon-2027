@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, ChevronDown, ChevronRight, CircleAlert, Loader2 } from "lucide-react";
+import { ArrowRight, CircleAlert, Loader2 } from "lucide-react";
 import type { AgentStep, StepKind, Trace } from "../api/types";
 import type { LiveStep } from "../api/stream";
 import { Chip, Empty, Mono, Panel } from "../components/ui/primitives";
-import { clock, compactArgs, offsetMs, summarize, usd } from "../lib/format";
+import { Clamped, DECISION_COLOR, Details, Meta, echoesCall, hasKeys } from "./orchParts";
+import { FlowView } from "./FlowView";
+import { compactArgs, safeStorage, summarize, usd } from "../lib/format";
 import { BADGE_COLOR, LANE_META, LANES, laneOf, STEP_META, toolBadge, type LaneId } from "../lib/meta";
 
 /* The Orchestration view (PLAN_V2 §8): four swimlanes, time flowing down. Cards are Thought (the agent's reasoning),
@@ -58,7 +60,7 @@ function statsOf(rows: OrchRow[], trace?: Trace): Record<LaneId, LaneStats> {
   return out;
 }
 
-function HeaderStrip({ rows, trace, live }: { rows: OrchRow[]; trace?: Trace; live: boolean }) {
+export function HeaderStrip({ rows, trace, live }: { rows: OrchRow[]; trace?: Trace; live: boolean }) {
   const stats = useMemo(() => statsOf(rows, trace), [rows, trace]);
   const total = LANES.reduce((a, l) => ({ turns: a.turns + stats[l].turns, tools: a.tools + stats[l].tools, llm: a.llm + stats[l].llm, cost: a.cost + stats[l].cost }), { turns: 0, tools: 0, llm: 0, cost: 0 });
   const orch = trace?.orchestration;
@@ -103,63 +105,6 @@ function HeaderStrip({ rows, trace, live }: { rows: OrchRow[]; trace?: Trace; li
 }
 
 /* ---------- cards ---------- */
-
-/** The v2 runtime sets a tool step's text to `name({...args})`: it only repeats the name and arguments the card already shows. */
-const echoesCall = (step: AgentStep) => !!step.tool && step.text.startsWith(`${step.tool}(`);
-
-const hasKeys = (o: Record<string, unknown> | null | undefined): o is Record<string, unknown> => !!o && Object.keys(o).length > 0;
-
-function Details({ step }: { step: AgentStep }) {
-  const [open, setOpen] = useState(false);
-  const payload = {
-    ...(hasKeys(step.args) ? { args: step.args } : {}),
-    ...(hasKeys(step.result) ? { result: step.result } : {}),
-    ...(hasKeys(step.data) ? { data: step.data } : {}),
-    ...(step.model ? { model: step.model } : {}),
-    ...(step.cost_usd ? { cost_usd: step.cost_usd } : {}),
-    ...(step.transport ? { transport: step.transport } : {}),
-  };
-  if (Object.keys(payload).length === 0) return null;
-  return (
-    <>
-      <button onClick={() => setOpen(!open)} aria-expanded={open} className="mt-1 inline-flex items-center gap-0.5 text-[11px] text-tx3 hover:text-tx">
-        {open ? <ChevronDown size={12} aria-hidden /> : <ChevronRight size={12} aria-hidden />} details
-      </button>
-      {open && (
-        <pre className="mono mt-1 max-h-60 overflow-auto rounded-md border border-line bg-bg p-2 text-[11px] text-tx2">{JSON.stringify(payload, null, 2)}</pre>
-      )}
-    </>
-  );
-}
-
-/** Time only: the lanes are narrow. Offset, model and cost are in the tooltip. */
-function Meta({ step, start }: { step: AgentStep; start: string }) {
-  const tip = [offsetMs(start, step.t), step.model, step.cost_usd ? usd(step.cost_usd) : null].filter(Boolean).join(" · ");
-  return (
-    <span className="mono text-[10px] text-tx3" title={tip}>
-      {clock(step.t)}
-    </span>
-  );
-}
-
-/** Thoughts and hand-off briefs can be long (a task brief is ~450 characters): show a few lines, let the reader expand. */
-function Clamped({ text, italic = false }: { text: string; italic?: boolean }) {
-  const [open, setOpen] = useState(false);
-  const long = text.length > 170;
-  return (
-    <>
-      <p className={`break-words text-tx2 ${italic ? "italic" : ""} ${open || !long ? "" : "line-clamp-4"}`}>{text}</p>
-      {long && (
-        <button onClick={() => setOpen(!open)} aria-expanded={open} className="text-[11px] text-tx3 hover:text-tx">
-          {open ? "less" : "more"}
-        </button>
-      )}
-    </>
-  );
-}
-
-const DECISION_COLOR = (text: string) =>
-  /escalat/i.test(text) ? "var(--cat-unconfirmed)" : /correction|fail|reject|violat/i.test(text) ? "var(--warn)" : /valid|passed|executed|ok\b|accept/i.test(text) ? "var(--ok)" : "var(--cat-compound)";
 
 function Card({ row, start }: { row: OrchRow; start: string }) {
   const { step, lane } = row;
@@ -321,19 +266,76 @@ export function OrchestrationView({ rows, trace, live = false, empty }: { rows: 
 }
 
 /** The tab for a finished event (v1 or v2 trace). */
+type OrchView = "flow" | "timeline";
+const VIEW_KEY = "ct-orch-view";
+
+/** Flow (the story: stage nodes) is the default; Timeline is the detailed lane view. The choice is remembered per browser. */
+function useOrchView(): [OrchView, (v: OrchView) => void] {
+  const [view, setView] = useState<OrchView>(() => (safeStorage(VIEW_KEY) === "timeline" ? "timeline" : "flow"));
+  return [
+    view,
+    (v) => {
+      setView(v);
+      safeStorage(VIEW_KEY, v);
+    },
+  ];
+}
+
+function OrchestrationShell({ rows, trace, live, eventId, empty }: { rows: OrchRow[]; trace?: Trace; live: boolean; eventId: string; empty?: { title: string; hint: string } }) {
+  const [view, setView] = useOrchView();
+  if (rows.length === 0 && empty) return <Empty title={empty.title} hint={empty.hint} />;
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <h2 className="text-[15px] font-semibold tracking-tight">How the four agents handled this event</h2>
+        <div role="group" aria-label="Orchestration view" className="ml-auto flex rounded-md border border-line p-0.5 text-[12px]">
+          {(["flow", "timeline"] as const).map((v) => (
+            <button
+              key={v}
+              aria-pressed={view === v}
+              onClick={() => setView(v)}
+              className={`rounded px-2.5 py-1 font-medium ${view === v ? "bg-surface-2 text-tx" : "text-tx3 hover:text-tx"}`}
+            >
+              {v === "flow" ? "Flow" : "Detailed timeline"}
+            </button>
+          ))}
+        </div>
+      </div>
+      {view === "flow" ? (
+        <>
+          <HeaderStrip rows={rows} trace={trace} live={live} />
+          <FlowView
+            rows={rows}
+            status={trace?.status}
+            correctionRounds={trace?.orchestration?.correction_rounds}
+            escalations={trace?.orchestration?.escalations}
+            live={live}
+            eventId={eventId}
+          />
+        </>
+      ) : (
+        <OrchestrationView rows={rows} trace={trace} live={live} empty={empty} />
+      )}
+    </div>
+  );
+}
+
+/** The tab for a finished event (v1 or v2 trace). */
 export function OrchestrationTab({ trace }: { trace: Trace }) {
   const rows = useMemo(() => rowsFromTrace(trace), [trace]);
   return (
-    <OrchestrationView
+    <OrchestrationShell
       rows={rows}
       trace={trace}
+      live={false}
+      eventId={trace.event_id}
       empty={{ title: "No agent activity recorded", hint: "This event was resolved before any agent was involved." }}
     />
   );
 }
 
-/** Cards streamed over SSE while an event is still running and its trace does not exist yet. */
-export function LiveOrchestration({ steps }: { steps: LiveStep[] }) {
+/** Stages and cards streamed over SSE while an event is still running and its trace does not exist yet. */
+export function LiveOrchestration({ steps, eventId }: { steps: LiveStep[]; eventId: string }) {
   const rows = useMemo(() => rowsFromLive(steps), [steps]);
-  return <OrchestrationView rows={rows} live />;
+  return <OrchestrationShell rows={rows} live eventId={eventId} />;
 }

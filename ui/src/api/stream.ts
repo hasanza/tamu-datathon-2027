@@ -32,6 +32,7 @@ export function toLiveStep(p: Record<string, unknown>, id: number): LiveStep | n
     kind: kind as StepKind,
     text,
     data: obj(s.data),
+    task: str(s.task),
     turn: typeof s.turn === "number" ? s.turn : null,
     tool: str(s.tool),
     args: obj(s.args),

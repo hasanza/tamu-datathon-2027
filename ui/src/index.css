@@ -133,3 +133,51 @@ code,
     animation: none;
   }
 }
+
+/* Orchestration "Flow": stages slide in, edges draw themselves, the active stage pulses. All of it is off for reduced motion. */
+@keyframes flow-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes flow-draw {
+  from { stroke-dashoffset: 1; opacity: 0.2; }
+  to { stroke-dashoffset: 0; opacity: 1; }
+}
+@keyframes flow-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes flow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-bright) 60%, transparent); }
+  50% { box-shadow: 0 0 0 7px transparent; }
+}
+.flow-node {
+  animation: flow-in 0.45s ease-out both;
+  animation-delay: var(--d, 0s);
+}
+.flow-node.flow-active {
+  animation: flow-in 0.45s ease-out both, flow-pulse 1.6s ease-in-out 0.5s infinite;
+  animation-delay: var(--d, 0s), var(--d, 0s);
+}
+.flow-edge {
+  stroke-dasharray: 1;
+  animation: flow-draw 0.55s ease-out both;
+  animation-delay: var(--d, 0s);
+}
+.flow-edge-label {
+  animation: flow-fade 0.3s ease-out both;
+  animation-delay: calc(var(--d, 0s) + 0.35s);
+}
+.flow-instant .flow-node,
+.flow-instant .flow-edge,
+.flow-instant .flow-edge-label {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flow-node,
+  .flow-node.flow-active,
+  .flow-edge,
+  .flow-edge-label {
+    animation: none;
+  }
+}

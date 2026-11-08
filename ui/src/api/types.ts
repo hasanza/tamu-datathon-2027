@@ -146,6 +146,9 @@ export interface AgentStep {
   text: string;
   data: Record<string, unknown> | null;
   // v2 additions, all optional so v1 traces stay valid
+  /** contract 0.2.1: coordinator steps carry their phase (understand | delegate | validate | execute | finish), specialist steps
+   *  the delegated task (reschedule | dealer_comms | loaners | quality_hold). Null on older traces. */
+  task?: string | null;
   turn?: number | null;
   tool?: string | null;
   args?: Record<string, unknown> | null;
