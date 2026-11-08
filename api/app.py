@@ -463,7 +463,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             for d in reset_dirs().values():
                 for p in contents(d):
                     shutil.rmtree(p) if p.is_dir() else p.unlink(missing_ok=True)
-        cfg.traces_dir, cfg.run_dir = initial_dirs
+        # scope=all: the feed stays quiet (the emptied live dirs) until the next Run feed; scope=run: back to the startup dirs
+        cfg.traces_dir, cfg.run_dir = (ROOT / "traces" / "live", ROOT / "runs" / "live") if scope == "all" else initial_dirs
         runner.update(proc=None, mode=None, started=None, stderr=None, cancelled=False)
         return runner_state()
 

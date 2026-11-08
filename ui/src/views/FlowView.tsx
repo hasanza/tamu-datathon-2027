@@ -15,8 +15,8 @@ import { Clamped, DECISION_COLOR, Details, echoesCall, hasKeys } from "./orchPar
    Stage nodes on two rows (coordinator above, specialists below), time left to right; the brief goes down, the result comes back up.
    Click a node to read its steps. Plain CSS/SVG animation, off under prefers-reduced-motion. */
 
-const W = 224; // node width
-const H = 172; // node height (fixed so the edges know where to attach)
+const W = 300; // node width
+const H = 236; // node height (fixed so the edges know where to attach)
 const GAP = 30;
 const TOP_Y = 8;
 const ROW_GAP = 96;
@@ -133,7 +133,7 @@ function NodeCard({
           {node.subtitle}
         </div>
       )}
-      <p className="mt-1.5 line-clamp-3 text-[12px] leading-snug text-tx2">{node.summary}</p>
+      <p className="mt-1.5 line-clamp-5 text-[12px] leading-snug text-tx2">{node.summary}</p>
       <div className="mt-auto flex flex-wrap gap-1 pt-1.5">
         {shown.map((c, i) => (
           <ChipView key={c.text + i} chip={c} animate={animate} delayMs={delay * 1000 + 450} />
