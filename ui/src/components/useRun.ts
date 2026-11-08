@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { api, ApiError } from "../api/client";
+import { emitTour } from "../lib/tour";
 import { PARALLEL_WORKERS, useRunMode, useToast } from "../state";
 
 /** Everything that depends on which run is on screen. Removed (not just invalidated) so a trace from the
@@ -22,6 +23,7 @@ export function useRun() {
     onSuccess: (_d, v) => {
       const where = v.all ? ` (${order})` : "";
       toast(v.all ? `Run started for the whole feed${where}` : `Run started for ${v.eventId}`, "ok");
+      if (!v.all && v.eventId) emitTour("run-started", { id: v.eventId });
       dropRunData(qc);
     },
     onError: (e) => {

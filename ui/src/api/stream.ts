@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRunStatus } from "./hooks";
 import { prettifyRepr, summarize } from "../lib/format";
+import { emitTour } from "../lib/tour";
 import { useToast } from "../state";
 import { firstSentence } from "../lib/flow";
 import { isCustomId, type AgentId, type AgentStep, type FeedEvent, type StepKind, type StreamType, type Transport } from "./types";
@@ -192,6 +193,8 @@ export function useLiveStream() {
               MAX_ITEMS,
             ),
           );
+          if (eventId && type === "event_received") emitTour("event-received", { id: eventId });
+          if (eventId && type === "event_done") emitTour("event-done", { id: eventId, status: typeof payload.status === "string" ? payload.status : undefined });
           if (eventId && type === "event_done" && !isCustomId(eventId)) setFinished((s) => new Set(s).add(eventId));
           if (eventId && type === "event_received") setLiveSteps((m) => ({ ...m, [eventId]: [] })); // a new run of this event
           if (eventId && type === "agent_step") {

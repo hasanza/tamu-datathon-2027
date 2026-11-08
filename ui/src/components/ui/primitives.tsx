@@ -82,9 +82,9 @@ export function ConfidenceRing({ value, size = 28 }: { value: number | null; siz
 }
 
 /** `fill`: at xl the panel takes the height its parent gives it; the header stays pinned and only the body scrolls. */
-export function Panel({ title, action, children, className = "", fill = false }: { title?: ReactNode; action?: ReactNode; children: ReactNode; className?: string; fill?: boolean }) {
+export function Panel({ title, action, children, className = "", fill = false, attrs }: { title?: ReactNode; action?: ReactNode; children: ReactNode; className?: string; fill?: boolean; attrs?: Record<string, string> }) {
   return (
-    <section className={`rounded-lg border border-line bg-surface ${fill ? "flex flex-col xl:min-h-0" : ""} ${className}`}>
+    <section {...attrs} className={`rounded-lg border border-line bg-surface ${fill ? "flex flex-col xl:min-h-0" : ""} ${className}`}>
       {(title || action) && (
         <header className="flex shrink-0 items-center justify-between gap-2 border-b border-line px-3 py-2">
           <h3 className="text-[13px] font-semibold tracking-tight text-tx">{title}</h3>

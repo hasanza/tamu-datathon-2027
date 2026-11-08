@@ -69,6 +69,7 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
   return (
     <Panel
       fill
+      attrs={{ "data-inbox": "" }}
       className="w-full max-w-[36rem] xl:flex-[1.8]"
       title={
         <span className="flex items-center gap-2">
@@ -268,6 +269,7 @@ export function ActivityLog({
   return (
     <Panel
       fill
+      attrs={{ "data-tour": "activity" }}
       className="w-full max-w-[36rem] xl:flex-1"
       title={
         <span className="flex items-center gap-2">

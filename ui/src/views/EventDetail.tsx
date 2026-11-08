@@ -109,6 +109,7 @@ export function EventDetail({ event, processing, liveSteps, events, onSelect }: 
             <ConfidenceRing value={t?.classification.confidence ?? event.confidence} size={34} />
             {!sandbox && (
             <button
+              data-tour="run-event"
               onClick={() => run.mutate({ eventId: event.event_id })}
               disabled={run.isPending}
               className="inline-flex items-center gap-1 rounded-md border border-line px-2.5 py-1 text-xs text-tx2 hover:border-brand-bright hover:text-tx disabled:opacity-60"

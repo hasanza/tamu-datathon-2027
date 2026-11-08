@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { Moon, Play, Square, Sun, TriangleAlert } from "lucide-react";
+import { GraduationCap, Moon, Play, Square, Sun, TriangleAlert } from "lucide-react";
+import { setTutorial } from "../lib/tour";
+import { useTourState } from "../lib/tourStore";
 import { useRunStatus } from "../api/hooks";
 import type { Page } from "../lib/route";
 import { useTheme } from "../state";
@@ -39,6 +41,23 @@ function RunProgress({ started, finished, total }: { started: number | null; fin
         <Square size={11} aria-hidden /> {cancel.isPending ? "Cancelling..." : "Cancel"}
       </button>
     </span>
+  );
+}
+
+/** Header switch for the tutorial: on re-arms both phases and starts the orientation; off ends a running tour. */
+function TutorialToggle() {
+  const { enabled } = useTourState();
+  return (
+    <button
+      onClick={() => setTutorial(!enabled)}
+      aria-pressed={enabled}
+      title={enabled ? "The tutorial is on: turn it off" : "Turn the tutorial on"}
+      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1.5 text-[12px] font-medium ${
+        enabled ? "border-brand-bright text-tx" : "border-line text-tx3 hover:border-brand-bright hover:text-tx"
+      }`}
+    >
+      <GraduationCap size={14} aria-hidden /> Tutorial <span className="text-[10.5px] uppercase tracking-wide">{enabled ? "on" : "off"}</span>
+    </button>
   );
 }
 
@@ -103,6 +122,7 @@ export function TopBar({
               </span>
             </span>
           )}
+          <span data-tour="run-feed" className="inline-flex items-center gap-x-3">
           {running && <RunProgress started={status?.started ?? null} finished={finished} total={total} />}
           <button
             onClick={() => setConfirmRun(true)}
@@ -112,6 +132,7 @@ export function TopBar({
             <Play size={14} aria-hidden /> {run.isPending ? "Starting…" : running ? "Running…" : "Run feed"}
           </button>
           <RunMenu running={running} activityCount={activityCount} />
+          </span>
           <Dialog
             open={confirmRun}
             onOpenChange={setConfirmRun}
@@ -134,6 +155,7 @@ export function TopBar({
               </>
             }
           />
+          <TutorialToggle />
           <button
             onClick={toggle}
             aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}

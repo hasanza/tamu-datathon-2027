@@ -113,7 +113,7 @@ export function AuditTab({ trace }: { trace: Trace }) {
   const calls = trace.llm.calls;
   return (
     <div className="space-y-4">
-      <Panel title="Guardrails and rehearsal">
+      <Panel title="Guardrails and rehearsal" attrs={{ "data-tour": "guardrails" }}>
         <ul className="space-y-1.5">
           {cs.map((c) => {
             const I = V_ICON[c.verdict];

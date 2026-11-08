@@ -5,6 +5,7 @@ import { Chip, Mono, Panel } from "../components/ui/primitives";
 import { buildFlow, firstLine, type Flow, type FlowChip, type FlowNode, type Tone } from "../lib/flow";
 import { compactArgs, prettifyRepr, summarize, usd } from "../lib/format";
 import { useFollow } from "../lib/useFollow";
+import { emitTour } from "../lib/tour";
 import { FollowChip } from "../components/ui/FollowChip";
 import { BADGE_COLOR, LANE_META, STEP_META, toolBadge } from "../lib/meta";
 import type { OrchRow } from "./OrchestrationTab";
@@ -360,6 +361,7 @@ export function FlowView({ rows, status, correctionRounds, escalations, live = f
   }, [selected, reduced]);
 
   const replay = () => {
+    emitTour("replay-start");
     setSelected(null);
     setInstant(false);
     setPlayKey((k) => k + 1);
@@ -377,7 +379,10 @@ export function FlowView({ rows, status, correctionRounds, escalations, live = f
   const pad = desktop && width > viewW ? Math.round(viewW / 2) : 0;
   const delayOf = (i: number) => (instant || live || reduced ? 0 : i * step);
   const animate = !instant && !reduced;
-  const toggle = (id: string) => setSelected((s) => (s === id ? null : id));
+  const toggle = (id: string) => {
+    setSelected((s) => (s === id ? null : id));
+    emitTour("node-expanded", { id });
+  };
 
   if (n === 0) return <p className="rounded-lg border border-line bg-surface px-3 py-6 text-center text-[13px] text-tx3">No stages yet: the agents have not started.</p>;
 
