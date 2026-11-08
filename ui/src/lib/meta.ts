@@ -106,6 +106,7 @@ export const NODE_COLOR: Record<NodeType, string> = {
   Customer: "#e6a100",
   Vehicle: "#747474",
   Day: "#4d6a8a",
+  Event: "#7a8aa0", // not in BRAND.md either: the message itself, a muted blue-grey
 };
 
 export const NODE_TYPES = Object.keys(NODE_COLOR) as NodeType[];

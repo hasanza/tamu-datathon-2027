@@ -17,8 +17,10 @@ function checks(t: Trace, target: "twin" | "server"): Check[] {
   const writes = t.actions.filter((a) => WRITE_TOOLS.has(a.tool));
   const unrehearsed = writes.filter((a) => a.rehearsal?.ok !== true);
   const accepted = t.actions.filter((a) => a.result?.ok === true); // a missing result is not an acceptance
-  const failed = t.actions.filter((a) => a.result && !a.result.ok);
-  const noResult = t.actions.length - accepted.length - failed.length;
+  // a skipped call never ran (an earlier write of its incident failed): count it apart from real failures
+  const skipped = t.actions.filter((a) => a.skipped);
+  const failed = t.actions.filter((a) => a.result && !a.result.ok && !a.skipped);
+  const noResult = t.actions.length - accepted.length - failed.length - skipped.length;
   const who = target === "twin" ? "Twin" : "Server";
   const distinctWrites = new Set(writes.map((a) => a.tool)).size;
   const out: Check[] = [
@@ -30,9 +32,9 @@ function checks(t: Trace, target: "twin" | "server"): Check[] {
     {
       rule: `${who} accepted every call`,
       detail: t.actions.length
-        ? `${accepted.length}/${t.actions.length} calls returned ok${noResult ? ` (${noResult} without a result)` : ""}`
+        ? `${accepted.length}/${t.actions.length} calls returned ok${failed.length ? `, ${failed.length} failed` : ""}${skipped.length ? `, ${skipped.length} skipped after a failure (no retry)` : ""}${noResult ? ` (${noResult} without a result)` : ""}`
         : "no calls",
-      verdict: t.actions.length === 0 ? "na" : failed.length > 0 ? "fail" : noResult > 0 ? "na" : "pass",
+      verdict: t.actions.length === 0 ? "na" : failed.length > 0 || skipped.length > 0 ? "fail" : noResult > 0 ? "na" : "pass",
     },
   ];
   const byTransport = t.actions.reduce<Record<string, number>>((acc, a) => (a.transport ? { ...acc, [a.transport]: (acc[a.transport] ?? 0) + 1 } : acc), {});

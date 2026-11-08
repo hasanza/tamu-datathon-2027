@@ -49,7 +49,9 @@ export type NodeType =
   | "Dealer"
   | "Lot"
   | "Vehicle"
-  | "Day";
+  | "Day"
+  // v2 (PLAN_V2 §6): noise and unconfirmed events get a minimal path Event -MENTIONS-> entity
+  | "Event";
 export type StepKind =
   // v1
   | "llm"
@@ -182,6 +184,10 @@ export interface Action {
   rehearsal: { ok: boolean; error: string | null } | null;
   result: { ok: boolean; error: string | null; response: Record<string, unknown> | null } | null;
   transport?: Transport | null;
+  /** v2: true when a failed write made this call not run ("skipped: dependency failed") */
+  skipped?: boolean;
+  /** v2: an event-wide notice lists every incident it serves */
+  incident_ids?: string[];
 }
 
 export interface MovedPO {
