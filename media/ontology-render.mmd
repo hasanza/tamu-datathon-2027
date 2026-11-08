@@ -1,0 +1,50 @@
+---
+config:
+  layout: elk
+  elk:
+    mergeEdges: false
+    nodePlacementStrategy: BRANDES_KOEPF
+---
+flowchart LR
+  Supplier -- SUPPLIES --> Part
+  Shipment -- OF_PART --> Part
+  Shipment -- TO_PLANT --> Plant
+  Shipment -- FROM --> Supplier
+  Model -- USES_PART --> Part
+  Plant -- BUILDS_MODEL --> Model
+  ProductionOrder -- AT_PLANT --> Plant
+  ProductionOrder -- OF_MODEL --> Model
+  ProductionOrder -- ON_DAY --> Day
+  CustomerOrder -- FULFILLED_BY --> ProductionOrder
+  CustomerOrder -- SOLD_BY --> Dealer
+  CustomerOrder -- FOR --> Customer
+  Lot -- OF_PART --> Part
+  Lot -- AT_PLANT --> Plant
+  Lot -- FROM --> Supplier
+  Vehicle -- BUILT_BY --> ProductionOrder
+  Vehicle -- AT_DEALER --> Dealer
+  Vehicle -- OWNED_BY --> Customer
+  classDef cPlant fill:#ff5a36,stroke:#000,stroke-width:1px,color:#000;
+  class Plant cPlant;
+  classDef cSupplier fill:#3b82f6,stroke:#000,stroke-width:1px,color:#fff;
+  class Supplier cSupplier;
+  classDef cPart fill:#8b5cf6,stroke:#000,stroke-width:1px,color:#fff;
+  class Part cPart;
+  classDef cModel fill:#c9cac8,stroke:#000,stroke-width:1px,color:#000;
+  class Model cModel;
+  classDef cShipment fill:#e6a100,stroke:#000,stroke-width:1px,color:#000;
+  class Shipment cShipment;
+  classDef cLot fill:#8b5cf6,stroke:#000,stroke-width:1px,color:#fff;
+  class Lot cLot;
+  classDef cProductionOrder fill:#ffffff,stroke:#000,stroke-width:1px,color:#000;
+  class ProductionOrder cProductionOrder;
+  classDef cCustomerOrder fill:#2fa66a,stroke:#000,stroke-width:1px,color:#fff;
+  class CustomerOrder cCustomerOrder;
+  classDef cDealer fill:#b30000,stroke:#000,stroke-width:1px,color:#fff;
+  class Dealer cDealer;
+  classDef cCustomer fill:#e6a100,stroke:#000,stroke-width:1px,color:#000;
+  class Customer cCustomer;
+  classDef cVehicle fill:#747474,stroke:#000,stroke-width:1px,color:#fff;
+  class Vehicle cVehicle;
+  classDef cDay fill:#4d6a8a,stroke:#000,stroke-width:1px,color:#fff;
+  class Day cDay;

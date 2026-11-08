@@ -1,70 +1,70 @@
-# Wacky Wheels Control Tower — design card
+# Wacky Wheels Control Tower: design card (v2)
 
-*Hack the Highway · event-driven multi-agent operations control tower. Numbers below come from the final clean run
-(`runs/final/`, `traces/final/`, tag `final-run-2`) and the replay grader.*
+*Hack the Highway · event-driven multi-agent operations control tower.*
+**Status: DRAFT for v2.** Architecture, guardrails and limits are written from `docs/PLAN_V2.md` §2, §4, §5 and are re-checked against the code at the v2 final run.
+Every number is a `TODO(v2 final run)` until that run exists. The v1 baseline (tag `final-run-2`, branch `main`) is kept in §6 for comparison.
 
 ## 1. What it does
-Reads 15 free-text events, decides what each one is, finds everything it touches in a knowledge graph of the company,
-plans the corrective actions the policy handbook prescribes, **rehearses the plan on a digital twin**, then executes it
-through MCP tools against the local enterprise server. Every event gets a trace: classification, extracted incidents,
-graph paths, agent timeline, rehearsal, executed actions, world diff, summary and the reason it acted or did not.
+Reads 15 free-text operational events, decides what each one is, finds everything it touches in a knowledge graph of the company, plans the corrective actions
+the policy handbook prescribes, **rehearses the plan on a digital twin**, then executes it through an **MCP client** against the local enterprise server.
+Every event gets a trace: the understanding, the graph paths, every agent turn, tool call and hand-off, the rehearsal, the executed actions, the world diff and the reason it acted or did not.
 
-**Principle: the LLM decides what happened; code decides what to do; a twin proves it works; then we act.**
+**Agents reason and orchestrate; tools compute; the twin proves; MCP executes.**
 
 ## 2. Architecture
 ```
-event ─▶ Coordinator ──▶ Supply Chain Planner ─┐
-         (understand,     Dealer & Customer Care ├─▶ plan ─▶ twin rehearsal ─▶ audit ─▶ MCP ─▶ enterprise server
-          gate, split)    Quality ───────────────┘             (zero failed)    (2nd LLM)          └▶ action_log.jsonl
-                              ▲ typed knowledge graph (networkx): 12 node types, ~27k edges
+event ─▶ COORDINATOR (LLM agent, hub) ──delegate──▶ SUPPLY CHAIN PLANNER      (LLM agent)
+         understand · resolve · gate     ──────────▶ DEALER NETWORK            (LLM agent)
+         delegate · validate · execute   ──────────▶ CUSTOMER CARE & QUALITY  (LLM agent)
+         explain · escalate to a human         each agent calls plain-code tools (graph, planners, composers)
+              │
+              └─▶ validators (handbook as code) ─▶ twin rehearsal ─▶ auditor (2nd model) ─▶ MCP client ─▶ enterprise server
 ```
-| Agent | Job | Must not |
-|---|---|---|
-| Coordinator | triage, split compound messages, resolve entities and dates, gate on confidence, own the shared world state, rehearse, audit, execute, summarise | compute impact |
-| Supply Chain Planner | supplier-delay / plant-outage impact → earliest feasible slot → reschedule or transfer | touch dealers or customers |
-| Dealer & Customer Care | one notice per dealer, loaners by priority within the pool, owner contact | move orders |
-| Quality | match the lot, split sold from in-stock, hold lot and stop sale | notify customers directly |
+Hub and spoke: specialists never call each other; every hand-off goes through the coordinator, is validated and is recorded.
+Each specialist runs once per incident for incident work and once per event for event-wide work, so a compound event yields one `dealer.notify` per dealer and one shared loaner pool.
 
-## 3. LLM vs code
+| Agent | Owns (enterprise tools) | Graph traversal it performs |
+|---|---|---|
+| Coordinator | `escalate` | entity and date resolution against the tables |
+| Supply Chain Planner | `mes.get_schedule` (read), `mes.reschedule`, `mes.transfer` | Shipment/Plant → Production order; slot reasoning |
+| Dealer Network | `dealer.notify`, `dealer.stop_sale` | Production order → Customer order → Dealer; Vehicle → Dealer |
+| Customer Care & Quality | `quality.hold_lot`, `crm.loaner_availability` (read), `crm.assign_loaner`, `crm.notify_customer` | Lot → Vehicle → Owner; Customer order → Customer |
+
+## 3. LLM versus code
 | Step | Who |
 |---|---|
-| Category, incident splitting, entity mentions, confidence, ambiguities | **LLM** (structured output, schema-validated) |
-| Name → id (aliases, names, fuzzy), relative dates from 2027-03-08, snapping to real ETAs and lot windows | code |
-| Graph traversal, affected sets, slot planning, loaner priority, vehicle split | code, no LLM imports |
-| Rehearsal, invariants, failed-call handling | code (organizers' own `Enterprise` class as the twin) |
-| Independent pre-commit audit, summaries, escalation wording | **LLM**, a different model from the extractor |
+| Reading the event, deciding the category, splitting a compound message, gating, choosing what to delegate, explaining | **LLM agents** (a bounded reason-act loop over structured JSON; each turn is recorded with its reasoning) |
+| Name → id (aliases, tables, fuzzy, closed-set tie-break), relative dates from 2027-03-08, snapping to real ETAs and lot windows | code (tools) |
+| Graph traversal, affected sets, slot planning, loaner ranking, notice and stop-sale composition | code (tools) |
+| Handbook rules 1–10 as **validators**, twin rehearsal, failed-call handling, execution order | code |
+| Independent pre-commit audit | **LLM**, a second model in a separate context |
 
-Handbook rules 1–10 are implemented in code, not prompted. The LLM never chooses an id, a date or an action argument.
+The agents choose which tool to call and why; the numbers that change the world (ids, dates, quantities) come from tools and are checked by validators. There is no cache: every LLM response is live.
 
 ## 4. Guardrails
-- **Twin first:** no write call reaches the server unless the whole plan rehearsed cleanly on an in-process copy of the world, and the live world still matches the baseline the plan was computed from.
-- **Data snapping:** dates must land on a real shipment ETA or lot window; a mismatch lowers confidence rather than being silently fixed. Below the 0.7 gate the event escalates.
-- **Noise** → zero write calls with a stated reason. **Unconfirmed** → exactly one `escalate`, zero writes.
-- **Invariants:** one notify per dealer, nothing outside the impact set, ≥3 action kinds for a real incident, no loaner call when a pool is empty.
-- **Auditor:** a second model reads the original message, the interpretation and a plan digest; only a `blocking` concern stops execution (the event escalates instead), `note` concerns go to the trace.
-- **Runtime failure:** captured, never retried blindly, event marked failed and escalated.
+- **Validators V1–V8** recompute the expected plan from the resolved incident through the graph: affected set exact, earliest feasible slots, exactly one notice per dealer with exactly its orders, loaners in priority order and never beyond the pool, quality hold and stop-sale exactly the affected vehicles, nothing outside the affected set, no write tool for noise or unconfirmed events. V7 (three action kinds) is a warning, not a blocker.
+- **Correction rounds:** a failed validator sends the plan back to the specialist as a correction task; after two failed rounds that incident is escalated with the findings. There is no silent fallback to a plan written by code.
+- **Escalation to a human** (one `escalate` per incident, saying what would make it actionable) for: an unconfirmed report; an unresolved id or date, or confidence below 0.7; a "noise" item that names a real record; a plan that still fails after two rounds; a failed twin rehearsal or a blocking auditor concern; a failed write; a server that is not fresh. A confirmed incident is never escalated because of a nickname or an odd date phrase.
+- **Twin first:** nothing is sent unless the whole event rehearsed cleanly on an in-process copy of the world, then passed the auditor.
+- **MCP execution is phased over the whole event** (moves, notices, loaner reads and loaners, holds, stop-sales, owner contacts), so a partial failure is safe. A server rejection is `failed`; an MCP timeout or exception is `unknown` and stops the event. Neither is retried: dependent writes are marked `skipped`, exactly one `escalate` lists done, failed and skipped, and the summary and counterfactual come from successful calls only. A failed read aborts before any write.
+- **Sandbox:** custom events and follow-ups run on the twin only; nothing reaches the real server or the action log.
 
-## 5. Policy decisions on ambiguous points (one `Policy` object, committed with the run)
-Affected orders claim slots in (original build date, PO id) order; a transferred order may land on the earliest free slot from today (literal reading of rule 3; E-09 has 2 and E-11 has 3 transfers, all landing Mar 8); transfer ties go to the lower plant id; loaners are assigned per entitled customer order within each dealer's pool.
+## 5. Explainability and the UI
+The **Orchestration** tab shows four swimlanes with every Thought, Tool call (badged MCP, twin, graph or code), Message between agents and Decision, live while a run is in progress, with turns, tool calls, LLM calls, cost and correction rounds per event. Alongside: graph path per event, actions with rehearsal, transport and result, an audit trail, an escalation inbox with "add details and re-run", and a Sequential or Parallel run toggle.
 
-## 6. Evaluation (final run)
-- **15/15 events clean** on a fresh organizers' server: 10 acted, 3 noise, 2 escalated; **797 tool calls, 0 failed**; the independent replay grader (replays the log on a fresh twin and diffs against an oracle written from the rules) agrees on all 15; the auditor raised 0 blocking disagreements. The whole run took about 90 s with live LLM calls.
-- **Paraphrase robustness:** 90 rewrites (15 events × 6 styles — typos, formal email, disclaimer footer, nicknames, phone shorthand, digest with an unrelated item): **88/90 (98%)** for `gemini-3.8-flash`, **89/90 (99%)** for `gemini-3.5-flash-lite`; the misses are over-escalations on nickname-heavy rewrites (entities and dates right, but flagged for a human). See `eval/reports/paraphrase_bench.md`.
-- **Efficiency:** 40 LLM calls for all 15 events, **$0.0498** per full run; none per action (a quality hold is up to 188 calls made by code).
-- **Models cited** (`runs/final/models.json`):
+## 6. Evaluation
+Filled in from the v2 final run (`TODO(v2 final run)` marks every figure):
+- **Replay and oracle:** three full sequential runs on fresh servers produce identical action logs; independent grader TODO/15; auditor bench TODO; parallel run grader TODO/15.
+- **Paraphrase robustness** (inputs regenerated live): TODO/90.
+- **Escalation tests:** one per circumstance plus a must-not-escalate test on nickname-heavy rewrites: TODO.
+- **Efficiency:** TODO LLM calls and TODO USD per full run; TODO minutes sequential, TODO minutes parallel.
+- **Models cited** (`runs/final/models.json`, `agents.toml`): TODO, one row per agent and for the auditor (calls, tokens in and out, cost).
+- **v1 baseline for comparison** (tag `final-run-2`, deterministic specialists): 15/15 clean, 797 tool calls, 0 failed, 40 LLM calls, $0.0498, about 90 s; paraphrase bench 88/90 and 89/90.
 
-  | Model | Role | Calls | Tokens in / out | Cost |
-  |---|---|---|---|---|
-  | `gemini-3.5-flash-lite` (Google) | extraction, entity tie-break, summaries | 30 | 16,752 / 5,233 | $0.0181 |
-  | `gemini-3.8-flash` (Google) | independent auditor | 10 | 13,426 / 5,759 | $0.0317 |
-
-- **Live, not cached:** every LLM response is live; the log is stable because tools compute the arguments.
-
-## 7. Explainability and the UI
-Control-tower UI over the trace files: live event feed with category and confidence, graph path per event (grouped nodes for large sets), agent timeline, actions table with rehearsal and result per call, audit trail of what changed, escalation inbox and KPIs. A FastAPI layer serves traces, the action log and a live server-sent-events stream of a running pipeline.
-
-## 8. Known limits and next steps
-- Slot ordering and the transfer-day reading are policy choices the brief leaves open; both are one config line and the grader shows the effect.
-- Names that match no alias and no table row lower confidence and escalate rather than guess; on heavy-nickname rewrites that sometimes over-escalates (1–2 of 90 in the bench), which is the safe direction.
-- Latent cases this data does not trigger: a production order that cannot be placed anywhere (no free slot at any plant) gets no dealer notice, and a confirmed incident with zero affected orders adds one `escalate`.
-- Next: a local model for offline extraction, a wider paraphrase bench, per-customer loaner caps behind a flag.
+## 7. What we would improve
+- **Agent reliability:** the agents run on Flash-class models chosen per agent in `agents.toml`. Validators and correction rounds contain mistakes, but a stronger model for the coordinator, few-shot tool-use examples and per-agent evaluation would cut correction rounds and cost.
+- **Cost and latency:** a full run is many LLM turns and takes minutes; parallel mode helps because events are independent worlds, but a shared tool-result cache across events (never of model output) and batching reads would help more.
+- **Latent cases our data never triggers:** an order that cannot be placed at any plant gets no dealer notice, and a confirmed incident with zero affected orders adds one escalation. Both should become explicit, tested paths.
+- **Resolution upstream of the validators:** a wrong id from entity resolution passes the validators by construction; the auditor is the only second look. A second independent resolution pass for high-impact incidents (a whole plant or a lot of hundreds of vehicles) would close this.
+- **Human in the loop:** escalations are advisory today; approving, editing and re-running with the operator's details already works in the sandbox, but a real approval path to the live systems needs authentication and an audit trail.
+- **Offline mode:** a local model for the understanding step so the tower runs with no network.
