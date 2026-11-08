@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef } from "react";
-import { useEvents, useKpis, useTrace } from "./api/hooks";
+import { useEvents, useTrace } from "./api/hooks";
 import { useLiveStream } from "./api/stream";
 import { EventFeed } from "./components/EventFeed";
 import { ActivityLog, EscalationInbox } from "./components/RightRail";
@@ -8,22 +8,6 @@ import { useRoute } from "./lib/route";
 import { AboutPage } from "./views/AboutPage";
 import { EventDetail } from "./views/EventDetail";
 import { OntologyPage } from "./views/OntologyPage";
-
-function Footer({ version }: { version: string | undefined }) {
-  const kpis = useKpis();
-  const models = kpis.data?.models.map((m) => m.replace(/^[^/]+\//, "")) ?? [];
-  return (
-    <footer className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-0.5 border-t border-line bg-surface px-4 py-1.5 text-[11px] text-tx3">
-      <span>
-        Models: <span className="mono text-tx2">{models.length ? models.join(", ") : "gemini-3.5-flash-lite, gemini-3.8-flash"}</span>
-      </span>
-      <span>
-        Pipeline <span className="mono text-tx2">{version ? `v${version}` : "-"}</span>
-      </span>
-      <span className="ml-auto">Wacky Wheels Control Tower · Powered by Hitachi Digital Services</span>
-    </footer>
-  );
-}
 
 export default function App() {
   const { route, go } = useRoute();
@@ -52,7 +36,7 @@ export default function App() {
 
   return (
     <div className="flex h-full flex-col">
-      <TopBar page={route.page} go={go} />
+      <TopBar page={route.page} go={go} version={lastVersion.current} />
       <main className="min-h-0 flex-1 overflow-y-auto xl:overflow-hidden">
         {route.page === "ontology" && <OntologyPage />}
         {route.page === "about" && <AboutPage />}
@@ -90,7 +74,6 @@ export default function App() {
           </div>
         )}
       </main>
-      <Footer version={lastVersion.current} />
     </div>
   );
 }
