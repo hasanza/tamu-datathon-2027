@@ -239,6 +239,48 @@ def escalated_brief(world: World, spec: IncidentSpec, text: str) -> IncidentBrie
     return IncidentBrief(incident_id=inc, category=cat, title=title, window=window, note=note)
 
 
+def entities_of(world: World, spec: IncidentSpec, br: IncidentBrief | None = None) -> list[str]:
+    """Display strings the agents inferred for one incident (plant, part, supplier, shipment, lot, window...), in
+    first-seen order, de-duplicated, non-empty. With `br` (the incident's brief) the list also takes the strings the
+    brief renders from the actions (held lot, window) and keeps only those that appear verbatim in the brief's title,
+    window, facts or note, so exact-match bolding finds each of them. Pure: no I/O, no LLM."""
+    cand: list[str | None] = []
+    plant = world.plants.get(spec.plant_id) if spec.plant_id else None
+    part = world.parts.get(spec.part_id) if spec.part_id else None
+    sup = world.suppliers.get(spec.supplier_id) if spec.supplier_id else None
+    if plant:
+        cand += [plant.name, plant.plant_id]
+    if part:
+        cand += [part.part_id, part.name]
+    if sup:
+        cand.append(sup.name)
+    cand += [spec.shipment_id, spec.lot_id]
+    if br:
+        cand.append(br.window)
+        cand += [f.value for f in br.facts if f.label in {"Lot held", "Shipment"}]
+        lot = next((world.lots.get(f.value) for f in br.facts if f.label == "Lot held"), None)
+        if lot:
+            cand += [lot.lot_id, lot.part_id, world.parts[lot.part_id].name, world.plants[lot.plant_id].name]
+            cand += [lot.plant_id, world.suppliers[lot.supplier_id].name]
+    amb = blocking_ambiguity(spec) if spec.category != "unconfirmed" else None
+    if amb:
+        cand += ambiguity_ids(amb)
+        cand += [_range_words(m[2], m[3]) for o in amb.options if (m := _OPTION.match(o))]
+    if br is None:
+        pairs = [(spec.outage_start, spec.outage_end, "{} → {}"), (spec.orig_eta, spec.new_eta, "ETA {} → {}")]
+        cand += [fmt.format(a, b) for a, b, fmt in pairs if a and b]
+    seen: dict[str, None] = {}
+    haystack = ""
+    if br:
+        haystack = " | ".join(
+            [br.title, br.window or "", br.note or ""] + [f"{f.label} {f.value} {f.detail or ''}" for f in br.facts]
+        )
+    for c in cand:
+        if c and (br is None or c in haystack):
+            seen.setdefault(c)
+    return list(seen)
+
+
 def incident_sentence(world: World, spec: IncidentSpec, actions: list[Action]) -> str:
     """One factual sentence for a real incident, built from the same `IncidentBrief` rows."""
     br = incident_brief(world, spec, actions)

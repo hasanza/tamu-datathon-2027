@@ -1,5 +1,5 @@
 {
-  "pipeline_version": "0.2.3",
+  "pipeline_version": "0.2.4",
   "event_id": "E-05",
   "received_at": "2027-03-08T08:25:00",
   "source": "news wire",
@@ -330,6 +330,7 @@
         "note": "Brochure PDF inquiry has no impact on automotive manufacturing operations or supply chain."
       }
     ],
-    "gates": []
+    "gates": [],
+    "entities": []
   }
 }

@@ -25,6 +25,7 @@ from control_tower.orchestration.report import (
     MOVES,
     ambiguity_ids,
     blocking_ambiguity,
+    entities_of,
     escalated_brief,
     incident_brief,
     incident_sentence,
@@ -1290,6 +1291,12 @@ def event_brief(ctx: EventContext, error: str | None = None) -> Brief:
             if i in st.partial:
                 b.note = st.partial[i][:200]
             items.append(b)
+    specs = {s.incident_id: s for s in ctx.incidents.values()}
+    entities = list(
+        dict.fromkeys(
+            e for b in items if b.incident_id in specs for e in entities_of(ctx.world, specs[b.incident_id], b)
+        )
+    )
     if pf:
         return Brief(headline="Failed: LLM provider unavailable, nothing executed, re-run", outcome="failed")
     acted = [b for b in items if b.facts]
@@ -1327,14 +1334,14 @@ def event_brief(ctx: EventContext, error: str | None = None) -> Brief:
             if ns or npool
             else "no live read applies to a quality hold"
         )
-        return Brief(headline=headline[:110], outcome=outcome, incidents=items, gates=gates)  # type: ignore[arg-type]
+        return Brief(headline=headline[:110], outcome=outcome, incidents=items, gates=gates, entities=entities)  # type: ignore[arg-type]
     if outcome == "noise":
         reason = _short_reason(next(iter(st.dropped.values()), "") or "nothing actionable")
-        return Brief(headline=f"Noise: {reason}, no action"[:110], outcome="noise", incidents=items)
+        return Brief(headline=f"Noise: {reason}, no action"[:110], outcome="noise", incidents=items, entities=entities)
     if outcome == "failed":
         why = _words(st.failure_text or error or "an unexpected error", 12)
-        return Brief(headline=f"Failed: {why}"[:110], outcome="failed", incidents=items)
-    return Brief(headline=_escalated_headline(ctx, error), outcome="escalated", incidents=items)
+        return Brief(headline=f"Failed: {why}"[:110], outcome="failed", incidents=items, entities=entities)
+    return Brief(headline=_escalated_headline(ctx, error), outcome="escalated", incidents=items, entities=entities)
 
 
 _BOUNDARY = re.compile(r"\. |; |, | and | but | because ")

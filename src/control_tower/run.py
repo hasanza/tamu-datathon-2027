@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import random
 import sys
 import time
 import traceback
@@ -58,17 +59,30 @@ def _provider_failed(tr: Trace | None) -> bool:
 
 
 def run_feed(
-    handle: Callable[[dict], Trace], events: list[dict], *, parallel: int = 1, pace: float = 0.0
+    handle: Callable[[dict], Trace],
+    events: list[dict],
+    *,
+    parallel: int = 1,
+    pace: float = 0.0,
+    announce: Callable[[dict], None] | None = None,
+    stagger: tuple[float, float] = (0.5, 1.2),
 ) -> list[tuple[dict, Trace | None, str, float]]:
     """Handle `events`; returns (event, trace or None, traceback, wall seconds) IN EVENT ORDER.
     parallel > 1 runs that many events at once (each has its own EventContext and its own world on the enterprise);
     one event crashing never stops the others. After ABORT_AFTER consecutive events (in processing order) that ended
     with a provider failure the run stops: no further event is started (events already running finish), so the
-    result may be shorter than `events`."""
+    result may be shorter than `events`.
 
-    def one(ev: dict) -> tuple[dict, Trace | None, str, float]:
+    `announce(event)` is called right before each event is handled (the arrival lead-in). In parallel runs the first
+    `parallel` workers are staggered: worker i waits i * uniform(*stagger) seconds first, so arrivals read as a stream."""
+
+    def one(ev: dict, slot: int = 0) -> tuple[dict, Trace | None, str, float]:
+        if announce and slot and stagger[1] > 0:
+            time.sleep(slot * random.uniform(*stagger))
         t0 = time.perf_counter()
         try:
+            if announce:
+                announce(ev)
             return ev, handle(ev), "", time.perf_counter() - t0
         except Exception:  # never let one event stop the feed
             return ev, None, traceback.format_exc(), time.perf_counter() - t0
@@ -90,7 +104,7 @@ def run_feed(
                 break
         return out
     with ThreadPoolExecutor(max_workers=parallel, thread_name_prefix="event") as pool:
-        futures = [pool.submit(one, ev) for ev in events]
+        futures = [pool.submit(one, ev, i if i < parallel else 0) for i, ev in enumerate(events)]
         stop = False
         for f in futures:
             if stop:
@@ -99,6 +113,20 @@ def run_feed(
                 continue
             stop = note(f.result())
     return out
+
+
+def make_announcer(sink: Sink, lead: float) -> Callable[[dict], None] | None:
+    """Arrival lead-in: emit `event_incoming`, then wait lead*uniform(0.8, 1.4) s so the UI can show its loader before
+    `event_received`. lead <= 0 emits with no sleep and no jitter. None when the sink has no file."""
+    if not sink.path:
+        return None
+
+    def announce(ev: dict) -> None:
+        sink.emit("event_incoming", ev["event_id"], {"received_at": ev.get("received_at"), "source": ev.get("source")})
+        if lead > 0:
+            time.sleep(lead * random.uniform(0.8, 1.4))
+
+    return announce
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -130,6 +158,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--pace", type=float, default=0.0, help="seconds to wait between events (live demo)")
     ap.add_argument(
         "--parallel", type=int, default=1, metavar="N", help="handle N events at once (default 1 = sequential)"
+    )
+    ap.add_argument(
+        "--lead",
+        type=float,
+        default=1.0,
+        help="seconds between event_incoming and event_received (jittered 0.8-1.4x; 0 = none)",
     )
     ap.add_argument("--traces-dir", help="where traces are written (default: traces/<name of --out>)")
     ap.add_argument("--transfer-min-day", choices=["today", "disruption_end"], default="today")
@@ -172,7 +206,10 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"{len(wanted)} event(s) -> {executor.name} [{coord.mode} x{a.parallel}]; traces in {traces_dir}")
     t0, rows, failed_events = time.perf_counter(), [], 0
-    results = run_feed(coord.handle, wanted, parallel=a.parallel, pace=a.pace)
+    results = run_feed(
+        coord.handle, wanted, parallel=a.parallel, pace=a.pace, announce=make_announcer(sink, a.lead),
+        stagger=(0.5, 1.2) if a.lead > 0 else (0.0, 0.0),
+    )  # fmt: skip
     for ev, tr, tb, wall in results:
         if tr is None:
             failed_events += 1
