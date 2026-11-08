@@ -1,6 +1,6 @@
 {
   "pipeline_version": "0.2.2",
-  "event_id": "C-17",
+  "event_id": "C-18",
   "received_at": "2027-03-08T09:00:00",
   "source": "ops chat",
   "text": "Heads up from the Lexington plant: we lose power Thursday and Friday this week for a transformer swap, no builds those two days. Line restarts Monday.",
@@ -8,12 +8,12 @@
   "classification": {
     "category": "plant_outage",
     "confidence": 0.95,
-    "reason": "Lexington plant loses power for transformer swap on Thursday and Friday."
+    "reason": "Plant power outage causing no builds on Thursday and Friday this week."
   },
   "incidents": [
     {
-      "incident_id": "C-17#1",
-      "event_id": "C-17",
+      "incident_id": "C-18#1",
+      "event_id": "C-18",
       "category": "plant_outage",
       "confidence": 0.95,
       "plant_id": "P_KY",
@@ -63,11 +63,11 @@
         }
       ],
       "ambiguities": [],
-      "reason": "Lexington plant loses power for transformer swap on Thursday and Friday."
+      "reason": "Plant power outage causing no builds on Thursday and Friday this week."
     }
   ],
   "paths": {
-    "C-17#1": [
+    "C-18#1": [
       {
         "nodes": [
           {
@@ -439,16 +439,16 @@
   "agents": [
     {
       "agent": "coordinator",
-      "started": "2027-03-08T09:00:04.085000",
-      "ended": "2027-03-08T09:01:39.719000",
+      "started": "2027-03-08T09:00:05.214000",
+      "ended": "2027-03-08T09:01:48.384000",
       "model": "gemini-3.8-flash",
       "llm_calls": 11,
-      "cost_usd": 0.052553,
+      "cost_usd": 0.055051,
       "steps": [
         {
-          "t": "2027-03-08T09:00:04.086000",
+          "t": "2027-03-08T09:00:05.214000",
           "kind": "thought",
-          "text": "The incoming message reports a plant outage at the Lexington plant due to a transformer swap on Thursday and Friday this week (2027-03-11 to 2027-03-12). Line restarts Monday (not part of the outage end date). I will register this incident.",
+          "text": "I will register the incident from the message. It is a plant_outage at the Lexington plant starting Thursday this week (2027-03-11) and ending Friday this week (2027-03-12).",
           "data": null,
           "turn": 1,
           "tool": null,
@@ -458,13 +458,13 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.004942,
+          "cost_usd": 0.005411,
           "task": "understand"
         },
         {
-          "t": "2027-03-08T09:00:04.087000",
+          "t": "2027-03-08T09:00:05.218000",
           "kind": "tool",
-          "text": "register_incidents({\"incidents\":[{\"category\":\"plant_outage\",\"evidence\":\"we lose power Thursday and Friday this week for a transformer swap, no builds those two days\",\"plant\":\"Lexington plant\",\"part\":null,\"supplier\":null,\"shipment_id\":null,\"lot_id\":null,\"original_eta\":null,\"new_eta\":null,\"outage_start\":{\"text\":\"Thursday this week\",\"iso\":null},\"outage_end\":{\"text\":\"Friday this week\",\"iso\":null},\"build_window_start\":null,\"build_window_end\":null,\"reason\":\"Lexington plant power loss and no builds on Thursday and Friday this week.\",\"confidence\":0.95}]})",
+          "text": "register_incidents({\"incidents\":[{\"category\":\"plant_outage\",\"evidence\":\"Heads up from the Lexington plant: we lose power Thursday and Friday this week for a transformer swap, no builds those two days. Line restarts Monday.\",\"plant\":\"Lexington plant\",\"part\":null,\"supplier\":null,\"shipment_id\":null,\"lot_id\":null,\"original_eta\":null,\"new_eta\":null,\"outage_start\":{\"text\":\"Thursday this week\",\"iso\":null},\"outage_end\":{\"text\":\"Friday this week\",\"iso\":null},\"build_window_start\":null,\"build_window_end\":null,\"reason\":\"Plant power outage causing no builds on Thursday and Friday this week.\",\"confidence\":0.95}]})",
           "data": null,
           "turn": 1,
           "tool": "register_incidents",
@@ -472,7 +472,7 @@
             "incidents": [
               {
                 "category": "plant_outage",
-                "evidence": "we lose power Thursday and Friday this week for a transformer swap, no builds those two days",
+                "evidence": "Heads up from the Lexington plant: we lose power Thursday and Friday this week for a transformer swap, no builds those two days. Line restarts Monday.",
                 "plant": "Lexington plant",
                 "part": null,
                 "supplier": null,
@@ -490,7 +490,7 @@
                 },
                 "build_window_start": null,
                 "build_window_end": null,
-                "reason": "Lexington plant power loss and no builds on Thursday and Friday this week.",
+                "reason": "Plant power outage causing no builds on Thursday and Friday this week.",
                 "confidence": 0.95
               }
             ]
@@ -502,7 +502,7 @@
                 "category": "plant_outage",
                 "plant_id": "P_KY",
                 "confidence": 0.4,
-                "incident_id": "C-17#1",
+                "incident_id": "C-18#1",
                 "needs_human": true,
                 "actionable": false,
                 "ambiguities": [
@@ -529,9 +529,9 @@
           "task": "understand"
         },
         {
-          "t": "2027-03-08T09:00:08.272000",
+          "t": "2027-03-08T09:00:08.946000",
           "kind": "thought",
-          "text": "Date resolution failed for 'Thursday this week' and 'Friday this week'. Let's check `resolve_date` for 'Thursday' or 'this Thursday' to see what date resolution expects, or check if we can re-register with proper ISO or standard phrases.",
+          "text": "The date phrases 'Thursday this week' and 'Friday this week' were not resolved automatically by register_incidents. Let's test resolving the date phrase using resolve_date.",
           "data": null,
           "turn": 2,
           "tool": null,
@@ -541,11 +541,11 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.004514,
+          "cost_usd": 0.004466,
           "task": "understand"
         },
         {
-          "t": "2027-03-08T09:00:08.273000",
+          "t": "2027-03-08T09:00:08.948000",
           "kind": "tool",
           "text": "resolve_date({\"phrase\":\"Thursday\"})",
           "data": null,
@@ -570,9 +570,9 @@
           "task": "understand"
         },
         {
-          "t": "2027-03-08T09:00:15.294000",
+          "t": "2027-03-08T09:00:17.771000",
           "kind": "thought",
-          "text": "Date resolution for 'Thursday this week' and 'Friday this week' failed because of the extra phrase 'this week'. I'll re-register with 'Thursday' and 'Friday' and supply the explicit ISO dates 2027-03-11 and 2027-03-12.",
+          "text": "Date phrase 'Thursday this week' failed automatic parsing without an ISO date. Now that we resolved Thursday to 2027-03-11 (and Friday to 2027-03-12), let's re-register the incident with the exact ISO dates.",
           "data": null,
           "turn": 3,
           "tool": null,
@@ -582,13 +582,13 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.00646,
+          "cost_usd": 0.007867,
           "task": "understand"
         },
         {
-          "t": "2027-03-08T09:00:15.294000",
+          "t": "2027-03-08T09:00:17.773000",
           "kind": "tool",
-          "text": "register_incidents({\"incidents\":[{\"category\":\"plant_outage\",\"evidence\":\"we lose power Thursday and Friday this week for a transformer swap, no builds those two days\",\"plant\":\"Lexington plant\",\"part\":null,\"supplier\":null,\"shipment_id\":null,\"lot_id\":null,\"original_eta\":null,\"new_eta\":null,\"outage_start\":{\"text\":\"2027-03-11\",\"iso\":null},\"outage_end\":{\"text\":\"2027-03-12\",\"iso\":null},\"build_window_start\":null,\"build_window_end\":null,\"reason\":\"Lexington plant loses power for transformer swap on Thursday and Friday.\",\"confidence\":0.95}]})",
+          "text": "register_incidents({\"incidents\":[{\"category\":\"plant_outage\",\"evidence\":\"Heads up from the Lexington plant: we lose power Thursday and Friday this week for a transformer swap, no builds those two days. Line restarts Monday.\",\"plant\":\"Lexington plant\",\"part\":null,\"supplier\":null,\"shipment_id\":null,\"lot_id\":null,\"original_eta\":null,\"new_eta\":null,\"outage_start\":{\"text\":\"2027-03-11\",\"iso\":null},\"outage_end\":{\"text\":\"2027-03-12\",\"iso\":null},\"build_window_start\":null,\"build_window_end\":null,\"reason\":\"Plant power outage causing no builds on Thursday and Friday this week.\",\"confidence\":0.95}]})",
           "data": null,
           "turn": 3,
           "tool": "register_incidents",
@@ -596,7 +596,7 @@
             "incidents": [
               {
                 "category": "plant_outage",
-                "evidence": "we lose power Thursday and Friday this week for a transformer swap, no builds those two days",
+                "evidence": "Heads up from the Lexington plant: we lose power Thursday and Friday this week for a transformer swap, no builds those two days. Line restarts Monday.",
                 "plant": "Lexington plant",
                 "part": null,
                 "supplier": null,
@@ -614,7 +614,7 @@
                 },
                 "build_window_start": null,
                 "build_window_end": null,
-                "reason": "Lexington plant loses power for transformer swap on Thursday and Friday.",
+                "reason": "Plant power outage causing no builds on Thursday and Friday this week.",
                 "confidence": 0.95
               }
             ]
@@ -628,7 +628,7 @@
                 "outage_start": "2027-03-11",
                 "outage_end": "2027-03-12",
                 "confidence": 0.95,
-                "incident_id": "C-17#1",
+                "incident_id": "C-18#1",
                 "needs_human": false,
                 "actionable": true,
                 "ambiguities": []
@@ -644,9 +644,9 @@
           "task": "understand"
         },
         {
-          "t": "2027-03-08T09:00:18.045000",
+          "t": "2027-03-08T09:00:22.263000",
           "kind": "thought",
-          "text": "Incident C-17#1 is actionable and confirmed. Proceed with per-incident delegation to supply_chain_planner for task reschedule.",
+          "text": "Incident C-18#1 is a confirmed plant outage for plant P_KY from 2027-03-11 to 2027-03-12. Proceeding to delegate the reschedule task to supply_chain_planner.",
           "data": null,
           "turn": 4,
           "tool": null,
@@ -656,16 +656,16 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.004461,
+          "cost_usd": 0.004697,
           "task": "delegate"
         },
         {
-          "t": "2027-03-08T09:00:18.045000",
+          "t": "2027-03-08T09:00:22.264000",
           "kind": "message",
-          "text": "Reschedule task for incident C-17#1. Resolved incident: {'category': 'plant_outage', 'plant_id': 'P_KY', 'outage_start': '2027-03-11', 'outage_end': '2027-03-12', 'confidence': 0.95, 'incident_id': 'C-17#1'}. Find the production orders this incident affects (affected_builds), propose the earliest feasible slots (propose_slots) and submit the plan. Slots are shared with the other incidents of this event; propose_slots knows the board.",
+          "text": "Reschedule task for incident C-18#1. Resolved incident: {'category': 'plant_outage', 'plant_id': 'P_KY', 'outage_start': '2027-03-11', 'outage_end': '2027-03-12', 'confidence': 0.95, 'incident_id': 'C-18#1'}. Find the production orders this incident affects (affected_builds), propose the earliest feasible slots (propose_slots) and submit the plan. Slots are shared with the other incidents of this event; propose_slots knows the board.",
           "data": {
             "task": "reschedule",
-            "incident_id": "C-17#1"
+            "incident_id": "C-18#1"
           },
           "turn": null,
           "tool": null,
@@ -679,22 +679,22 @@
           "task": "reschedule"
         },
         {
-          "t": "2027-03-08T09:00:33.071000",
+          "t": "2027-03-08T09:00:36.089000",
           "kind": "tool",
-          "text": "delegate({\"agent\":\"supply_chain_planner\",\"task\":\"reschedule\",\"incident_id\":\"C-17#1\",\"payload\":null})",
+          "text": "delegate({\"agent\":\"supply_chain_planner\",\"task\":\"reschedule\",\"incident_id\":\"C-18#1\",\"payload\":null})",
           "data": null,
           "turn": 4,
           "tool": "delegate",
           "args": {
             "agent": "supply_chain_planner",
             "task": "reschedule",
-            "incident_id": "C-17#1",
+            "incident_id": "C-18#1",
             "payload": null
           },
           "result": {
             "agent": "supply_chain_planner",
             "task": "reschedule",
-            "incident_id": "C-17#1",
+            "incident_id": "C-18#1",
             "actions_count": 6,
             "findings": {
               "reschedules": 6,
@@ -702,11 +702,11 @@
               "unplaceable": [],
               "already_built": 0
             },
-            "reasoning_summary": "Plant outage at P_KY from 2027-03-11 to 2027-03-12 affected 6 production orders (PO-0130 through PO-0135). All 6 orders have been successfully rescheduled at P_KY across dates 2027-03-15 to 2027-03-17 starting from the plant restart date.",
+            "reasoning_summary": "Plant outage at P_KY from 2027-03-11 to 2027-03-12 affected 6 production orders (PO-0130 to PO-0135). All 6 orders have been rescheduled to the earliest available slots at P_KY between 2027-03-15 and 2027-03-17.",
             "paths_count": 6,
             "turns": 4,
             "llm_calls": 4,
-            "cost_usd": 0.012402,
+            "cost_usd": 0.011262,
             "correction_round": 0
           },
           "to_agent": null,
@@ -717,9 +717,9 @@
           "task": "delegate"
         },
         {
-          "t": "2027-03-08T09:00:36.898000",
+          "t": "2027-03-08T09:00:39.715000",
           "kind": "thought",
-          "text": "All per-incident tasks are complete. Since 6 production orders moved during rescheduling, event-wide delegations are required: dealer_network (dealer_comms) and customer_care_quality (loaners). Delegating dealer_network for dealer_comms first.",
+          "text": "Per-incident rescheduling for C-18#1 moved 6 production orders. Now calling event-wide delegation for dealer_network dealer_comms.",
           "data": null,
           "turn": 5,
           "tool": null,
@@ -729,13 +729,13 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.004975,
+          "cost_usd": 0.004897,
           "task": "delegate"
         },
         {
-          "t": "2027-03-08T09:00:36.899000",
+          "t": "2027-03-08T09:00:39.716000",
           "kind": "message",
-          "text": "dealer_comms task for the whole event C-17. 6 production orders were moved (payload.moved_po_ids). Compose exactly one dealer.notify per affected dealer for ALL moved orders of all incidents together, then submit the dealer plan.",
+          "text": "dealer_comms task for the whole event C-18. 6 production orders were moved (payload.moved_po_ids). Compose exactly one dealer.notify per affected dealer for ALL moved orders of all incidents together, then submit the dealer plan.",
           "data": {
             "task": "dealer_comms",
             "incident_id": null
@@ -752,7 +752,7 @@
           "task": "dealer_comms"
         },
         {
-          "t": "2027-03-08T09:00:51.179000",
+          "t": "2027-03-08T09:00:54.518000",
           "kind": "tool",
           "text": "delegate({\"agent\":\"dealer_network\",\"task\":\"dealer_comms\",\"incident_id\":null,\"payload\":null})",
           "data": null,
@@ -773,11 +773,11 @@
               "notices": 31,
               "stop_sales": 0
             },
-            "reasoning_summary": "Notified 31 dealers regarding 55 affected customer orders resulting from 6 rescheduled production orders. No quality hold stop-sales were required for this event.",
+            "reasoning_summary": "Notified 31 dealers regarding 55 affected customer orders resulting from 6 rescheduled production orders across event C-18.",
             "paths_count": 6,
             "turns": 4,
             "llm_calls": 4,
-            "cost_usd": 0.010778,
+            "cost_usd": 0.009973,
             "correction_round": 0
           },
           "to_agent": null,
@@ -788,9 +788,9 @@
           "task": "delegate"
         },
         {
-          "t": "2027-03-08T09:00:54.968000",
+          "t": "2027-03-08T09:00:57.648000",
           "kind": "thought",
-          "text": "Orders moved due to the rescheduled production orders at Lexington (P_KY), so customer_care_quality must handle loaners.",
+          "text": "Orders moved during rescheduling, so customer_care_quality must be delegated for loaner vehicle coordination next.",
           "data": null,
           "turn": 6,
           "tool": null,
@@ -800,13 +800,13 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.004923,
+          "cost_usd": 0.004574,
           "task": "delegate"
         },
         {
-          "t": "2027-03-08T09:00:54.970000",
+          "t": "2027-03-08T09:00:57.649000",
           "kind": "message",
-          "text": "loaners task for the whole event C-17. payload.co_ids is the handle of the 55 customer orders of all moved production orders. Run eligible_customers, ONE loaner_availability read for all dealers, rank_and_assign, and submit (task=loaners). One shared pool per dealer across all incidents.",
+          "text": "loaners task for the whole event C-18. payload.co_ids is the handle of the 55 customer orders of all moved production orders. Run eligible_customers, ONE loaner_availability read for all dealers, rank_and_assign, and submit (task=loaners). One shared pool per dealer across all incidents.",
           "data": {
             "task": "loaners",
             "incident_id": null
@@ -823,7 +823,7 @@
           "task": "loaners"
         },
         {
-          "t": "2027-03-08T09:01:15.755000",
+          "t": "2027-03-08T09:01:21.452000",
           "kind": "tool",
           "text": "delegate({\"agent\":\"customer_care_quality\",\"task\":\"loaners\",\"incident_id\":null,\"payload\":null})",
           "data": null,
@@ -843,11 +843,11 @@
             "findings": {
               "assignments": 11
             },
-            "reasoning_summary": "Evaluated 55 affected customer orders: 42 Standard-tier customers receive no loaner per handbook rules. Among the 13 eligible Gold and Platinum customers across 10 dealers, 11 were successfully assigned loaners according to priority and live pool capacity. Two orders (CO-00638 at D35, CO-00655 at D38) remained unserved due to pool exhaustion.",
+            "reasoning_summary": "Out of 55 affected customer orders, 42 Standard-tier customers receive no loaner per handbook rule 5. Among the 13 eligible Platinum and Gold customers, 11 loaners were successfully assigned across 10 dealers based on priority rankings and live pool availability, leaving 2 unserved due to limited dealer pools.",
             "paths_count": 0,
             "turns": 5,
             "llm_calls": 5,
-            "cost_usd": 0.019029,
+            "cost_usd": 0.020633,
             "correction_round": 0
           },
           "to_agent": null,
@@ -858,9 +858,9 @@
           "task": "delegate"
         },
         {
-          "t": "2027-03-08T09:01:18.007000",
+          "t": "2027-03-08T09:01:23.804000",
           "kind": "thought",
-          "text": "All per-incident and event-wide specialist delegations are complete. Now running validate_plan to verify the entire plan against handbook rules before execution.",
+          "text": "All delegations are complete (reschedule, dealer_comms, loaners). Running validate_plan to check rule compliance before execution.",
           "data": null,
           "turn": 7,
           "tool": null,
@@ -870,11 +870,11 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.004662,
+          "cost_usd": 0.004646,
           "task": "validate"
         },
         {
-          "t": "2027-03-08T09:01:18.011000",
+          "t": "2027-03-08T09:01:23.808000",
           "kind": "decision",
           "text": "Plan validated: 0 blocking finding(s), 0 warning(s)",
           "data": {
@@ -892,7 +892,7 @@
           "task": "validate"
         },
         {
-          "t": "2027-03-08T09:01:18.012000",
+          "t": "2027-03-08T09:01:23.809000",
           "kind": "tool",
           "text": "validate_plan({})",
           "data": null,
@@ -914,9 +914,9 @@
           "task": "validate"
         },
         {
-          "t": "2027-03-08T09:01:20.876000",
+          "t": "2027-03-08T09:01:27.143000",
           "kind": "thought",
-          "text": "All specialist delegations are complete and validate_plan succeeded with zero blocking issues and no missing tasks. Proceeding to execute the plan.",
+          "text": "The plan validation passed with no blocking issues or warnings, and all tasks are completed. Now proceeding to execute the plan.",
           "data": null,
           "turn": 8,
           "tool": null,
@@ -926,13 +926,13 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.004777,
+          "cost_usd": 0.004746,
           "task": "execute"
         },
         {
-          "t": "2027-03-08T09:01:20.884000",
+          "t": "2027-03-08T09:01:27.151000",
           "kind": "rehearse",
-          "text": "Rehearsed 51 actions on the twin: 51 ok, 0 failed",
+          "text": "Pre-flight check on a sandbox copy of the enterprise: 51 actions rehearsed, 51 accepted, 0 rejected",
           "data": null,
           "turn": null,
           "tool": null,
@@ -946,9 +946,9 @@
           "task": "execute"
         },
         {
-          "t": "2027-03-08T09:01:25.650000",
+          "t": "2027-03-08T09:01:31.795000",
           "kind": "audit",
-          "text": "Auditor agrees: The plant outage interpretation, rescheduling after restart, dealer notifications, and loaner assignments strictly adhere to all policy rules.",
+          "text": "Auditor agrees: The plant outage dates, affected orders, rescheduling plan, dealer notifications, and loaner allocations fully adhere to all operational policies.",
           "data": null,
           "turn": null,
           "tool": null,
@@ -962,7 +962,7 @@
           "task": "execute"
         },
         {
-          "t": "2027-03-08T09:01:25.696000",
+          "t": "2027-03-08T09:01:31.838000",
           "kind": "execute",
           "text": "Freshness: 3 slot reads, 10 pool reads matched the baseline",
           "data": null,
@@ -978,7 +978,7 @@
           "task": "execute"
         },
         {
-          "t": "2027-03-08T09:01:26.013000",
+          "t": "2027-03-08T09:01:32.136000",
           "kind": "execute",
           "text": "Executed 48/48 writes via mcp: 0 failed, 0 unknown, 0 skipped",
           "data": null,
@@ -994,7 +994,7 @@
           "task": "execute"
         },
         {
-          "t": "2027-03-08T09:01:26.013000",
+          "t": "2027-03-08T09:01:32.136000",
           "kind": "tool",
           "text": "execute({})",
           "data": null,
@@ -1022,9 +1022,9 @@
           "task": "execute"
         },
         {
-          "t": "2027-03-08T09:01:29.185000",
+          "t": "2027-03-08T09:01:34.847000",
           "kind": "thought",
-          "text": "All actions have been executed successfully across mes.reschedule, dealer.notify, and crm.assign_loaner. I will now call finish to close out the event.",
+          "text": "Execution completed successfully with all writes verified. Calling finish to wrap up the event.",
           "data": null,
           "turn": 9,
           "tool": null,
@@ -1034,13 +1034,13 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.004784,
+          "cost_usd": 0.004884,
           "task": "finish"
         },
         {
-          "t": "2027-03-08T09:01:39.718000",
+          "t": "2027-03-08T09:01:48.383000",
           "kind": "decision",
-          "text": "Event settled (done): The Lexington plant loses power from 2027-03-11 to 2027-03-12 for a transformer swap with no builds until the line restarts Monday. In response to the outage, 6 production orders were rescheduled at the same plant. Additionally, 31 dealers were notified once each for 55 customer orders, and 11 loaners were assigned.",
+          "text": "Event settled (done): Wacky Wheels Lexington plant (P_KY) experienced a planned power outage for a transformer swap with no builds from 2027-03-11 to 2027-03-12 before restarting on Monday. In response, 6 production orders were rescheduled at the same plant. Additionally, 31 dealers were notified once each for 55 customer orders, and 11 loaners were assigned.",
           "data": null,
           "turn": null,
           "tool": null,
@@ -1054,19 +1054,19 @@
           "task": "finish"
         },
         {
-          "t": "2027-03-08T09:01:39.719000",
+          "t": "2027-03-08T09:01:48.384000",
           "kind": "tool",
-          "text": "finish({\"summary_hint\":\"Handled Lexington plant outage by rescheduling 6 orders, notifying 31 dealers, and assigning 11 loaners.\"})",
+          "text": "finish({\"summary_hint\":\"Handled planned power outage at Lexington plant (P_KY) on 2027-03-11 and 2027-03-12 by rescheduling 6 production orders, notifying 31 dealers, and assigning 11 loaners.\"})",
           "data": null,
           "turn": 9,
           "tool": "finish",
           "args": {
-            "summary_hint": "Handled Lexington plant outage by rescheduling 6 orders, notifying 31 dealers, and assigning 11 loaners."
+            "summary_hint": "Handled planned power outage at Lexington plant (P_KY) on 2027-03-11 and 2027-03-12 by rescheduling 6 production orders, notifying 31 dealers, and assigning 11 loaners."
           },
           "result": {
             "finished": true,
             "status": "done",
-            "summary": "The Lexington plant loses power from 2027-03-11 to 2027-03-12 for a transformer swap with no builds until the line restarts Monday. In response to the outage, 6 production orders were rescheduled at the same plant. Additionally, 31 dealers were notified once each for 55 customer orders, and 11 loaners were assigned."
+            "summary": "Wacky Wheels Lexington plant (P_KY) experienced a planned power outage for a transformer swap with no builds from 2027-03-11 to 2027-03-12 before restarting on Monday. In response, 6 production orders were rescheduled at the same plant. Additionally, 31 dealers were notified once each for 55 customer orders, and 11 loaners were assigned."
           },
           "to_agent": null,
           "from_agent": null,
@@ -1076,7 +1076,7 @@
           "task": "finish"
         },
         {
-          "t": "2027-03-08T09:01:39.719000",
+          "t": "2027-03-08T09:01:48.384000",
           "kind": "decision",
           "text": "Coordinator finished",
           "data": {
@@ -1097,16 +1097,16 @@
     },
     {
       "agent": "supply_chain_planner",
-      "started": "2027-03-08T09:00:20.439000",
-      "ended": "2027-03-08T09:00:33.071000",
+      "started": "2027-03-08T09:00:24.935000",
+      "ended": "2027-03-08T09:00:36.088000",
       "model": "gemini-3.8-flash",
       "llm_calls": 4,
-      "cost_usd": 0.012402,
+      "cost_usd": 0.011262,
       "steps": [
         {
-          "t": "2027-03-08T09:00:20.439000",
+          "t": "2027-03-08T09:00:24.935000",
           "kind": "thought",
-          "text": "First, I will query affected_builds for incident C-17#1 to identify the impacted production orders and plant restart day.",
+          "text": "I will find the production orders affected by plant outage incident C-18#1 at plant P_KY by calling affected_builds.",
           "data": null,
           "turn": 1,
           "tool": null,
@@ -1116,21 +1116,21 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.001852,
+          "cost_usd": 0.001894,
           "task": "reschedule"
         },
         {
-          "t": "2027-03-08T09:00:20.440000",
+          "t": "2027-03-08T09:00:24.938000",
           "kind": "tool",
-          "text": "affected_builds({\"incident_id\":\"C-17#1\"})",
+          "text": "affected_builds({\"incident_id\":\"C-18#1\"})",
           "data": null,
           "turn": 1,
           "tool": "affected_builds",
           "args": {
-            "incident_id": "C-17#1"
+            "incident_id": "C-18#1"
           },
           "result": {
-            "incident_id": "C-17#1",
+            "incident_id": "C-18#1",
             "kind": "plant_outage",
             "plant_id": "P_KY",
             "shipment_id": null,
@@ -1159,9 +1159,9 @@
           "task": "reschedule"
         },
         {
-          "t": "2027-03-08T09:00:23.479000",
+          "t": "2027-03-08T09:00:27.690000",
           "kind": "thought",
-          "text": "Affected builds for incident C-17#1 were already retrieved (6 POs at plant P_KY during 2027-03-11 to 2027-03-12, restart day 2027-03-15). Now I need to propose the earliest feasible slots using propose_slots.",
+          "text": "The affected builds for incident C-18#1 have already been identified (6 POs at plant P_KY during the outage 2027-03-11 to 2027-03-12). Next step is to propose the earliest feasible slots using propose_slots.",
           "data": null,
           "turn": 2,
           "tool": null,
@@ -1171,21 +1171,21 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.002291,
+          "cost_usd": 0.00223,
           "task": "reschedule"
         },
         {
-          "t": "2027-03-08T09:00:23.481000",
+          "t": "2027-03-08T09:00:27.692000",
           "kind": "tool",
-          "text": "propose_slots({\"incident_id\":\"C-17#1\"})",
+          "text": "propose_slots({\"incident_id\":\"C-18#1\"})",
           "data": null,
           "turn": 2,
           "tool": "propose_slots",
           "args": {
-            "incident_id": "C-17#1"
+            "incident_id": "C-18#1"
           },
           "result": {
-            "incident_id": "C-17#1",
+            "incident_id": "C-18#1",
             "moves": [
               {
                 "po": "PO-0130",
@@ -1248,9 +1248,9 @@
           "task": "reschedule"
         },
         {
-          "t": "2027-03-08T09:00:29.399000",
+          "t": "2027-03-08T09:00:32.091000",
           "kind": "thought",
-          "text": "Affected builds and proposed slots have already been identified. 6 production orders (PO-0130 to PO-0135) affected by the plant outage at P_KY are rescheduled at P_KY across 2027-03-15 to 2027-03-17. Now calling submit_reschedule_plan to finalize the moves.",
+          "text": "All 6 production orders affected by the outage at P_KY (PO-0130 through PO-0135) have been proposed for rescheduling to the earliest feasible slots at P_KY starting on restart date 2027-03-15 through 2027-03-17. I will now submit the reschedule plan.",
           "data": null,
           "turn": 3,
           "tool": null,
@@ -1260,23 +1260,23 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.004636,
+          "cost_usd": 0.003639,
           "task": "reschedule"
         },
         {
-          "t": "2027-03-08T09:00:29.399000",
+          "t": "2027-03-08T09:00:32.092000",
           "kind": "tool",
-          "text": "submit_reschedule_plan({\"incident_id\":\"C-17#1\",\"reasoning_summary\":\"Plant outage at P_KY from 2027-03-11 to 2027-03-12 affected 6 production orders (PO-0130 through PO-0135). All 6 orders have been successfully rescheduled at P_KY across dates 2027-03-15 to 2027-03-17 starting from the plant restart date.\"})",
+          "text": "submit_reschedule_plan({\"incident_id\":\"C-18#1\",\"reasoning_summary\":\"Plant outage at P_KY from 2027-03-11 to 2027-03-12 affected 6 production orders (PO-0130 to PO-0135). All 6 orders have been rescheduled to the earliest available slots at P_KY between 2027-03-15 and 2027-03-17.\"})",
           "data": null,
           "turn": 3,
           "tool": "submit_reschedule_plan",
           "args": {
-            "incident_id": "C-17#1",
-            "reasoning_summary": "Plant outage at P_KY from 2027-03-11 to 2027-03-12 affected 6 production orders (PO-0130 through PO-0135). All 6 orders have been successfully rescheduled at P_KY across dates 2027-03-15 to 2027-03-17 starting from the plant restart date."
+            "incident_id": "C-18#1",
+            "reasoning_summary": "Plant outage at P_KY from 2027-03-11 to 2027-03-12 affected 6 production orders (PO-0130 to PO-0135). All 6 orders have been rescheduled to the earliest available slots at P_KY between 2027-03-15 and 2027-03-17."
           },
           "result": {
             "task": "reschedule",
-            "incident_id": "C-17#1",
+            "incident_id": "C-18#1",
             "actions_count": 6,
             "action_ids": [
               "supply_chain_planner/reschedule/1",
@@ -1294,7 +1294,7 @@
               "already_built": 0
             },
             "paths_count": 6,
-            "reasoning_summary": "Plant outage at P_KY from 2027-03-11 to 2027-03-12 affected 6 production orders (PO-0130 through PO-0135). All 6 orders have been successfully rescheduled at P_KY across dates 2027-03-15 to 2027-03-17 starting from the plant restart date."
+            "reasoning_summary": "Plant outage at P_KY from 2027-03-11 to 2027-03-12 affected 6 production orders (PO-0130 to PO-0135). All 6 orders have been rescheduled to the earliest available slots at P_KY between 2027-03-15 and 2027-03-17."
           },
           "to_agent": null,
           "from_agent": null,
@@ -1304,9 +1304,9 @@
           "task": "reschedule"
         },
         {
-          "t": "2027-03-08T09:00:33.071000",
+          "t": "2027-03-08T09:00:36.087000",
           "kind": "thought",
-          "text": "The reschedule plan for incident C-17#1 has been submitted successfully. I will output the final SpecialistResult returned by submit_reschedule_plan.",
+          "text": "The reschedule plan has been successfully submitted via submit_reschedule_plan. Now returning the SpecialistResult in final.",
           "data": null,
           "turn": 4,
           "tool": null,
@@ -1316,16 +1316,16 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.003623,
+          "cost_usd": 0.003499,
           "task": "reschedule"
         },
         {
-          "t": "2027-03-08T09:00:33.071000",
+          "t": "2027-03-08T09:00:36.088000",
           "kind": "decision",
           "text": "Supply Chain Planner submitted its result",
           "data": {
             "task": "reschedule",
-            "incident_id": "C-17#1",
+            "incident_id": "C-18#1",
             "actions_count": 6,
             "action_ids": [
               "supply_chain_planner/reschedule/1",
@@ -1343,7 +1343,7 @@
               "already_built": 0
             },
             "paths_count": 6,
-            "reasoning_summary": "Plant outage at P_KY from 2027-03-11 to 2027-03-12 affected 6 production orders (PO-0130 through PO-0135). All 6 orders have been successfully rescheduled at P_KY across dates 2027-03-15 to 2027-03-17 starting from the plant restart date."
+            "reasoning_summary": "Plant outage at P_KY from 2027-03-11 to 2027-03-12 affected 6 production orders (PO-0130 to PO-0135). All 6 orders have been rescheduled to the earliest available slots at P_KY between 2027-03-15 and 2027-03-17."
           },
           "turn": 4,
           "tool": null,
@@ -1357,12 +1357,12 @@
           "task": "reschedule"
         },
         {
-          "t": "2027-03-08T09:00:33.071000",
+          "t": "2027-03-08T09:00:36.088000",
           "kind": "message",
-          "text": "Plant outage at P_KY from 2027-03-11 to 2027-03-12 affected 6 production orders (PO-0130 through PO-0135). All 6 orders have been successfully rescheduled at P_KY across dates 2027-03-15 to 2027-03-17 starting from the plant restart date. (6 actions)",
+          "text": "Plant outage at P_KY from 2027-03-11 to 2027-03-12 affected 6 production orders (PO-0130 to PO-0135). All 6 orders have been rescheduled to the earliest available slots at P_KY between 2027-03-15 and 2027-03-17. (6 actions)",
           "data": {
             "task": "reschedule",
-            "incident_id": "C-17#1",
+            "incident_id": "C-18#1",
             "actions_count": 6,
             "findings": {
               "reschedules": 6,
@@ -1386,16 +1386,16 @@
     },
     {
       "agent": "dealer_network",
-      "started": "2027-03-08T09:00:40.323000",
-      "ended": "2027-03-08T09:00:51.179000",
+      "started": "2027-03-08T09:00:42.637000",
+      "ended": "2027-03-08T09:00:54.517000",
       "model": "gemini-3.8-flash",
       "llm_calls": 4,
-      "cost_usd": 0.010778,
+      "cost_usd": 0.009973,
       "steps": [
         {
-          "t": "2027-03-08T09:00:40.323000",
+          "t": "2027-03-08T09:00:42.637000",
           "kind": "thought",
-          "text": "I need to find the affected customer orders and their dealers for the 6 moved production orders in event C-17 using customer_orders_of.",
+          "text": "I need to find the customer orders affected by the moved production orders. I will call `customer_orders_of` with `po_ids='h:C-18:moved_po_ids:1'`.",
           "data": null,
           "turn": 1,
           "tool": null,
@@ -1405,24 +1405,24 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.00219,
+          "cost_usd": 0.002036,
           "task": "dealer_comms"
         },
         {
-          "t": "2027-03-08T09:00:40.325000",
+          "t": "2027-03-08T09:00:42.639000",
           "kind": "tool",
-          "text": "customer_orders_of({\"po_ids\":\"h:C-17:moved_po_ids:1\"})",
+          "text": "customer_orders_of({\"po_ids\":\"h:C-18:moved_po_ids:1\"})",
           "data": null,
           "turn": 1,
           "tool": "customer_orders_of",
           "args": {
-            "po_ids": "h:C-17:moved_po_ids:1"
+            "po_ids": "h:C-18:moved_po_ids:1"
           },
           "result": {
             "po_count": 6,
             "co_count": 55,
             "dealer_count": 31,
-            "by_dealer": "h:C-17:by_dealer:2",
+            "by_dealer": "h:C-18:by_dealer:2",
             "by_dealer_counts": {
               "D02": 3,
               "D03": 1,
@@ -1456,7 +1456,7 @@
               "D49": 1,
               "D50": 1
             },
-            "co_ids": "h:C-17:co_ids:3",
+            "co_ids": "h:C-18:co_ids:3",
             "customer_tiers": {
               "Standard": 42,
               "Gold": 10,
@@ -1472,9 +1472,9 @@
           "task": "dealer_comms"
         },
         {
-          "t": "2027-03-08T09:00:43.601000",
+          "t": "2027-03-08T09:00:46.358000",
           "kind": "thought",
-          "text": "Customer orders affected by the 6 moved production orders were found across 31 dealers (handle h:C-17:by_dealer:2). No quality incidents/stop sales are specified in the input. Now calling compose_notices with the by_dealer handle to create exactly one dealer.notify per affected dealer.",
+          "text": "The previous tool call customer_orders_of returned affected customer orders by dealer stored under handle 'h:C-18:by_dealer:2' across 31 dealers. There are no quality hold incidents or stop sales to process. Next, I will call compose_notices with the by_dealer handle to create dealer notifications.",
           "data": null,
           "turn": 2,
           "tool": null,
@@ -1484,18 +1484,18 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.002435,
+          "cost_usd": 0.002214,
           "task": "dealer_comms"
         },
         {
-          "t": "2027-03-08T09:00:43.604000",
+          "t": "2027-03-08T09:00:46.363000",
           "kind": "tool",
-          "text": "compose_notices({\"by_dealer\":\"h:C-17:by_dealer:2\"})",
+          "text": "compose_notices({\"by_dealer\":\"h:C-18:by_dealer:2\"})",
           "data": null,
           "turn": 2,
           "tool": "compose_notices",
           "args": {
-            "by_dealer": "h:C-17:by_dealer:2"
+            "by_dealer": "h:C-18:by_dealer:2"
           },
           "result": {
             "notices": 31,
@@ -1508,7 +1508,7 @@
                 "D08",
                 "D10"
               ],
-              "stored_key": "C-17:dealer_network:bcd2b49c:2:compose_notices.dealers"
+              "stored_key": "C-18:dealer_network:322a2635:2:compose_notices.dealers"
             },
             "orders_listed": 55
           },
@@ -1520,9 +1520,9 @@
           "task": "dealer_comms"
         },
         {
-          "t": "2027-03-08T09:00:47.315000",
+          "t": "2027-03-08T09:00:50.215000",
           "kind": "thought",
-          "text": "Notices have been composed for all 31 dealers covering 55 affected customer orders from the 6 moved production orders. There are no quality incidents or stop sales to process for event C-17. Proceeding to submit the dealer plan.",
+          "text": "The notices for the 31 affected dealers covering all 55 customer orders linked to the 6 moved production orders have already been composed. There is no quality incident or unsold vehicles to stop sale in this task. Now calling submit_dealer_plan to finalize and submit the dealer communications plan.",
           "data": null,
           "turn": 3,
           "tool": null,
@@ -1532,31 +1532,31 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.002816,
+          "cost_usd": 0.00272,
           "task": "dealer_comms"
         },
         {
-          "t": "2027-03-08T09:00:47.316000",
+          "t": "2027-03-08T09:00:50.217000",
           "kind": "tool",
-          "text": "submit_dealer_plan({\"reasoning_summary\":\"Notified 31 dealers regarding 55 affected customer orders resulting from 6 rescheduled production orders. No quality hold stop-sales were required for this event.\"})",
+          "text": "submit_dealer_plan({\"reasoning_summary\":\"Notified 31 dealers regarding 55 affected customer orders resulting from 6 rescheduled production orders across event C-18.\"})",
           "data": null,
           "turn": 3,
           "tool": "submit_dealer_plan",
           "args": {
-            "reasoning_summary": "Notified 31 dealers regarding 55 affected customer orders resulting from 6 rescheduled production orders. No quality hold stop-sales were required for this event."
+            "reasoning_summary": "Notified 31 dealers regarding 55 affected customer orders resulting from 6 rescheduled production orders across event C-18."
           },
           "result": {
             "task": "dealer_comms",
             "incident_id": null,
             "actions_count": 31,
             "action_ids": [],
-            "handle": "h:C-17:dealer_comms-action-ids:4",
+            "handle": "h:C-18:dealer_comms-action-ids:4",
             "findings": {
               "notices": 31,
               "stop_sales": 0
             },
             "paths_count": 6,
-            "reasoning_summary": "Notified 31 dealers regarding 55 affected customer orders resulting from 6 rescheduled production orders. No quality hold stop-sales were required for this event."
+            "reasoning_summary": "Notified 31 dealers regarding 55 affected customer orders resulting from 6 rescheduled production orders across event C-18."
           },
           "to_agent": null,
           "from_agent": null,
@@ -1566,9 +1566,9 @@
           "task": "dealer_comms"
         },
         {
-          "t": "2027-03-08T09:00:51.178000",
+          "t": "2027-03-08T09:00:54.516000",
           "kind": "thought",
-          "text": "All steps have been executed: customer orders for the 6 moved POs were identified across 31 dealers (55 customer orders), dealer notices were composed, and the dealer plan was submitted. Returning the final SpecialistResult.",
+          "text": "The dealer plan has been successfully submitted. Finalizing the task with the returned SpecialistResult.",
           "data": null,
           "turn": 4,
           "tool": null,
@@ -1578,11 +1578,11 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.003337,
+          "cost_usd": 0.003003,
           "task": "dealer_comms"
         },
         {
-          "t": "2027-03-08T09:00:51.179000",
+          "t": "2027-03-08T09:00:54.517000",
           "kind": "decision",
           "text": "Dealer Network submitted its result",
           "data": {
@@ -1590,13 +1590,13 @@
             "incident_id": null,
             "actions_count": 31,
             "action_ids": [],
-            "handle": "h:C-17:dealer_comms-action-ids:4",
+            "handle": "h:C-18:dealer_comms-action-ids:4",
             "findings": {
               "notices": 31,
               "stop_sales": 0
             },
             "paths_count": 6,
-            "reasoning_summary": "Notified 31 dealers regarding 55 affected customer orders resulting from 6 rescheduled production orders. No quality hold stop-sales were required for this event."
+            "reasoning_summary": "Notified 31 dealers regarding 55 affected customer orders resulting from 6 rescheduled production orders across event C-18."
           },
           "turn": 4,
           "tool": null,
@@ -1610,9 +1610,9 @@
           "task": "dealer_comms"
         },
         {
-          "t": "2027-03-08T09:00:51.179000",
+          "t": "2027-03-08T09:00:54.517000",
           "kind": "message",
-          "text": "Notified 31 dealers regarding 55 affected customer orders resulting from 6 rescheduled production orders. No quality hold stop-sales were required for this event. (31 actions)",
+          "text": "Notified 31 dealers regarding 55 affected customer orders resulting from 6 rescheduled production orders across event C-18. (31 actions)",
           "data": {
             "task": "dealer_comms",
             "incident_id": null,
@@ -1637,16 +1637,16 @@
     },
     {
       "agent": "customer_care_quality",
-      "started": "2027-03-08T09:00:58.526000",
-      "ended": "2027-03-08T09:01:15.754000",
+      "started": "2027-03-08T09:01:01.068000",
+      "ended": "2027-03-08T09:01:21.452000",
       "model": "gemini-3.8-flash",
       "llm_calls": 5,
-      "cost_usd": 0.019029,
+      "cost_usd": 0.020633,
       "steps": [
         {
-          "t": "2027-03-08T09:00:58.526000",
+          "t": "2027-03-08T09:01:01.068000",
           "kind": "thought",
-          "text": "We start the loaners task by filtering eligible customers from the given affected customer orders handle 'h:C-17:co_ids:5'.",
+          "text": "Starting loaners task for event C-18. Step 1: Call eligible_customers with co_ids handle 'h:C-18:co_ids:5' to identify Platinum and Gold tier customers and retrieve dealer IDs.",
           "data": null,
           "turn": 1,
           "tool": null,
@@ -1656,21 +1656,21 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.002998,
+          "cost_usd": 0.002863,
           "task": "loaners"
         },
         {
-          "t": "2027-03-08T09:00:58.527000",
+          "t": "2027-03-08T09:01:01.069000",
           "kind": "tool",
-          "text": "eligible_customers({\"co_ids\":\"h:C-17:co_ids:5\"})",
+          "text": "eligible_customers({\"co_ids\":\"h:C-18:co_ids:5\"})",
           "data": null,
           "turn": 1,
           "tool": "eligible_customers",
           "args": {
-            "co_ids": "h:C-17:co_ids:5"
+            "co_ids": "h:C-18:co_ids:5"
           },
           "result": {
-            "eligible": "h:C-17:eligible:6",
+            "eligible": "h:C-18:eligible:6",
             "eligible_count": 13,
             "dealer_ids": [
               "D02",
@@ -1743,9 +1743,9 @@
           "task": "loaners"
         },
         {
-          "t": "2027-03-08T09:01:02.338000",
+          "t": "2027-03-08T09:01:05.676000",
           "kind": "thought",
-          "text": "Eligible customers have been filtered, identifying 13 eligible customer orders across 10 dealers (D02, D08, D10, D11, D13, D21, D31, D35, D37, D38). Next step per handbook is a single live read of loaner availability across all identified dealers.",
+          "text": "Eligible customers have been identified (13 eligible across 10 dealers, 42 standard excluded). Now performing a single live loaner availability check for all 10 dealer IDs: D02, D08, D10, D11, D13, D21, D31, D35, D37, D38.",
           "data": null,
           "turn": 2,
           "tool": null,
@@ -1755,11 +1755,11 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.003589,
+          "cost_usd": 0.004073,
           "task": "loaners"
         },
         {
-          "t": "2027-03-08T09:01:02.503000",
+          "t": "2027-03-08T09:01:05.830000",
           "kind": "tool",
           "text": "loaner_availability({\"dealer_ids\":[\"D02\",\"D08\",\"D10\",\"D11\",\"D13\",\"D21\",\"D31\",\"D35\",\"D37\",\"D38\"],\"dealer_id\":null})",
           "data": null,
@@ -1794,7 +1794,7 @@
               "D37": 1,
               "D38": 1
             },
-            "handle": "h:C-17:pools:7"
+            "handle": "h:C-18:pools:7"
           },
           "to_agent": null,
           "from_agent": null,
@@ -1804,9 +1804,9 @@
           "task": "loaners"
         },
         {
-          "t": "2027-03-08T09:01:05.514000",
+          "t": "2027-03-08T09:01:09.354000",
           "kind": "thought",
-          "text": "Step 3: Call rank_and_assign with the eligible handle 'h:C-17:eligible:6' using the live loaner availability pools read in step 2.",
+          "text": "I have retrieved the eligible customers (13 eligible across 10 dealers) and checked live loaner availability across all relevant dealers. Now, following Handbook Rule 5, I will rank eligible orders by customer tier (Platinum before Gold), then promised date, then customer order id, and assign loaners from each dealer's pool.",
           "data": null,
           "turn": 3,
           "tool": null,
@@ -1816,18 +1816,18 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.002866,
+          "cost_usd": 0.003316,
           "task": "loaners"
         },
         {
-          "t": "2027-03-08T09:01:05.516000",
+          "t": "2027-03-08T09:01:09.356000",
           "kind": "tool",
-          "text": "rank_and_assign({\"eligible\":\"h:C-17:eligible:6\"})",
+          "text": "rank_and_assign({\"eligible\":\"h:C-18:eligible:6\"})",
           "data": null,
           "turn": 3,
           "tool": "rank_and_assign",
           "args": {
-            "eligible": "h:C-17:eligible:6"
+            "eligible": "h:C-18:eligible:6"
           },
           "result": {
             "assignments": 11,
@@ -1912,9 +1912,9 @@
           "task": "loaners"
         },
         {
-          "t": "2027-03-08T09:01:10.021000",
+          "t": "2027-03-08T09:01:14.794000",
           "kind": "thought",
-          "text": "All required tool steps (eligible_customers, loaner_availability, rank_and_assign) have completed successfully. Now calling submit_care_plan for task 'loaners'.",
+          "text": "All three required loaner workflow tools have been executed: eligible_customers identified 13 eligible orders and 42 standard-tier orders across 10 dealers; loaner_availability read the live pools; rank_and_assign assigned 11 loaners with 2 unserved due to pool capacity. Now calling submit_care_plan for task 'loaners'.",
           "data": null,
           "turn": 4,
           "tool": null,
@@ -1924,20 +1924,20 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.003939,
+          "cost_usd": 0.004502,
           "task": "loaners"
         },
         {
-          "t": "2027-03-08T09:01:10.022000",
+          "t": "2027-03-08T09:01:14.796000",
           "kind": "tool",
-          "text": "submit_care_plan({\"task\":\"loaners\",\"incident_id\":null,\"reasoning_summary\":\"Evaluated 55 affected customer orders: 42 Standard-tier customers receive no loaner per handbook rules. Among the 13 eligible Gold and Platinum customers across 10 dealers, 11 were successfully assigned loaners according to priority and live pool capacity. Two orders (CO-00638 at D35, CO-00655 at D38) remained unserved due to pool exhaustion.\"})",
+          "text": "submit_care_plan({\"task\":\"loaners\",\"incident_id\":null,\"reasoning_summary\":\"Out of 55 affected customer orders, 42 Standard-tier customers receive no loaner per handbook rule 5. Among the 13 eligible Platinum and Gold customers, 11 loaners were successfully assigned across 10 dealers based on priority rankings and live pool availability, leaving 2 unserved due to limited dealer pools.\"})",
           "data": null,
           "turn": 4,
           "tool": "submit_care_plan",
           "args": {
             "task": "loaners",
             "incident_id": null,
-            "reasoning_summary": "Evaluated 55 affected customer orders: 42 Standard-tier customers receive no loaner per handbook rules. Among the 13 eligible Gold and Platinum customers across 10 dealers, 11 were successfully assigned loaners according to priority and live pool capacity. Two orders (CO-00638 at D35, CO-00655 at D38) remained unserved due to pool exhaustion."
+            "reasoning_summary": "Out of 55 affected customer orders, 42 Standard-tier customers receive no loaner per handbook rule 5. Among the 13 eligible Platinum and Gold customers, 11 loaners were successfully assigned across 10 dealers based on priority rankings and live pool availability, leaving 2 unserved due to limited dealer pools."
           },
           "result": {
             "task": "loaners",
@@ -1961,7 +1961,7 @@
               "assignments": 11
             },
             "paths_count": 0,
-            "reasoning_summary": "Evaluated 55 affected customer orders: 42 Standard-tier customers receive no loaner per handbook rules. Among the 13 eligible Gold and Platinum customers across 10 dealers, 11 were successfully assigned loaners according to priority and live pool capacity. Two orders (CO-00638 at D35, CO-00655 at D38) remained unserved due to pool exhaustion."
+            "reasoning_summary": "Out of 55 affected customer orders, 42 Standard-tier customers receive no loaner per handbook rule 5. Among the 13 eligible Platinum and Gold customers, 11 loaners were successfully assigned across 10 dealers based on priority rankings and live pool availability, leaving 2 unserved due to limited dealer pools."
           },
           "to_agent": null,
           "from_agent": null,
@@ -1971,9 +1971,9 @@
           "task": "loaners"
         },
         {
-          "t": "2027-03-08T09:01:15.753000",
+          "t": "2027-03-08T09:01:21.451000",
           "kind": "thought",
-          "text": "All steps for the loaners task have been completed and submitted via submit_care_plan. Setting final to the returned SpecialistResult.",
+          "text": "All steps for the loaners task have been completed. 55 customer orders were evaluated, filtering out 42 Standard-tier customers who are not entitled to loaners per Handbook rule 5. Live dealer pools were queried in one call across 10 dealers. Priority ranking assigned 11 loaners to Platinum and Gold customers, with 2 customers unserved due to pool limits. The care plan has been submitted successfully.",
           "data": null,
           "turn": 5,
           "tool": null,
@@ -1983,11 +1983,11 @@
           "from_agent": null,
           "transport": null,
           "model": "gemini-3.8-flash",
-          "cost_usd": 0.005637,
+          "cost_usd": 0.005879,
           "task": "loaners"
         },
         {
-          "t": "2027-03-08T09:01:15.754000",
+          "t": "2027-03-08T09:01:21.452000",
           "kind": "decision",
           "text": "Customer Care & Quality submitted its result",
           "data": {
@@ -2012,7 +2012,7 @@
               "assignments": 11
             },
             "paths_count": 0,
-            "reasoning_summary": "Evaluated 55 affected customer orders: 42 Standard-tier customers receive no loaner per handbook rules. Among the 13 eligible Gold and Platinum customers across 10 dealers, 11 were successfully assigned loaners according to priority and live pool capacity. Two orders (CO-00638 at D35, CO-00655 at D38) remained unserved due to pool exhaustion."
+            "reasoning_summary": "Out of 55 affected customer orders, 42 Standard-tier customers receive no loaner per handbook rule 5. Among the 13 eligible Platinum and Gold customers, 11 loaners were successfully assigned across 10 dealers based on priority rankings and live pool availability, leaving 2 unserved due to limited dealer pools."
           },
           "turn": 5,
           "tool": null,
@@ -2026,9 +2026,9 @@
           "task": "loaners"
         },
         {
-          "t": "2027-03-08T09:01:15.754000",
+          "t": "2027-03-08T09:01:21.452000",
           "kind": "message",
-          "text": "Evaluated 55 affected customer orders: 42 Standard-tier customers receive no loaner per handbook rules. Among the 13 eligible Gold and Platinum customers across 10 dealers, 11 were successfully assigned loaners according to priority and live pool capacity. Two orders (CO-00638 at D35, CO-00655 at D38) remained unserved due to pool exhaustion. (11 actions)",
+          "text": "Out of 55 affected customer orders, 42 Standard-tier customers receive no loaner per handbook rule 5. Among the 13 eligible Platinum and Gold customers, 11 loaners were successfully assigned across 10 dealers based on priority rankings and live pool availability, leaving 2 unserved due to limited dealer pools. (11 actions)",
           "data": {
             "task": "loaners",
             "incident_id": null,
@@ -2470,7 +2470,7 @@
     },
     {
       "seq": 14,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "supply_chain_planner",
       "tool": "mes.reschedule",
       "args": {
@@ -2501,12 +2501,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 15,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "supply_chain_planner",
       "tool": "mes.reschedule",
       "args": {
@@ -2537,12 +2537,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 16,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "supply_chain_planner",
       "tool": "mes.reschedule",
       "args": {
@@ -2573,12 +2573,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 17,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "supply_chain_planner",
       "tool": "mes.reschedule",
       "args": {
@@ -2609,12 +2609,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 18,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "supply_chain_planner",
       "tool": "mes.reschedule",
       "args": {
@@ -2645,12 +2645,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 19,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "supply_chain_planner",
       "tool": "mes.reschedule",
       "args": {
@@ -2681,12 +2681,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 20,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -2720,12 +2720,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 21,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -2757,12 +2757,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 22,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -2794,12 +2794,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 23,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -2834,12 +2834,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 24,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -2871,12 +2871,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 25,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -2908,12 +2908,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 26,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -2946,12 +2946,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 27,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -2983,12 +2983,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 28,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3020,12 +3020,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 29,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3058,12 +3058,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 30,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3096,12 +3096,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 31,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3133,12 +3133,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 32,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3171,12 +3171,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 33,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3208,12 +3208,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 34,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3249,12 +3249,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 35,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3286,12 +3286,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 36,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3323,12 +3323,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 37,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3360,12 +3360,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 38,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3398,12 +3398,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 39,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3435,12 +3435,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 40,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3472,12 +3472,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 41,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3510,12 +3510,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 42,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3549,12 +3549,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 43,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3586,12 +3586,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 44,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3625,12 +3625,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 45,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3662,12 +3662,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 46,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3704,12 +3704,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 47,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3741,12 +3741,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 48,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3778,12 +3778,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 49,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3815,12 +3815,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 50,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "dealer_network",
       "tool": "dealer.notify",
       "args": {
@@ -3852,12 +3852,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 51,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "customer_care_quality",
       "tool": "crm.assign_loaner",
       "args": {
@@ -3886,12 +3886,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 52,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "customer_care_quality",
       "tool": "crm.assign_loaner",
       "args": {
@@ -3920,12 +3920,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 53,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "customer_care_quality",
       "tool": "crm.assign_loaner",
       "args": {
@@ -3954,12 +3954,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 54,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "customer_care_quality",
       "tool": "crm.assign_loaner",
       "args": {
@@ -3988,12 +3988,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 55,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "customer_care_quality",
       "tool": "crm.assign_loaner",
       "args": {
@@ -4022,12 +4022,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 56,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "customer_care_quality",
       "tool": "crm.assign_loaner",
       "args": {
@@ -4056,12 +4056,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 57,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "customer_care_quality",
       "tool": "crm.assign_loaner",
       "args": {
@@ -4090,12 +4090,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 58,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "customer_care_quality",
       "tool": "crm.assign_loaner",
       "args": {
@@ -4124,12 +4124,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 59,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "customer_care_quality",
       "tool": "crm.assign_loaner",
       "args": {
@@ -4158,12 +4158,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 60,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "customer_care_quality",
       "tool": "crm.assign_loaner",
       "args": {
@@ -4192,12 +4192,12 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     },
     {
       "seq": 61,
-      "incident_id": "C-17#1",
+      "incident_id": "C-18#1",
       "agent": "customer_care_quality",
       "tool": "crm.assign_loaner",
       "args": {
@@ -4226,7 +4226,7 @@
       "transport": "mcp/stdio",
       "skipped": false,
       "incident_ids": [
-        "C-17#1"
+        "C-18#1"
       ]
     }
   ],
@@ -4524,9 +4524,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 4404,
-        "output_tokens": 437,
-        "cost_usd": 0.004942,
+        "input_tokens": 4419,
+        "output_tokens": 559,
+        "cost_usd": 0.005411,
         "cached": false,
         "attempts": 1
       },
@@ -4534,9 +4534,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 4694,
-        "output_tokens": 265,
-        "cost_usd": 0.004514,
+        "input_tokens": 4720,
+        "output_tokens": 247,
+        "cost_usd": 0.004466,
         "cached": false,
         "attempts": 1
       },
@@ -4544,9 +4544,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 4753,
-        "output_tokens": 772,
-        "cost_usd": 0.00646,
+        "input_tokens": 4779,
+        "output_tokens": 1142,
+        "cost_usd": 0.007867,
         "cached": false,
         "attempts": 1
       },
@@ -4554,9 +4554,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 5038,
-        "output_tokens": 182,
-        "cost_usd": 0.004461,
+        "input_tokens": 5077,
+        "output_tokens": 237,
+        "cost_usd": 0.004697,
         "cached": false,
         "attempts": 1
       },
@@ -4565,8 +4565,8 @@
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
         "input_tokens": 1770,
-        "output_tokens": 140,
-        "cost_usd": 0.001852,
+        "output_tokens": 151,
+        "cost_usd": 0.001894,
         "cached": false,
         "attempts": 1
       },
@@ -4575,8 +4575,8 @@
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
         "input_tokens": 1934,
-        "output_tokens": 224,
-        "cost_usd": 0.002291,
+        "output_tokens": 208,
+        "cost_usd": 0.00223,
         "cached": false,
         "attempts": 1
       },
@@ -4585,8 +4585,8 @@
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
         "input_tokens": 2392,
-        "output_tokens": 758,
-        "cost_usd": 0.004636,
+        "output_tokens": 492,
+        "cost_usd": 0.003639,
         "cached": false,
         "attempts": 1
       },
@@ -4594,9 +4594,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 2741,
-        "output_tokens": 418,
-        "cost_usd": 0.003623,
+        "input_tokens": 2735,
+        "output_tokens": 386,
+        "cost_usd": 0.003499,
         "cached": false,
         "attempts": 1
       },
@@ -4604,9 +4604,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 5263,
-        "output_tokens": 274,
-        "cost_usd": 0.004975,
+        "input_tokens": 5299,
+        "output_tokens": 246,
+        "cost_usd": 0.004897,
         "cached": false,
         "attempts": 1
       },
@@ -4615,8 +4615,8 @@
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
         "input_tokens": 1580,
-        "output_tokens": 268,
-        "cost_usd": 0.00219,
+        "output_tokens": 227,
+        "cost_usd": 0.002036,
         "cached": false,
         "attempts": 1
       },
@@ -4625,8 +4625,8 @@
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
         "input_tokens": 1887,
-        "output_tokens": 272,
-        "cost_usd": 0.002435,
+        "output_tokens": 213,
+        "cost_usd": 0.002214,
         "cached": false,
         "attempts": 1
       },
@@ -4634,9 +4634,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 1989,
-        "output_tokens": 353,
-        "cost_usd": 0.002816,
+        "input_tokens": 1991,
+        "output_tokens": 327,
+        "cost_usd": 0.00272,
         "cached": false,
         "attempts": 1
       },
@@ -4644,9 +4644,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 2144,
-        "output_tokens": 461,
-        "cost_usd": 0.003337,
+        "input_tokens": 2134,
+        "output_tokens": 374,
+        "cost_usd": 0.003003,
         "cached": false,
         "attempts": 1
       },
@@ -4654,9 +4654,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 5409,
-        "output_tokens": 231,
-        "cost_usd": 0.004923,
+        "input_tokens": 5439,
+        "output_tokens": 132,
+        "cost_usd": 0.004574,
         "cached": false,
         "attempts": 1
       },
@@ -4665,8 +4665,8 @@
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
         "input_tokens": 2387,
-        "output_tokens": 322,
-        "cost_usd": 0.002998,
+        "output_tokens": 286,
+        "cost_usd": 0.002863,
         "cached": false,
         "attempts": 1
       },
@@ -4675,8 +4675,8 @@
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
         "input_tokens": 2796,
-        "output_tokens": 398,
-        "cost_usd": 0.003589,
+        "output_tokens": 527,
+        "cost_usd": 0.004073,
         "cached": false,
         "attempts": 1
       },
@@ -4685,8 +4685,8 @@
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
         "input_tokens": 2936,
-        "output_tokens": 177,
-        "cost_usd": 0.002866,
+        "output_tokens": 297,
+        "cost_usd": 0.003316,
         "cached": false,
         "attempts": 1
       },
@@ -4695,8 +4695,8 @@
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
         "input_tokens": 3212,
-        "output_tokens": 408,
-        "cost_usd": 0.003939,
+        "output_tokens": 558,
+        "cost_usd": 0.004502,
         "cached": false,
         "attempts": 1
       },
@@ -4704,9 +4704,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 3591,
-        "output_tokens": 785,
-        "cost_usd": 0.005637,
+        "input_tokens": 3549,
+        "output_tokens": 858,
+        "cost_usd": 0.005879,
         "cached": false,
         "attempts": 1
       },
@@ -4714,9 +4714,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 5606,
-        "output_tokens": 122,
-        "cost_usd": 0.004662,
+        "input_tokens": 5615,
+        "output_tokens": 116,
+        "cost_usd": 0.004646,
         "cached": false,
         "attempts": 1
       },
@@ -4724,9 +4724,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 5639,
-        "output_tokens": 146,
-        "cost_usd": 0.004777,
+        "input_tokens": 5648,
+        "output_tokens": 136,
+        "cost_usd": 0.004746,
         "cached": false,
         "attempts": 1
       },
@@ -4735,8 +4735,8 @@
         "model": "gemini-3.8-flash",
         "purpose": "audit",
         "input_tokens": 1357,
-        "output_tokens": 442,
-        "cost_usd": 0.002675,
+        "output_tokens": 492,
+        "cost_usd": 0.002863,
         "cached": false,
         "attempts": 1
       },
@@ -4744,9 +4744,9 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "agent_turn",
-        "input_tokens": 5708,
-        "output_tokens": 134,
-        "cost_usd": 0.004784,
+        "input_tokens": 5717,
+        "output_tokens": 159,
+        "cost_usd": 0.004884,
         "cached": false,
         "attempts": 1
       },
@@ -4754,15 +4754,15 @@
         "provider": "gemini",
         "model": "gemini-3.8-flash",
         "purpose": "summarize",
-        "input_tokens": 388,
-        "output_tokens": 1357,
-        "cost_usd": 0.00538,
+        "input_tokens": 430,
+        "output_tokens": 1514,
+        "cost_usd": 0.006,
         "cached": false,
         "attempts": 1
       }
     ],
-    "total_cost_usd": 0.094762
+    "total_cost_usd": 0.096919
   },
-  "summary": "The Lexington plant loses power from 2027-03-11 to 2027-03-12 for a transformer swap with no builds until the line restarts Monday. In response to the outage, 6 production orders were rescheduled at the same plant. Additionally, 31 dealers were notified once each for 55 customer orders, and 11 loaners were assigned.",
-  "decision_reason": "Action was taken because identifiers and dates resolved against the data, handbook validators passed, and the digital-twin rehearsal passed. Furthermore, the live schedule baseline matched before the first write, and the auditor confirmed that the plant outage interpretation, rescheduling after restart, dealer notifications, and loaner assignments strictly adhered to all policy rules."
+  "summary": "Wacky Wheels Lexington plant (P_KY) experienced a planned power outage for a transformer swap with no builds from 2027-03-11 to 2027-03-12 before restarting on Monday. In response, 6 production orders were rescheduled at the same plant. Additionally, 31 dealers were notified once each for 55 customer orders, and 11 loaners were assigned.",
+  "decision_reason": "Action was taken because this was a confirmed incident where identifiers and dates resolved against the data, handbook validators passed, and the pre-flight check on a sandbox copy of the enterprise succeeded. Furthermore, the auditor agreed that the outage dates, affected orders, rescheduling plan, dealer notifications, and loaner allocations fully adhered to operational policies, with the live schedule baseline matching before the first write."
 }
