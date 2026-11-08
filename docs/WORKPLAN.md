@@ -39,6 +39,20 @@ See `ONBOARDING.md` for machine setup, assistant identity, git conventions and d
 
 ## 0.0 Status (updated 2026-11-08, branch `v2`)
 
+**Checkpoint 2026-11-08 (tag `v2-checkpoint-1`; `v2` frozen, all further work on branch `v3`).** v2 is functionally complete and verified live:
+four LLM agents (coordinator hub + Supply Chain Planner, Dealer Network, Customer Care & Quality; `agents.toml`), ReAct tool loops,
+handbook validators with correct-then-escalate, phased execution through the real MCP client (`mcp/stdio`), no caching, parallel mode
+(`--parallel N`, UI toggle), provider retry/backoff with run-level abort, contract 0.2.2 (`AgentStep.task`, `Orchestration.target`,
+`provider_failure`). Judge events run on a PRIVATE copy of the organisers' server through the same MCP client (`live.py --custom`;
+`runs/custom/sandbox/<id>/`); the in-process twin remains only for the pre-flight rehearsal, `--dry-run` and the grader; no "twin" in
+anything judges see. Full live run through the UI: 15/15 grader clean, 766 writes, 0 failed calls, 230 LLM calls, 0 retries, $0.90;
+Codex cold audit recomputed all 15 events from the CSVs with zero deviations. UI: Orchestration Flow view (two-row stage nodes, animated,
+Detailed timeline toggle), scrollable inbox 1.8:1 with Activity, Scored/Sandbox badges, run-status alerts. Fixtures: `traces/examples/v2/`
+(E-01, E-02, E-03, E-05, E-11, C-18 at 0.2.2). Known UX hazard: "Run this event" from the UI starts a fresh scored server with
+`--overwrite` and wipes `runs/live` + `traces/live` (a single-event run destroyed the full-run artefacts once) — fix on v3.
+Remaining for v3: three-run identity verification (`eval/run_identity.py --k 3`), one live parallel run, final run (tag `v2-final-1`),
+merge into `main`; GLASS: README/design-card wording sweep, demo video; GLASS needs his own Gemini key before running live.
+
 **v2 in progress** (`docs/PLAN_V2.md`): four real agents (coordinator + Supply Chain Planner + Dealer Network + Customer Care & Quality) on top of the
 v1 code (now tools and validators), execution through a real MCP client, no caching, failed-call handling, graph path for every event, Orchestration UI.
 All PRs target `v2`; `main` stays the v1 submission (tag `final-run-2`) until v2 is verified (PLAN_V2 §9).
