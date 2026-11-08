@@ -106,6 +106,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--event", action="append", default=[], help="event id, repeatable")
     ap.add_argument("--out", default="runs/dev")
+    ap.add_argument(
+        "--action-log", help="dry-run: where the twin executor writes the log (default <out>/action_log.jsonl)"
+    )
     ap.add_argument("--server", default="http://127.0.0.1:8000")
     ap.add_argument(
         "--dry-run",
@@ -152,7 +155,7 @@ def main(argv: list[str] | None = None) -> int:
     index = EntityIndex(world)
     twin = Twin()
     if a.dry_run:
-        executor = TwinExecutor(out / "action_log.jsonl")
+        executor = TwinExecutor(Path(a.action_log) if a.action_log else out / "action_log.jsonl")
     elif a.executor == "http":
         executor = HttpExecutor(a.server)
     else:

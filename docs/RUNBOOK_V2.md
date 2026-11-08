@@ -27,6 +27,11 @@ A re-run on a used server aborts safely (the freshness check finds a changed wor
 | `--provider P --model M`, `--audit-model M` | Override the model of every agent / the auditor for this run. |
 | `--no-audit`, `--no-explain` | Skip the auditor or the explanation LLM calls (cheaper experiments only). |
 
+## Partial runs
+`python -m control_tower.live --event E-08` (the UI's "Run this event") does not wipe `runs/live` / `traces/live`: the server logs to
+`runs/live/partial/<utc>`, then its rows replace that event's rows in `runs/live/action_log.jsonl`, and `models.json` is summed.
+A full run (`--all`) starts fresh (wipes `traces/live`, server `--out runs/live --overwrite`): that is the submission semantics.
+
 ## Judge-supplied events
 A custom event (UI "Add event" -> `POST /api/custom` -> `python -m control_tower.live --custom <file>`) is handled exactly like a feed event:
 the same four agents and the same MCP client, but against a PRIVATE instance of the organisers' server that `live.py` starts for that
