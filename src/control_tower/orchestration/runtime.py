@@ -156,6 +156,18 @@ def run_agent(spec: AgentSpec, task: str, payload: dict[str, Any], ctx: ToolCont
                         turn=n,
                     )
                     feedback = None
+                    stop = ctx.state.get("stop_agent")
+                    if isinstance(stop, tuple) and stop[0] == spec.agent_id:
+                        # a control tool (the coordinator's `finish`) ends the loop itself: saves a turn
+                        result = spec.result_schema.model_validate(stop[1])
+                        timeline.step(
+                            spec.agent_id,
+                            "decision",
+                            f"{spec.display_name} finished",
+                            data=stop[1],
+                            turn=n,
+                        )
+                        return AgentResult(result, None, n, llm_calls, round(cost, 6))
                     continue
 
         if feedback is not None:

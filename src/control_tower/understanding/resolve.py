@@ -418,8 +418,8 @@ def build_incident(
             )
             steps.append(
                 ResolutionStep(
-                    mention=raw.evidence,
-                    entity_type="note",
+                    mention=raw.shipment_id or raw.lot_id or raw.plant or raw.evidence,
+                    entity_type="shipment" if raw.shipment_id else "lot" if raw.lot_id else "plant",
                     method="unresolved",
                     note="noise guard: specific record named",
                 )
