@@ -82,7 +82,8 @@ def run_feed(
         t0 = time.perf_counter()
         try:
             if announce:
-                announce(ev)
+                announce(ev)  # lead-in sleep is not part of the event's wall time
+            t0 = time.perf_counter()
             return ev, handle(ev), "", time.perf_counter() - t0
         except Exception:  # never let one event stop the feed
             return ev, None, traceback.format_exc(), time.perf_counter() - t0

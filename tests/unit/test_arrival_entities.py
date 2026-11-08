@@ -37,6 +37,21 @@ def test_announce_once_per_event_before_handle(parallel):
         assert log == [(k, e["event_id"]) for e in EVENTS for k in ("announce", "handle")]
 
 
+def test_wall_time_excludes_announce():
+    import time
+
+    res = run.run_feed(lambda ev: None, EVENTS[:1], announce=lambda ev: time.sleep(0.2))
+    assert res[0][3] < 0.1
+
+
+def test_announce_failure_yields_traceback_row():
+    def boom(ev):
+        raise RuntimeError("x")
+
+    res = run.run_feed(lambda ev: None, EVENTS[:1], announce=boom)
+    assert res[0][1] is None and "RuntimeError" in res[0][2]
+
+
 def test_no_announce_by_default():
     assert len(run.run_feed(lambda ev: None, EVENTS)) == len(EVENTS)
 
