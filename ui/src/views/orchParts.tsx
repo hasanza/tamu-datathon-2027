@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { Disclosure } from "../components/ui/Disclosure";
 import type { AgentStep } from "../api/types";
 import { clock, offsetMs, usd } from "../lib/format";
 
@@ -11,7 +11,6 @@ export const echoesCall = (step: AgentStep) => !!step.tool && step.text.startsWi
 export const hasKeys = (o: Record<string, unknown> | null | undefined): o is Record<string, unknown> => !!o && Object.keys(o).length > 0;
 
 export function Details({ step }: { step: AgentStep }) {
-  const [open, setOpen] = useState(false);
   const payload = {
     ...(hasKeys(step.args) ? { args: step.args } : {}),
     ...(hasKeys(step.result) ? { result: step.result } : {}),
@@ -22,14 +21,9 @@ export function Details({ step }: { step: AgentStep }) {
   };
   if (Object.keys(payload).length === 0) return null;
   return (
-    <>
-      <button onClick={() => setOpen(!open)} aria-expanded={open} className="mt-1 inline-flex items-center gap-0.5 text-[11px] text-tx3 hover:text-tx">
-        {open ? <ChevronDown size={12} aria-hidden /> : <ChevronRight size={12} aria-hidden />} details
-      </button>
-      {open && (
-        <pre className="mono mt-1 max-h-60 overflow-auto rounded-md border border-line bg-bg p-2 text-[11px] text-tx2">{JSON.stringify(payload, null, 2)}</pre>
-      )}
-    </>
+    <Disclosure summary="details" className="mt-1">
+      <pre className="mono max-h-60 overflow-auto rounded-md border border-line bg-bg p-2 text-[11px] text-tx2">{JSON.stringify(payload, null, 2)}</pre>
+    </Disclosure>
   );
 }
 
