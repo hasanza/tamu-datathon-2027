@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRunStatus } from "./hooks";
-import type { StreamType } from "./types";
+import { isCustomId, type FeedEvent, type StreamType } from "./types";
 
 export interface ActivityItem {
   id: number;
@@ -50,6 +50,9 @@ export function useLiveStream() {
   const [recent, setRecent] = useState<Record<string, number>>({}); // event id -> last update ms (row flash)
   const [replay, setReplay] = useState(false);
   const seq = useRef(0);
+  // A custom (sandbox) event only shows up in /api/events once its trace exists, i.e. when it is done. While it runs
+  // (5-10 s) the stream is the only place that knows about it, so keep a placeholder row for the feed.
+  const [pendingCustom, setPendingCustom] = useState<Record<string, FeedEvent & { at: number }>>({});
 
   // SSE can miss lines (reconnect starts at the end of the file). When the API says a run has finished,
   // re-read everything so no event is left "processing" or "queued".
@@ -125,6 +128,29 @@ export function useLiveStream() {
               MAX_ITEMS,
             ),
           );
+          if (eventId && isCustomId(eventId)) {
+            if (type === "event_received") {
+              const source = typeof payload.source === "string" ? payload.source : "judge input";
+              setPendingCustom((p) => ({
+                ...p,
+                [eventId]: {
+                  event_id: eventId,
+                  received_at: typeof payload.received_at === "string" ? payload.received_at : new Date().toISOString(),
+                  source,
+                  text: typeof payload.text === "string" ? payload.text : "",
+                  status: "processing",
+                  category: null,
+                  confidence: null,
+                  custom: true,
+                  parent_id: /^follow-up to ([EC]-\d{2})$/.exec(source)?.[1] ?? null,
+                  at: Date.now(),
+                },
+              }));
+            } else if (type === "event_done") {
+              // the real row arrives with the events refresh that event_done triggers right below
+              window.setTimeout(() => setPendingCustom((p) => Object.fromEntries(Object.entries(p).filter(([k]) => k !== eventId))), 1500);
+            }
+          }
           if (eventId) {
             setRecent((r) => ({ ...r, [eventId]: Date.now() }));
             setProcessing((s) => {
@@ -160,6 +186,20 @@ export function useLiveStream() {
     };
   }, [qc, replay]);
 
+  // A custom run that never reports event_done (killed API, restart) must not stay "processing" forever.
+  useEffect(() => {
+    const t = window.setInterval(() => {
+      const cutoff = Date.now() - 180_000;
+      setPendingCustom((p) => {
+        const stale = Object.keys(p).filter((k) => (p[k]?.at ?? 0) < cutoff);
+        if (stale.length === 0) return p;
+        setProcessing((s) => new Set([...s].filter((id) => !stale.includes(id))));
+        return Object.fromEntries(Object.entries(p).filter(([k]) => !stale.includes(k)));
+      });
+    }, 15_000);
+    return () => window.clearInterval(t);
+  }, []);
+
   const clear = useCallback(() => setItems([]), []);
-  return { live, items, processing, recent, replay, setReplay, clear };
+  return { live, items, processing, recent, replay, setReplay, clear, pendingCustom: Object.values(pendingCustom) };
 }

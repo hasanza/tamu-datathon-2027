@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useEvents, useKpis, useTrace } from "./api/hooks";
 import { useLiveStream } from "./api/stream";
 import { EventFeed } from "./components/EventFeed";
@@ -29,8 +29,14 @@ export default function App() {
   const { route, go } = useRoute();
   const events = useEvents();
   const stream = useLiveStream();
-  const selectedId = route.eventId ?? events.data?.[0]?.event_id ?? null;
-  const selected = events.data?.find((e) => e.event_id === selectedId);
+  // custom runs in flight appear in the feed (as "processing") before the API lists them
+  const feedEvents = useMemo(() => {
+    if (!events.data) return events.data;
+    const known = new Set(events.data.map((e) => e.event_id));
+    return [...events.data, ...stream.pendingCustom.filter((p) => !known.has(p.event_id)).map(({ at: _at, ...row }) => row)];
+  }, [events.data, stream.pendingCustom]);
+  const selectedId = route.eventId ?? feedEvents?.[0]?.event_id ?? null;
+  const selected = feedEvents?.find((e) => e.event_id === selectedId);
   const trace = useTrace(selectedId);
   const lastVersion = useRef<string>();
   if (trace.data) lastVersion.current = trace.data.pipeline_version;
@@ -54,7 +60,7 @@ export default function App() {
           <div className="grid min-h-full grid-cols-1 md:grid-cols-[280px_1fr] xl:h-full xl:grid-cols-[320px_minmax(0,1fr)_340px]">
             <aside aria-label="Event feed" className="min-h-0 border-b border-line md:overflow-hidden md:border-b-0 md:border-r max-md:max-h-[420px]">
               <EventFeed
-                events={events.data}
+                events={feedEvents}
                 loading={events.isLoading}
                 error={events.error}
                 onRetry={() => void events.refetch()}

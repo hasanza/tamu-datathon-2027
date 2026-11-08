@@ -1,5 +1,12 @@
 import type { FeedEvent, GraphPath, Kpis, LogRow, RunMode, RunStatus, Trace } from "./types";
 
+export interface CustomResult {
+  event_id: string;
+  status: string;
+  category: string;
+  parent_id?: string | null;
+}
+
 export class ApiError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -42,10 +49,17 @@ export const api = {
       { method: "POST" },
     ),
   custom: (text: string, source?: string) =>
-    request<{ event_id: string; status: string; category: string }>("/api/custom", {
+    request<CustomResult>("/api/custom", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(source ? { text, source } : { text }),
+    }),
+  /** Follow-up to an escalated event: the API appends the operator's details to the parent's text and re-runs it in the sandbox. */
+  followUp: (parentId: string, details: string) =>
+    request<CustomResult>("/api/custom", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ parent_id: parentId, details }),
     }),
   runStatus: () => request<RunStatus>("/api/run/status"),
   reset: () => request<RunStatus>("/api/reset", { method: "POST" }),

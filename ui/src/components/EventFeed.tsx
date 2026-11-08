@@ -2,6 +2,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Bell, ClipboardCheck, ListChecks, Mail, MessageSquare, Newspaper, Radio, Search, Siren } from "lucide-react";
 import type { EventCategory, FeedEvent, Status } from "../api/types";
 import { CATEGORY_META, sourceIconName, STATUS_META } from "../lib/meta";
+import { newestFirst } from "../lib/escalation";
 import { clip } from "../lib/format";
 import { CustomEventCard } from "./CustomEventCard";
 import { CategoryBadge, Chip, ConfidenceRing, Empty, ErrorBox, Loading, StatusChip } from "./ui/primitives";
@@ -57,6 +58,14 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
   const [cats, setCats] = useState<Set<EventCategory>>(new Set());
   const [stats, setStats] = useState<Set<Status>>(new Set());
   const listRef = useRef<HTMLUListElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  // A new judge event lands at the top of the list: bring the top into view so the user sees it appear.
+  const customCount = (events ?? []).filter((e) => e.custom).length;
+  const prevCustom = useRef(customCount);
+  useEffect(() => {
+    if (customCount > prevCustom.current) scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    prevCustom.current = customCount;
+  }, [customCount]);
   const cursor = useRef(selected); // tracks the selection synchronously so held/rapid keys do not read a stale value
   useEffect(() => {
     cursor.current = selected;
@@ -71,7 +80,8 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
           (cats.size === 0 || (e.category && cats.has(e.category))) &&
           (stats.size === 0 || stats.has(e.status)) &&
           (!needle || `${e.event_id} ${e.text} ${e.source}`.toLowerCase().includes(needle)),
-      );
+      )
+      .sort(newestFirst); // judge input first (highest C-nn on top), then the preset events in E-01..E-15 order
   }, [events, q, cats, stats, processing]);
 
   // j/k and arrow keys move the selection unless the user is typing.
@@ -156,7 +166,7 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
         {loading && <Loading label="Loading events" />}
         {error && <ErrorBox message={error.message} onRetry={onRetry} />}
         {!loading && !error && rows.length === 0 && (
@@ -174,11 +184,17 @@ export function EventFeed({ events, loading, error, onRetry, selected, onSelect,
             const sel = e.event_id === selected;
             const flash = recent[e.event_id];
             const firstCustom = !!e.custom && !rows.slice(0, i).some((r) => r.custom);
+            const firstPreset = !e.custom && !rows.slice(0, i).some((r) => !r.custom) && i > 0;
             return (
               <Fragment key={e.event_id}>
               {firstCustom && (
                 <li role="presentation" className="bg-surface-2 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-tx3">
-                  Judge input · sandbox ({rows.filter((r) => r.custom).length})
+                  Judge input · sandbox ({rows.filter((r) => r.custom).length}) · newest first
+                </li>
+              )}
+              {firstPreset && (
+                <li role="presentation" className="bg-surface-2 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-tx3">
+                  Preset events ({rows.filter((r) => !r.custom).length})
                 </li>
               )}
               <li className="relative">

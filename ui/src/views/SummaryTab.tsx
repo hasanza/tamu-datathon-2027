@@ -2,6 +2,7 @@ import { Fragment, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import type { Incident, Trace } from "../api/types";
 import { CategoryBadge, Chip, ConfidenceRing, Mono, Panel, Stat } from "../components/ui/primitives";
+import { FollowUpControl, FollowUpList } from "../components/FollowUp";
 import { ImpactPanel } from "./ImpactPanel";
 
 function Id({ v }: { v: string | null }) {
@@ -184,6 +185,16 @@ export function SummaryTab({ trace }: { trace: Trace }) {
         </div>
         <p className="mt-2 text-xs text-tx3">Classifier: {trace.classification.reason}</p>
       </Panel>
+
+      {(trace.status === "escalated" || trace.status === "failed") && (
+        <Panel title="Needs a human">
+          <p className="text-[13px] text-tx2">
+            This event was handed to a person and nothing operational changed. Add the missing details to run it again in the sandbox.
+          </p>
+          <FollowUpControl trace={trace} />
+          <FollowUpList parentId={trace.event_id} />
+        </Panel>
+      )}
 
       <Panel title={`Business impact${cf ? "" : " (none)"}`}>
         {cf ? (

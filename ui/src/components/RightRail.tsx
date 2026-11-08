@@ -2,20 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { CheckCheck, Radio, RotateCcw, Trash2, TriangleAlert } from "lucide-react";
 import type { ActivityItem } from "../api/stream";
 import { useRunStatus, useTraces } from "../api/hooks";
-import type { FeedEvent, Trace } from "../api/types";
+import { isCustomId, type FeedEvent } from "../api/types";
+import { confirmClause, newestFirst } from "../lib/escalation";
+import { FollowUpControl, FollowUpList } from "./FollowUp";
 import { safeStorage } from "../lib/format";
 import { Chip, Empty, Mono, Panel } from "./ui/primitives";
 
 /* ---------------- Escalation inbox ---------------- */
-
-function confirmClause(t: Trace): string | null {
-  const esc = t.actions.find((a) => a.tool === "escalate");
-  const reason = typeof esc?.args.reason === "string" ? esc.args.reason : "";
-  const m = /Please confirm:\s*(.*?)\.\s*(?:No operational|$)/s.exec(reason);
-  if (m?.[1]) return m[1];
-  const blocking = t.incidents.flatMap((i) => i.ambiguities.filter((a) => a.blocking).map((a) => a.issue));
-  return blocking.length ? `Resolve: ${blocking.join("; ")}` : null;
-}
 
 function readAcked(): Set<string> {
   try {
@@ -26,7 +19,7 @@ function readAcked(): Set<string> {
 }
 
 export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | undefined; onSelect: (id: string) => void }) {
-  const ids = useMemo(() => (events ?? []).filter((e) => !e.custom && (e.status === "escalated" || e.status === "failed")).map((e) => e.event_id), [events]);
+  const ids = useMemo(() => (events ?? []).filter((e) => e.status === "escalated" || e.status === "failed").sort(newestFirst).map((e) => e.event_id), [events]);
   const { traces, loading, failed } = useTraces(ids);
   // An acknowledgement belongs to one run: the same event escalates again in the next run and must reappear.
   const run = String(useRunStatus().data?.started ?? "snapshot");
@@ -62,7 +55,10 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
                   <button onClick={() => onSelect(t.event_id)} className="mono font-medium text-tx underline-offset-2 hover:underline">
                     {t.event_id}
                   </button>
-                  <Chip color={t.status === "failed" ? "var(--fail)" : "var(--cat-unconfirmed)"}>{t.status}</Chip>
+                  <span className="flex items-center gap-1.5">
+                    {isCustomId(t.event_id) && <Chip color="var(--cat-compound)">Sandbox</Chip>}
+                    <Chip color={t.status === "failed" ? "var(--fail)" : "var(--cat-unconfirmed)"}>{t.status}</Chip>
+                  </span>
                 </div>
                 <p className="mt-1.5 text-tx2">{t.decision_reason}</p>
                 {need && (
@@ -71,6 +67,8 @@ export function EscalationInbox({ events, onSelect }: { events: FeedEvent[] | un
                     {need}
                   </p>
                 )}
+                <FollowUpControl trace={t} />
+                <FollowUpList parentId={t.event_id} />
                 <button
                   onClick={() => setAcked(new Set(acked).add(ackKey(t.event_id)))}
                   className="mt-2 inline-flex items-center gap-1 rounded-md border border-line px-2 py-1 text-xs text-tx2 hover:border-ok hover:text-tx"
